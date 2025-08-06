@@ -7,7 +7,7 @@ import { AppProvider } from "@/contexts/AppContext";
 import Welcome from "./pages/Welcome";
 import Setup from "./pages/Setup";
 import BuddySelection from "./pages/BuddySelection";
-import LocationPermission from "./pages/LocationPermission";
+import NotificationPermission from "./pages/NotificationPermission";
 import Home from "./pages/Home";
 import CravingSOS from "./pages/CravingSOS";
 import BreathingExercise from "./pages/BreathingExercise";
@@ -30,7 +30,7 @@ const App = () => (
             <Route path="/" element={<Welcome />} />
             <Route path="/setup" element={<Setup />} />
             <Route path="/buddy-selection" element={<BuddySelection />} />
-            <Route path="/location-permission" element={<LocationPermission />} />
+            <Route path="/notification-permission" element={<NotificationPermission />} />
             <Route path="/home" element={<Home />} />
             <Route path="/craving-sos" element={<CravingSOS onClose={() => {}} />} />
             <Route path="/breathing-exercise" element={<BreathingExercise onClose={() => {}} onBack={() => {}} />} />

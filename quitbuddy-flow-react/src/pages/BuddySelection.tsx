@@ -34,7 +34,7 @@ const BuddySelection = () => {
 
   const handleContinue = () => {
     if (buddyName.trim()) {
-      navigate('/location-permission');
+      navigate('/notification-permission');
     }
   };
 

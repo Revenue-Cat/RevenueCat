@@ -13,6 +13,7 @@ interface ShopItem {
   price: number;
   owned: boolean;
   isNew?: boolean;
+  gradient?: string;
 }
 
 const ShopDrawer = () => {
@@ -46,10 +47,12 @@ const ShopDrawer = () => {
   ];
 
   const backgrounds: ShopItem[] = [
-    { id: "1", emoji: "🌅", name: "Sunrise", price: 50, owned: ownedBackgrounds.includes("1") },
-    { id: "2", emoji: "🌊", name: "Ocean", price: 100, owned: ownedBackgrounds.includes("2") },
-    { id: "3", emoji: "🏔️", name: "Mountains", price: 150, owned: ownedBackgrounds.includes("3") },
-    { id: "4", emoji: "🌲", name: "Forest", price: 200, owned: ownedBackgrounds.includes("4") }
+    { id: "default", emoji: "🌅", name: "Default", price: 0, owned: ownedBackgrounds.includes("default"), gradient: "bg-gradient-to-br from-blue-50 to-indigo-100" },
+    { id: "1", emoji: "🌅", name: "Sunset", price: 50, owned: ownedBackgrounds.includes("1"), gradient: "bg-gradient-to-br from-orange-400 to-pink-500" },
+    { id: "2", emoji: "🌊", name: "Ocean", price: 100, owned: ownedBackgrounds.includes("2"), gradient: "bg-gradient-to-br from-blue-400 to-cyan-500" },
+    { id: "3", emoji: "🌲", name: "Forest", price: 150, owned: ownedBackgrounds.includes("3"), gradient: "bg-gradient-to-br from-green-400 to-emerald-600" },
+    { id: "4", emoji: "💜", name: "Purple", price: 200, owned: ownedBackgrounds.includes("4"), gradient: "bg-gradient-to-br from-purple-400 to-pink-600" },
+    { id: "5", emoji: "🌑", name: "Dark", price: 250, owned: ownedBackgrounds.includes("5"), gradient: "bg-gradient-to-br from-gray-800 to-gray-900" }
   ];
 
   const accessories: ShopItem[] = [
@@ -125,8 +128,12 @@ const ShopDrawer = () => {
             <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
               New
             </div>
-          )}
-          <div className="text-4xl mb-2">{item.emoji}</div>
+           )}
+           {selectedShopTab === 'backgrounds' && item.gradient ? (
+             <div className={`w-full h-8 rounded-md mb-2 mx-auto ${item.gradient}`}></div>
+           ) : (
+             <div className="text-4xl mb-2">{item.emoji}</div>
+           )}
           <div className="text-sm font-medium text-foreground mb-1">{item.name}</div>
             <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
               {isOwned ? (

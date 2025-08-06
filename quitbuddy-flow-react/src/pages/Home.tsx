@@ -11,6 +11,7 @@ import { useApp } from "@/contexts/AppContext";
 import CravingSOS from "./CravingSOS";
 import ShopDrawer from "@/components/ShopDrawer";
 import CoinPurchaseDrawer from "@/components/CoinPurchaseDrawer";
+import PurchaseDrawer from "@/components/PurchaseDrawer";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -22,9 +23,12 @@ const Home = () => {
     ownedBackgrounds,
     setSelectedCharacter,
     setSelectedBackground,
-    setShowCoinPurchase
+    setShowCoinPurchase,
+    purchaseItem
   } = useApp();
   
+  const [selectedPurchaseItem, setSelectedPurchaseItem] = useState<any>(null);
+  const [purchaseItemType, setPurchaseItemType] = useState<'characters' | 'backgrounds'>('characters');
   const [timeElapsed, setTimeElapsed] = useState({
     days: 0,
     hours: 23,
@@ -60,8 +64,21 @@ const Home = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Get background gradient based on selected background
+  const getBackgroundClass = () => {
+    const backgrounds = {
+      "default": "bg-gradient-to-br from-blue-50 to-indigo-100",
+      "1": "bg-gradient-to-br from-orange-400 to-pink-500",
+      "2": "bg-gradient-to-br from-blue-400 to-cyan-500", 
+      "3": "bg-gradient-to-br from-green-400 to-emerald-600",
+      "4": "bg-gradient-to-br from-purple-400 to-pink-600",
+      "5": "bg-gradient-to-br from-gray-800 to-gray-900"
+    };
+    return backgrounds[selectedBackground.id] || backgrounds["default"];
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen ${getBackgroundClass()}`}>
       <div className="px-6 py-8 max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -169,54 +186,83 @@ const Home = () => {
             <TabsContent value="characters" className="mt-4">
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { id: "1", emoji: "🦫", name: "Chill Capybara" },
-                  { id: "2", emoji: "🐨", name: "Zen Koala" },
-                  { id: "3", emoji: "🦥", name: "Slow Sloth" },
-                  { id: "4", emoji: "🐧", name: "Cool Penguin" },
-                  { id: "5", emoji: "🐼", name: "Panda Bear" },
-                  { id: "6", emoji: "🦉", name: "Wise Owl" },
-                  { id: "7", emoji: "🦆", name: "Duck Friend" }
-                ].filter(char => ownedCharacters.includes(char.id)).map((character) => (
-                  <Card 
-                    key={character.id} 
-                    className={`p-4 text-center cursor-pointer transition-colors ${
-                      character.id === selectedCharacter.id ? "bg-buddy-accent border-buddy-primary ring-2 ring-primary" : "hover:bg-surface-light"
-                    }`}
-                    onClick={() => setSelectedCharacter({...character, price: 0, owned: true})}
-                  >
-                    <div className="text-4xl mb-2">{character.emoji}</div>
-                    <div className="text-sm font-medium text-foreground mb-1">{character.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {character.id === selectedCharacter.id ? "Selected" : "Owned"}
-                    </div>
-                  </Card>
-                ))}
+                  { id: "1", emoji: "🦫", name: "Chill Capybara", price: 0 },
+                  { id: "2", emoji: "🐨", name: "Zen Koala", price: 150 },
+                  { id: "3", emoji: "🦥", name: "Slow Sloth", price: 200 },
+                  { id: "4", emoji: "🐧", name: "Cool Penguin", price: 100 },
+                  { id: "5", emoji: "🐼", name: "Panda Bear", price: 200 },
+                  { id: "6", emoji: "🦉", name: "Wise Owl", price: 100 },
+                  { id: "7", emoji: "🦆", name: "Duck Friend", price: 150 }
+                ].map((character) => {
+                  const isOwned = ownedCharacters.includes(character.id);
+                  const isSelected = character.id === selectedCharacter.id;
+                  
+                  return (
+                    <Card 
+                      key={character.id} 
+                      className={`p-4 text-center cursor-pointer transition-colors ${
+                        isSelected ? "bg-buddy-accent border-buddy-primary ring-2 ring-primary" : 
+                        isOwned ? "bg-buddy-accent border-buddy-primary" : "hover:bg-surface-light"
+                      }`}
+                      onClick={() => {
+                        if (isOwned) {
+                          setSelectedCharacter({...character, owned: true});
+                        } else {
+                          setSelectedPurchaseItem({...character, owned: false});
+                          setPurchaseItemType('characters');
+                        }
+                      }}
+                    >
+                      <div className="text-4xl mb-2">{character.emoji}</div>
+                      <div className="text-sm font-medium text-foreground mb-1">{character.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {isSelected ? "Selected" : isOwned ? "Owned" : 
+                         character.price === 0 ? "Free" : `${character.price} coins`}
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             </TabsContent>
 
             <TabsContent value="backgrounds" className="mt-4">
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { id: "default", emoji: "🌅", name: "Default" },
-                  { id: "1", emoji: "🌅", name: "Sunrise" },
-                  { id: "2", emoji: "🌊", name: "Ocean" },
-                  { id: "3", emoji: "🏔️", name: "Mountains" },
-                  { id: "4", emoji: "🌲", name: "Forest" }
-                ].filter(bg => ownedBackgrounds.includes(bg.id)).map((background) => (
-                  <Card 
-                    key={background.id} 
-                    className={`p-4 text-center cursor-pointer transition-colors ${
-                      background.id === selectedBackground.id ? "bg-buddy-accent border-buddy-primary ring-2 ring-primary" : "hover:bg-surface-light"
-                    }`}
-                    onClick={() => setSelectedBackground({...background, price: 0, owned: true})}
-                  >
-                    <div className="text-4xl mb-2">{background.emoji}</div>
-                    <div className="text-sm font-medium text-foreground mb-1">{background.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {background.id === selectedBackground.id ? "Selected" : "Owned"}
-                    </div>
-                  </Card>
-                ))}
+                  { id: "default", emoji: "🌅", name: "Default", price: 0, gradient: "bg-gradient-to-br from-blue-50 to-indigo-100" },
+                  { id: "1", emoji: "🌅", name: "Sunset", price: 50, gradient: "bg-gradient-to-br from-orange-400 to-pink-500" },
+                  { id: "2", emoji: "🌊", name: "Ocean", price: 100, gradient: "bg-gradient-to-br from-blue-400 to-cyan-500" },
+                  { id: "3", emoji: "🌲", name: "Forest", price: 150, gradient: "bg-gradient-to-br from-green-400 to-emerald-600" },
+                  { id: "4", emoji: "💜", name: "Purple", price: 200, gradient: "bg-gradient-to-br from-purple-400 to-pink-600" },
+                  { id: "5", emoji: "🌑", name: "Dark", price: 250, gradient: "bg-gradient-to-br from-gray-800 to-gray-900" }
+                ].map((background) => {
+                  const isOwned = ownedBackgrounds.includes(background.id);
+                  const isSelected = background.id === selectedBackground.id;
+                  
+                  return (
+                    <Card 
+                      key={background.id} 
+                      className={`p-4 text-center cursor-pointer transition-colors ${
+                        isSelected ? "bg-buddy-accent border-buddy-primary ring-2 ring-primary" : 
+                        isOwned ? "bg-buddy-accent border-buddy-primary" : "hover:bg-surface-light"
+                      }`}
+                      onClick={() => {
+                        if (isOwned) {
+                          setSelectedBackground({...background, owned: true});
+                        } else {
+                          setSelectedPurchaseItem({...background, owned: false});
+                          setPurchaseItemType('backgrounds');
+                        }
+                      }}
+                    >
+                      <div className={`w-full h-8 rounded-md mb-2 mx-auto ${background.gradient}`}></div>
+                      <div className="text-sm font-medium text-foreground mb-1">{background.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {isSelected ? "Selected" : isOwned ? "Owned" : 
+                         background.price === 0 ? "Free" : `${background.price} coins`}
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             </TabsContent>
           </div>
@@ -234,6 +280,12 @@ const Home = () => {
       {showCravingSOS && (
         <CravingSOS onClose={() => setShowCravingSOS(false)} />
       )}
+      
+      <PurchaseDrawer 
+        selectedItem={selectedPurchaseItem}
+        onClose={() => setSelectedPurchaseItem(null)}
+        itemType={purchaseItemType}
+      />
       
       <CoinPurchaseDrawer />
     </div>
