@@ -9,7 +9,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import CigaretteModal from '../components/CigaretteModal';
+import SetupModal from '../components/SetupModal';
+import PriceModal from '../components/PriceModal';
+import TobaccoTypeModal from '../components/TobaccoTypeModal';
+import GoalModal from '../components/GoalModal';
 
 interface OnboardingPathScreenProps {
   onNext?: () => void;
@@ -46,12 +49,27 @@ const pathCards: PathCard[] = [
   },
 ];
 
+// Setup options for different fields
+const cigaretteOptions = [
+  { id: '1-5', text: '1-5', icon: 'remove-circle-outline' as const },
+  { id: '6-10', text: '6-10', icon: 'remove-circle-outline' as const },
+  { id: '11-15', text: '11-15', icon: 'remove-circle-outline' as const },
+  { id: '16-20', text: '16-20 (1 pack)', icon: 'cube-outline' as const },
+  { id: '21-30', text: '21-30', icon: 'remove-circle-outline' as const },
+  { id: '31-40', text: '31-40 (2 packs)', icon: 'cube-outline' as const },
+];
+
 const OnboardingPathScreen: React.FC<OnboardingPathScreenProps> = ({
   onNext,
 }) => {
   const navigation = useNavigation();
-  const [showCigaretteModal, setShowCigaretteModal] = useState(false);
-  const [selectedCigaretteOption, setSelectedCigaretteOption] = useState<string>('');
+  const [showSetupModal, setShowSetupModal] = useState(false);
+  const [showPriceModal, setShowPriceModal] = useState(false);
+  const [showTobaccoTypeModal, setShowTobaccoTypeModal] = useState(false);
+  const [showGoalModal, setShowGoalModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalOptions, setModalOptions] = useState<any[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
 
   const handleNext = () => {
     if (onNext) {
@@ -63,19 +81,66 @@ const OnboardingPathScreen: React.FC<OnboardingPathScreenProps> = ({
 
   const handleCardPress = (cardId: string) => {
     if (cardId === 'smoke-type') {
-      setShowCigaretteModal(true);
+      setShowTobaccoTypeModal(true);
+    } else if (cardId === 'daily-usage') {
+      setModalTitle('How much do you use daily?');
+      setModalOptions(cigaretteOptions);
+      setShowSetupModal(true);
+    } else if (cardId === 'cost') {
+      setShowPriceModal(true);
+    } else if (cardId === 'goal') {
+      setShowGoalModal(true);
     } else {
       console.log(`Selected: ${cardId}`);
     }
   };
 
-  const handleCigaretteSelect = (option: string) => {
-    setSelectedCigaretteOption(option);
-    console.log(`Selected cigarette option: ${option}`);
+  const handleSetupModalSelect = (option: string) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      [modalTitle]: option
+    }));
+    console.log(`Selected option: ${option}`);
   };
 
-  const handleCloseModal = () => {
-    setShowCigaretteModal(false);
+  const handlePriceModalSelect = (price: string) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      'price': price
+    }));
+    console.log(`Selected price: ${price}`);
+  };
+
+  const handleTobaccoTypeSelect = (type: string) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      'tobacco-type': type
+    }));
+    console.log(`Selected tobacco type: ${type}`);
+  };
+
+  const handleGoalSelect = (goal: string) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      'goal': goal
+    }));
+    console.log(`Selected goal: ${goal}`);
+  };
+
+  const handleCloseSetupModal = () => {
+    setShowSetupModal(false);
+  };
+
+  const handleClosePriceModal = () => {
+    setShowPriceModal(false);
+  };
+
+  const handleCloseTobaccoTypeModal = () => {
+    setShowTobaccoTypeModal(false);
+  };
+
+  const handleCloseGoalModal = () => {
+    setShowGoalModal(false);
   };
 
   return (
@@ -123,11 +188,34 @@ const OnboardingPathScreen: React.FC<OnboardingPathScreenProps> = ({
         </Pressable>
       </View>
 
-      {/* Cigarette Modal */}
-      <CigaretteModal
-        visible={showCigaretteModal}
-        onClose={handleCloseModal}
-        onSelect={handleCigaretteSelect}
+      {/* Setup Modal */}
+      <SetupModal
+        visible={showSetupModal}
+        onClose={handleCloseSetupModal}
+        onSelect={handleSetupModalSelect}
+        title={modalTitle}
+        options={modalOptions}
+      />
+
+      {/* Price Modal */}
+      <PriceModal
+        visible={showPriceModal}
+        onClose={handleClosePriceModal}
+        onSelect={handlePriceModalSelect}
+      />
+
+      {/* Tobacco Type Modal */}
+      <TobaccoTypeModal
+        visible={showTobaccoTypeModal}
+        onClose={handleCloseTobaccoTypeModal}
+        onSelect={handleTobaccoTypeSelect}
+      />
+
+      {/* Goal Modal */}
+      <GoalModal
+        visible={showGoalModal}
+        onClose={handleCloseGoalModal}
+        onSelect={handleGoalSelect}
       />
     </SafeAreaView>
   );
