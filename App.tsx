@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import OnboardingScreen from './src/screens/OnboardingScreen';
+import OnboardingPathScreen from './src/screens/OnboardingPathScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import HomeScreen from './src/screens/HomeScreen';
@@ -23,11 +25,14 @@ const AppContent: React.FC = () => {
         screenOptions={{
           headerShown: false,
         }}
+        initialRouteName="Onboarding"
       >
         {user ? (
           <Stack.Screen name="Home" component={HomeScreen} />
         ) : (
           <>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+            <Stack.Screen name="OnboardingPath" component={OnboardingPathScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
           </>
