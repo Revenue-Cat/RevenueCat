@@ -17,6 +17,7 @@ import Shop from './src/screens/Shop';
 import CravingSOS from './src/screens/CravingSOS';
 import BreathingExercise from './src/screens/BreathingExercise';
 import ChatAssistance from './src/screens/ChatAssistance';
+import CoinPurchaseModal from './src/components/CoinPurchaseModal';
 
 type Screen = 
   | 'welcome' 
@@ -96,7 +97,11 @@ const App: React.FC = () => {
         )}
         
         {currentScreen === 'profile' && (
-          <Profile onBack={() => navigateTo('home')} />
+          <Profile 
+            onBack={() => navigateTo('home')} 
+            onNavigateToAchievements={() => navigateTo('achievements')}
+            onNavigateToShop={() => navigateTo('shop')}
+          />
         )}
         
         {currentScreen === 'achievements' && (
@@ -137,6 +142,9 @@ const App: React.FC = () => {
             onBack={handleCloseChatAssistance}
           />
         </Modal>
+
+        {/* Coin Purchase Modal */}
+        <CoinPurchaseModal />
       </SafeAreaView>
     </AppProvider>
   );

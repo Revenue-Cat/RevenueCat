@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,122 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
+  Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useApp } from '../contexts/AppContext';
 
 const { width } = Dimensions.get('window');
 
 interface ProfileProps {
   onBack: () => void;
+  onNavigateToAchievements: () => void;
+  onNavigateToShop: () => void;
 }
 
-const Profile: React.FC<ProfileProps> = ({ onBack }) => {
+interface SmokingHabits {
+  smokeType: string;
+  dailyAmount: string;
+  packPrice: string;
+  goal: string;
+}
+
+const Profile: React.FC<ProfileProps> = ({ onBack, onNavigateToAchievements, onNavigateToShop }) => {
+  const { userCoins, setShowCoinPurchase, openShopWithTab } = useApp();
+  
+  const [smokingHabits, setSmokingHabits] = useState<SmokingHabits>({
+    smokeType: "cigarettes",
+    dailyAmount: "5-10",
+    packPrice: "5",
+    goal: "quit-completely"
+  });
+  
+  const [editingField, setEditingField] = useState<string | null>(null);
+
+  const setupFields = [
+    {
+      id: "smokeType",
+      label: "What do you usually smoke?",
+      icon: "remove-circle-outline" as keyof typeof Ionicons.glyphMap,
+      value: smokingHabits.smokeType,
+      options: [
+        { value: "cigarettes", label: "Cigarettes" },
+        { value: "tobacco-heater", label: "Tobacco heater" },
+        { value: "roll-your-own", label: "Roll-your-own" }
+      ]
+    },
+    {
+      id: "dailyAmount",
+      label: "How much do you use daily?",
+      icon: "reader-outline" as keyof typeof Ionicons.glyphMap,
+      value: smokingHabits.dailyAmount,
+      options: [
+        { value: "1-5", label: "1-5 cigarettes per day" },
+        { value: "5-10", label: "5-10 cigarettes per day" },
+        { value: "11-15", label: "11-15 cigarettes per day" },
+        { value: "16-20", label: "16-20 cigarettes per day (1 pack)" },
+        { value: "21-30", label: "21-30 cigarettes per day" },
+        { value: "31-40", label: "31-40 cigarettes per day (2 packs)" }
+      ]
+    },
+    {
+      id: "packPrice",
+      label: "How much do you pay for one unit?",
+      icon: "wallet-outline" as keyof typeof Ionicons.glyphMap,
+      value: smokingHabits.packPrice,
+      options: [
+        { value: "3", label: "$3" },
+        { value: "4", label: "$4" },
+        { value: "5", label: "$5" },
+        { value: "6", label: "$6" },
+        { value: "7", label: "$7" }
+      ]
+    },
+    {
+      id: "goal",
+      label: "What's your main goal?",
+      icon: "navigate-circle-outline" as keyof typeof Ionicons.glyphMap,
+      value: smokingHabits.goal,
+      options: [
+        { value: "quit-completely", label: "Quit completely" },
+        { value: "reduce-gradually", label: "Reduce gradually" },
+        { value: "save-money", label: "Save money" },
+        { value: "improve-health", label: "Improve health" },
+        { value: "gain-control", label: "Gain control" },
+        { value: "doesnt-matter", label: "Doesn't matter" }
+      ]
+    }
+  ];
+
+  const handleFieldEdit = (fieldId: string) => {
+    setEditingField(fieldId);
+  };
+
+  const handleSelection = (field: keyof SmokingHabits, value: string) => {
+    setSmokingHabits(prev => ({ ...prev, [field]: value }));
+    setEditingField(null);
+  };
+
+  const getDisplayText = (field: any) => {
+    const option = field.options.find((opt: any) => opt.value === field.value);
+    const label = option?.label || field.value;
+    
+    switch (field.id) {
+      case "smokeType":
+        return `I am smoking ${label.toLowerCase()}`;
+      case "dailyAmount":
+        return `I smoke ${label.toLowerCase()}`;
+      case "packPrice":
+        return `One pack cost me $${field.value}`;
+      case "goal":
+        return `I want ${label.toLowerCase()}`;
+      default:
+        return label;
+    }
+  };
+
+  const currentField = setupFields.find(field => field.id === editingField);
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -25,79 +131,154 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
             <Ionicons name="arrow-back" size={24} color="#000000" />
           </Pressable>
           <Text style={styles.title}>Profile</Text>
-          <View style={styles.placeholder} />
+          <Pressable style={styles.coinsButton} onPress={() => setShowCoinPurchase(true)}>
+            <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
+            <Text style={styles.coinsText}>{userCoins}</Text>
+          </Pressable>
         </View>
 
-        {/* Profile Info */}
-        <View style={styles.profileSection}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <Ionicons name="person" size={48} color="#666666" />
-            </View>
-            <Pressable style={styles.editButton}>
-              <Ionicons name="create-outline" size={20} color="white" />
-            </Pressable>
+        {/* Achievement Preview */}
+        <Pressable style={styles.previewCard} onPress={onNavigateToAchievements}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Achievements</Text>
+            <Ionicons name="chevron-forward" size={20} color="#666666" />
           </View>
-          <Text style={styles.userName}>User Name</Text>
-          <Text style={styles.userEmail}>user@example.com</Text>
-        </View>
+          <View style={styles.previewGrid}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <View key={i} style={styles.previewItem} />
+            ))}
+          </View>
+        </Pressable>
 
-        {/* Stats */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Your Progress</Text>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>23</Text>
-              <Text style={styles.statLabel}>Days Smoke-Free</Text>
+        {/* Characters Preview */}
+        <Pressable style={styles.previewCard} onPress={() => openShopWithTab('characters')}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Characters</Text>
+            <Ionicons name="chevron-forward" size={20} color="#666666" />
+          </View>
+          <View style={styles.previewGrid}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <View key={i} style={styles.previewItem} />
+            ))}
+          </View>
+        </Pressable>
+
+        {/* Backgrounds Preview */}
+        <Pressable style={styles.previewCard} onPress={() => openShopWithTab('backgrounds')}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Backgrounds</Text>
+            <Ionicons name="chevron-forward" size={20} color="#666666" />
+          </View>
+          <View style={styles.previewGrid}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <View key={i} style={[styles.previewItem, styles.backgroundPreview]} />
+            ))}
+          </View>
+        </Pressable>
+
+        {/* Subscription */}
+        <View style={styles.subscriptionCard}>
+          <Text style={styles.cardTitle}>Subscription</Text>
+          <View style={styles.subscriptionOptions}>
+            <View style={styles.subscriptionOption}>
+              <View>
+                <Text style={styles.subscriptionLabel}>12 month</Text>
+                <Text style={styles.subscriptionSubtext}>Save 80%</Text>
+              </View>
+              <View style={styles.subscriptionPrice}>
+                <Text style={styles.priceText}>10.99 USD</Text>
+                <Text style={styles.originalPrice}>15.99 USD</Text>
+              </View>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>47</Text>
-              <Text style={styles.statLabel}>Cigarettes Avoided</Text>
+            <View style={styles.subscriptionOption}>
+              <Text style={styles.subscriptionLabel}>3 month</Text>
+              <Text style={styles.priceText}>5.99 USD</Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>€23.50</Text>
-              <Text style={styles.statLabel}>Money Saved</Text>
+            <View style={styles.subscriptionOption}>
+              <Text style={styles.subscriptionLabel}>1 month</Text>
+              <Text style={styles.priceText}>2.99 USD</Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>5</Text>
-              <Text style={styles.statLabel}>Achievements</Text>
+            <View style={styles.subscriptionOption}>
+              <Text style={styles.subscriptionLabel}>App for life</Text>
+              <Text style={styles.priceText}>20.99 USD</Text>
             </View>
           </View>
+          <Pressable style={styles.unlockButton}>
+            <Text style={styles.unlockButtonText}>Unlock the entire program</Text>
+          </Pressable>
         </View>
 
         {/* Settings */}
-        <View style={styles.settingsSection}>
-          <Text style={styles.sectionTitle}>Settings</Text>
-          <View style={styles.settingsList}>
-            <Pressable style={styles.settingItem}>
-              <Ionicons name="notifications-outline" size={24} color="#000000" />
-              <Text style={styles.settingText}>Notifications</Text>
-              <Ionicons name="chevron-forward" size={20} color="#666666" />
-            </Pressable>
-            <Pressable style={styles.settingItem}>
-              <Ionicons name="shield-outline" size={24} color="#000000" />
-              <Text style={styles.settingText}>Privacy</Text>
-              <Ionicons name="chevron-forward" size={20} color="#666666" />
-            </Pressable>
-            <Pressable style={styles.settingItem}>
-              <Ionicons name="help-circle-outline" size={24} color="#000000" />
-              <Text style={styles.settingText}>Help & Support</Text>
-              <Ionicons name="chevron-forward" size={20} color="#666666" />
-            </Pressable>
-            <Pressable style={styles.settingItem}>
-              <Ionicons name="information-circle-outline" size={24} color="#000000" />
-              <Text style={styles.settingText}>About</Text>
-              <Ionicons name="chevron-forward" size={20} color="#666666" />
-            </Pressable>
+        <View style={styles.settingsCard}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Smoking Habits</Text>
+            <Ionicons name="create-outline" size={20} color="#666666" />
+          </View>
+          <View style={styles.habitsList}>
+            {setupFields.map((field) => (
+              <Pressable
+                key={field.id}
+                style={styles.habitItem}
+                onPress={() => handleFieldEdit(field.id)}
+              >
+                <View style={styles.habitContent}>
+                  <Ionicons name={field.icon} size={24} color="#000000" />
+                  <Text style={styles.habitText}>{getDisplayText(field)}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#666666" />
+              </Pressable>
+            ))}
+          </View>
+          <View style={styles.notificationToggle}>
+            <Text style={styles.notificationLabel}>Notifications</Text>
+            <View style={styles.toggleSwitch}>
+              <View style={styles.toggleKnob} />
+            </View>
           </View>
         </View>
-
-        {/* Logout */}
-        <Pressable style={styles.logoutButton}>
-          <Ionicons name="log-out-outline" size={24} color="#ff4444" />
-          <Text style={styles.logoutText}>Log Out</Text>
-        </Pressable>
       </ScrollView>
+
+      {/* Modal for Editing Settings */}
+      {editingField && currentField && (
+        <Modal visible={true} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>{currentField.label}</Text>
+                
+                <ScrollView style={styles.optionsContainer}>
+                  {currentField.options.map((option) => (
+                    <Pressable
+                      key={option.value}
+                      style={[
+                        styles.option,
+                        smokingHabits[editingField as keyof SmokingHabits] === option.value ? styles.optionSelected : styles.optionUnselected
+                      ]}
+                      onPress={() => handleSelection(editingField as keyof SmokingHabits, option.value)}
+                    >
+                      <Text style={[
+                        styles.optionText,
+                        smokingHabits[editingField as keyof SmokingHabits] === option.value ? styles.optionTextSelected : styles.optionTextUnselected
+                      ]}>
+                        {option.label}
+                      </Text>
+                      <Ionicons 
+                        name={currentField.icon} 
+                        size={24} 
+                        color={smokingHabits[editingField as keyof SmokingHabits] === option.value ? 'white' : '#666666'} 
+                      />
+                    </Pressable>
+                  ))}
+                </ScrollView>
+                
+                <Pressable style={styles.closeButton} onPress={() => setEditingField(null)}>
+                  <Text style={styles.closeButtonText}>✕</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -133,110 +314,223 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000000',
   },
-  placeholder: {
-    width: 40,
-  },
-  profileSection: {
+  coinsButton: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 32,
+    backgroundColor: '#f5f5f5',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 8,
   },
-  avatarContainer: {
-    position: 'relative',
+  coinsText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  previewCard: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 16,
+    padding: 16,
     marginBottom: 16,
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  previewGrid: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  previewItem: {
+    flex: 1,
+    aspectRatio: 1,
+    backgroundColor: '#e5e5e5',
+    borderRadius: 12,
+  },
+  backgroundPreview: {
+    backgroundColor: '#e0f2fe',
+  },
+  subscriptionCard: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+  },
+  subscriptionOptions: {
+    gap: 12,
+    marginBottom: 16,
+  },
+  subscriptionOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+  },
+  subscriptionLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#000000',
+  },
+  subscriptionSubtext: {
+    fontSize: 12,
+    color: '#666666',
+  },
+  subscriptionPrice: {
+    alignItems: 'flex-end',
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  originalPrice: {
+    fontSize: 12,
+    color: '#666666',
+    textDecorationLine: 'line-through',
+  },
+  unlockButton: {
+    backgroundColor: '#000000',
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  unlockButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  settingsCard: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+  },
+  habitsList: {
+    gap: 12,
+    marginBottom: 16,
+  },
+  habitItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+  },
+  habitContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  habitText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#000000',
+  },
+  notificationToggle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e5e5',
+  },
+  notificationLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#000000',
+  },
+  toggleSwitch: {
+    width: 50,
+    height: 30,
+    backgroundColor: '#e5e5e5',
+    borderRadius: 15,
+    padding: 2,
+  },
+  toggleKnob: {
+    width: 26,
+    height: 26,
+    backgroundColor: '#ffffff',
+    borderRadius: 13,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContainer: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    maxHeight: '70%',
+  },
+  modalContent: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 40,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000000',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  optionsContainer: {
+    maxHeight: 400,
+  },
+  option: {
+    width: '100%',
+    height: 56,
+    borderRadius: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
+  optionUnselected: {
+    backgroundColor: '#f5f5f5',
+  },
+  optionSelected: {
+    backgroundColor: '#000000',
+  },
+  optionText: {
+    fontSize: 16,
+    fontWeight: '500',
+    flex: 1,
+  },
+  optionTextUnselected: {
+    color: '#000000',
+  },
+  optionTextSelected: {
+    color: 'white',
+    fontWeight: '600',
+  },
+  closeButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#f5f5f5',
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
+    marginTop: 24,
   },
-  editButton: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#000000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  userName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  userEmail: {
-    fontSize: 16,
-    color: '#666666',
-  },
-  statsSection: {
-    marginBottom: 32,
-  },
-  sectionTitle: {
+  closeButtonText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#000000',
-    marginBottom: 16,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  statCard: {
-    width: (width - 72) / 2,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666666',
-    textAlign: 'center',
-  },
-  settingsSection: {
-    marginBottom: 32,
-  },
-  settingsList: {
-    gap: 8,
-  },
-  settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    gap: 12,
-  },
-  settingText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#000000',
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    gap: 8,
-  },
-  logoutText: {
-    fontSize: 16,
-    color: '#ff4444',
-    fontWeight: '600',
   },
 });
 
