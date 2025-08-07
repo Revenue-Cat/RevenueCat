@@ -13,6 +13,7 @@ import { loginWithEmail } from "../config/firebase";
 import { useGoogleAuth } from "../services/googleAuth";
 import LottieView from "lottie-react-native";
 import { Dimensions } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
 
 interface LoginScreenProps {
   navigation: any;
@@ -55,8 +56,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     }
   };
 
+  const handleBackToOnboarding = () => {
+    navigation.navigate("Onboarding");
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={handleBackToOnboarding}
+      >
+        <Ionicons name="arrow-back" size={24} color="#333" />
+      </TouchableOpacity>
+
       <View style={{ height: 220 }}>
         <LottieView
           source={require("../assets/CuteDoggie.json")}
@@ -142,6 +155,20 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 1000,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -217,11 +244,11 @@ const styles = StyleSheet.create({
   },
   registerText: {
     color: "#666",
-    fontSize: 14,
+    fontSize: 16,
   },
   registerLinkText: {
     color: "#007AFF",
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "600",
   },
 });

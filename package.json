@@ -17,6 +17,7 @@
     "expo": "~53.0.17",
     "expo-auth-session": "^6.2.1",
     "expo-crypto": "^14.1.5",
+    "expo-linear-gradient": "^14.1.5",
     "expo-status-bar": "~2.2.3",
     "expo-web-browser": "^14.2.0",
     "firebase": "^12.0.0",
