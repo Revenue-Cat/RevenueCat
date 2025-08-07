@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,8 +19,87 @@ interface OnboardingThemeScreenProps {
 interface ColorSwatch {
   id: string;
   color: string;
+  backgroundColor?: string;
   isSelected?: boolean;
 }
+
+interface ModeData {
+  id: 'light' | 'dark';
+  title: string;
+  colors: ColorSwatch[];
+  previewStyle: object;
+}
+
+// Extracted reusable components
+const ColorSwatchComponent: React.FC<{
+  swatch: ColorSwatch;
+  isSelected: boolean;
+  onSelect: (color: string) => void;
+}> = React.memo(({ swatch, isSelected, onSelect }) => (
+  <Pressable
+    style={[
+      styles.colorSwatch,
+      { backgroundColor: swatch.backgroundColor || swatch.color },
+      isSelected && styles.selectedColorSwatch
+    ]}
+    onPress={() => onSelect(swatch.color)}
+  />
+));
+
+const UIPreview: React.FC<{ mode: 'light' | 'dark' }> = React.memo(({ mode }) => (
+  <View style={styles.uiPreview}>
+    <View style={[
+      styles.previewContainer,
+      mode === 'light' ? styles.lightModePreview : styles.darkModePreview
+    ]}>
+      <View style={styles.previewHeader} />
+      <View style={styles.previewContent}>
+        <View style={styles.previewElement} />
+        <View style={styles.previewElement} />
+        <View style={styles.previewElement} />
+      </View>
+    </View>
+  </View>
+));
+
+const ModeSection: React.FC<{
+  modeData: ModeData;
+  isSelected: boolean;
+  onSelect: (mode: 'light' | 'dark') => void;
+  selectedColor: string;
+  onColorSelect: (color: string) => void;
+}> = React.memo(({ modeData, isSelected, onSelect, selectedColor, onColorSelect }) => (
+  <View style={[
+    styles.modeContainer,
+    isSelected ? styles.selectedModeContainer : styles.unselectedModeContainer,
+    {
+      backgroundColor: modeData.id === 'light' 
+        ? '#3a3a3c' 
+        : '#008080'
+    }
+  ]}>
+    <Pressable
+      style={styles.modePressable}
+      onPress={() => onSelect(modeData.id)}
+    >
+      <UIPreview mode={modeData.id} />
+      
+      <View style={styles.modeContent}>
+        <Text style={styles.modeTitle}>{modeData.title} </Text>
+        <View style={styles.colorGrid}>
+          {modeData.colors.map((swatch) => (
+            <ColorSwatchComponent
+              key={swatch.id}
+              swatch={swatch}
+              isSelected={swatch.color === selectedColor}
+              onSelect={onColorSelect}
+            />
+          ))}
+        </View>
+      </View>
+    </Pressable>
+  </View>
+));
 
 const OnboardingThemeScreen: React.FC<OnboardingThemeScreenProps> = ({
   onNext,
@@ -31,65 +109,65 @@ const OnboardingThemeScreen: React.FC<OnboardingThemeScreenProps> = ({
   const [selectedMode, setSelectedMode] = useState<'light' | 'dark'>('dark');
   const [selectedColor, setSelectedColor] = useState<string>('#E7A1B0');
 
-  const lightModeColors: ColorSwatch[] = [
-    { id: 'light1', color: '#48D1CC' },
-    { id: 'light2', color: '#9370DB' },
-    { id: 'light3', color: '#FFA07A' },
-    { id: 'light4', color: '#FFB347' },
-    { id: 'light5', color: '#3CB371' },
-    { id: 'light6', color: '#F08080' },
-  ];
+  // Memoized data to prevent unnecessary re-renders
+  const modeData: ModeData[] = useMemo(() => [
+    {
+      id: 'light',
+      title: 'Світлий режим',
+      colors: [
+        { id: 'light1', color: '#48D1CC' },
+        { id: 'light2', color: '#9370DB' },
+        { id: 'light3', color: '#FFA07A' },
+        { id: 'light4', color: '#FFB347' },
+        { id: 'light5', color: '#3CB371' },
+        { id: 'light6', color: '#F08080' },
+      ],
+      previewStyle: styles.lightModePreview,
+    },
+    {
+      id: 'dark',
+      title: 'Темний режим',
+      colors: [
+        { id: 'dark1', color: '#00FFFF' },
+        { id: 'dark2', color: '#C71585' },
+        { id: 'dark3', color: '#E7A1B0' },
+        { id: 'dark4', color: '#FFD700' },
+        { id: 'dark5', color: '#55AE84' },
+        { id: 'dark6', color: '#DC143C' },
+      ],
+      previewStyle: styles.darkModePreview,
+    },
+  ], []);
 
-  const darkModeColors: ColorSwatch[] = [
-    { id: 'dark1', color: '#00FFFF' },
-    { id: 'dark2', color: '#C71585' },
-    { id: 'dark3', color: '#E7A1B0', isSelected: true },
-    { id: 'dark4', color: '#FFD700' },
-    { id: 'dark5', color: '#55AE84' },
-    { id: 'dark6', color: '#DC143C' },
-  ];
-
-  const handleBack = () => {
+  // Memoized handlers to prevent unnecessary re-renders
+  const handleBack = useCallback(() => {
     if (onBack) {
       onBack();
     } else {
       navigation.goBack();
     }
-  };
+  }, [onBack, navigation]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (onNext) {
       onNext();
     } else {
-      // Navigate to next screen or complete onboarding
       navigation.navigate('Login' as never);
     }
-  };
+  }, [onNext, navigation]);
 
-  const handleModeSelect = (mode: 'light' | 'dark') => {
+  const handleModeSelect = useCallback((mode: 'light' | 'dark') => {
     setSelectedMode(mode);
-  };
+  }, []);
 
-  const handleColorSelect = (color: string) => {
+  const handleColorSelect = useCallback((color: string) => {
     setSelectedColor(color);
-  };
-
-  const renderColorSwatch = (swatch: ColorSwatch, isDarkMode: boolean) => (
-    <Pressable
-      key={swatch.id}
-      style={[
-        styles.colorSwatch,
-        { backgroundColor: swatch.color },
-        swatch.color === selectedColor && styles.selectedColorSwatch
-      ]}
-      onPress={() => handleColorSelect(swatch.color)}
-    />
-  );
+  }, []);
 
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={selectedMode === 'dark' ? ['#008080', '#008080'] : ['#008080', '#008080']}
+        colors={['#008080', '#008080']}
         style={styles.background}
       >
         <View style={styles.radialGradient} />
@@ -101,7 +179,7 @@ const OnboardingThemeScreen: React.FC<OnboardingThemeScreenProps> = ({
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.content}>
-            {/* Back Arrow */}
+            {/* Back Button */}
             <Pressable
               style={styles.backButton}
               onPress={handleBack}
@@ -114,69 +192,17 @@ const OnboardingThemeScreen: React.FC<OnboardingThemeScreenProps> = ({
               Оберіть режим відображення та кольори
             </Text>
 
-            {/* Light Mode Section */}
-            <View style={[
-              styles.modeContainer,
-              selectedMode === 'light' ? styles.darkModeContainer : styles.lightModeContainer,
-              selectedMode === 'light' && styles.selectedModeContainer
-            ]}>
-              <Pressable
-                style={styles.modePressable}
-                onPress={() => handleModeSelect('light')}
-              >
-                {/* UI Preview Placeholder */}
-                <View style={styles.uiPreview}>
-                  <View style={styles.lightModePreview}>
-                    <View style={styles.previewHeader} />
-                    <View style={styles.previewContent}>
-                      <View style={styles.previewElement} />
-                      <View style={styles.previewElement} />
-                      <View style={styles.previewElement} />
-                    </View>
-                  </View>
-                </View>
-
-                {/* Text & Colors */}
-                <View style={styles.modeContent}>
-                  <Text style={styles.modeTitle}>Світлий режим</Text>
-                  <View style={styles.colorGrid}>
-                    {lightModeColors.map((swatch) => renderColorSwatch(swatch, false))}
-                  </View>
-                </View>
-              </Pressable>
-            </View>
-
-            {/* Dark Mode Section */}
-            <View style={[
-              styles.modeContainer,
-              selectedMode === 'light' ? styles.lightModeContainer : styles.darkModeContainer,
-              selectedMode === 'dark' && styles.selectedModeContainer
-            ]}>
-              <Pressable
-                style={styles.modePressable}
-                onPress={() => handleModeSelect('dark')}
-              >
-                {/* UI Preview Placeholder */}
-                <View style={styles.uiPreview}>
-                  <View style={styles.darkModePreview}>
-                    <View style={styles.previewHeader} />
-                    <View style={styles.previewContent}>
-                      <View style={styles.previewElement} />
-                      <View style={styles.previewElement} />
-                      <View style={styles.previewElement} />
-                    </View>
-                  </View>
-                </View>
-
-                {/* Text & Colors */}
-                <View style={styles.modeContent}>
-                  <Text style={styles.modeTitle}>Темний режим</Text>
-                  <View style={styles.colorGrid}>
-                    {darkModeColors.map((swatch) => renderColorSwatch(swatch, true))}
-                  </View>
-                </View>
-              </Pressable>
-            </View>
+            {/* Mode Sections */}
+            {modeData.map((mode) => (
+              <ModeSection
+                key={mode.id}
+                modeData={mode}
+                isSelected={selectedMode === mode.id}
+                onSelect={handleModeSelect}
+                selectedColor={selectedColor}
+                onColorSelect={handleColorSelect}
+              />
+            ))}
 
             {/* Next Button */}
             <Pressable
@@ -221,6 +247,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   backButton: {
     marginTop: 40,
@@ -232,8 +260,9 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 24,
     fontWeight: 'bold',
+    textAlign: 'center',
     marginTop: 20,
     marginBottom: 30,
     paddingHorizontal: 20,
@@ -242,6 +271,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 20,
     marginBottom: 20,
+  },
+  unselectedModeContainer: {
+    backgroundColor: '#3a3a3c',
+    borderWidth: 3,
+    borderColor: '#545458',
   },
   lightModeContainer: {
     backgroundColor: '#3a3a3c',
@@ -254,7 +288,6 @@ const styles = StyleSheet.create({
   selectedModeContainer: {
     borderWidth: 3,
     borderColor: '#22d3ee',
-    backgroundColor: '#008080',
   },
   modePressable: {
     flexDirection: 'row',
@@ -268,19 +301,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 20,
   },
-  lightModePreview: {
+  previewContainer: {
     width: 120,
     height: 160,
-    backgroundColor: '#f0f0f0',
     borderRadius: 10,
     padding: 10,
   },
+  lightModePreview: {
+    backgroundColor: '#f0f0f0',
+  },
   darkModePreview: {
-    width: 120,
-    height: 160,
     backgroundColor: '#1c1c1e',
-    borderRadius: 10,
-    padding: 10,
   },
   previewHeader: {
     height: 15,
@@ -303,14 +334,14 @@ const styles = StyleSheet.create({
   },
   modeTitle: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 12,
     fontWeight: 'bold',
     marginBottom: 15,
   },
   colorGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 4,
     justifyContent: 'flex-start',
   },
   colorSwatch: {
