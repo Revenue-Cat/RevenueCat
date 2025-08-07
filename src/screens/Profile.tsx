@@ -164,7 +164,10 @@ const Profile: React.FC<ProfileProps> = ({ onBack, onNavigateToAchievements, onN
         </Pressable>
 
         {/* Backgrounds Preview */}
-        <Pressable style={styles.previewCard} onPress={() => openShopWithTab('backgrounds')}>
+        <Pressable 
+          style={styles.previewCard} 
+          onPress={() => openShopWithTab('backgrounds')}
+        >
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Backgrounds</Text>
             <Ionicons name="chevron-forward" size={20} color="#666666" />

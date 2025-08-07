@@ -18,6 +18,7 @@ import CravingSOS from './src/screens/CravingSOS';
 import BreathingExercise from './src/screens/BreathingExercise';
 import ChatAssistance from './src/screens/ChatAssistance';
 import CoinPurchaseModal from './src/components/CoinPurchaseModal';
+import ShopModal from './src/components/ShopModal';
 
 type Screen = 
   | 'welcome' 
@@ -145,6 +146,9 @@ const App: React.FC = () => {
 
         {/* Coin Purchase Modal */}
         <CoinPurchaseModal />
+
+        {/* Shop Modal */}
+        <ShopModal />
       </SafeAreaView>
     </AppProvider>
   );
