@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Pressable,
-  StyleSheet,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,89 +15,38 @@ interface WelcomeProps {
 
 const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
+    <View className="flex-1 bg-white">
+      <View className="flex-1 items-center justify-center px-6 py-16">
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Welcome to QuitQly!</Text>
-          <Text style={styles.subtitle}>
+        <View className="items-center mb-16">
+          <Text className="text-3xl font-bold text-black mb-3 text-center">
+            Welcome to QuitQly!
+          </Text>
+          <Text className="text-base text-gray-600 text-center leading-6 px-5">
             Your friendly guide to quitting smoking — one small step at a time.
           </Text>
         </View>
 
         {/* Placeholder for illustration */}
-        <View style={styles.illustration}>
-          <Text style={styles.emoji}>🚭</Text>
+        <View
+          className="bg-gray-100 rounded-3xl mb-16 items-center justify-center"
+          style={{ width: width * 0.8, height: 400 }}
+        >
+          <Text className="text-6xl">🚭</Text>
         </View>
 
         {/* CTA Button */}
-        <Pressable style={styles.button} onPress={onNext}>
-          <Text style={styles.buttonText}>Let's start</Text>
+        <Pressable
+          className="bg-black rounded-2xl px-6 py-4 items-center justify-center flex-row"
+          style={{ width: width * 0.8, height: 56 }}
+          onPress={onNext}
+        >
+          <Text className="text-white font-semibold text-xl mr-2">Let's start</Text>
           <Ionicons name="arrow-forward" size={24} color="white" />
         </Pressable>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 64,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 64,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: 20,
-  },
-  illustration: {
-    width: width * 0.8,
-    height: 400,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 24,
-    marginBottom: 64,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emoji: {
-    fontSize: 96,
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#000000',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 18,
-    width: width * 0.8,
-    height: 56,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: '600',
-  },
-});
 
 export default Welcome; 

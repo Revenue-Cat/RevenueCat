@@ -1,8 +1,8 @@
+import "./global.css"
 import React, { useState, useEffect } from 'react';
 import {
   View,
   SafeAreaView,
-  StyleSheet,
   Modal,
 } from 'react-native';
 import { AppProvider } from './src/contexts/AppContext';
@@ -66,7 +66,7 @@ const App: React.FC = () => {
 
   return (
     <AppProvider>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView className="flex-1 bg-white">
         {currentScreen === 'welcome' && (
           <Welcome onNext={() => navigateTo('setup')} />
         )}
@@ -153,12 +153,5 @@ const App: React.FC = () => {
     </AppProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-});
 
 export default App;
