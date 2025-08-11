@@ -1,0 +1,117 @@
+{
+  "welcome": {
+    "title": "Welcome to QuitQly!",
+    "subtitle": "Your friendly guide to quitting smoking — one small step at a time.",
+    "selectLanguage": "Select Language",
+    "letsStart": "Let's start"
+  },
+  "setup": {
+    "title": "Set your path to quitting",
+    "subtitle": "Answer a few quick questions to personalize your quitting plan. It won't take more than 20 seconds.",
+    "statsText": "of smokers say they want to quit — you're not alone.",
+    "next": "Next",
+    "header": {
+      "title": "Set your path to quitting",
+      "description": "Answer a few quick questions to personalize your quitting plan. It won't take more than 20 seconds."
+    },
+    "stats": {
+      "description": "of smokers say they want to quit — you're not alone."
+    },
+    "nextButton": {
+      "text": "Next"
+    },
+    "fields": {
+      "smokeType": {
+        "label": "What do you usually smoke?",
+        "selected": "I am smoking {{value}}",
+        "options": {
+          "cigarettes": "Cigarettes",
+          "tobacco-heater": "Tobacco heater",
+          "roll-your-own": "Roll-your-own"
+        }
+      },
+      "dailyAmount": {
+        "label": "How much do you use daily?",
+        "selected": "I smoke {{value}}",
+        "options": {
+          "1-5": "1-5 cigarettes per day",
+          "5-10": "5-10 cigarettes per day",
+          "11-15": "11-15 cigarettes per day",
+          "16-20": "16-20 cigarettes per day (1 pack)",
+          "21-30": "21-30 cigarettes per day",
+          "31-40": "31-40 cigarettes per day (2 packs)"
+        }
+      },
+      "packPrice": {
+        "label": "How much do you pay for one unit?",
+        "selected": "One pack cost me {{value}}",
+        "options": {
+          "3": "$3",
+          "4": "$4",
+          "5": "$5",
+          "6": "$6",
+          "7": "$7"
+        }
+      },
+      "goal": {
+        "label": "What's your main goal?",
+        "selected": "I want {{value}}",
+        "options": {
+          "quit-completely": "Quit completely",
+          "reduce-gradually": "Reduce gradually",
+          "save-money": "Save money",
+          "improve-health": "Improve health",
+          "gain-control": "Gain control",
+          "doesnt-matter": "Doesn't matter"
+        }
+      }
+    }
+  },
+  "buddySelection": {
+    "title": "Choose your buddy",
+    "subtitle": "Pick a character to accompany you on your quitting journey.",
+    "next": "Next",
+    "buddies": {
+      "capybara": {
+        "name": "Chill Capybara",
+        "description": "Relaxed and supportive"
+      },
+      "koala": {
+        "name": "Zen Koala",
+        "description": "Calm and peaceful"
+      },
+      "sloth": {
+        "name": "Slow Sloth",
+        "description": "Patient and steady"
+      },
+      "penguin": {
+        "name": "Cool Penguin",
+        "description": "Cool and collected"
+      },
+      "panda": {
+        "name": "Panda Bear",
+        "description": "Gentle and caring"
+      },
+      "owl": {
+        "name": "Wise Owl",
+        "description": "Smart and insightful"
+      }
+    }
+  },
+  "notificationPermission": {
+    "title": "Enable Notifications",
+    "subtitle": "We'll send you reminders to stay on track and celebrate your progress.",
+    "benefits": {
+      "motivation": "Daily motivation reminders",
+      "milestones": "Celebrate your milestones",
+      "goals": "Stay on track with your goals"
+    },
+    "enable": "Enable Notifications",
+    "skip": "Skip for now"
+  },
+  "languages": {
+    "english": "English",
+    "spanish": "Spanish",
+    "ukrainian": "Ukrainian"
+  }
+} 

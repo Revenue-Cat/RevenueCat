@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
@@ -27,6 +28,7 @@ interface SetupProps {
 
 const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const isDark = theme === 'dark';
   
   const [setupData, setSetupData] = useState<SetupData>({
@@ -52,54 +54,54 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
   const setupFields = [
     {
       id: "smokeType",
-      label: "What do you usually smoke?",
+      label: t('setup.fields.smokeType.label'),
       icon: "remove-circle-outline" as keyof typeof Ionicons.glyphMap,
       value: setupData.smokeType,
       options: [
-        { value: "cigarettes", label: "Cigarettes" },
-        { value: "tobacco-heater", label: "Tobacco heater" },
-        { value: "roll-your-own", label: "Roll-your-own" }
+        { value: "cigarettes", label: t('setup.fields.smokeType.options.cigarettes') },
+        { value: "tobacco-heater", label: t('setup.fields.smokeType.options.tobacco-heater') },
+        { value: "roll-your-own", label: t('setup.fields.smokeType.options.roll-your-own') }
       ]
     },
     {
       id: "dailyAmount",
-      label: "How much do you use daily?",
+      label: t('setup.fields.dailyAmount.label'),
       icon: "reader-outline" as keyof typeof Ionicons.glyphMap,
       value: setupData.dailyAmount,
       options: [
-        { value: "1-5", label: "1-5 cigarettes per day" },
-        { value: "5-10", label: "5-10 cigarettes per day" },
-        { value: "11-15", label: "11-15 cigarettes per day" },
-        { value: "16-20", label: "16-20 cigarettes per day (1 pack)" },
-        { value: "21-30", label: "21-30 cigarettes per day" },
-        { value: "31-40", label: "31-40 cigarettes per day (2 packs)" }
+        { value: "1-5", label: t('setup.fields.dailyAmount.options.1-5') },
+        { value: "5-10", label: t('setup.fields.dailyAmount.options.5-10') },
+        { value: "11-15", label: t('setup.fields.dailyAmount.options.11-15') },
+        { value: "16-20", label: t('setup.fields.dailyAmount.options.16-20') },
+        { value: "21-30", label: t('setup.fields.dailyAmount.options.21-30') },
+        { value: "31-40", label: t('setup.fields.dailyAmount.options.31-40') }
       ]
     },
     {
       id: "packPrice",
-      label: "How much do you pay for one unit?",
+      label: t('setup.fields.packPrice.label'),
       icon: "wallet-outline" as keyof typeof Ionicons.glyphMap,
       value: setupData.packPrice,
       options: [
-        { value: "3", label: "$3" },
-        { value: "4", label: "$4" },
-        { value: "5", label: "$5" },
-        { value: "6", label: "$6" },
-        { value: "7", label: "$7" }
+        { value: "3", label: t('setup.fields.packPrice.options.3') },
+        { value: "4", label: t('setup.fields.packPrice.options.4') },
+        { value: "5", label: t('setup.fields.packPrice.options.5') },
+        { value: "6", label: t('setup.fields.packPrice.options.6') },
+        { value: "7", label: t('setup.fields.packPrice.options.7') }
       ]
     },
     {
       id: "goal",
-      label: "What's your main goal?",
+      label: t('setup.fields.goal.label'),
       icon: "navigate-circle-outline" as keyof typeof Ionicons.glyphMap,
       value: setupData.goal,
       options: [
-        { value: "quit-completely", label: "Quit completely" },
-        { value: "reduce-gradually", label: "Reduce gradually" },
-        { value: "save-money", label: "Save money" },
-        { value: "improve-health", label: "Improve health" },
-        { value: "gain-control", label: "Gain control" },
-        { value: "doesnt-matter", label: "Doesn't matter" }
+        { value: "quit-completely", label: t('setup.fields.goal.options.quit-completely') },
+        { value: "reduce-gradually", label: t('setup.fields.goal.options.reduce-gradually') },
+        { value: "save-money", label: t('setup.fields.goal.options.save-money') },
+        { value: "improve-health", label: t('setup.fields.goal.options.improve-health') },
+        { value: "gain-control", label: t('setup.fields.goal.options.gain-control') },
+        { value: "doesnt-matter", label: t('setup.fields.goal.options.doesnt-matter') }
       ]
     }
   ];
@@ -112,10 +114,10 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
         {/* Header */}
         <View className="items-center mb-8">
           <Text className={`text-3xl font-bold mb-3 text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
-            Set your path to quitting
+            {t('setup.header.title')}
           </Text>
           <Text className={`text-base text-center leading-6 px-5 ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
-            Answer a few quick questions to personalize your quitting plan. It won't take more than 20 seconds.
+            {t('setup.header.description')}
           </Text>
         </View>
 
@@ -123,7 +125,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
         <View className={`rounded-2xl p-6 items-center mb-8 ${isDark ? 'bg-dark-surface' : 'bg-light-surface'}`}>
           <Text className={`text-5xl font-bold mb-2 ${isDark ? 'text-dark-text' : 'text-light-text'}`}>70%</Text>
           <Text className={`text-base text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
-            of smokers say they want to quit — you're not alone.
+            {t('setup.stats.description')}
           </Text>
         </View>
 
@@ -142,14 +144,10 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
               <Text className={`text-base font-medium flex-1 ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
                 {setupData[field.id] ? (
                   <Text>
-                    {field.id === "smokeType" && "I am smoking "}
-                    {field.id === "dailyAmount" && "I smoke "}
-                    {field.id === "packPrice" && "One pack cost me "}
-                    {field.id === "goal" && "I want "}
-                    <Text className="font-bold">
-                      {field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id]}
-                    </Text>
-                    {field.id === "packPrice" && setupData[field.id] && `$${setupData[field.id]}`}
+                    {field.id === "smokeType" && t('setup.fields.smokeType.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
+                    {field.id === "dailyAmount" && t('setup.fields.dailyAmount.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
+                    {field.id === "packPrice" && t('setup.fields.packPrice.selected', { value: `$${setupData[field.id]}` })}
+                    {field.id === "goal" && t('setup.fields.goal.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
                   </Text>
                 ) : (
                   field.label
@@ -176,7 +174,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
             disabled={!allFieldsCompleted}
           >
             <Text className={`text-lg font-semibold ${isDark ? 'text-dark-background' : 'text-light-background'}`}>
-              Next
+              {t('setup.nextButton.text')}
             </Text>
             <Ionicons 
               name="arrow-forward" 

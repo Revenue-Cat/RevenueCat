@@ -7,6 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
@@ -17,17 +18,18 @@ interface BuddySelectionProps {
 
 const BuddySelection: React.FC<BuddySelectionProps> = ({ onNext }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const isDark = theme === 'dark';
   
   const [selectedBuddy, setSelectedBuddy] = useState<string>('capybara');
 
   const buddies = [
-    { id: 'capybara', emoji: '🦫', name: 'Chill Capybara', description: 'Relaxed and supportive' },
-    { id: 'koala', emoji: '🐨', name: 'Zen Koala', description: 'Calm and peaceful' },
-    { id: 'sloth', emoji: '🦥', name: 'Slow Sloth', description: 'Patient and steady' },
-    { id: 'penguin', emoji: '🐧', name: 'Cool Penguin', description: 'Cool and collected' },
-    { id: 'panda', emoji: '🐼', name: 'Panda Bear', description: 'Gentle and caring' },
-    { id: 'owl', emoji: '🦉', name: 'Wise Owl', description: 'Smart and insightful' },
+    { id: 'capybara', emoji: '🦫', name: t('buddySelection.buddies.capybara.name'), description: t('buddySelection.buddies.capybara.description') },
+    { id: 'koala', emoji: '🐨', name: t('buddySelection.buddies.koala.name'), description: t('buddySelection.buddies.koala.description') },
+    { id: 'sloth', emoji: '🦥', name: t('buddySelection.buddies.sloth.name'), description: t('buddySelection.buddies.sloth.description') },
+    { id: 'penguin', emoji: '🐧', name: t('buddySelection.buddies.penguin.name'), description: t('buddySelection.buddies.penguin.description') },
+    { id: 'panda', emoji: '🐼', name: t('buddySelection.buddies.panda.name'), description: t('buddySelection.buddies.panda.description') },
+    { id: 'owl', emoji: '🦉', name: t('buddySelection.buddies.owl.name'), description: t('buddySelection.buddies.owl.description') },
   ];
 
   return (
@@ -36,10 +38,10 @@ const BuddySelection: React.FC<BuddySelectionProps> = ({ onNext }) => {
         {/* Header */}
         <View className="items-center mb-8">
           <Text className={`text-3xl font-bold mb-3 text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
-            Choose your buddy
+            {t('buddySelection.title')}
           </Text>
           <Text className={`text-base text-center leading-6 px-5 ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
-            Pick a character to accompany you on your quitting journey.
+            {t('buddySelection.subtitle')}
           </Text>
         </View>
 
@@ -82,7 +84,7 @@ const BuddySelection: React.FC<BuddySelectionProps> = ({ onNext }) => {
             onPress={onNext}
           >
             <Text className={`text-lg font-semibold ${isDark ? 'text-dark-background' : 'text-light-background'}`}>
-              Next
+              {t('buddySelection.next')}
             </Text>
             <Ionicons 
               name="arrow-forward" 

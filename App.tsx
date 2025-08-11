@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { AppProvider } from './src/contexts/AppContext';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import './src/i18n'; // Import i18n configuration
 import Welcome from './src/screens/Welcome';
 import Setup from './src/screens/Setup';
 import BuddySelection from './src/screens/BuddySelection';

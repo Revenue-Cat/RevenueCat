@@ -1,0 +1,117 @@
+{
+  "welcome": {
+    "title": "¡Bienvenido a QuitQly!",
+    "subtitle": "Tu guía amigable para dejar de fumar — un pequeño paso a la vez.",
+    "selectLanguage": "Seleccionar Idioma",
+    "letsStart": "Empezar"
+  },
+  "setup": {
+    "title": "Establece tu camino para dejar de fumar",
+    "subtitle": "Responde algunas preguntas rápidas para personalizar tu plan para dejar de fumar. No tomará más de 20 segundos.",
+    "statsText": "de los fumadores dicen que quieren dejar de fumar — no estás solo.",
+    "next": "Siguiente",
+    "header": {
+      "title": "Establece tu camino para dejar de fumar",
+      "description": "Responde algunas preguntas rápidas para personalizar tu plan para dejar de fumar. No tomará más de 20 segundos."
+    },
+    "stats": {
+      "description": "de los fumadores dicen que quieren dejar de fumar — no estás solo."
+    },
+    "nextButton": {
+      "text": "Siguiente"
+    },
+    "fields": {
+      "smokeType": {
+        "label": "¿Qué sueles fumar?",
+        "selected": "Estoy fumando {{value}}",
+        "options": {
+          "cigarettes": "Cigarrillos",
+          "tobacco-heater": "Calentador de tabaco",
+          "roll-your-own": "Cigarrillos de liar"
+        }
+      },
+      "dailyAmount": {
+        "label": "¿Cuánto consumes diariamente?",
+        "selected": "Fumo {{value}}",
+        "options": {
+          "1-5": "1-5 cigarrillos por día",
+          "5-10": "5-10 cigarrillos por día",
+          "11-15": "11-15 cigarrillos por día",
+          "16-20": "16-20 cigarrillos por día (1 paquete)",
+          "21-30": "21-30 cigarrillos por día",
+          "31-40": "31-40 cigarrillos por día (2 paquetes)"
+        }
+      },
+      "packPrice": {
+        "label": "¿Cuánto pagas por una unidad?",
+        "selected": "Un paquete me cuesta {{value}}",
+        "options": {
+          "3": "$3",
+          "4": "$4",
+          "5": "$5",
+          "6": "$6",
+          "7": "$7"
+        }
+      },
+      "goal": {
+        "label": "¿Cuál es tu objetivo principal?",
+        "selected": "Quiero {{value}}",
+        "options": {
+          "quit-completely": "Dejar completamente",
+          "reduce-gradually": "Reducir gradualmente",
+          "save-money": "Ahorrar dinero",
+          "improve-health": "Mejorar la salud",
+          "gain-control": "Ganar control",
+          "doesnt-matter": "No importa"
+        }
+      }
+    }
+  },
+  "buddySelection": {
+    "title": "Elige tu compañero",
+    "subtitle": "Elige un personaje para acompañarte en tu viaje para dejar de fumar.",
+    "next": "Siguiente",
+    "buddies": {
+      "capybara": {
+        "name": "Capibara Tranquilo",
+        "description": "Relajado y solidario"
+      },
+      "koala": {
+        "name": "Koala Zen",
+        "description": "Tranquilo y pacífico"
+      },
+      "sloth": {
+        "name": "Perezoso Lento",
+        "description": "Paciente y constante"
+      },
+      "penguin": {
+        "name": "Pingüino Genial",
+        "description": "Fresco y sereno"
+      },
+      "panda": {
+        "name": "Oso Panda",
+        "description": "Gentil y cariñoso"
+      },
+      "owl": {
+        "name": "Búho Sabio",
+        "description": "Inteligente y perspicaz"
+      }
+    }
+  },
+  "notificationPermission": {
+    "title": "Activar Notificaciones",
+    "subtitle": "Te enviaremos recordatorios para mantenerte en el camino y celebrar tu progreso.",
+    "benefits": {
+      "motivation": "Recordatorios de motivación diaria",
+      "milestones": "Celebrar tus logros",
+      "goals": "Mantenerte en el camino con tus objetivos"
+    },
+    "enable": "Activar Notificaciones",
+    "skip": "Omitir por ahora"
+  },
+  "languages": {
+    "english": "Inglés",
+    "spanish": "Español",
+    "ukrainian": "Ucraniano"
+  }
+} 

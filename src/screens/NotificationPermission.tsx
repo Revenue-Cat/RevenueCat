@@ -6,6 +6,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
@@ -16,6 +17,7 @@ interface NotificationPermissionProps {
 
 const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const isDark = theme === 'dark';
 
   return (
@@ -24,10 +26,10 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
         {/* Header */}
         <View className="items-center mb-12">
           <Text className={`text-3xl font-bold mb-3 text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
-            Enable Notifications
+            {t('notificationPermission.title')}
           </Text>
           <Text className={`text-base text-center leading-6 px-5 ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
-            We'll send you reminders to stay on track and celebrate your progress.
+            {t('notificationPermission.subtitle')}
           </Text>
         </View>
 
@@ -49,7 +51,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
               color={isDark ? '#f1f5f9' : '#000000'} 
             />
             <Text className={`text-base ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
-              Daily motivation reminders
+              {t('notificationPermission.benefits.motivation')}
             </Text>
           </View>
           <View className="flex-row items-center gap-3">
@@ -59,7 +61,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
               color={isDark ? '#f1f5f9' : '#000000'} 
             />
             <Text className={`text-base ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
-              Celebrate your milestones
+              {t('notificationPermission.benefits.milestones')}
             </Text>
           </View>
           <View className="flex-row items-center gap-3">
@@ -69,7 +71,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
               color={isDark ? '#f1f5f9' : '#000000'} 
             />
             <Text className={`text-base ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
-              Stay on track with your goals
+              {t('notificationPermission.benefits.goals')}
             </Text>
           </View>
         </View>
@@ -80,7 +82,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
           onPress={onNext}
         >
           <Text className={`text-xl font-semibold ${isDark ? 'text-dark-background' : 'text-light-background'}`}>
-            Enable Notifications
+            {t('notificationPermission.enable')}
           </Text>
           <Ionicons 
             name="arrow-forward" 
@@ -92,7 +94,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
         {/* Skip Option */}
         <Pressable className="py-3" onPress={onNext}>
           <Text className={`text-base underline ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
-            Skip for now
+            {t('notificationPermission.skip')}
           </Text>
         </Pressable>
       </View>
