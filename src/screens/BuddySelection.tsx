@@ -4,10 +4,10 @@ import {
   Text,
   Pressable,
   ScrollView,
-  StyleSheet,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -16,6 +16,9 @@ interface BuddySelectionProps {
 }
 
 const BuddySelection: React.FC<BuddySelectionProps> = ({ onNext }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  
   const [selectedBuddy, setSelectedBuddy] = useState<string>('capybara');
 
   const buddies = [
@@ -28,33 +31,44 @@ const BuddySelection: React.FC<BuddySelectionProps> = ({ onNext }) => {
   ];
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+    <View className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 40 }}>
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Choose your buddy</Text>
-          <Text style={styles.subtitle}>
+        <View className="items-center mb-8">
+          <Text className={`text-3xl font-bold mb-3 text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+            Choose your buddy
+          </Text>
+          <Text className={`text-base text-center leading-6 px-5 ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
             Pick a character to accompany you on your quitting journey.
           </Text>
         </View>
 
         {/* Buddy Selection */}
-        <View style={styles.buddiesContainer}>
+        <View className="gap-4 mb-8">
           {buddies.map((buddy) => (
             <Pressable
               key={buddy.id}
-              style={[
-                styles.buddyCard,
-                selectedBuddy === buddy.id && styles.selectedBuddyCard
-              ]}
+              className={`w-11/12 rounded-2xl p-5 items-center self-center relative ${
+                selectedBuddy === buddy.id 
+                  ? (isDark ? 'bg-dark-accent border-2 border-dark-accent' : 'bg-gray-200 border-2 border-light-primary') 
+                  : (isDark ? 'bg-dark-surface' : 'bg-gray-100')
+              }`}
               onPress={() => setSelectedBuddy(buddy.id)}
             >
-              <Text style={styles.buddyEmoji}>{buddy.emoji}</Text>
-              <Text style={styles.buddyName}>{buddy.name}</Text>
-              <Text style={styles.buddyDescription}>{buddy.description}</Text>
+              <Text className="text-5xl mb-3">{buddy.emoji}</Text>
+              <Text className={`text-lg font-bold mb-1 text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+                {buddy.name}
+              </Text>
+              <Text className={`text-sm text-center ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
+                {buddy.description}
+              </Text>
               {selectedBuddy === buddy.id && (
-                <View style={styles.checkmark}>
-                  <Ionicons name="checkmark-circle" size={24} color="#000000" />
+                <View className="absolute top-3 right-3">
+                  <Ionicons 
+                    name="checkmark-circle" 
+                    size={24} 
+                    color={isDark ? '#0f172a' : '#000000'} 
+                  />
                 </View>
               )}
             </Pressable>
@@ -62,105 +76,24 @@ const BuddySelection: React.FC<BuddySelectionProps> = ({ onNext }) => {
         </View>
 
         {/* Next Button */}
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.button} onPress={onNext}>
-            <Text style={styles.buttonText}>Next</Text>
-            <Ionicons name="arrow-forward" size={20} color="white" />
+        <View className="items-center">
+          <Pressable 
+            className={`flex-row items-center justify-between px-6 py-4 rounded-2xl w-4/5 h-14 ${isDark ? 'bg-dark-accent' : 'bg-light-primary'}`}
+            onPress={onNext}
+          >
+            <Text className={`text-lg font-semibold ${isDark ? 'text-dark-background' : 'text-light-background'}`}>
+              Next
+            </Text>
+            <Ionicons 
+              name="arrow-forward" 
+              size={20} 
+              color={isDark ? '#0f172a' : '#ffffff'} 
+            />
           </Pressable>
         </View>
       </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: 20,
-  },
-  buddiesContainer: {
-    gap: 16,
-    marginBottom: 32,
-  },
-  buddyCard: {
-    width: width * 0.9,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
-    alignSelf: 'center',
-    position: 'relative',
-  },
-  selectedBuddyCard: {
-    backgroundColor: '#e5e5e5',
-    borderWidth: 2,
-    borderColor: '#000000',
-  },
-  buddyEmoji: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  buddyName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  buddyDescription: {
-    fontSize: 14,
-    color: '#666666',
-    textAlign: 'center',
-  },
-  checkmark: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-  },
-  buttonContainer: {
-    alignItems: 'center',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#000000',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 18,
-    width: width * 0.8,
-    height: 56,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-});
 
 export default BuddySelection; 

@@ -6,6 +6,7 @@ import {
   Modal,
 } from 'react-native';
 import { AppProvider } from './src/contexts/AppContext';
+import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 import Welcome from './src/screens/Welcome';
 import Setup from './src/screens/Setup';
 import BuddySelection from './src/screens/BuddySelection';
@@ -30,11 +31,12 @@ type Screen =
   | 'achievements' 
   | 'shop';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
+  const { theme } = useTheme();
 
   const navigateTo = (screen: Screen) => {
     setCurrentScreen(screen);
@@ -66,7 +68,7 @@ const App: React.FC = () => {
 
   return (
     <AppProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className={`flex-1 ${theme === 'dark' ? 'bg-dark-background' : 'bg-light-background'}`}>
         {currentScreen === 'welcome' && (
           <Welcome onNext={() => navigateTo('setup')} />
         )}
@@ -151,6 +153,14 @@ const App: React.FC = () => {
         <ShopModal />
       </SafeAreaView>
     </AppProvider>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 };
 

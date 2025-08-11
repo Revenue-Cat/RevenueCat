@@ -3,10 +3,10 @@ import {
   View,
   Text,
   Pressable,
-  StyleSheet,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -15,130 +15,89 @@ interface NotificationPermissionProps {
 }
 
 const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
+    <View className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
+      <View className="flex-1 items-center justify-center px-6 py-16">
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Enable Notifications</Text>
-          <Text style={styles.subtitle}>
+        <View className="items-center mb-12">
+          <Text className={`text-3xl font-bold mb-3 text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+            Enable Notifications
+          </Text>
+          <Text className={`text-base text-center leading-6 px-5 ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
             We'll send you reminders to stay on track and celebrate your progress.
           </Text>
         </View>
 
         {/* Notification Icon */}
-        <View style={styles.notificationIcon}>
-          <Ionicons name="notifications-outline" size={120} color="#000000" />
+        <View className={`w-38 h-38 rounded-full mb-12 items-center justify-center ${isDark ? 'bg-dark-surface' : 'bg-gray-100'}`}>
+          <Ionicons 
+            name="notifications-outline" 
+            size={120} 
+            color={isDark ? '#f1f5f9' : '#000000'} 
+          />
         </View>
 
         {/* Benefits */}
-        <View style={styles.benefitsContainer}>
-          <View style={styles.benefitItem}>
-            <Ionicons name="checkmark-circle" size={24} color="#000000" />
-            <Text style={styles.benefitText}>Daily motivation reminders</Text>
+        <View className="mb-12 gap-4">
+          <View className="flex-row items-center gap-3">
+            <Ionicons 
+              name="checkmark-circle" 
+              size={24} 
+              color={isDark ? '#f1f5f9' : '#000000'} 
+            />
+            <Text className={`text-base ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+              Daily motivation reminders
+            </Text>
           </View>
-          <View style={styles.benefitItem}>
-            <Ionicons name="checkmark-circle" size={24} color="#000000" />
-            <Text style={styles.benefitText}>Celebrate your milestones</Text>
+          <View className="flex-row items-center gap-3">
+            <Ionicons 
+              name="checkmark-circle" 
+              size={24} 
+              color={isDark ? '#f1f5f9' : '#000000'} 
+            />
+            <Text className={`text-base ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+              Celebrate your milestones
+            </Text>
           </View>
-          <View style={styles.benefitItem}>
-            <Ionicons name="checkmark-circle" size={24} color="#000000" />
-            <Text style={styles.benefitText}>Stay on track with your goals</Text>
+          <View className="flex-row items-center gap-3">
+            <Ionicons 
+              name="checkmark-circle" 
+              size={24} 
+              color={isDark ? '#f1f5f9' : '#000000'} 
+            />
+            <Text className={`text-base ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+              Stay on track with your goals
+            </Text>
           </View>
         </View>
 
         {/* CTA Button */}
-        <Pressable style={styles.button} onPress={onNext}>
-          <Text style={styles.buttonText}>Enable Notifications</Text>
-          <Ionicons name="arrow-forward" size={24} color="white" />
+        <Pressable 
+          className={`flex-row items-center justify-between px-6 py-4 rounded-2xl w-4/5 h-14 mb-4 ${isDark ? 'bg-dark-accent' : 'bg-light-primary'}`}
+          onPress={onNext}
+        >
+          <Text className={`text-xl font-semibold ${isDark ? 'text-dark-background' : 'text-light-background'}`}>
+            Enable Notifications
+          </Text>
+          <Ionicons 
+            name="arrow-forward" 
+            size={24} 
+            color={isDark ? '#0f172a' : '#ffffff'} 
+          />
         </Pressable>
 
         {/* Skip Option */}
-        <Pressable style={styles.skipButton} onPress={onNext}>
-          <Text style={styles.skipText}>Skip for now</Text>
+        <Pressable className="py-3" onPress={onNext}>
+          <Text className={`text-base underline ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
+            Skip for now
+          </Text>
         </Pressable>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 64,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 48,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: 20,
-  },
-  notificationIcon: {
-    width: 150,
-    height: 150,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 75,
-    marginBottom: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  benefitsContainer: {
-    marginBottom: 48,
-    gap: 16,
-  },
-  benefitItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  benefitText: {
-    fontSize: 16,
-    color: '#000000',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#000000',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 18,
-    width: width * 0.8,
-    height: 56,
-    marginBottom: 16,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: '600',
-  },
-  skipButton: {
-    paddingVertical: 12,
-  },
-  skipText: {
-    fontSize: 16,
-    color: '#666666',
-    textDecorationLine: 'underline',
-  },
-});
 
 export default NotificationPermission; 

@@ -5,10 +5,10 @@ import {
   Pressable,
   ScrollView,
   Modal,
-  StyleSheet,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../contexts/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -17,6 +17,7 @@ interface SetupData {
   dailyAmount: string;
   packPrice: string;
   goal: string;
+  [key: string]: string;
 }
 
 interface SetupProps {
@@ -25,6 +26,9 @@ interface SetupProps {
 }
 
 const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  
   const [setupData, setSetupData] = useState<SetupData>({
     smokeType: '',
     dailyAmount: '',
@@ -103,43 +107,46 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
   const currentField = setupFields.find(field => field.id === currentStep);
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+    <View className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 40 }}>
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Set your path to quitting</Text>
-          <Text style={styles.subtitle}>
+        <View className="items-center mb-8">
+          <Text className={`text-3xl font-bold mb-3 text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+            Set your path to quitting
+          </Text>
+          <Text className={`text-base text-center leading-6 px-5 ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
             Answer a few quick questions to personalize your quitting plan. It won't take more than 20 seconds.
           </Text>
         </View>
 
         {/* Stats Card */}
-        <View style={styles.statsCard}>
-          <Text style={styles.statsNumber}>70%</Text>
-          <Text style={styles.statsText}>
+        <View className={`rounded-2xl p-6 items-center mb-8 ${isDark ? 'bg-dark-surface' : 'bg-light-surface'}`}>
+          <Text className={`text-5xl font-bold mb-2 ${isDark ? 'text-dark-text' : 'text-light-text'}`}>70%</Text>
+          <Text className={`text-base text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
             of smokers say they want to quit — you're not alone.
           </Text>
         </View>
 
         {/* Setup Fields */}
-        <View style={styles.fieldsContainer}>
+        <View className="gap-4 mb-8">
           {setupFields.map((field) => (
             <Pressable
               key={field.id}
-              style={[
-                styles.field,
-                setupData[field.id] ? styles.fieldCompleted : styles.fieldEmpty
-              ]}
+              className={`w-11/12 h-14 rounded-xl flex-row justify-between items-center px-5 self-center ${
+                setupData[field.id] 
+                  ? (isDark ? 'bg-dark-surface' : 'bg-gray-200') 
+                  : (isDark ? 'bg-dark-surface' : 'bg-gray-100')
+              }`}
               onPress={() => handleFieldClick(field.id)}
             >
-              <Text style={styles.fieldText}>
+              <Text className={`text-base font-medium flex-1 ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
                 {setupData[field.id] ? (
                   <Text>
                     {field.id === "smokeType" && "I am smoking "}
                     {field.id === "dailyAmount" && "I smoke "}
                     {field.id === "packPrice" && "One pack cost me "}
                     {field.id === "goal" && "I want "}
-                    <Text style={styles.fieldValue}>
+                    <Text className="font-bold">
                       {field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id]}
                     </Text>
                     {field.id === "packPrice" && setupData[field.id] && `$${setupData[field.id]}`}
@@ -148,23 +155,34 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
                   field.label
                 )}
               </Text>
-              <Ionicons name={field.icon} size={24} color="#666666" />
+              <Ionicons 
+                name={field.icon} 
+                size={24} 
+                color={isDark ? '#94a3b8' : '#6b7280'} 
+              />
             </Pressable>
           ))}
         </View>
 
         {/* Next Button */}
-        <View style={styles.buttonContainer}>
+        <View className="items-center">
           <Pressable
-            style={[
-              styles.button,
-              allFieldsCompleted ? styles.buttonEnabled : styles.buttonDisabled
-            ]}
+            className={`flex-row items-center justify-between px-6 py-4 rounded-2xl w-4/5 h-14 ${
+              allFieldsCompleted 
+                ? (isDark ? 'bg-dark-accent' : 'bg-light-primary') 
+                : 'bg-gray-400'
+            }`}
             onPress={onNext}
             disabled={!allFieldsCompleted}
           >
-            <Text style={styles.buttonText}>Next</Text>
-            <Ionicons name="arrow-forward" size={20} color="white" />
+            <Text className={`text-lg font-semibold ${isDark ? 'text-dark-background' : 'text-light-background'}`}>
+              Next
+            </Text>
+            <Ionicons 
+              name="arrow-forward" 
+              size={20} 
+              color={isDark ? '#0f172a' : '#ffffff'} 
+            />
           </Pressable>
         </View>
       </ScrollView>
@@ -172,38 +190,49 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
       {/* Modal for Options */}
       {currentStep && currentField && (
         <Modal visible={true} transparent={true} animationType="slide">
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>{currentField.label}</Text>
+          <View className="flex-1 bg-black/50 justify-end">
+            <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl max-h-4/5`}>
+              <View className="px-5 pt-6 pb-10">
+                <Text className={`text-lg font-bold text-center mb-6 ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+                  {currentField.label}
+                </Text>
                 
-                <ScrollView style={styles.optionsContainer}>
+                <ScrollView className="max-h-96">
                   {currentField.options.map((option) => (
                     <Pressable
                       key={option.value}
-                      style={[
-                        styles.option,
-                        setupData[currentStep as keyof SetupData] === option.value ? styles.optionSelected : styles.optionUnselected
-                      ]}
+                      className={`w-11/12 h-14 rounded-xl flex-row justify-between items-center px-5 self-center mb-3 ${
+                        setupData[currentStep as keyof SetupData] === option.value 
+                          ? (isDark ? 'bg-dark-accent' : 'bg-light-primary') 
+                          : (isDark ? 'bg-dark-surface' : 'bg-gray-100')
+                      }`}
                       onPress={() => handleSelection(currentStep as keyof SetupData, option.value)}
                     >
-                      <Text style={[
-                        styles.optionText,
-                        setupData[currentStep as keyof SetupData] === option.value ? styles.optionTextSelected : styles.optionTextUnselected
-                      ]}>
+                      <Text className={`text-base font-medium flex-1 ${
+                        setupData[currentStep as keyof SetupData] === option.value 
+                          ? (isDark ? 'text-dark-background' : 'text-light-background') 
+                          : (isDark ? 'text-dark-text' : 'text-light-text')
+                      }`}>
                         {option.label}
                       </Text>
                       <Ionicons 
                         name={currentField.icon} 
                         size={24} 
-                        color={setupData[currentStep as keyof SetupData] === option.value ? 'white' : '#666666'} 
+                        color={setupData[currentStep as keyof SetupData] === option.value 
+                          ? (isDark ? '#0f172a' : '#ffffff') 
+                          : (isDark ? '#94a3b8' : '#6b7280')} 
                       />
                     </Pressable>
                   ))}
                 </ScrollView>
                 
-                <Pressable style={styles.closeButton} onPress={() => setCurrentStep(null)}>
-                  <Text style={styles.closeButtonText}>✕</Text>
+                <Pressable 
+                  className={`w-15 h-15 rounded-full justify-center items-center self-center mt-6 ${
+                    isDark ? 'bg-dark-surface' : 'bg-gray-100'
+                  }`} 
+                  onPress={() => setCurrentStep(null)}
+                >
+                  <Text className={`text-2xl font-bold ${isDark ? 'text-dark-text' : 'text-light-text'}`}>✕</Text>
                 </Pressable>
               </View>
             </View>
@@ -213,178 +242,5 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: 20,
-  },
-  statsCard: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 16,
-    padding: 24,
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  statsNumber: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 8,
-  },
-  statsText: {
-    fontSize: 16,
-    color: '#000000',
-    textAlign: 'center',
-  },
-  fieldsContainer: {
-    gap: 16,
-    marginBottom: 32,
-  },
-  field: {
-    width: width * 0.9,
-    height: 56,
-    borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    alignSelf: 'center',
-  },
-  fieldEmpty: {
-    backgroundColor: '#f5f5f5',
-  },
-  fieldCompleted: {
-    backgroundColor: '#e5e5e5',
-  },
-  fieldText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#000000',
-    flex: 1,
-  },
-  fieldValue: {
-    fontWeight: 'bold',
-  },
-  buttonContainer: {
-    alignItems: 'center',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 18,
-    width: width * 0.8,
-    height: 56,
-  },
-  buttonEnabled: {
-    backgroundColor: '#000000',
-  },
-  buttonDisabled: {
-    backgroundColor: '#cccccc',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContainer: {
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: height * 0.7,
-  },
-  modalContent: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 40,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000000',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  optionsContainer: {
-    maxHeight: height * 0.5,
-  },
-  option: {
-    width: width * 0.9,
-    height: 56,
-    borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    alignSelf: 'center',
-    marginBottom: 12,
-  },
-  optionUnselected: {
-    backgroundColor: '#f5f5f5',
-  },
-  optionSelected: {
-    backgroundColor: '#000000',
-  },
-  optionText: {
-    fontSize: 16,
-    fontWeight: '500',
-    flex: 1,
-  },
-  optionTextUnselected: {
-    color: '#000000',
-  },
-  optionTextSelected: {
-    color: 'white',
-    fontWeight: '600',
-  },
-  closeButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: 24,
-  },
-  closeButtonText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-});
 
 export default Setup; 
