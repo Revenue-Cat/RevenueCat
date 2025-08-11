@@ -61,11 +61,11 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
           
           {/* Language Dropdown */}
           <Pressable
-            className="mt-6 px-4 py-2 rounded-full bg-gray-100 flex-row items-center"
+            className="mt-6 px-4 py-2 rounded-full bg-indigo-50 flex-row items-center"
             onPress={() => setShowLanguageModal(true)}
           >
-            <View className="w-6 h-6 rounded-full bg-white mr-2 items-center justify-center">
-              <Text className="text-sm">{currentLanguage?.flag}</Text>
+            <View className="w-6 h-6 rounded-full items-center justify-center overflow-hidden">
+              <Text className="text-base" style={{ transform: [{ scale: 1.2 }] }}>{currentLanguage?.flag}</Text>
             </View>
             <Ionicons name="chevron-down" size={16} color="#6b7280" />
           </Pressable>
@@ -76,21 +76,21 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
           className={`rounded-3xl mb-16 items-center justify-center ${isDark ? 'bg-dark-surface' : 'bg-light-surface'}`}
           style={{ width: width * 0.8, height: 400 }}
         >
-          <Text className="text-6xl">🚭</Text>
+          <Text className="text-xl">Image here</Text>
         </View>
 
         {/* CTA Button */}
         <Pressable
-          className={`rounded-2xl px-6 py-4 items-center justify-center flex-row ${isDark ? 'bg-dark-accent' : 'bg-light-primary'}`}
+          className="rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
           onPress={onNext}
         >
-          <Text className={`font-semibold text-xl mr-2 ${isDark ? 'text-dark-background' : 'text-light-background'}`}>
-            {t('welcome.letsStart')}
+          <Text className="font-semibold text-xl mr-2 text-white">
+            {t('setup.next')}
           </Text>
           <Ionicons 
             name="arrow-forward" 
             size={24} 
-            color={isDark ? '#0f172a' : '#ffffff'} 
+            color="#ffffff" 
           />
         </Pressable>
       </View>
@@ -121,8 +121,8 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
                     onPress={() => handleLanguageSelect(lang.code)}
                   >
                     <View className="flex-row items-center">
-                      <View className="w-8 h-8 rounded-full bg-white mr-3 items-center justify-center">
-                        <Text className="text-lg">{lang.flag}</Text>
+                      <View className="w-8 h-8 rounded-full items-center justify-center overflow-hidden mr-3">
+                        <Text className="text-xl" style={{ transform: [{ scale: 1.3 }] }}>{lang.flag}</Text>
                       </View>
                       <Text className={`text-base font-medium ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
                         {lang.name}
