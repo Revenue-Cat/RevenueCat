@@ -5,6 +5,7 @@ import {
   Pressable,
   Dimensions,
   Modal,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +37,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
   const currentLanguage = languages.find(lang => lang.code === language);
 
   return (
-    <View className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
+    <ScrollView className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
       <View className="flex-1 items-center justify-center px-6 py-16">
         {/* Theme Toggle Button */}
         <Pressable
@@ -151,7 +152,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
           </View>
         </View>
       </Modal>
-    </View>
+    </ScrollView>
   );
 };
 
