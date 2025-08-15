@@ -2,8 +2,10 @@
   "welcome": {
     "title": "Welcome to QuitQly!",
     "subtitle": "Your friendly guide to quitting smoking — one small step at a time.",
-    "selectLanguage": "Select Language",
-    "letsStart": "Let's start"
+    "selectLanguage": "Language",
+    "letsStart": "Let's start",
+    "willYouQuit": "Will you... quit?",
+    "ctaButton": "Yes, let's do it together"
   },
   "setup": {
     "title": "Set your path to quitting",
@@ -12,38 +14,42 @@
     "next": "Next",
     "header": {
       "title": "Set your path to quitting",
-      "description": "Answer a few quick questions to personalize your quitting plan. It won't take more than 20 seconds."
+      "description": "Just a few taps and 20 seconds to get a quitting plan made for you"
     },
     "stats": {
-      "description": "of smokers say they want to quit — you're not alone."
+      "description": "Average US smoke-free savings. Add your habits to get your number."
     },
     "nextButton": {
       "text": "Next"
     },
     "fields": {
       "smokeType": {
-        "label": "What do you usually smoke?",
+        "label": "What do you smoke?",
+        "modalTitle": "What do you usually smoke?",
         "selected": "I am smoking {{value}}",
         "options": {
-          "cigarettes": "Cigarettes",
-          "tobacco-heater": "Tobacco heater",
-          "roll-your-own": "Roll-your-own"
+          "cigarettes": "Sigarettess",
+          "tobacco-heater": "Rolling tabacco",
+          "roll-your-own": "Heated tobacco",
+          "vaping": "Vaping"
         }
       },
       "dailyAmount": {
-        "label": "How much do you use daily?",
+        "label": "What's your daily usage?",
+        "modalTitle": "How many cigarettes a day is normal for you?",
         "selected": "I smoke {{value}}",
         "options": {
-          "1-5": "1-5 cigarettes per day",
-          "5-10": "5-10 cigarettes per day",
-          "11-15": "11-15 cigarettes per day",
-          "16-20": "16-20 cigarettes per day (1 pack)",
-          "21-30": "21-30 cigarettes per day",
-          "31-40": "31-40 cigarettes per day (2 packs)"
+          "1-5": "1-5",
+          "5-10": "6-10",
+          "11-15": "11-15",
+          "16-20": "16-20 (1 pack)",
+          "21-30": "21-30",
+          "31-40": "31-40 (2 pack)"
         }
       },
       "packPrice": {
-        "label": "How much do you pay for one unit?",
+        "label": "What's the cost of one unit?",
+        "modalTitle": "How many do you spend on smoking?",
         "selected": "One pack cost me {{value}}",
         "options": {
           "3": "$3",
@@ -54,7 +60,8 @@
         }
       },
       "goal": {
-        "label": "What's your main goal?",
+        "label": "What is your primary goal?",
+        "modalTitle": "What's your goal?",
         "selected": "I want {{value}}",
         "options": {
           "quit-completely": "Quit completely",

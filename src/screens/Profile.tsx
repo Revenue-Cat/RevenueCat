@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -28,6 +29,8 @@ interface SmokingHabits {
 
 const Profile: React.FC<ProfileProps> = ({ onBack, onNavigateToAchievements, onNavigateToShop }) => {
   const { userCoins, setShowCoinPurchase, openShopWithTab } = useApp();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   
   const [smokingHabits, setSmokingHabits] = useState<SmokingHabits>({
     smokeType: "cigarettes",
@@ -244,38 +247,47 @@ const Profile: React.FC<ProfileProps> = ({ onBack, onNavigateToAchievements, onN
       {/* Modal for Editing Settings */}
       {editingField && currentField && (
         <Modal visible={true} transparent={true} animationType="slide">
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>{currentField.label}</Text>
+          <View className="flex-1 bg-black/50 justify-end">
+            <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl`}>
+              <View className="px-5 pt-6 pb-10">
+                <Text className={`text-lg font-bold text-center mt-6 mb-6 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
+                  {currentField.label}
+                </Text>
                 
-                <ScrollView style={styles.optionsContainer}>
-                  {currentField.options.map((option) => (
-                    <Pressable
-                      key={option.value}
-                      style={[
-                        styles.option,
-                        smokingHabits[editingField as keyof SmokingHabits] === option.value ? styles.optionSelected : styles.optionUnselected
-                      ]}
-                      onPress={() => handleSelection(editingField as keyof SmokingHabits, option.value)}
-                    >
-                      <Text style={[
-                        styles.optionText,
-                        smokingHabits[editingField as keyof SmokingHabits] === option.value ? styles.optionTextSelected : styles.optionTextUnselected
-                      ]}>
-                        {option.label}
-                      </Text>
-                      <Ionicons 
-                        name={currentField.icon} 
-                        size={24} 
-                        color={smokingHabits[editingField as keyof SmokingHabits] === option.value ? 'white' : '#666666'} 
-                      />
-                    </Pressable>
-                  ))}
+                <ScrollView className="max-h-96">
+                  <View className="gap-4">
+                    {currentField.options.map((option) => (
+                      <Pressable
+                        key={option.value}
+                        className={`w-11/12 h-16 rounded-3xl flex-row justify-between items-center px-5 self-center ${
+                          smokingHabits[editingField as keyof SmokingHabits] === option.value 
+                            ? (isDark ? 'bg-slate-600' : 'bg-indigo-100') 
+                            : (isDark ? 'bg-slate-700' : 'bg-indigo-50')
+                        }`}
+                        onPress={() => handleSelection(editingField as keyof SmokingHabits, option.value)}
+                      >
+                        <Text className={`text-base ${smokingHabits[editingField as keyof SmokingHabits] === option.value ? 'font-bold' : 'font-medium'} ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
+                          {option.label}
+                        </Text>
+                        {smokingHabits[editingField as keyof SmokingHabits] === option.value && (
+                          <Ionicons 
+                            name="checkmark" 
+                            size={24} 
+                            color="#4f46e5" 
+                          />
+                        )}
+                      </Pressable>
+                    ))}
+                  </View>
                 </ScrollView>
                 
-                <Pressable style={styles.closeButton} onPress={() => setEditingField(null)}>
-                  <Text style={styles.closeButtonText}>✕</Text>
+                <Pressable 
+                  className={`w-15 h-15 rounded-full justify-center items-center self-center mt-6 ${
+                    isDark ? 'bg-slate-700' : 'bg-indigo-50'
+                  }`} 
+                  onPress={() => setEditingField(null)}
+                >
+                  <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
                 </Pressable>
               </View>
             </View>

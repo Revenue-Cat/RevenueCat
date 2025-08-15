@@ -10,9 +10,19 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
-
-const { width, height } = Dimensions.get('window');
-
+import SmokeIcon from '../assets/icons/smoke.svg';
+import TargetIcon from '../assets/icons/target.svg';
+import SpendIcon from '../assets/icons/spend.svg';
+import CalendarIcon from '../assets/icons/calendar.svg';
+import VapeIcon from '../assets/icons/vape.svg';
+import RollIcon from '../assets/icons/roll.svg';
+import HeatedIcon from '../assets/icons/heated.svg';
+import NoMeterIcon from '../assets/icons/no-mater.svg';
+import BrainIcon from '../assets/icons/brain.svg';
+import HearthIcon from '../assets/icons/heart.svg';
+import SaveMoneyIcon from '../assets/icons/save-money.svg';
+import ChartDownIcon from '../assets/icons/chart_down.svg';
+import QuitIcon from '../assets/icons/quit.svg';
 interface SetupData {
   smokeType: string;
   dailyAmount: string;
@@ -27,7 +37,7 @@ interface SetupProps {
 }
 
 const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
   const isDark = theme === 'dark';
   
@@ -50,23 +60,28 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
     setSetupData(prev => ({ ...prev, [field]: value }));
     setCurrentStep(null);
   };
+  const iconColor = setupData[currentStep as keyof SetupData] ? '#312E81' : (isDark ? '#CBD5E1' : '#1E1B4B');
 
   const setupFields = [
     {
       id: "smokeType",
       label: t('setup.fields.smokeType.label'),
-      icon: "remove-circle-outline" as keyof typeof Ionicons.glyphMap,
+      modalTitle: t('setup.fields.smokeType.modalTitle'),
+      icon: <SmokeIcon width={20} height={20} color={iconColor} />,
       value: setupData.smokeType,
       options: [
-        { value: "cigarettes", label: t('setup.fields.smokeType.options.cigarettes') },
-        { value: "tobacco-heater", label: t('setup.fields.smokeType.options.tobacco-heater') },
-        { value: "roll-your-own", label: t('setup.fields.smokeType.options.roll-your-own') }
+        { value: "cigarettes", label: t('setup.fields.smokeType.options.cigarettes'), icon: <SmokeIcon width={20} height={20} color={iconColor} /> },
+        { value: "tobacco-heater", label: t('setup.fields.smokeType.options.tobacco-heater'), icon: <RollIcon width={20} height={20} color={iconColor} /> },
+        { value: "roll-your-own", label: t('setup.fields.smokeType.options.roll-your-own'), icon: <HeatedIcon width={20} height={20} color={iconColor} /> },
+        { value: "vaping", label: t('setup.fields.smokeType.options.vaping'), icon: <VapeIcon width={20} height={20} color={iconColor} />}
+
       ]
     },
     {
       id: "dailyAmount",
       label: t('setup.fields.dailyAmount.label'),
-      icon: "reader-outline" as keyof typeof Ionicons.glyphMap,
+      modalTitle: t('setup.fields.dailyAmount.modalTitle'),
+      icon: <CalendarIcon width={20} height={20} color={iconColor} />,
       value: setupData.dailyAmount,
       options: [
         { value: "1-5", label: t('setup.fields.dailyAmount.options.1-5') },
@@ -80,7 +95,8 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
     {
       id: "packPrice",
       label: t('setup.fields.packPrice.label'),
-      icon: "wallet-outline" as keyof typeof Ionicons.glyphMap,
+      modalTitle: t('setup.fields.packPrice.modalTitle'),
+      icon: <SpendIcon width={20} height={20} color={iconColor} />,
       value: setupData.packPrice,
       options: [
         { value: "3", label: t('setup.fields.packPrice.options.3') },
@@ -93,15 +109,16 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
     {
       id: "goal",
       label: t('setup.fields.goal.label'),
-      icon: "navigate-circle-outline" as keyof typeof Ionicons.glyphMap,
+      modalTitle: t('setup.fields.goal.modalTitle'),
+      icon: <TargetIcon width={20} height={20} color={iconColor} />,
       value: setupData.goal,
       options: [
-        { value: "quit-completely", label: t('setup.fields.goal.options.quit-completely') },
-        { value: "reduce-gradually", label: t('setup.fields.goal.options.reduce-gradually') },
-        { value: "save-money", label: t('setup.fields.goal.options.save-money') },
-        { value: "improve-health", label: t('setup.fields.goal.options.improve-health') },
-        { value: "gain-control", label: t('setup.fields.goal.options.gain-control') },
-        { value: "doesnt-matter", label: t('setup.fields.goal.options.doesnt-matter') }
+        { value: "quit-completely", label: t('setup.fields.goal.options.quit-completely'), icon: <QuitIcon width={20} height={20} color={iconColor} /> },
+        { value: "reduce-gradually", label: t('setup.fields.goal.options.reduce-gradually'), icon: <ChartDownIcon width={20} height={20} color={iconColor} /> },
+        { value: "save-money", label: t('setup.fields.goal.options.save-money'), icon: <SaveMoneyIcon width={20} height={20} color={iconColor} /> },
+        { value: "improve-health", label: t('setup.fields.goal.options.improve-health'), icon: <HearthIcon width={20} height={20} color={iconColor} /> },
+        { value: "gain-control", label: t('setup.fields.goal.options.gain-control'), icon: <BrainIcon width={20} height={20} color={iconColor} /> },
+        { value: "doesnt-matter", label: t('setup.fields.goal.options.doesnt-matter'), icon: <NoMeterIcon width={20} height={20} color={iconColor} /> }
       ]
     }
   ];
@@ -110,21 +127,51 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
 
   return (
     <View className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
+      {/* Back Button */}
+      <Pressable
+        className={`absolute top-10 left-1 p-1 rounded-full z-10 ${isDark ? 'bg-slate-700' : 'bg-indigo-50'}`}
+        onPress={() => {
+          console.log('Back button pressed');
+          onBack();
+        }}
+      >
+        <Ionicons 
+          name="arrow-back" 
+          size={24} 
+          color={isDark ? '#f1f5f9' : '#1e1b4b'} 
+        />
+      </Pressable>
+
+      {/* Theme Toggle Button */}
+      <Pressable
+        className={`absolute top-16 right-3 p-1 rounded-full z-10 ${isDark ? 'bg-slate-700' : 'bg-indigo-50'}`}
+        onPress={toggleTheme}
+      >
+        <Ionicons 
+          name={isDark ? 'sunny' : 'moon'} 
+          size={24} 
+          color={isDark ? '#f1f5f9' : '#1e1b4b'} 
+        />
+      </Pressable>
+
       <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 40 }}>
         {/* Header */}
         <View className="items-center mb-8">
-          <Text className={`text-3xl font-bold mb-3 text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+          <Text className={`text-2xl font-bold mb-3 text-center ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
             {t('setup.header.title')}
           </Text>
-          <Text className={`text-base text-center leading-6 px-5 ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
+          <Text className={`text-sm text-center leading-6 px-5 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
             {t('setup.header.description')}
           </Text>
         </View>
 
         {/* Stats Card */}
-        <View className={`rounded-2xl p-6 items-center mb-8 ${isDark ? 'bg-dark-surface' : 'bg-light-surface'}`}>
-          <Text className={`text-5xl font-bold mb-2 ${isDark ? 'text-dark-text' : 'text-light-text'}`}>70%</Text>
-          <Text className={`text-base text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+        <View className={`rounded-2xl p-6 items-center mb-8`}>
+          <View className="flex-row items-baseline mb-2">
+            <Text className={`text-5xl font-bold ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>≈$1200</Text>
+            <Text className={`text-xl font-bold ml-1 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>/year</Text>
+          </View>
+          <Text className={`text-base text-center ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
             {t('setup.stats.description')}
           </Text>
         </View>
@@ -134,103 +181,107 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
           {setupFields.map((field) => (
             <Pressable
               key={field.id}
-              className={`w-11/12 h-14 rounded-xl flex-row justify-between items-center px-5 self-center ${
+              className={`w-11/12 h-16 rounded-3xl flex-row justify-between items-center px-3 self-center ${
                 setupData[field.id] 
-                  ? (isDark ? 'bg-dark-surface' : 'bg-gray-200') 
-                  : (isDark ? 'bg-dark-surface' : 'bg-gray-100')
+                  ? (isDark ? 'bg-slate-600' : 'bg-indigo-100') 
+                  : (isDark ? 'bg-slate-700' : 'bg-indigo-50')
               }`}
               onPress={() => handleFieldClick(field.id)}
             >
-              <Text className={`text-base font-medium flex-1 ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
-                {setupData[field.id] ? (
-                  <Text>
-                    {field.id === "smokeType" && t('setup.fields.smokeType.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
-                    {field.id === "dailyAmount" && t('setup.fields.dailyAmount.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
-                    {field.id === "packPrice" && t('setup.fields.packPrice.selected', { value: `$${setupData[field.id]}` })}
-                    {field.id === "goal" && t('setup.fields.goal.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
-                  </Text>
-                ) : (
-                  field.label
-                )}
-              </Text>
+              <View className="flex-row items-center flex-1">
+                {field.icon} 
+                <Text className={`text-base text-md pl-2 font-medium flex-1 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`} numberOfLines={1} ellipsizeMode="tail">
+                  {setupData[field.id] ? (
+                    <Text>
+                      {field.id === "smokeType" && t('setup.fields.smokeType.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
+                      {field.id === "dailyAmount" && t('setup.fields.dailyAmount.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
+                      {field.id === "packPrice" && t('setup.fields.packPrice.selected', { value: `$${setupData[field.id]}` })}
+                      {field.id === "goal" && t('setup.fields.goal.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
+                    </Text>
+                  ) : (
+                    field.label
+                  )}
+                </Text>
+              </View>
               <Ionicons 
-                name={field.icon} 
-                size={24} 
-                color={isDark ? '#94a3b8' : '#6b7280'} 
+                name={setupData[field.id] ? "checkmark" : "chevron-forward-outline"} 
+                size={20} 
+                color={isDark ? '#CBD5E1' : '#64748b'} 
               />
             </Pressable>
           ))}
         </View>
-
-        {/* Next Button */}
-        <View className="items-center">
-          <Pressable
-            className={`flex-row items-center justify-between px-6 py-4 rounded-2xl w-4/5 h-14 ${
-              allFieldsCompleted 
-                ? (isDark ? 'bg-dark-accent' : 'bg-light-primary') 
-                : 'bg-gray-400'
-            }`}
-            onPress={onNext}
-            disabled={!allFieldsCompleted}
-          >
-            <Text className={`text-lg font-semibold ${isDark ? 'text-dark-background' : 'text-light-background'}`}>
-              {t('setup.nextButton.text')}
-            </Text>
-            <Ionicons 
-              name="arrow-forward" 
-              size={20} 
-              color={isDark ? '#0f172a' : '#ffffff'} 
-            />
-          </Pressable>
-        </View>
       </ScrollView>
+
+      {/* Next Button - Fixed at bottom */}
+      <View className="px-6 pb-8">
+        <Pressable
+          className={`rounded-2xl px-6 py-4 items-center justify-center flex-row ${
+            allFieldsCompleted 
+              ? 'bg-indigo-600'
+              : 'bg-gray-400'
+          }`}
+          onPress={onNext}
+          disabled={!allFieldsCompleted}
+        >
+          <Text className="font-semibold text-xl mr-2 text-white">
+            {t('setup.nextButton.text')}
+          </Text>
+          <Ionicons 
+            name="arrow-forward" 
+            size={24} 
+            color="#ffffff" 
+          />
+        </Pressable>
+      </View>
 
       {/* Modal for Options */}
       {currentStep && currentField && (
         <Modal visible={true} transparent={true} animationType="slide">
           <View className="flex-1 bg-black/50 justify-end">
-            <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl max-h-4/5`}>
+            <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl`}>
               <View className="px-5 pt-6 pb-10">
-                <Text className={`text-lg font-bold text-center mb-6 ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
-                  {currentField.label}
+                <Text className={`text-xl font-bold text-center px-8 mt-6 mb-6 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
+                  {currentField.modalTitle}
                 </Text>
                 
-                <ScrollView className="max-h-96">
-                  {currentField.options.map((option) => (
-                    <Pressable
-                      key={option.value}
-                      className={`w-11/12 h-14 rounded-xl flex-row justify-between items-center px-5 self-center mb-3 ${
-                        setupData[currentStep as keyof SetupData] === option.value 
-                          ? (isDark ? 'bg-dark-accent' : 'bg-light-primary') 
-                          : (isDark ? 'bg-dark-surface' : 'bg-gray-100')
-                      }`}
-                      onPress={() => handleSelection(currentStep as keyof SetupData, option.value)}
-                    >
-                      <Text className={`text-base font-medium flex-1 ${
-                        setupData[currentStep as keyof SetupData] === option.value 
-                          ? (isDark ? 'text-dark-background' : 'text-light-background') 
-                          : (isDark ? 'text-dark-text' : 'text-light-text')
-                      }`}>
-                        {option.label}
-                      </Text>
-                      <Ionicons 
-                        name={currentField.icon} 
-                        size={24} 
-                        color={setupData[currentStep as keyof SetupData] === option.value 
-                          ? (isDark ? '#0f172a' : '#ffffff') 
-                          : (isDark ? '#94a3b8' : '#6b7280')} 
-                      />
-                    </Pressable>
-                  ))}
+                <ScrollView>
+                  <View className="gap-4">
+                    {currentField.options.map((option) => (
+                      <Pressable
+                        key={option.value}
+                        className={`w-11/12 h-16 rounded-3xl flex-row items-center justify-between px-5 self-center ${
+                          setupData[currentStep as keyof SetupData] === option.value 
+                            ? (isDark ? 'bg-slate-600' : 'bg-indigo-100') 
+                            : (isDark ? 'bg-slate-700' : 'bg-indigo-50')
+                        }`}
+                        onPress={() => handleSelection(currentStep as keyof SetupData, option.value)}
+                      >
+                        <View className="flex-row items-center">
+                          {option.icon && option.icon}
+                          <Text className={`text-base ${option.icon ? 'pl-2' : ''} ${setupData[currentStep as keyof SetupData] === option.value ? 'font-bold' : 'font-medium'} ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
+                            {option.label}
+                          </Text>
+                        </View>
+                        {setupData[currentStep as keyof SetupData] === option.value && (
+                          <Ionicons 
+                            name="checkmark" 
+                            size={24} 
+                            color="#4f46e5" 
+                          />
+                        )}
+                      </Pressable>
+                    ))}
+                  </View>
                 </ScrollView>
                 
                 <Pressable 
                   className={`w-15 h-15 rounded-full justify-center items-center self-center mt-6 ${
-                    isDark ? 'bg-dark-surface' : 'bg-gray-100'
+                    isDark ? 'bg-slate-700' : 'bg-indigo-50'
                   }`} 
                   onPress={() => setCurrentStep(null)}
                 >
-                  <Text className={`text-2xl font-bold ${isDark ? 'text-dark-text' : 'text-light-text'}`}>✕</Text>
+                  <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
                 </Pressable>
               </View>
             </View>

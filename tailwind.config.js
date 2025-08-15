@@ -7,25 +7,25 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Light theme colors
+        // Light theme colors - matching Welcome page
         light: {
           background: '#ffffff',
           surface: '#f8fafc',
-          primary: '#000000',
-          secondary: '#6b7280',
-          accent: '#3b82f6',
-          text: '#1f2937',
-          'text-secondary': '#6b7280',
+          primary: '#1e1b4b', // indigo-950
+          secondary: '#64748b', // slate-500
+          accent: '#4f46e5', // indigo-600
+          text: '#1e1b4b', // indigo-950
+          'text-secondary': '#64748b', // slate-500
         },
-        // Dark theme colors
+        // Dark theme colors - matching Welcome page
         dark: {
-          background: '#0f172a',
-          surface: '#1e293b',
-          primary: '#ffffff',
-          secondary: '#94a3b8',
-          accent: '#60a5fa',
-          text: '#f1f5f9',
-          'text-secondary': '#94a3b8',
+          background: '#0f172a', // slate-900
+          surface: '#1e293b', // slate-800
+          primary: '#f1f5f9', // slate-100
+          secondary: '#cbd5e1', // slate-300
+          accent: '#4f46e5', // indigo-600
+          text: '#f1f5f9', // slate-100
+          'text-secondary': '#cbd5e1', // slate-300
         }
       },
     },

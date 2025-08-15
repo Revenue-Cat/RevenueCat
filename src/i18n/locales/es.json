@@ -2,8 +2,10 @@
   "welcome": {
     "title": "¡Bienvenido a QuitQly!",
     "subtitle": "Tu guía amigable para dejar de fumar — un pequeño paso a la vez.",
-    "selectLanguage": "Seleccionar Idioma",
-    "letsStart": "Empezar"
+    "selectLanguage": "Idioma",
+    "letsStart": "Empezar",
+    "willYouQuit": "¿Dejarás... de fumar?",
+    "ctaButton": "Sí, hagámoslo juntos"
   },
   "setup": {
     "title": "Establece tu camino para dejar de fumar",
@@ -12,17 +14,17 @@
     "next": "Siguiente",
     "header": {
       "title": "Establece tu camino para dejar de fumar",
-      "description": "Responde algunas preguntas rápidas para personalizar tu plan para dejar de fumar. No tomará más de 20 segundos."
+      "description": "Solo unos toques y 20 segundos para obtener un plan para dejar de fumar hecho para ti"
     },
     "stats": {
-      "description": "de los fumadores dicen que quieren dejar de fumar — no estás solo."
+      "description": "Ahorros promedio de EE.UU. sin fumar. Agrega tus hábitos para obtener tu número."
     },
     "nextButton": {
       "text": "Siguiente"
     },
     "fields": {
       "smokeType": {
-        "label": "¿Qué sueles fumar?",
+        "label": "¿Qué fumas?",
         "selected": "Estoy fumando {{value}}",
         "options": {
           "cigarettes": "Cigarrillos",
@@ -31,7 +33,7 @@
         }
       },
       "dailyAmount": {
-        "label": "¿Cuánto consumes diariamente?",
+        "label": "¿Cuál es tu uso diario?",
         "selected": "Fumo {{value}}",
         "options": {
           "1-5": "1-5 cigarrillos por día",
@@ -43,7 +45,7 @@
         }
       },
       "packPrice": {
-        "label": "¿Cuánto pagas por una unidad?",
+        "label": "¿Cuál es el costo de una unidad?",
         "selected": "Un paquete me cuesta {{value}}",
         "options": {
           "3": "$3",

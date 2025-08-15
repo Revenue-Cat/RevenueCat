@@ -5,10 +5,12 @@ import {
   Pressable,
   ScrollView,
   Modal,
-  StyleSheet,
   Dimensions,
+  StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -25,6 +27,10 @@ interface AchievementsProps {
 }
 
 const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
+  const { t } = useTranslation();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
 
   const achievements: Achievement[] = [

@@ -37,10 +37,10 @@ const BuddySelection: React.FC<BuddySelectionProps> = ({ onNext }) => {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 40 }}>
         {/* Header */}
         <View className="items-center mb-8">
-          <Text className={`text-3xl font-bold mb-3 text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+          <Text className={`text-3xl font-bold mb-3 text-center ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
             {t('buddySelection.title')}
           </Text>
-          <Text className={`text-base text-center leading-6 px-5 ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
+          <Text className={`text-base text-center leading-6 px-5 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
             {t('buddySelection.subtitle')}
           </Text>
         </View>
@@ -52,24 +52,24 @@ const BuddySelection: React.FC<BuddySelectionProps> = ({ onNext }) => {
               key={buddy.id}
               className={`w-11/12 rounded-2xl p-5 items-center self-center relative ${
                 selectedBuddy === buddy.id 
-                  ? (isDark ? 'bg-dark-accent border-2 border-dark-accent' : 'bg-gray-200 border-2 border-light-primary') 
-                  : (isDark ? 'bg-dark-surface' : 'bg-gray-100')
+                  ? (isDark ? 'bg-slate-600 border-2 border-indigo-600' : 'bg-indigo-100 border-2 border-indigo-600') 
+                  : (isDark ? 'bg-slate-700' : 'bg-indigo-50')
               }`}
               onPress={() => setSelectedBuddy(buddy.id)}
             >
               <Text className="text-5xl mb-3">{buddy.emoji}</Text>
-              <Text className={`text-lg font-bold mb-1 text-center ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+              <Text className={`text-lg font-bold mb-1 text-center ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
                 {buddy.name}
               </Text>
-              <Text className={`text-sm text-center ${isDark ? 'text-dark-text-secondary' : 'text-light-text-secondary'}`}>
+              <Text className={`text-sm text-center ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
                 {buddy.description}
               </Text>
               {selectedBuddy === buddy.id && (
                 <View className="absolute top-3 right-3">
                   <Ionicons 
-                    name="checkmark-circle" 
+                    name="checkmark" 
                     size={24} 
-                    color={isDark ? '#0f172a' : '#000000'} 
+                    color="#4f46e5" 
                   />
                 </View>
               )}
@@ -80,16 +80,16 @@ const BuddySelection: React.FC<BuddySelectionProps> = ({ onNext }) => {
         {/* Next Button */}
         <View className="items-center">
           <Pressable 
-            className={`flex-row items-center justify-between px-6 py-4 rounded-2xl w-4/5 h-14 ${isDark ? 'bg-dark-accent' : 'bg-light-primary'}`}
+            className="flex-row items-center justify-between px-6 py-4 rounded-2xl w-4/5 h-14 bg-indigo-600"
             onPress={onNext}
           >
-            <Text className={`text-lg font-semibold ${isDark ? 'text-dark-background' : 'text-light-background'}`}>
+            <Text className="text-lg font-semibold text-white">
               {t('buddySelection.next')}
             </Text>
             <Ionicons 
               name="arrow-forward" 
               size={20} 
-              color={isDark ? '#0f172a' : '#ffffff'} 
+              color="#ffffff" 
             />
           </Pressable>
         </View>

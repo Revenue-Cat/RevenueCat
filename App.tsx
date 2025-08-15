@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { AppProvider } from './src/contexts/AppContext';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import { LanguageProvider } from './src/contexts/LanguageContext';
 import './src/i18n'; // Import i18n configuration
 import Welcome from './src/screens/Welcome';
 import Setup from './src/screens/Setup';
@@ -160,7 +161,9 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <ThemeProvider>
-      <AppContent />
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
     </ThemeProvider>
   );
 };
