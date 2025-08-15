@@ -49,15 +49,29 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
   });
   
   const [currentStep, setCurrentStep] = useState<string | null>(null);
+  const [pickerValue, setPickerValue] = useState(3);
+  const [pickerCurrency, setPickerCurrency] = useState('$');
 
   const allFieldsCompleted = Object.values(setupData).every(value => value !== '');
 
   const handleFieldClick = (field: string) => {
+    if (field === 'packPrice') {
+      // Initialize picker with current value if exists
+      const currentValue = setupData.packPrice;
+      if (currentValue) {
+        setPickerValue(parseInt(currentValue));
+      }
+    }
     setCurrentStep(field);
   };
 
   const handleSelection = (field: keyof SetupData, value: string) => {
     setSetupData(prev => ({ ...prev, [field]: value }));
+    setCurrentStep(null);
+  };
+
+  const handlePickerConfirm = () => {
+    setSetupData(prev => ({ ...prev, packPrice: pickerValue.toString() }));
     setCurrentStep(null);
   };
   const iconColor = setupData[currentStep as keyof SetupData] ? '#312E81' : (isDark ? '#CBD5E1' : '#1E1B4B');
@@ -236,7 +250,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
       </View>
 
       {/* Modal for Options */}
-      {currentStep && currentField && (
+      {currentStep && currentField && currentStep !== 'packPrice' && (
         <Modal visible={true} transparent={true} animationType="slide">
           <View className="flex-1 bg-black/50 justify-end">
             <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl`}>
@@ -283,6 +297,95 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
                 >
                   <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
                 </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* Custom Picker Modal for Pack Price */}
+      {currentStep === 'packPrice' && (
+        <Modal visible={true} transparent={true} animationType="slide">
+          <View className="flex-1 bg-black/50 justify-end">
+            <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl`}>
+              <View className="px-5 pt-6 pb-10">
+                <Text className={`text-xl font-bold text-center px-8 mt-6 mb-6 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
+                  {t('setup.fields.packPrice.modalTitle')}
+                </Text>
+                
+                {/* Picker Container */}
+                <View className="flex-row justify-center items-center mb-8">
+                  {/* Number Picker */}
+                  <View className="w-32 h-48 overflow-hidden">
+                    <ScrollView 
+                      showsVerticalScrollIndicator={false}
+                      contentContainerStyle={{ paddingVertical: 96 }}
+                    >
+                      {Array.from({ length: 20 }, (_, i) => i + 1).map((number) => (
+                        <Pressable
+                          key={number}
+                          onPress={() => setPickerValue(number)}
+                          className={`h-12 items-center justify-center ${
+                            pickerValue === number ? 'bg-indigo-100 rounded-lg' : ''
+                          }`}
+                        >
+                          <Text className={`text-2xl font-bold ${
+                            pickerValue === number 
+                              ? 'text-indigo-600' 
+                              : isDark ? 'text-slate-400' : 'text-slate-300'
+                          }`}>
+                            {number}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </ScrollView>
+                  </View>
+
+                  {/* Currency Picker */}
+                  <View className="w-20 h-48 overflow-hidden">
+                    <ScrollView 
+                      showsVerticalScrollIndicator={false}
+                      contentContainerStyle={{ paddingVertical: 96 }}
+                    >
+                      {['$', '€', '£'].map((currency, index) => (
+                        <Pressable
+                          key={currency}
+                          onPress={() => setPickerCurrency(currency)}
+                          className={`h-12 items-center justify-center ${
+                            pickerCurrency === currency ? 'bg-indigo-100 rounded-lg' : ''
+                          }`}
+                        >
+                          <Text className={`text-2xl font-bold ${
+                            pickerCurrency === currency 
+                              ? 'text-indigo-600' 
+                              : isDark ? 'text-slate-400' : 'text-slate-300'
+                          }`}>
+                            {currency}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </ScrollView>
+                  </View>
+                </View>
+
+                {/* Action Buttons */}
+                <View className="flex-row justify-center gap-4">
+                  <Pressable 
+                    className={`w-12 h-12 rounded-2xl  justify-center items-center ${
+                      isDark ? 'bg-slate-700' : 'bg-slate-200'
+                    }`} 
+                    onPress={() => setCurrentStep(null)}
+                  >
+                    <Text className="text-2xl font-bold text-slate-600">✕</Text>
+                  </Pressable>
+                  
+                  <Pressable 
+                    className="w-12 h-12 rounded-2xl justify-center items-center bg-indigo-600"
+                    onPress={handlePickerConfirm}
+                  >
+                    <Text className="text-2xl font-bold text-white">✓</Text>
+                  </Pressable>
+                </View>
               </View>
             </View>
           </View>
