@@ -4,12 +4,16 @@ import {
   Text,
   Pressable,
   ScrollView,
-  Modal,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
+import SlideModal from '../components/SlideModal';
+import PackPricePickerModal from '../components/PackPricePickerModal';
+import SmokeTypeModal from '../components/SmokeTypeModal';
+import DailyAmountModal from '../components/DailyAmountModal';
+import GoalModal from '../components/GoalModal';
 import SmokeIcon from '../assets/icons/smoke.svg';
 import TargetIcon from '../assets/icons/target.svg';
 import SpendIcon from '../assets/icons/spend.svg';
@@ -23,10 +27,12 @@ import HearthIcon from '../assets/icons/heart.svg';
 import SaveMoneyIcon from '../assets/icons/save-money.svg';
 import ChartDownIcon from '../assets/icons/chart_down.svg';
 import QuitIcon from '../assets/icons/quit.svg';
+
 interface SetupData {
   smokeType: string;
   dailyAmount: string;
   packPrice: string;
+  packPriceCurrency: string;
   goal: string;
   [key: string]: string;
 }
@@ -45,14 +51,28 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
     smokeType: '',
     dailyAmount: '',
     packPrice: '',
+    packPriceCurrency: '$',
     goal: ''
   });
   
   const [currentStep, setCurrentStep] = useState<string | null>(null);
+  const [pickerValue, setPickerValue] = useState(3);
+  const [pickerCurrency, setPickerCurrency] = useState('$');
 
   const allFieldsCompleted = Object.values(setupData).every(value => value !== '');
 
   const handleFieldClick = (field: string) => {
+    if (field === 'packPrice') {
+      // Initialize picker with current value if exists
+      const currentValue = setupData.packPrice;
+      const currentCurrency = setupData.packPriceCurrency;
+      if (currentValue) {
+        setPickerValue(parseInt(currentValue));
+      }
+      if (currentCurrency) {
+        setPickerCurrency(currentCurrency);
+      }
+    }
     setCurrentStep(field);
   };
 
@@ -60,6 +80,16 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
     setSetupData(prev => ({ ...prev, [field]: value }));
     setCurrentStep(null);
   };
+
+  const handlePickerConfirm = () => {
+    setSetupData(prev => ({ 
+      ...prev, 
+      packPrice: pickerValue.toString(),
+      packPriceCurrency: pickerCurrency
+    }));
+    setCurrentStep(null);
+  };
+
   const iconColor = setupData[currentStep as keyof SetupData] ? '#312E81' : (isDark ? '#CBD5E1' : '#1E1B4B');
 
   const setupFields = [
@@ -195,7 +225,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
                     <Text>
                       {field.id === "smokeType" && t('setup.fields.smokeType.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
                       {field.id === "dailyAmount" && t('setup.fields.dailyAmount.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
-                      {field.id === "packPrice" && t('setup.fields.packPrice.selected', { value: `$${setupData[field.id]}` })}
+                      {field.id === "packPrice" && t('setup.fields.packPrice.selected', { value: `${setupData.packPriceCurrency}${setupData[field.id]}` })}
                       {field.id === "goal" && t('setup.fields.goal.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
                     </Text>
                   ) : (
@@ -235,59 +265,39 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
         </Pressable>
       </View>
 
-      {/* Modal for Options */}
-      {currentStep && currentField && (
-        <Modal visible={true} transparent={true} animationType="slide">
-          <View className="flex-1 bg-black/50 justify-end">
-            <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl`}>
-              <View className="px-5 pt-6 pb-10">
-                <Text className={`text-xl font-bold text-center px-8 mt-6 mb-6 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
-                  {currentField.modalTitle}
-                </Text>
-                
-                <ScrollView>
-                  <View className="gap-4">
-                    {currentField.options.map((option) => (
-                      <Pressable
-                        key={option.value}
-                        className={`w-11/12 h-16 rounded-3xl flex-row items-center justify-between px-5 self-center ${
-                          setupData[currentStep as keyof SetupData] === option.value 
-                            ? (isDark ? 'bg-slate-600' : 'bg-indigo-100') 
-                            : (isDark ? 'bg-slate-700' : 'bg-indigo-50')
-                        }`}
-                        onPress={() => handleSelection(currentStep as keyof SetupData, option.value)}
-                      >
-                        <View className="flex-row items-center">
-                          {option.icon && option.icon}
-                          <Text className={`text-base ${option.icon ? 'pl-2' : ''} ${setupData[currentStep as keyof SetupData] === option.value ? 'font-bold' : 'font-medium'} ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
-                            {option.label}
-                          </Text>
-                        </View>
-                        {setupData[currentStep as keyof SetupData] === option.value && (
-                          <Ionicons 
-                            name="checkmark" 
-                            size={24} 
-                            color="#4f46e5" 
-                          />
-                        )}
-                      </Pressable>
-                    ))}
-                  </View>
-                </ScrollView>
-                
-                <Pressable 
-                  className={`w-15 h-15 rounded-full justify-center items-center self-center mt-6 ${
-                    isDark ? 'bg-slate-700' : 'bg-indigo-50'
-                  }`} 
-                  onPress={() => setCurrentStep(null)}
-                >
-                  <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      )}
+      {/* Individual Modal Components */}
+      <SmokeTypeModal
+        visible={currentStep === 'smokeType'}
+        onClose={() => setCurrentStep(null)}
+        selectedValue={setupData.smokeType}
+        onSelect={(value) => handleSelection('smokeType', value)}
+      />
+
+      <DailyAmountModal
+        visible={currentStep === 'dailyAmount'}
+        onClose={() => setCurrentStep(null)}
+        selectedValue={setupData.dailyAmount}
+        onSelect={(value) => handleSelection('dailyAmount', value)}
+      />
+
+      <GoalModal
+        visible={currentStep === 'goal'}
+        onClose={() => setCurrentStep(null)}
+        selectedValue={setupData.goal}
+        onSelect={(value) => handleSelection('goal', value)}
+      />
+
+      {/* Pack Price Picker Modal */}
+      <PackPricePickerModal
+        visible={currentStep === 'packPrice'}
+        onClose={() => setCurrentStep(null)}
+        title={t('setup.fields.packPrice.modalTitle')}
+        pickerValue={pickerValue}
+        pickerCurrency={pickerCurrency}
+        onValueChange={setPickerValue}
+        onCurrencyChange={setPickerCurrency}
+        onConfirm={handlePickerConfirm}
+      />
     </View>
   );
 };
