@@ -32,6 +32,7 @@ interface SetupData {
   smokeType: string;
   dailyAmount: string;
   packPrice: string;
+  packPriceCurrency: string;
   goal: string;
   [key: string]: string;
 }
@@ -50,6 +51,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
     smokeType: '',
     dailyAmount: '',
     packPrice: '',
+    packPriceCurrency: '$',
     goal: ''
   });
   
@@ -63,8 +65,12 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
     if (field === 'packPrice') {
       // Initialize picker with current value if exists
       const currentValue = setupData.packPrice;
+      const currentCurrency = setupData.packPriceCurrency;
       if (currentValue) {
         setPickerValue(parseInt(currentValue));
+      }
+      if (currentCurrency) {
+        setPickerCurrency(currentCurrency);
       }
     }
     setCurrentStep(field);
@@ -76,7 +82,11 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
   };
 
   const handlePickerConfirm = () => {
-    setSetupData(prev => ({ ...prev, packPrice: pickerValue.toString() }));
+    setSetupData(prev => ({ 
+      ...prev, 
+      packPrice: pickerValue.toString(),
+      packPriceCurrency: pickerCurrency
+    }));
     setCurrentStep(null);
   };
 
@@ -215,7 +225,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
                     <Text>
                       {field.id === "smokeType" && t('setup.fields.smokeType.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
                       {field.id === "dailyAmount" && t('setup.fields.dailyAmount.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
-                      {field.id === "packPrice" && t('setup.fields.packPrice.selected', { value: `$${setupData[field.id]}` })}
+                      {field.id === "packPrice" && t('setup.fields.packPrice.selected', { value: `${setupData.packPriceCurrency}${setupData[field.id]}` })}
                       {field.id === "goal" && t('setup.fields.goal.selected', { value: field.options.find(opt => opt.value === setupData[field.id])?.label || setupData[field.id] })}
                     </Text>
                   ) : (

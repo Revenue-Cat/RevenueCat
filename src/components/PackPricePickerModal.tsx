@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, Pressable, ScrollView, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { useTheme } from '../contexts/ThemeContext';
 import SlideModal from './SlideModal';
 
@@ -26,67 +27,10 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const numberScrollViewRef = useRef<ScrollView>(null);
-  const currencyScrollViewRef = useRef<ScrollView>(null);
-  const [numberScrollY, setNumberScrollY] = useState(0);
-  const [currencyScrollY, setCurrencyScrollY] = useState(0);
 
   const handleConfirm = () => {
     onConfirm();
     onClose();
-  };
-
-  const handleNumberScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { contentOffset } = event.nativeEvent;
-    setNumberScrollY(contentOffset.y);
-    
-    const itemHeight = 48; // Height of each number item
-    const selectedIndex = Math.round(contentOffset.y / itemHeight);
-    const selectedNumber = Math.max(1, Math.min(20, selectedIndex + 1));
-    
-    if (selectedNumber !== pickerValue) {
-      onValueChange(selectedNumber);
-    }
-  };
-
-  const handleCurrencyScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { contentOffset } = event.nativeEvent;
-    setCurrencyScrollY(contentOffset.y);
-    
-    const itemHeight = 48; // Height of each currency item
-    const selectedIndex = Math.round(contentOffset.y / itemHeight);
-    const currencies = ['$', '€', '£'];
-    const selectedCurrency = currencies[Math.max(0, Math.min(2, selectedIndex))];
-    
-    if (selectedCurrency !== pickerCurrency) {
-      onCurrencyChange(selectedCurrency);
-    }
-  };
-
-  const handleNumberPress = (number: number) => {
-    onValueChange(number);
-    // Scroll to the selected number using ref
-    const itemHeight = 48;
-    const targetScrollY = (number - 1) * itemHeight;
-    
-    numberScrollViewRef.current?.scrollTo({
-      y: targetScrollY,
-      animated: true
-    });
-  };
-
-  const handleCurrencyPress = (currency: string) => {
-    onCurrencyChange(currency);
-    // Scroll to the selected currency using ref
-    const itemHeight = 48;
-    const currencies = ['$', '€', '£'];
-    const currencyIndex = currencies.indexOf(currency);
-    const targetScrollY = currencyIndex * itemHeight;
-    
-    currencyScrollViewRef.current?.scrollTo({
-      y: targetScrollY,
-      animated: true
-    });
   };
 
   return (
@@ -96,74 +40,70 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
       title={title}
       showCloseButton={false}
     >
-      {/* Picker Container with Fixed Selection Area */}
-      <View className="flex-row justify-center items-center mb-8 relative">
-        {/* Fixed Selection Highlight Overlay - 50% width and centered */}
-        <View className="absolute top-1/2 left-1/4 right-1/4 h-12 bg-indigo-100/30 rounded-lg -translate-y-6 z-0" />
-        
-        {/* Number Picker - Scrollable with Numbers Visible in Selection Area */}
-        <View className="w-22 h-48 overflow-hidden relative z-10">
-          <ScrollView 
-            ref={numberScrollViewRef}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingVertical: 96 }}
-            onScroll={handleNumberScroll}
-            scrollEventThrottle={16}
-            snapToInterval={48}
-            decelerationRate="fast"
+      {/* Picker Container */}
+      <View className="flex-row justify-center items-center gap-0 relative">
+
+        {/* Number Picker */}
+        <View className="w-20 h-50 items-center justify-center p-0 m-0">
+          <Picker
+            selectedValue={pickerValue}
+            onValueChange={(value) => onValueChange(Number(value))}
+            style={{
+              width: 90,
+              height: 220,
+              color: isDark ? '#0c68e7' : '#07033f',
+            }}
+            itemStyle={{
+              fontSize: 24,
+              fontWeight: 'bold',
+              color: isDark ? '#0c68e7' : '#07033f',
+            }}
+            selectionColor={isDark ? '#1e40af' : '#0b3ee6'} // Custom selection background
           >
             {Array.from({ length: 20 }, (_, i) => i + 1).map((number) => (
-              <Pressable
+              <Picker.Item
                 key={number}
-                onPress={() => handleNumberPress(number)}
-                className="h-12 items-center justify-center"
-              >
-                <Text className={`text-2xl font-bold ${
-                  pickerValue === number 
-                    ? 'text-indigo-800 font-black' 
-                    : isDark ? 'text-slate-400' : 'text-slate-300'
-                }`}>
-                  {number}
-                </Text>
-              </Pressable>
+                label={number.toString()}
+                value={number}
+                color={pickerValue === number ? '#1E1B4B' : '#1E1B4B'}
+              />
             ))}
-          </ScrollView>
+          </Picker>
         </View>
 
-        {/* Currency Picker - Scrollable with Currencies Visible in Selection Area */}
-        <View className="w-10 h-48 overflow-hidden relative z-10">
-          <ScrollView 
-            ref={currencyScrollViewRef}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingVertical: 96 }}
-            onScroll={handleCurrencyScroll}
-            scrollEventThrottle={16}
-            snapToInterval={48}
-            decelerationRate="fast"
+        {/* Currency Picker */}
+        <View className="w-16 h-50 items-center justify-center p-0 m-0">
+          <Picker
+            selectedValue={pickerCurrency}
+            onValueChange={(value) => onCurrencyChange(value)}
+            style={{
+              width: 70,
+              height: 220,
+              color: isDark ? '#0c68e7' : '#e6710b',
+            }}
+            itemStyle={{
+              fontSize: 24,
+              fontWeight: 'bold',
+              color: isDark ? '#0c68e7' : '#e45a1a',
+            }}
+            selectionColor={isDark ? '#1e40af' : '#0235e0'} // Custom selection background
           >
-            {['$', '€', '£'].map((currency, index) => (
-              <Pressable
+            {['$', '€', '£'].map((currency) => (
+              <Picker.Item
                 key={currency}
-                onPress={() => handleCurrencyPress(currency)}
-                className="h-12 items-center justify-center"
-              >
-                <Text className={`text-2xl font-bold ${
-                  pickerCurrency === currency 
-                    ? 'text-indigo-800 font-black' 
-                    : isDark ? 'text-slate-400' : 'text-slate-300'
-                }`}>
-                  {currency}
-                </Text>
-              </Pressable>
+                label={currency}
+                value={currency}
+                color={pickerCurrency === currency ? '#1E1B4B' : '#1E1B4B'}
+              />
             ))}
-          </ScrollView>
+          </Picker>
         </View>
       </View>
 
       {/* Action Buttons */}
       <View className="flex-row justify-center gap-4">
         <Pressable 
-          className={`w-12 h-12 rounded-2xl justify-center items-center ${
+          className={`w-16 h-16 rounded-2xl justify-center items-center ${
             isDark ? 'bg-slate-700' : 'bg-slate-200'
           }`} 
           onPress={onClose}
@@ -172,7 +112,7 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
         </Pressable>
         
         <Pressable 
-          className="w-12 h-12 rounded-2xl justify-center items-center bg-indigo-600"
+          className="w-16 h-16 rounded-2xl justify-center items-center bg-indigo-600"
           onPress={handleConfirm}
         >
           <Text className="text-2xl font-bold text-white">✓</Text>
