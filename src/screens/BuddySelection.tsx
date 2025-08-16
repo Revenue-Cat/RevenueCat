@@ -1,14 +1,6 @@
 // src/screens/BuddySelection.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  Modal,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../contexts/ThemeContext";
@@ -16,6 +8,12 @@ import { useApp } from "../contexts/AppContext";
 import BuddyCarousel, { Buddy } from "../components/BuddyCarousel";
 import type { SexKey } from "../assets/buddies";
 
+// Modals
+import BuddyNameModal from "../components/BuddyNameModal";
+import GenderModal from "../components/GenderModal";
+import SideModal from "../components/SideModal";
+
+// icon sets (light/dark)
 import GenderLight from "../assets/icons/gander.svg";
 import GenderDark from "../assets/icons/gander-d.svg";
 import CharacterLight from "../assets/icons/character.svg";
@@ -38,6 +36,8 @@ interface Props {
   onNext: () => void;
 }
 
+const UNLOCKED_COUNT = 3;
+
 const BuddySelection: React.FC<Props> = ({ onNext }) => {
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
@@ -48,7 +48,7 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
     setGender: setGenderCtx,
     selectedBuddyId,
     setSelectedBuddyId,
-    buddyName: savedBuddyName,
+    buddyName: savedBuddyName, // use the name from context (if user already changed it)
     setBuddyName: setBuddyNameCtx,
   } = useApp();
 
@@ -62,17 +62,12 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
     Incognito: isDark ? IncognitoDark : IncognitoLight,
   };
 
-  // Gender / sex key for images
   const [gender, setGender] = useState<Gender>(savedGender);
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
 
-  // Bright/Dark side (controls theme)
   const [side, setSide] = useState<Side>(isDark ? "dark" : "bright");
-  useEffect(() => {
-    setSide(isDark ? "dark" : "bright");
-  }, [isDark]);
+  useEffect(() => setSide(isDark ? "dark" : "bright"), [isDark]);
 
-  // Buddies (i18n + fallbacks)
   const buddies: Buddy[] = useMemo(
     () => [
       {
@@ -128,47 +123,78 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
 
   const [activeIndex, setActiveIndex] = useState<number>(initialIndex);
 
-  // Display name:
-  // - On first render, prefer saved custom name if it exists, else buddy default.
-  // - On carousel change, ALWAYS switch to the new buddy's default name (and persist to context).
+  // NAME RULE:
+  // 1) Start with the buddy's default name (object).
+  // 2) If the user changes the name, save to context and ALWAYS use that (even on buddy change).
+  const defaultInitialName = buddies[initialIndex]?.name || buddies[0].name;
+  const [nameEdited, setNameEdited] = useState<boolean>(!!savedBuddyName);
   const [buddyName, setBuddyNameLocal] = useState<string>(
-    savedBuddyName || buddies[initialIndex]?.name || buddies[0].name
+    savedBuddyName || defaultInitialName
   );
 
-  // If language changes (buddies array re-computed), keep name synced to the
-  // current buddy's *default* name as per request.
+  // Keep name synced on language/buddies change:
+  // - If user has a custom name in context -> keep using it.
+  // - Else -> update to the current buddy’s default.
   useEffect(() => {
-    const nextDefault = buddies[activeIndex]?.name ?? buddies[0].name;
-    setBuddyNameLocal(nextDefault);
-    setBuddyNameCtx(nextDefault);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [buddies, activeIndex]);
+    if (nameEdited && savedBuddyName) {
+      setBuddyNameLocal(savedBuddyName);
+    } else {
+      const nextDefault = buddies[activeIndex]?.name ?? buddies[0].name;
+      setBuddyNameLocal(nextDefault);
+      setBuddyNameCtx(nextDefault);
+    }
+  }, [buddies, activeIndex, nameEdited, savedBuddyName, setBuddyNameCtx]);
 
-  // UI state
-  const [showNameModal, setShowNameModal] = useState(false);
-  const [showGenderModal, setShowGenderModal] = useState(false);
-  const [showSideModal, setShowSideModal] = useState(false);
-  const [nameDraft, setNameDraft] = useState(buddyName);
+  // Initialize selected buddy id (and default name in context if no custom yet)
+  useEffect(() => {
+    setSelectedBuddyId(buddies[initialIndex].id);
+    if (!nameEdited) setBuddyNameCtx(defaultInitialName);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Random backgrounds for buddy cards (BG1..BG6)
+  const BGs = useMemo(
+    () => [
+      require("../assets/backgrounds/BG1.png"),
+      require("../assets/backgrounds/BG2.png"),
+      require("../assets/backgrounds/BG3.png"),
+      require("../assets/backgrounds/BG4.png"),
+      require("../assets/backgrounds/BG5.png"),
+      require("../assets/backgrounds/BG6.png"),
+    ],
+    []
+  );
+  const buddyBGs = useMemo(
+    () => buddies.map(() => BGs[Math.floor(Math.random() * BGs.length)]),
+    // re-roll when buddies length changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [buddies.length, BGs]
+  );
+
+  const isLocked = (idx: number) => idx >= UNLOCKED_COUNT;
+  const centerLocked = isLocked(activeIndex);
+  const canProceed = !centerLocked;
 
   const systemIconColor = isDark ? "#CBD5E1" : "#1e1b4b";
 
-  const confirmName = () => {
-    const finalName = nameDraft.trim() || buddies[activeIndex].name;
+  const handleConfirmName = (name: string) => {
+    const finalName = (name || "").trim() || buddies[activeIndex].name;
     setBuddyNameLocal(finalName);
     setBuddyNameCtx(finalName);
+    setNameEdited(true);
     setShowNameModal(false);
   };
 
-  const cancelName = () => {
-    setNameDraft(buddyName);
-    setShowNameModal(false);
-  };
-
-  const pickSide = (s: Side) => {
+  const handlePickSide = (s: Side) => {
     setSide(s);
     setTheme(s === "dark" ? "dark" : "light");
     setShowSideModal(false);
   };
+
+  // Modals
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [showGenderModal, setShowGenderModal] = useState(false);
+  const [showSideModal, setShowSideModal] = useState(false);
 
   return (
     <View
@@ -195,15 +221,23 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
       <View className="mt-2">
         <BuddyCarousel
           data={buddies}
-          sex={gender === "lady" ? "w" : "m"}
+          sex={sexKey}
           isDark={isDark}
+          isLocked={(i) => isLocked(i)}
+          backgrounds={buddyBGs}
           onChange={(i) => {
             setActiveIndex(i);
             setSelectedBuddyId(buddies[i].id);
-            const defaultName = buddies[i].name;
-            setBuddyNameLocal(defaultName); // <-- ALWAYS switch to default on change
-            setBuddyNameCtx(defaultName); // <-- persist to context too
-            setNameDraft(defaultName); // keep modal draft in sync
+            // NAME DECISION ON BUDDY CHANGE:
+            // If user edited a custom name (saved in context) -> keep using it.
+            // Else -> swap to the new buddy's default and sync context.
+            if (nameEdited && savedBuddyName) {
+              setBuddyNameLocal(savedBuddyName);
+            } else {
+              const defaultName = buddies[i].name;
+              setBuddyNameLocal(defaultName);
+              setBuddyNameCtx(defaultName);
+            }
           }}
         />
       </View>
@@ -232,7 +266,7 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
         {buddies[activeIndex]?.description}
       </Text>
 
-      {/* Dots (dark: active slate-300, inactive slate-700; light: active indigo-950, inactive slate-200) */}
+      {/* Dots */}
       <View className="mt-4 flex-row justify-center">
         {buddies.map((_, i) => {
           const active = i === activeIndex;
@@ -253,17 +287,13 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
         })}
       </View>
 
-      {/* Selection rows */}
+      {/* Rows */}
       <View className="mt-6 px-6 gap-3">
-        {/* Buddy name row */}
+        {/* Name */}
         <Pressable
-          onPress={() => {
-            setNameDraft(buddyName);
-            setShowNameModal(true);
-          }}
-          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
-            isDark ? "bg-slate-700" : "bg-indigo-50"
-          }`}
+          disabled={centerLocked}
+          onPress={() => setShowNameModal(true)}
+          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${isDark ? "bg-slate-700" : "bg-indigo-50"} ${centerLocked ? "opacity-60" : ""}`}
         >
           <View className="flex-row items-center">
             <Icons.Character width={20} height={20} color={systemIconColor} />
@@ -281,12 +311,10 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
           />
         </Pressable>
 
-        {/* Gender row */}
+        {/* Gender */}
         <Pressable
           onPress={() => setShowGenderModal(true)}
-          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
-            isDark ? "bg-slate-700" : "bg-indigo-50"
-          }`}
+          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${isDark ? "bg-slate-700" : "bg-indigo-50"}`}
         >
           <View className="flex-row items-center">
             <Icons.Gender width={20} height={20} color={systemIconColor} />
@@ -304,12 +332,10 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
           <Ionicons name="checkmark" size={18} color={systemIconColor} />
         </Pressable>
 
-        {/* Side row */}
+        {/* Side */}
         <Pressable
           onPress={() => setShowSideModal(true)}
-          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
-            isDark ? "bg-slate-700" : "bg-indigo-50"
-          }`}
+          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${isDark ? "bg-slate-700" : "bg-indigo-50"}`}
         >
           <View className="flex-row items-center">
             {side === "bright" ? (
@@ -331,7 +357,8 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
       {/* CTA */}
       <View className="px-6 pb-8 mt-6">
         <Pressable
-          className="rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
+          className={`rounded-2xl px-6 py-4 items-center justify-center flex-row ${canProceed ? "bg-indigo-600" : "bg-gray-400"}`}
+          disabled={!canProceed}
           onPress={onNext}
         >
           <Text className="font-semibold text-xl mr-2 text-white">
@@ -339,229 +366,41 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
           </Text>
           <Ionicons name="arrow-forward" size={24} color="#ffffff" />
         </Pressable>
+        {!canProceed && (
+          <Text
+            className={`text-center mt-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}
+          >
+            This buddy is locked. Unlock it in the shop soon.
+          </Text>
+        )}
       </View>
 
-      {/* NAME MODAL */}
-      <Modal
+      {/* Modals */}
+      <BuddyNameModal
         visible={showNameModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowNameModal(false)}
-      >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            justifyContent: "flex-end",
-          }}
-        >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-          >
-            <View
-              className={`${isDark ? "bg-dark-background" : "bg-light-background"} rounded-t-3xl`}
-            >
-              <View className="px-5 pt-6 pb-8">
-                <Text
-                  className={`text-lg font-bold text-center mb-4 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
-                >
-                  Buddy name
-                </Text>
-
-                <View
-                  className={`rounded-2xl px-3 py-2 ${
-                    isDark
-                      ? "bg-slate-700 border border-slate-600"
-                      : "bg-indigo-50 border border-indigo-200"
-                  }`}
-                >
-                  <TextInput
-                    value={nameDraft}
-                    onChangeText={setNameDraft}
-                    placeholder="Type a name"
-                    placeholderTextColor="#94A3B8"
-                    className={`h-12 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
-                    style={{ fontSize: 16 }}
-                    returnKeyType="done"
-                    onSubmitEditing={confirmName}
-                  />
-                </View>
-
-                <View className="flex-row justify-center gap-4 mt-4">
-                  <Pressable
-                    onPress={cancelName}
-                    className={`${isDark ? "bg-dark-surface" : "bg-gray-100"} w-12 h-12 rounded-full items-center justify-center`}
-                  >
-                    <Ionicons name="close" size={20} color={systemIconColor} />
-                  </Pressable>
-                  <Pressable
-                    className="bg-indigo-600 w-12 h-12 rounded-full items-center justify-center"
-                    onPress={confirmName}
-                  >
-                    <Ionicons name="checkmark" size={20} color="#fff" />
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </KeyboardAvoidingView>
-        </View>
-      </Modal>
-
-      {/* GENDER MODAL */}
-      <Modal
+        isDark={isDark}
+        initialName={buddyName}
+        onConfirm={handleConfirmName}
+        onClose={() => setShowNameModal(false)}
+      />
+      <GenderModal
         visible={showGenderModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowGenderModal(false)}
-      >
-        <View className="flex-1 bg-black/50 justify-end">
-          <View
-            className={`${isDark ? "bg-dark-background" : "bg-light-background"} rounded-t-3xl`}
-          >
-            <View className="px-5 pt-6 pb-8">
-              <Text
-                className={`text-lg font-bold text-center mb-4 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
-              >
-                Gender
-              </Text>
-
-              {(
-                [
-                  { key: "man", label: "Man", Icon: Icons.Man },
-                  { key: "lady", label: "Woman", Icon: Icons.Woman },
-                  {
-                    key: "any",
-                    label: "Isn't important",
-                    Icon: Icons.Incognito,
-                  },
-                ] as const
-              ).map(({ key, label, Icon }) => {
-                const selected = gender === key;
-                return (
-                  <Pressable
-                    key={key}
-                    onPress={() => {
-                      setGender(key);
-                      setGenderCtx(key);
-                      setShowGenderModal(false);
-                    }}
-                    className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between mb-3 ${
-                      selected
-                        ? isDark
-                          ? "bg-slate-600"
-                          : "bg-indigo-100"
-                        : isDark
-                          ? "bg-slate-700"
-                          : "bg-indigo-50"
-                    }`}
-                  >
-                    <View className="flex-row items-center">
-                      <Icon width={20} height={20} color={systemIconColor} />
-                      <Text
-                        className={`ml-3 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
-                        style={{ fontWeight: "600" }}
-                      >
-                        {label}
-                      </Text>
-                    </View>
-                    {selected && (
-                      <Ionicons
-                        name="checkmark"
-                        size={18}
-                        color={systemIconColor}
-                      />
-                    )}
-                  </Pressable>
-                );
-              })}
-
-              <Pressable
-                onPress={() => setShowGenderModal(false)}
-                className={`${isDark ? "bg-dark-surface" : "bg-gray-100"} w-12 h-12 rounded-full items-center justify-center self-center mt-2`}
-              >
-                <Ionicons name="close" size={20} color={systemIconColor} />
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* SIDE MODAL */}
-      <Modal
+        isDark={isDark}
+        gender={gender}
+        onSelect={(g) => {
+          setGender(g);
+          setGenderCtx(g);
+          setShowGenderModal(false);
+        }}
+        onClose={() => setShowGenderModal(false)}
+      />
+      <SideModal
         visible={showSideModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowSideModal(false)}
-      >
-        <View className="flex-1 bg-black/50 justify-end">
-          <View
-            className={`${isDark ? "bg-dark-background" : "bg-light-background"} rounded-t-3xl`}
-          >
-            <View className="px-5 pt-6 pb-8">
-              <Text
-                className={`text-lg font-bold text-center mb-4 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
-              >
-                Bright or dark side?
-              </Text>
-
-              {(
-                [
-                  { key: "bright", label: "Bright side", Icon: Icons.Sun },
-                  { key: "dark", label: "Dark side", Icon: Icons.Moon },
-                ] as const
-              ).map(({ key, label, Icon }) => {
-                const selected = side === key;
-                return (
-                  <Pressable
-                    key={key}
-                    onPress={() => pickSide(key)}
-                    className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between mb-3 ${
-                      selected
-                        ? isDark
-                          ? "bg-slate-600"
-                          : "bg-indigo-100"
-                        : isDark
-                          ? "bg-slate-700"
-                          : "bg-indigo-50"
-                    }`}
-                  >
-                    <View className="flex-row items-center">
-                      <Icon width={20} height={20} color={systemIconColor} />
-                      <Text
-                        className={`ml-3 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
-                        style={{ fontWeight: "600" }}
-                      >
-                        {label}
-                      </Text>
-                    </View>
-                    {selected && (
-                      <Ionicons
-                        name="checkmark"
-                        size={18}
-                        color={systemIconColor}
-                      />
-                    )}
-                  </Pressable>
-                );
-              })}
-
-              <Text
-                className={`text-center mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}
-                style={{ fontSize: 12 }}
-              >
-                This selection will set your app’s theme to light or dark.
-              </Text>
-
-              <Pressable
-                onPress={() => setShowSideModal(false)}
-                className={`${isDark ? "bg-dark-surface" : "bg-gray-100"} w-12 h-12 rounded-full items-center justify-center self-center mt-3`}
-              >
-                <Ionicons name="close" size={20} color={systemIconColor} />
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
+        isDark={isDark}
+        side={side}
+        onSelect={handlePickSide}
+        onClose={() => setShowSideModal(false)}
+      />
     </View>
   );
 };

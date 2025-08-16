@@ -1,3 +1,4 @@
+// src/components/BuddyCarousel.tsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
@@ -10,13 +11,14 @@ import {
 } from "react-native";
 import { FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
+import LockLight from "../assets/icons/lock.svg";
 
 const { width: SCREEN_W } = Dimensions.get("window");
-
 const IMG_W = 132;
 const IMG_H = 168;
-const IMG_H_EXPANDED = IMG_H * 1.5;
+const IMG_H_EXPANDED = IMG_H * 1.35;
 const CARD_PAD = 8;
 const ITEM_W = IMG_W + CARD_PAD * 2;
 const ITEM_H = 168;
@@ -36,6 +38,9 @@ type Props = {
   sex: SexKey;
   isDark?: boolean;
   onChange?: (activeBaseIndex: number) => void;
+  isLocked?: (baseIndex: number) => boolean;
+  backgrounds?: any[];
+  onEditName?: () => void;
 };
 
 export default function BuddyCarousel({
@@ -43,12 +48,79 @@ export default function BuddyCarousel({
   sex,
   isDark = false,
   onChange,
+  isLocked,
+  backgrounds,
 }: Props) {
   const listRef = useRef<FlatList>(null);
-  const scrollX = useRef(new Animated.Value(0)).current;
+
+  // --- compute start index BEFORE creating Animated.Value
+  const mid = Math.floor(LOOP_MULTIPLIER / 2);
+  const startIndex = mid * data.length;
+  const initialOffset = startIndex * CELL_W;
+
+  // Seed scrollX with the same offset the list will start at
+  const scrollX = useRef(new Animated.Value(initialOffset)).current;
+
+  const swipeSoundRef = useRef<Audio.Sound | null>(null);
+  const snapSoundRef = useRef<Audio.Sound | null>(null);
+  const [soundsReady, setSoundsReady] = useState({ swipe: false, snap: false });
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        await Audio.setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          allowsRecordingIOS: false,
+          staysActiveInBackground: false,
+          interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+          interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
+
+        const swipe = await Audio.Sound.createAsync(
+          require("../assets/sounds/swipe.mp3"),
+          { volume: 0.5, shouldPlay: false },
+          undefined,
+          true
+        );
+        const snap = await Audio.Sound.createAsync(
+          require("../assets/sounds/snap.mp3"),
+          { volume: 0.6, shouldPlay: false },
+          undefined,
+          true
+        );
+
+        if (!mounted) {
+          await swipe.sound.unloadAsync();
+          await snap.sound.unloadAsync();
+          return;
+        }
+        swipeSoundRef.current = swipe.sound;
+        snapSoundRef.current = snap.sound;
+        setSoundsReady({ swipe: true, snap: true });
+      } catch {}
+    })();
+
+    return () => {
+      mounted = false;
+      (async () => {
+        try { await swipeSoundRef.current?.unloadAsync(); } catch {}
+        try { await snapSoundRef.current?.unloadAsync(); } catch {}
+      })();
+    };
+  }, []);
+
+  const playSwipe = () => {
+    if (soundsReady.swipe) swipeSoundRef.current?.replayAsync().catch(() => {});
+  };
+  const playSnap = () => {
+    if (soundsReady.snap) snapSoundRef.current?.replayAsync().catch(() => {});
+  };
 
   const [isSettling, setIsSettling] = useState(false);
-  const settleTimer = useRef<NodeJS.Timeout | null>(null);
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideBadgeNow = () => {
     setIsSettling(true);
     if (settleTimer.current) clearTimeout(settleTimer.current);
@@ -57,22 +129,14 @@ export default function BuddyCarousel({
     if (settleTimer.current) clearTimeout(settleTimer.current);
     settleTimer.current = setTimeout(() => setIsSettling(false), 150);
   };
-  useEffect(
-    () => () => settleTimer.current && clearTimeout(settleTimer.current),
-    []
-  );
+  useEffect(() => {
+    return () => { if (settleTimer.current) clearTimeout(settleTimer.current); };
+  }, []);
 
   const extended = useMemo(
-    () =>
-      Array.from(
-        { length: data.length * LOOP_MULTIPLIER },
-        (_, i) => data[i % data.length]
-      ),
+    () => Array.from({ length: data.length * LOOP_MULTIPLIER }, (_, i) => data[i % data.length]),
     [data]
   );
-
-  const mid = Math.floor(LOOP_MULTIPLIER / 2);
-  const startIndex = mid * data.length;
 
   const [centerExtIndex, setCenterExtIndex] = useState(startIndex);
 
@@ -93,37 +157,50 @@ export default function BuddyCarousel({
     });
   };
 
-  const handleMomentumBegin = () => {
-    hideBadgeNow();
-  };
+  // Sync the animated value with the list's actual initial position
+  useEffect(() => {
+    scrollX.setValue(initialOffset);
+    requestAnimationFrame(() => {
+      listRef.current?.scrollToIndex({ index: startIndex, animated: false });
+    });
+  }, [initialOffset, startIndex, scrollX]);
 
+  const handleBeginDrag = () => { hideBadgeNow(); playSwipe(); };
+  const handleMomentumBegin = () => { hideBadgeNow(); playSwipe(); };
   const handleMomentumEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const i = Math.round(e.nativeEvent.contentOffset.x / CELL_W);
     if (i !== centerExtIndex) setCenterExtIndex(i);
 
     const cycle = data.length;
-    const center = mid * cycle;
+    const center = Math.floor(LOOP_MULTIPLIER / 2) * cycle;
     if (Math.abs(i - center) > cycle * 6) {
       const normalized = center + (i % cycle);
       requestAnimationFrame(() => {
         listRef.current?.scrollToIndex({ index: normalized, animated: false });
         setCenterExtIndex(normalized);
         showBadgeSoon();
+        playSnap();
       });
     } else {
       showBadgeSoon();
+      playSnap();
     }
   };
 
   const scrollTo = (i: number) => {
     hideBadgeNow();
+    playSwipe();
     listRef.current?.scrollToIndex({ index: i, animated: true });
   };
 
+  const LockIcon = LockLight;
+
   const renderItem = ({ index }: { item: Buddy; index: number }) => {
-    const isCenter = index === centerExtIndex;
     const baseIdx = ((index % data.length) + data.length) % data.length;
     const src = buddyAssets[data[baseIdx].id][sex];
+    const locked = isLocked ? isLocked(baseIdx) : false;
+    const bgSrc = backgrounds?.[baseIdx];
+    const isCenter = index === centerExtIndex;
 
     const centerOffset = index * CELL_W;
 
@@ -148,29 +225,27 @@ export default function BuddyCarousel({
     const showBadge = isCenter && !isSettling;
 
     return (
-      <View
-        style={{ width: CELL_W, overflow: "visible" }}
-        className="items-center"
-      >
+      <View style={{ width: CELL_W, overflow: "visible" }} className="items-center">
         <Pressable onPress={() => scrollTo(index)}>
-          <View
-            className="relative"
-            style={{
-              width: ITEM_W,
-              height: ITEM_H,
-              overflow: "visible" as any,
-            }}
-          >
+          <View className="relative" style={{ width: ITEM_W, height: ITEM_H, overflow: "visible" as any }}>
             <Animated.View
-              className="rounded-3xl bg-blue-300"
+              className="rounded-3xl"
               style={{
                 width: ITEM_W,
                 height: ITEM_H,
                 overflow: "hidden",
                 opacity,
                 transform: [{ translateY }, { rotate }],
+                backgroundColor: bgSrc ? "transparent" : "#93C5FD",
               }}
             >
+              {bgSrc && (
+                <Image
+                  source={bgSrc}
+                  resizeMode="cover"
+                  style={{ position: "absolute", width: "100%", height: "100%" }}
+                />
+              )}
               <Image
                 source={src}
                 resizeMode="contain"
@@ -181,10 +256,10 @@ export default function BuddyCarousel({
 
             {showBadge && (
               <View
-                className="bg-green-500 rounded-full p-1 absolute left-1/2 -translate-x-1/2"
-                style={{ width: 32, height: 32, bottom: -16 }}
+                className={`rounded-full p-1 absolute left-1/2 -translate-x-1/2 shadow ${locked ? "bg-white" : "bg-green-500"}`}
+                style={{ width: 32, height: 32, bottom: -16, alignItems: "center", justifyContent: "center" }}
               >
-                <Ionicons name="checkmark" size={24} color="#fff" />
+                {locked ? <LockIcon width={18} height={18} /> : <Ionicons name="checkmark" size={24} color="#fff" />}
               </View>
             )}
           </View>
@@ -211,6 +286,7 @@ export default function BuddyCarousel({
       initialScrollIndex={startIndex}
       getItemLayout={getItemLayout}
       onScrollToIndexFailed={onScrollToIndexFailed}
+      onScrollBeginDrag={handleBeginDrag}
       onMomentumScrollBegin={handleMomentumBegin}
       onMomentumScrollEnd={handleMomentumEnd}
       onScroll={Animated.event(
