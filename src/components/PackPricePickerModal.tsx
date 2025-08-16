@@ -77,7 +77,7 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
             selectedValue={pickerCurrency}
             onValueChange={(value) => onCurrencyChange(value)}
             style={{
-              width: 70,
+              width: 72,
               height: 220,
               color: isDark ? '#0c68e7' : '#e6710b',
             }}

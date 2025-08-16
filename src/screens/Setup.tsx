@@ -43,7 +43,7 @@ interface SetupProps {
 }
 
 const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const { t } = useTranslation();
   const isDark = theme === 'dark';
   
@@ -172,17 +172,6 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
         />
       </Pressable>
 
-      {/* Theme Toggle Button */}
-      <Pressable
-        className={`absolute top-16 right-3 p-1 rounded-full z-10 ${isDark ? 'bg-slate-700' : 'bg-indigo-50'}`}
-        onPress={toggleTheme}
-      >
-        <Ionicons 
-          name={isDark ? 'sunny' : 'moon'} 
-          size={24} 
-          color={isDark ? '#f1f5f9' : '#1e1b4b'} 
-        />
-      </Pressable>
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 40 }}>
         {/* Header */}
@@ -241,15 +230,22 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
             </Pressable>
           ))}
         </View>
+
+        {/* Privacy Text */}
+        <View className="px-6 mb-4">
+          <Text className="text-xs text-slate-500 text-center">
+            Don't worry, your data is secure. We keep it private and won't pass it on.
+          </Text>
+        </View>
       </ScrollView>
 
       {/* Next Button - Fixed at bottom */}
-      <View className="px-6 pb-8">
+      <View className="px-6 pb-8 items-center">
         <Pressable
           className={`rounded-2xl px-6 py-4 items-center justify-center flex-row ${
             allFieldsCompleted 
               ? 'bg-indigo-600'
-              : 'bg-gray-400'
+              : 'bg-indigo-600 opacity-50'
           }`}
           onPress={onNext}
           disabled={!allFieldsCompleted}
