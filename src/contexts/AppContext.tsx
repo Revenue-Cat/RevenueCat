@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+type ShopTab = 'characters' | 'backgrounds' | 'accessories';
+export type UserGender = 'man' | 'lady' | 'any';
+
 interface ShopItem {
   id: string;
   emoji: string;
@@ -17,21 +20,31 @@ interface AppState {
   ownedCharacters: string[];
   ownedBackgrounds: string[];
   ownedAccessories: string[];
-  
+
+  // Buddy/User selections
+  gender: UserGender;           // user's gender (m/w/any)
+  selectedBuddyId: string;      // which buddy was chosen (id from buddies list)
+  buddyName: string;            // custom display name for buddy
+
   // UI state
   showShop: boolean;
   showCoinPurchase: boolean;
-  selectedShopTab: 'characters' | 'backgrounds' | 'accessories';
-  
+  selectedShopTab: ShopTab;
+
   // Actions
   setUserCoins: (coins: number) => void;
   setSelectedCharacter: (character: ShopItem) => void;
   setSelectedBackground: (background: ShopItem) => void;
-  purchaseItem: (item: ShopItem, category: 'characters' | 'backgrounds' | 'accessories') => boolean;
+  purchaseItem: (item: ShopItem, category: ShopTab) => boolean;
   setShowShop: (show: boolean) => void;
   setShowCoinPurchase: (show: boolean) => void;
-  setSelectedShopTab: (tab: 'characters' | 'backgrounds' | 'accessories') => void;
-  openShopWithTab: (tab: 'characters' | 'backgrounds' | 'accessories') => void;
+  setSelectedShopTab: (tab: ShopTab) => void;
+  openShopWithTab: (tab: ShopTab) => void;
+
+  // Selection setters
+  setGender: (gender: UserGender) => void;
+  setSelectedBuddyId: (id: string) => void;
+  setBuddyName: (name: string) => void;
 }
 
 const defaultCharacter: ShopItem = {
@@ -61,25 +74,30 @@ export const useApp = () => {
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Shop/state
   const [userCoins, setUserCoinsState] = useState(100);
   const [selectedCharacter, setSelectedCharacterState] = useState<ShopItem>(defaultCharacter);
   const [selectedBackground, setSelectedBackgroundState] = useState<ShopItem>(defaultBackground);
   const [ownedCharacters, setOwnedCharacters] = useState<string[]>(['1']);
   const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['default']);
   const [ownedAccessories, setOwnedAccessories] = useState<string[]>([]);
-  
+
+  // Buddy/User selections
+  const [gender, setGenderState] = useState<UserGender>('man');
+  const [selectedBuddyId, setSelectedBuddyIdState] = useState<string>('alpaca');
+  const [buddyName, setBuddyNameState] = useState<string>('Alpaca Calmington');
+
   // UI state
   const [showShop, setShowShop] = useState(false);
   const [showCoinPurchase, setShowCoinPurchase] = useState(false);
-  const [selectedShopTab, setSelectedShopTab] = useState<'characters' | 'backgrounds' | 'accessories'>('characters');
+  const [selectedShopTab, setSelectedShopTab] = useState<ShopTab>('characters');
 
-  // Load from AsyncStorage on mount (React Native equivalent of localStorage)
+  // Load from AsyncStorage on mount (TODO)
   useEffect(() => {
-    // TODO: Implement AsyncStorage for persistence
-    // For now, we'll use the default state
+    // TODO: Implement AsyncStorage load if desired
   }, []);
 
-  // Save to AsyncStorage when state changes
+  // Save to AsyncStorage when state changes (TODO)
   useEffect(() => {
     const stateToSave = {
       userCoins,
@@ -87,31 +105,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       selectedBackground,
       ownedCharacters,
       ownedBackgrounds,
-      ownedAccessories
+      ownedAccessories,
+      gender,
+      selectedBuddyId,
+      buddyName,
     };
-    // TODO: Implement AsyncStorage save
+    // TODO: AsyncStorage.setItem('@app_state', JSON.stringify(stateToSave));
     console.log('State to save:', stateToSave);
-  }, [userCoins, selectedCharacter, selectedBackground, ownedCharacters, ownedBackgrounds, ownedAccessories]);
+  }, [
+    userCoins,
+    selectedCharacter,
+    selectedBackground,
+    ownedCharacters,
+    ownedBackgrounds,
+    ownedAccessories,
+    gender,
+    selectedBuddyId,
+    buddyName,
+  ]);
 
-  const setUserCoins = (coins: number) => {
-    setUserCoinsState(coins);
-  };
+  // Actions
+  const setUserCoins = (coins: number) => setUserCoinsState(coins);
+  const setSelectedCharacter = (character: ShopItem) => setSelectedCharacterState(character);
+  const setSelectedBackground = (background: ShopItem) => setSelectedBackgroundState(background);
 
-  const setSelectedCharacter = (character: ShopItem) => {
-    setSelectedCharacterState(character);
-  };
-
-  const setSelectedBackground = (background: ShopItem) => {
-    setSelectedBackgroundState(background);
-  };
-
-  const purchaseItem = (item: ShopItem, category: 'characters' | 'backgrounds' | 'accessories'): boolean => {
-    if (userCoins < item.price) {
-      return false;
-    }
-
+  const purchaseItem = (item: ShopItem, category: ShopTab): boolean => {
+    if (userCoins < item.price) return false;
     setUserCoinsState(prev => prev - item.price);
-    
+
     switch (category) {
       case 'characters':
         setOwnedCharacters(prev => [...prev, item.id]);
@@ -123,14 +144,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setOwnedAccessories(prev => [...prev, item.id]);
         break;
     }
-    
     return true;
   };
 
-  const openShopWithTab = (tab: 'characters' | 'backgrounds' | 'accessories') => {
+  const openShopWithTab = (tab: ShopTab) => {
     setSelectedShopTab(tab);
     setShowShop(true);
   };
+
+  // Selection setters (exposed)
+  const setGender = (g: UserGender) => setGenderState(g);
+  const setSelectedBuddyId = (id: string) => setSelectedBuddyIdState(id);
+  const setBuddyName = (name: string) => setBuddyNameState(name);
 
   const value: AppState = {
     userCoins,
@@ -139,9 +164,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     ownedCharacters,
     ownedBackgrounds,
     ownedAccessories,
+
+    gender,
+    selectedBuddyId,
+    buddyName,
+
     showShop,
     showCoinPurchase,
     selectedShopTab,
+
     setUserCoins,
     setSelectedCharacter,
     setSelectedBackground,
@@ -149,7 +180,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setShowShop,
     setShowCoinPurchase,
     setSelectedShopTab,
-    openShopWithTab
+    openShopWithTab,
+
+    setGender,
+    setSelectedBuddyId,
+    setBuddyName,
   };
 
   return (
@@ -157,4 +192,4 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       {children}
     </AppContext.Provider>
   );
-}; 
+};

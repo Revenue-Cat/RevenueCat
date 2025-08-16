@@ -1,40 +1,36 @@
-import "./global.css"
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  SafeAreaView,
-  Modal,
-} from 'react-native';
-import { AppProvider } from './src/contexts/AppContext';
-import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
-import { LanguageProvider } from './src/contexts/LanguageContext';
-import './src/i18n'; // Import i18n configuration
-import Welcome from './src/screens/Welcome';
-import Setup from './src/screens/Setup';
-import BuddySelection from './src/screens/BuddySelection';
-import NotificationPermission from './src/screens/NotificationPermission';
-import Home from './src/screens/Home';
-import Profile from './src/screens/Profile';
-import Achievements from './src/screens/Achievements';
-import Shop from './src/screens/Shop';
-import CravingSOS from './src/screens/CravingSOS';
-import BreathingExercise from './src/screens/BreathingExercise';
-import ChatAssistance from './src/screens/ChatAssistance';
-import CoinPurchaseModal from './src/components/CoinPurchaseModal';
-import ShopModal from './src/components/ShopModal';
+import "./global.css";
+import React, { useState, useEffect } from "react";
+import { View, SafeAreaView, Modal } from "react-native";
+import { AppProvider } from "./src/contexts/AppContext";
+import { ThemeProvider, useTheme } from "./src/contexts/ThemeContext";
+import { LanguageProvider } from "./src/contexts/LanguageContext";
+import "./src/i18n"; // Import i18n configuration
+import Welcome from "./src/screens/Welcome";
+import Setup from "./src/screens/Setup";
+import BuddySelection from "./src/screens/BuddySelection";
+import NotificationPermission from "./src/screens/NotificationPermission";
+import Home from "./src/screens/Home";
+import Profile from "./src/screens/Profile";
+import Achievements from "./src/screens/Achievements";
+import Shop from "./src/screens/Shop";
+import CravingSOS from "./src/screens/CravingSOS";
+import BreathingExercise from "./src/screens/BreathingExercise";
+import ChatAssistance from "./src/screens/ChatAssistance";
+import CoinPurchaseModal from "./src/components/CoinPurchaseModal";
+import ShopModal from "./src/components/ShopModal";
 
-type Screen = 
-  | 'welcome' 
-  | 'setup' 
-  | 'buddy-selection' 
-  | 'notification-permission' 
-  | 'home' 
-  | 'profile' 
-  | 'achievements' 
-  | 'shop';
+type Screen =
+  | "welcome"
+  | "setup"
+  | "buddy-selection"
+  | "notification-permission"
+  | "home"
+  | "profile"
+  | "achievements"
+  | "shop";
 
 const AppContent: React.FC = () => {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
+  const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
@@ -70,52 +66,54 @@ const AppContent: React.FC = () => {
 
   return (
     <AppProvider>
-      <SafeAreaView className={`flex-1 ${theme === 'dark' ? 'bg-dark-background' : 'bg-light-background'}`}>
-        {currentScreen === 'welcome' && (
-          <Welcome onNext={() => navigateTo('setup')} />
+      <SafeAreaView
+        className={`flex-1 ${theme === "dark" ? "bg-dark-background" : "bg-light-background"}`}
+      >
+        {currentScreen === "welcome" && (
+          <Welcome onNext={() => navigateTo("setup")} />
         )}
-        
-        {currentScreen === 'setup' && (
-          <Setup 
-            onNext={() => navigateTo('buddy-selection')}
-            onBack={() => navigateTo('welcome')}
+
+        {currentScreen === "setup" && (
+          <Setup
+            onNext={() => navigateTo("buddy-selection")}
+            onBack={() => navigateTo("welcome")}
           />
         )}
-        
-        {currentScreen === 'buddy-selection' && (
-          <BuddySelection onNext={() => navigateTo('notification-permission')} />
+
+        {currentScreen === "buddy-selection" && (
+          <BuddySelection
+            onNext={() => navigateTo("notification-permission")}
+          />
         )}
-        
-        {currentScreen === 'notification-permission' && (
-          <NotificationPermission onNext={() => navigateTo('home')} />
+
+        {currentScreen === "notification-permission" && (
+          <NotificationPermission onNext={() => navigateTo("home")} />
         )}
-        
-        {currentScreen === 'home' && (
-          <Home 
+
+        {currentScreen === "home" && (
+          <Home
             onShowCravingSOS={handleShowCravingSOS}
             onShowBreathingExercise={handleShowBreathingExercise}
             onShowChatAssistance={handleShowChatAssistance}
-            onNavigateToProfile={() => navigateTo('profile')}
-            onNavigateToAchievements={() => navigateTo('achievements')}
-            onNavigateToShop={() => navigateTo('shop')}
+            onNavigateToProfile={() => navigateTo("profile")}
+            onNavigateToAchievements={() => navigateTo("achievements")}
+            onNavigateToShop={() => navigateTo("shop")}
           />
         )}
-        
-        {currentScreen === 'profile' && (
-          <Profile 
-            onBack={() => navigateTo('home')} 
-            onNavigateToAchievements={() => navigateTo('achievements')}
-            onNavigateToShop={() => navigateTo('shop')}
+
+        {currentScreen === "profile" && (
+          <Profile
+            onBack={() => navigateTo("home")}
+            onNavigateToAchievements={() => navigateTo("achievements")}
+            onNavigateToShop={() => navigateTo("shop")}
           />
         )}
-        
-        {currentScreen === 'achievements' && (
-          <Achievements onBack={() => navigateTo('home')} />
+
+        {currentScreen === "achievements" && (
+          <Achievements onBack={() => navigateTo("home")} />
         )}
-        
-        {currentScreen === 'shop' && (
-          <Shop onBack={() => navigateTo('home')} />
-        )}
+
+        {currentScreen === "shop" && <Shop onBack={() => navigateTo("home")} />}
 
         {/* Modals */}
         <Modal
@@ -131,7 +129,7 @@ const AppContent: React.FC = () => {
           animationType="slide"
           presentationStyle="fullScreen"
         >
-          <BreathingExercise 
+          <BreathingExercise
             onClose={handleCloseBreathingExercise}
             onBack={handleCloseBreathingExercise}
           />
@@ -142,7 +140,7 @@ const AppContent: React.FC = () => {
           animationType="slide"
           presentationStyle="fullScreen"
         >
-          <ChatAssistance 
+          <ChatAssistance
             onClose={handleCloseChatAssistance}
             onBack={handleCloseChatAssistance}
           />
