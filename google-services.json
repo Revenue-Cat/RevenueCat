@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1079110225769",
+    "project_id": "quitqly-e5383",
+    "storage_bucket": "quitqly-e5383.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079110225769:android:fbd0c14f4eb35bae2e37f8",
+        "android_client_info": {
+          "package_name": "com.quitqly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjK8B026qKfa19_coyp70PYYijGocENAA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

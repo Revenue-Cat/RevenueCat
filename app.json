@@ -2,7 +2,7 @@
   "expo": {
     "name": "RevenueCat",
     "slug": "RevenueCat",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,19 +15,45 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.revenuecat.app"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "bundleIdentifier": "com.quitqly",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.revenuecat.app"
+      "package": "com.quitqly"
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bc196950-d806-4d74-bbfd-12124995c882"
+      }
+    },
+    "owner": "sofogroup",
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "buildProperties": {
+              "SWIFT_STRICT_CONCURRENCY": "targeted"
+            }
+          }
+        }
+      ]
+    ]
   }
 }

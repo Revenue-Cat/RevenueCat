@@ -20,6 +20,8 @@ import BreathingExercise from "./src/screens/BreathingExercise";
 import ChatAssistance from "./src/screens/ChatAssistance";
 import CoinPurchaseModal from "./src/components/CoinPurchaseModal";
 import ShopModal from "./src/components/ShopModal";
+import Purchases, { LOG_LEVEL } from 'react-native-purchases';
+import { Platform } from 'react-native';
 
 type Screen =
   | "welcome"
@@ -66,6 +68,17 @@ const AppContent: React.FC = () => {
   const handleCloseChatAssistance = () => {
     setShowChatAssistance(false);
   };
+
+  useEffect(() => {
+    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+
+    if (Platform.OS === 'ios') {
+       Purchases.configure({apiKey: "appl_KopTWcANzpTAMEriDmzPeFhFiVu"});
+    } else if (Platform.OS === 'android') {
+       Purchases.configure({apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ"});
+    }
+
+  }, []);
 
   return (
     <AppProvider>
