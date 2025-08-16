@@ -1,124 +1,128 @@
 {
-  "welcome": {
-    "title": "Welcome to QuitQly!",
-    "subtitle": "Your friendly guide to quitting smoking — one small step at a time.",
-    "selectLanguage": "Language",
-    "letsStart": "Let's start",
-    "willYouQuit": "Will you... quit?",
-    "ctaButton": "Yes, let's do it together"
+  "buddySelection": {
+    "buddies": {
+      "alpaca": {
+        "description": "Soft-spoken strategist who keeps you cozy while cravings pass.",
+        "name": "Alpaca Calmington"
+      },
+      "dog": {
+        "description": "Loyal motivator who fetches wins and guards your streaks.",
+        "name": "Captain Pup"
+      },
+      "fox": {
+        "description": "Quick-witted planner who helps you outsmart triggers.",
+        "name": "Foxy Focus"
+      },
+      "koala": {
+        "description": "Sniffs out trouble and keeps your breath fresher than a Paris morning.",
+        "name": "Monsieur Sniff"
+      },
+      "zebra": {
+        "description": "Balanced guide reminding you: one step at a time, one stripe at a time.",
+        "name": "Zen Zebra"
+      }
+    },
+    "next": "Let's Go, Buddy!",
+    "sex": {
+      "label": "Gender",
+      "note": "Your buddy's image adapts to your selection.",
+      "options": {
+        "m": "Male",
+        "w": "Female"
+      }
+    },
+    "subtitle": "Choose your support animal to guide you on your journey!",
+    "title": "Pick your quit buddy"
+  },
+  "languages": {
+    "english": "English",
+    "spanish": "Spanish",
+    "ukrainian": "Ukrainian"
+  },
+  "notificationPermission": {
+    "benefits": {
+      "goals": "Stay on track with your goals",
+      "milestones": "Celebrate your milestones",
+      "motivation": "Daily motivation reminders"
+    },
+    "enable": "Enable Notifications",
+    "skip": "Skip for now",
+    "subtitle": "We'll send you reminders to stay on track and celebrate your progress.",
+    "title": "Enable Notifications"
   },
   "setup": {
-    "title": "Set your path to quitting",
-    "subtitle": "Answer a few quick questions to personalize your quitting plan. It won't take more than 20 seconds.",
-    "statsText": "of smokers say they want to quit — you're not alone.",
-    "next": "Next",
-    "header": {
-      "title": "Set your path to quitting",
-      "description": "Just a few taps and 20 seconds to get a quitting plan made for you"
-    },
-    "stats": {
-      "description": "Average US smoke-free savings. Add your habits to get your number."
-    },
-    "nextButton": {
-      "text": "Next"
-    },
     "fields": {
-      "smokeType": {
-        "label": "What do you smoke?",
-        "modalTitle": "What do you usually smoke?",
-        "selected": "I am smoking {{value}}",
-        "options": {
-          "cigarettes": "Sigarettess",
-          "tobacco-heater": "Rolling tabacco",
-          "roll-your-own": "Heated tobacco",
-          "vaping": "Vaping"
-        }
-      },
       "dailyAmount": {
         "label": "What's your daily usage?",
         "modalTitle": "How many cigarettes a day is normal for you?",
-        "selected": "I smoke {{value}}",
         "options": {
           "1-5": "1-5",
-          "5-10": "6-10",
           "11-15": "11-15",
           "16-20": "16-20 (1 pack)",
           "21-30": "21-30",
-          "31-40": "31-40 (2 pack)"
-        }
+          "31-40": "31-40 (2 pack)",
+          "5-10": "6-10"
+        },
+        "selected": "I smoke {{value}}"
+      },
+      "goal": {
+        "label": "What is your primary goal?",
+        "modalTitle": "What's your goal?",
+        "options": {
+          "doesnt-matter": "Doesn't matter",
+          "gain-control": "Gain control",
+          "improve-health": "Improve health",
+          "quit-completely": "Quit completely",
+          "reduce-gradually": "Reduce gradually",
+          "save-money": "Save money"
+        },
+        "selected": "I want {{value}}"
       },
       "packPrice": {
         "label": "What's the cost of one unit?",
         "modalTitle": "How many do you spend on smoking?",
-        "selected": "One pack cost me {{value}}",
         "options": {
           "3": "$3",
           "4": "$4",
           "5": "$5",
           "6": "$6",
           "7": "$7"
-        }
+        },
+        "selected": "One pack cost me {{value}}"
       },
-      "goal": {
-        "label": "What is your primary goal?",
-        "modalTitle": "What's your goal?",
-        "selected": "I want {{value}}",
+      "smokeType": {
+        "label": "What do you smoke?",
+        "modalTitle": "What do you usually smoke?",
         "options": {
-          "quit-completely": "Quit completely",
-          "reduce-gradually": "Reduce gradually",
-          "save-money": "Save money",
-          "improve-health": "Improve health",
-          "gain-control": "Gain control",
-          "doesnt-matter": "Doesn't matter"
-        }
+          "cigarettes": "Sigarettess",
+          "roll-your-own": "Heated tobacco",
+          "tobacco-heater": "Rolling tabacco",
+          "vaping": "Vaping"
+        },
+        "selected": "I am smoking {{value}}"
       }
-    }
-  },
-  "buddySelection": {
-    "title": "Choose your buddy",
-    "subtitle": "Pick a character to accompany you on your quitting journey.",
-    "next": "Next",
-    "buddies": {
-      "capybara": {
-        "name": "Chill Capybara",
-        "description": "Relaxed and supportive"
-      },
-      "koala": {
-        "name": "Zen Koala",
-        "description": "Calm and peaceful"
-      },
-      "sloth": {
-        "name": "Slow Sloth",
-        "description": "Patient and steady"
-      },
-      "penguin": {
-        "name": "Cool Penguin",
-        "description": "Cool and collected"
-      },
-      "panda": {
-        "name": "Panda Bear",
-        "description": "Gentle and caring"
-      },
-      "owl": {
-        "name": "Wise Owl",
-        "description": "Smart and insightful"
-      }
-    }
-  },
-  "notificationPermission": {
-    "title": "Enable Notifications",
-    "subtitle": "We'll send you reminders to stay on track and celebrate your progress.",
-    "benefits": {
-      "motivation": "Daily motivation reminders",
-      "milestones": "Celebrate your milestones",
-      "goals": "Stay on track with your goals"
     },
-    "enable": "Enable Notifications",
-    "skip": "Skip for now"
+    "header": {
+      "description": "Just a few taps and 20 seconds to get a quitting plan made for you",
+      "title": "Set your path to quitting"
+    },
+    "next": "Next",
+    "nextButton": {
+      "text": "Next"
+    },
+    "stats": {
+      "description": "Average US smoke-free savings. Add your habits to get your number."
+    },
+    "statsText": "of smokers say they want to quit — you're not alone.",
+    "subtitle": "Answer a few quick questions to personalize your quitting plan. It won't take more than 20 seconds.",
+    "title": "Set your path to quitting"
   },
-  "languages": {
-    "english": "English",
-    "spanish": "Spanish",
-    "ukrainian": "Ukrainian"
+  "welcome": {
+    "ctaButton": "Yes, let's do it together",
+    "letsStart": "Let's start",
+    "selectLanguage": "Language",
+    "subtitle": "Your friendly guide to quitting smoking — one small step at a time.",
+    "title": "Welcome to QuitQly!",
+    "willYouQuit": "Will you... quit?"
   }
-} 
+}
