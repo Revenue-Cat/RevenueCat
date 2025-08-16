@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, Pressable, ScrollView, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import SlideModal from './SlideModal';
@@ -28,6 +28,8 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
   const isDark = theme === 'dark';
   const numberScrollViewRef = useRef<ScrollView>(null);
   const currencyScrollViewRef = useRef<ScrollView>(null);
+  const [numberScrollY, setNumberScrollY] = useState(0);
+  const [currencyScrollY, setCurrencyScrollY] = useState(0);
 
   const handleConfirm = () => {
     onConfirm();
@@ -36,11 +38,10 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
 
   const handleNumberScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset } = event.nativeEvent;
-    const itemHeight = 48; // Height of each number item
-    const centerOffset = 96; // Padding to center the selection
+    setNumberScrollY(contentOffset.y);
     
-    const scrollPosition = contentOffset.y + centerOffset;
-    const selectedIndex = Math.round(scrollPosition / itemHeight);
+    const itemHeight = 48; // Height of each number item
+    const selectedIndex = Math.round(contentOffset.y / itemHeight);
     const selectedNumber = Math.max(1, Math.min(20, selectedIndex + 1));
     
     if (selectedNumber !== pickerValue) {
@@ -50,11 +51,10 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
 
   const handleCurrencyScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset } = event.nativeEvent;
-    const itemHeight = 48; // Height of each currency item
-    const centerOffset = 96; // Padding to center the selection
+    setCurrencyScrollY(contentOffset.y);
     
-    const scrollPosition = contentOffset.y + centerOffset;
-    const selectedIndex = Math.round(scrollPosition / itemHeight);
+    const itemHeight = 48; // Height of each currency item
+    const selectedIndex = Math.round(contentOffset.y / itemHeight);
     const currencies = ['$', '€', '£'];
     const selectedCurrency = currencies[Math.max(0, Math.min(2, selectedIndex))];
     
@@ -65,9 +65,8 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
 
   const handleNumberPress = (number: number) => {
     onValueChange(number);
-    // Scroll to the selected number - use same calculation as scroll handler
+    // Scroll to the selected number using ref
     const itemHeight = 48;
-    const centerOffset = 96;
     const targetScrollY = (number - 1) * itemHeight;
     
     numberScrollViewRef.current?.scrollTo({
@@ -78,9 +77,8 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
 
   const handleCurrencyPress = (currency: string) => {
     onCurrencyChange(currency);
-    // Scroll to the selected currency - use same calculation as scroll handler
+    // Scroll to the selected currency using ref
     const itemHeight = 48;
-    const centerOffset = 96;
     const currencies = ['$', '€', '£'];
     const currencyIndex = currencies.indexOf(currency);
     const targetScrollY = currencyIndex * itemHeight;
