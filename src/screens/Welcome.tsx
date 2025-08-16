@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Pressable,
-  Modal,
   ScrollView,
   Image,
 } from 'react-native';
@@ -14,6 +13,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import FlagEn from '../assets/icons/flag-en.svg';
 import FlagEs from '../assets/icons/flag-es.svg';
 import FlagUk from '../assets/icons/flag-uk.svg';
+import SlideModal from '../components/SlideModal';
 
 interface WelcomeProps {
   onNext: () => void;
@@ -94,62 +94,52 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
       </View>
 
       {/* Language Selection Modal */}
-      <Modal
+      <SlideModal
         visible={showLanguageModal}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setShowLanguageModal(false)}
+        onClose={() => setShowLanguageModal(false)}
+        title={t('welcome.selectLanguage')}
+        showCloseButton={false}
       >
-        <View className="flex-1 bg-black/50 justify-end">
-          <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl`}>
-            <View className="px-5 pt-6 pb-10">
-              <Text className={`text-lg font-bold text-center mt-6 mb-6 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
-                {t('welcome.selectLanguage')}
-              </Text>
-              
-              <View className="gap-4">
-                {languages.map((lang) => (
-                  <Pressable
-                    key={lang.code}
-                    className={`w-11/12 h-16 rounded-3xl flex-row justify-between items-center px-5 self-center 
-                      ${lang.code === language ? 'font-bold' : 'font-medium'} 
-                      ${lang.code === language 
-                        ? (isDark ? 'bg-slate-600' : 'bg-indigo-100') 
-                        : (isDark ? 'bg-slate-700' : 'bg-indigo-50')
-                    }`}
-                    onPress={() => handleLanguageSelect(lang.code)}
-                  >
-                    <View className="flex-row items-center">
-                      <View className="w-8 h-8 rounded-full items-center justify-center overflow-hidden mr-3">
-                        <lang.flag width={32} height={21} />
-                      </View>
-                      <Text className={`text-base font-medium ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
-                        {lang.name}
-                      </Text>
-                    </View>
-                    {lang.code === language && (
-                      <Ionicons 
-                        name="checkmark" 
-                        size={24} 
-                        color={isDark ? '#0f172a' : '#000000'} 
-                      />
-                    )}
-                  </Pressable>
-                ))}
+        <View className="gap-4">
+          {languages.map((lang) => (
+            <Pressable
+              key={lang.code}
+              className={`w-11/12 h-16 rounded-3xl flex-row justify-between items-center px-5 self-center 
+                ${lang.code === language ? 'font-bold' : 'font-medium'} 
+                ${lang.code === language 
+                  ? (isDark ? 'bg-slate-600' : 'bg-indigo-100') 
+                  : (isDark ? 'bg-slate-700' : 'bg-indigo-50')
+              }`}
+              onPress={() => handleLanguageSelect(lang.code)}
+            >
+              <View className="flex-row items-center">
+                <View className="w-8 h-8 rounded-full items-center justify-center overflow-hidden mr-3">
+                  <lang.flag width={32} height={21} />
+                </View>
+                <Text className={`text-base font-medium ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
+                  {lang.name}
+                </Text>
               </View>
-              
-              <Pressable 
-                className={`w-15 h-15 rounded-full justify-center items-center self-center mt-6 ${
-                  isDark ? 'bg-dark-surface' : 'bg-gray-100'
-                }`} 
-                onPress={() => setShowLanguageModal(false)}
-              >
-                <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
-              </Pressable>
-            </View>
-          </View>
+              {lang.code === language && (
+                <Ionicons 
+                  name="checkmark" 
+                  size={24} 
+                  color={isDark ? '#0f172a' : '#000000'} 
+                />
+              )}
+            </Pressable>
+          ))}
         </View>
-      </Modal>
+        
+        <Pressable 
+          className={`w-15 h-15 rounded-full justify-center items-center self-center mt-6 ${
+            isDark ? 'bg-dark-surface' : 'bg-gray-100'
+          }`} 
+          onPress={() => setShowLanguageModal(false)}
+        >
+          <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
+        </Pressable>
+      </SlideModal>
     </View>
   );
 };

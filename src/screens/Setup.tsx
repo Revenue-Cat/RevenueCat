@@ -4,12 +4,16 @@ import {
   Text,
   Pressable,
   ScrollView,
-  Modal,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
+import SlideModal from '../components/SlideModal';
+import PackPricePickerModal from '../components/PackPricePickerModal';
+import SmokeTypeModal from '../components/SmokeTypeModal';
+import DailyAmountModal from '../components/DailyAmountModal';
+import GoalModal from '../components/GoalModal';
 import SmokeIcon from '../assets/icons/smoke.svg';
 import TargetIcon from '../assets/icons/target.svg';
 import SpendIcon from '../assets/icons/spend.svg';
@@ -23,6 +27,7 @@ import HearthIcon from '../assets/icons/heart.svg';
 import SaveMoneyIcon from '../assets/icons/save-money.svg';
 import ChartDownIcon from '../assets/icons/chart_down.svg';
 import QuitIcon from '../assets/icons/quit.svg';
+
 interface SetupData {
   smokeType: string;
   dailyAmount: string;
@@ -74,6 +79,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
     setSetupData(prev => ({ ...prev, packPrice: pickerValue.toString() }));
     setCurrentStep(null);
   };
+
   const iconColor = setupData[currentStep as keyof SetupData] ? '#312E81' : (isDark ? '#CBD5E1' : '#1E1B4B');
 
   const setupFields = [
@@ -249,148 +255,39 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
         </Pressable>
       </View>
 
-      {/* Modal for Options */}
-      {currentStep && currentField && currentStep !== 'packPrice' && (
-        <Modal visible={true} transparent={true} animationType="slide">
-          <View className="flex-1 bg-black/50 justify-end">
-            <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl`}>
-              <View className="px-5 pt-6 pb-10">
-                <Text className={`text-xl font-bold text-center px-8 mt-6 mb-6 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
-                  {currentField.modalTitle}
-                </Text>
-                
-                <ScrollView>
-                  <View className="gap-4">
-                    {currentField.options.map((option) => (
-                      <Pressable
-                        key={option.value}
-                        className={`w-11/12 h-16 rounded-3xl flex-row items-center justify-between px-5 self-center ${
-                          setupData[currentStep as keyof SetupData] === option.value 
-                            ? (isDark ? 'bg-slate-600' : 'bg-indigo-100') 
-                            : (isDark ? 'bg-slate-700' : 'bg-indigo-50')
-                        }`}
-                        onPress={() => handleSelection(currentStep as keyof SetupData, option.value)}
-                      >
-                        <View className="flex-row items-center">
-                          {option.icon && option.icon}
-                          <Text className={`text-base ${option.icon ? 'pl-2' : ''} ${setupData[currentStep as keyof SetupData] === option.value ? 'font-bold' : 'font-medium'} ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
-                            {option.label}
-                          </Text>
-                        </View>
-                        {setupData[currentStep as keyof SetupData] === option.value && (
-                          <Ionicons 
-                            name="checkmark" 
-                            size={24} 
-                            color="#4f46e5" 
-                          />
-                        )}
-                      </Pressable>
-                    ))}
-                  </View>
-                </ScrollView>
-                
-                <Pressable 
-                  className={`w-15 h-15 rounded-full justify-center items-center self-center mt-6 ${
-                    isDark ? 'bg-slate-700' : 'bg-indigo-50'
-                  }`} 
-                  onPress={() => setCurrentStep(null)}
-                >
-                  <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      )}
+      {/* Individual Modal Components */}
+      <SmokeTypeModal
+        visible={currentStep === 'smokeType'}
+        onClose={() => setCurrentStep(null)}
+        selectedValue={setupData.smokeType}
+        onSelect={(value) => handleSelection('smokeType', value)}
+      />
 
-      {/* Custom Picker Modal for Pack Price */}
-      {currentStep === 'packPrice' && (
-        <Modal visible={true} transparent={true} animationType="slide">
-          <View className="flex-1 bg-black/50 justify-end">
-            <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl`}>
-              <View className="px-5 pt-6 pb-10">
-                <Text className={`text-xl font-bold text-center px-8 mt-6 mb-6 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
-                  {t('setup.fields.packPrice.modalTitle')}
-                </Text>
-                
-                {/* Picker Container */}
-                <View className="flex-row justify-center items-center mb-8">
-                  {/* Number Picker */}
-                  <View className="w-32 h-48 overflow-hidden">
-                    <ScrollView 
-                      showsVerticalScrollIndicator={false}
-                      contentContainerStyle={{ paddingVertical: 96 }}
-                    >
-                      {Array.from({ length: 20 }, (_, i) => i + 1).map((number) => (
-                        <Pressable
-                          key={number}
-                          onPress={() => setPickerValue(number)}
-                          className={`h-12 items-center justify-center ${
-                            pickerValue === number ? 'bg-indigo-100 rounded-lg' : ''
-                          }`}
-                        >
-                          <Text className={`text-2xl font-bold ${
-                            pickerValue === number 
-                              ? 'text-indigo-600' 
-                              : isDark ? 'text-slate-400' : 'text-slate-300'
-                          }`}>
-                            {number}
-                          </Text>
-                        </Pressable>
-                      ))}
-                    </ScrollView>
-                  </View>
+      <DailyAmountModal
+        visible={currentStep === 'dailyAmount'}
+        onClose={() => setCurrentStep(null)}
+        selectedValue={setupData.dailyAmount}
+        onSelect={(value) => handleSelection('dailyAmount', value)}
+      />
 
-                  {/* Currency Picker */}
-                  <View className="w-20 h-48 overflow-hidden">
-                    <ScrollView 
-                      showsVerticalScrollIndicator={false}
-                      contentContainerStyle={{ paddingVertical: 96 }}
-                    >
-                      {['$', '€', '£'].map((currency, index) => (
-                        <Pressable
-                          key={currency}
-                          onPress={() => setPickerCurrency(currency)}
-                          className={`h-12 items-center justify-center ${
-                            pickerCurrency === currency ? 'bg-indigo-100 rounded-lg' : ''
-                          }`}
-                        >
-                          <Text className={`text-2xl font-bold ${
-                            pickerCurrency === currency 
-                              ? 'text-indigo-600' 
-                              : isDark ? 'text-slate-400' : 'text-slate-300'
-                          }`}>
-                            {currency}
-                          </Text>
-                        </Pressable>
-                      ))}
-                    </ScrollView>
-                  </View>
-                </View>
+      <GoalModal
+        visible={currentStep === 'goal'}
+        onClose={() => setCurrentStep(null)}
+        selectedValue={setupData.goal}
+        onSelect={(value) => handleSelection('goal', value)}
+      />
 
-                {/* Action Buttons */}
-                <View className="flex-row justify-center gap-4">
-                  <Pressable 
-                    className={`w-12 h-12 rounded-2xl  justify-center items-center ${
-                      isDark ? 'bg-slate-700' : 'bg-slate-200'
-                    }`} 
-                    onPress={() => setCurrentStep(null)}
-                  >
-                    <Text className="text-2xl font-bold text-slate-600">✕</Text>
-                  </Pressable>
-                  
-                  <Pressable 
-                    className="w-12 h-12 rounded-2xl justify-center items-center bg-indigo-600"
-                    onPress={handlePickerConfirm}
-                  >
-                    <Text className="text-2xl font-bold text-white">✓</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      )}
+      {/* Pack Price Picker Modal */}
+      <PackPricePickerModal
+        visible={currentStep === 'packPrice'}
+        onClose={() => setCurrentStep(null)}
+        title={t('setup.fields.packPrice.modalTitle')}
+        pickerValue={pickerValue}
+        pickerCurrency={pickerCurrency}
+        onValueChange={setPickerValue}
+        onCurrencyChange={setPickerCurrency}
+        onConfirm={handlePickerConfirm}
+      />
     </View>
   );
 };
