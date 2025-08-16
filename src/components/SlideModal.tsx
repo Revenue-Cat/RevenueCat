@@ -5,6 +5,7 @@ import {
   Pressable,
   Modal,
   Animated,
+  Dimensions,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -25,30 +26,46 @@ const SlideModal: React.FC<SlideModalProps> = ({
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const slideAnim = useRef(new Animated.Value(300)).current;
+  const { height: screenHeight } = Dimensions.get('window');
+  const slideAnim = useRef(new Animated.Value(screenHeight)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     if (visible) {
-      // Show modal and slide up from bottom
+      // Show modal and slide up from bottom with fade
       setModalVisible(true);
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 400,
-        useNativeDriver: true,
-      }).start();
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        })
+      ]).start();
     } else {
-      // Slide down to bottom first, then hide modal
-      Animated.timing(slideAnim, {
-        toValue: 300,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => {
+      // Slide down to bottom and fade out
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: screenHeight,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        })
+      ]).start(() => {
         // Hide modal after animation completes
         setModalVisible(false);
       });
     }
-  }, [visible, slideAnim]);
+  }, [visible, slideAnim, fadeAnim, screenHeight]);
 
   return (
     <Modal
@@ -57,8 +74,13 @@ const SlideModal: React.FC<SlideModalProps> = ({
       animationType="none"
       onRequestClose={onClose}
     >
-      {/* Dark Overlay - Fades in */}
-      <View className="flex-1 bg-black/50" />
+      {/* Dark Overlay - Smooth fade in/out */}
+      <Animated.View 
+        className="flex-1 bg-black"
+        style={{
+          opacity: Animated.multiply(fadeAnim, 0.5)
+        }}
+      />
       
       {/* Modal Content - Slides from bottom with smooth animation */}
       <Animated.View 
