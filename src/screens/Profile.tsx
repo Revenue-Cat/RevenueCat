@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,8 +11,44 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 import { useTheme } from '../contexts/ThemeContext';
+import RevenueCatUI, { PAYWALL_RESULT } from "react-native-purchases-ui";
+import Purchases from 'react-native-purchases';
 
 const { width } = Dimensions.get('window');
+
+async function presentPaywall(): Promise<boolean> {
+    // Present paywall for current offering:
+    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall();
+
+    switch (paywallResult) {
+        case PAYWALL_RESULT.NOT_PRESENTED:
+        case PAYWALL_RESULT.ERROR:
+        case PAYWALL_RESULT.CANCELLED:
+            return false;
+        case PAYWALL_RESULT.PURCHASED:
+        case PAYWALL_RESULT.RESTORED:
+            return true;
+        default:
+            return false;
+    }
+}
+
+async function presentPaywallIfNeeded() {
+    // Present paywall for current offering:
+    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywallIfNeeded({
+        requiredEntitlementIdentifier: "Unlock entire program"
+    });
+}
+
+async function logCustomer() {
+  try {
+      const customerInfo = await Purchases.getCustomerInfo();
+      console.log(customerInfo)
+      console.log(JSON.stringify(customerInfo.entitlements))
+  } catch (e) {
+    console.error("RC Customer retrieval error", e)
+  }
+}
 
 interface ProfileProps {
   onBack: () => void;
@@ -123,6 +159,10 @@ const Profile: React.FC<ProfileProps> = ({ onBack, onNavigateToAchievements, onN
     }
   };
 
+  useEffect(() => {
+    logCustomer()
+  }, [])
+
   const currentField = setupFields.find(field => field.id === editingField);
 
   return (
@@ -209,7 +249,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack, onNavigateToAchievements, onN
               <Text style={styles.priceText}>20.99 USD</Text>
             </View>
           </View>
-          <Pressable style={styles.unlockButton}>
+          <Pressable style={styles.unlockButton} onPress={() => presentPaywall()}>
             <Text style={styles.unlockButtonText}>Unlock the entire program</Text>
           </Pressable>
         </View>

@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.revenuecat.app"
+      "bundleIdentifier": "com.quitqly"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,11 +23,17 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.revenuecat.app"
+      "package": "com.quitqly"
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bc196950-d806-4d74-bbfd-12124995c882"
+      }
+    },
+    "owner": "sofogroup"
   }
 }
