@@ -1,4 +1,3 @@
-// src/components/BuddyCarousel.tsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
@@ -15,22 +14,15 @@ import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 
-// Image + card geometry
 const IMG_W = 132;
 const IMG_H = 168;
-const IMG_H_EXPANDED = IMG_H * 1.5; // 252
+const IMG_H_EXPANDED = IMG_H * 1.5;
 const CARD_PAD = 8;
-const ITEM_W = IMG_W + CARD_PAD * 2; // blue card width
+const ITEM_W = IMG_W + CARD_PAD * 2;
 const ITEM_H = 168;
 const GUTTER = 24;
-
-// Each snap "cell" = card + gutter
 const CELL_W = ITEM_W + GUTTER;
-
-// Header/footer spacer so the first card is centered with side peeks
 const SIDE_SPACING = Math.max(0, (SCREEN_W - ITEM_W) / 2);
-
-// Infinite loop
 const LOOP_MULTIPLIER = 800;
 
 export type Buddy = {
@@ -41,9 +33,9 @@ export type Buddy = {
 
 type Props = {
   data: Buddy[];
-  sex: SexKey; // 'm' | 'w'
+  sex: SexKey;
   isDark?: boolean;
-  onChange?: (activeBaseIndex: number) => void; // normalized index in `data`
+  onChange?: (activeBaseIndex: number) => void;
 };
 
 export default function BuddyCarousel({
@@ -55,7 +47,6 @@ export default function BuddyCarousel({
   const listRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
 
-  // Hide badge while scrolling/settling to avoid flicker
   const [isSettling, setIsSettling] = useState(false);
   const settleTimer = useRef<NodeJS.Timeout | null>(null);
   const hideBadgeNow = () => {
@@ -66,27 +57,30 @@ export default function BuddyCarousel({
     if (settleTimer.current) clearTimeout(settleTimer.current);
     settleTimer.current = setTimeout(() => setIsSettling(false), 150);
   };
-  useEffect(() => () => settleTimer.current && clearTimeout(settleTimer.current), []);
+  useEffect(
+    () => () => settleTimer.current && clearTimeout(settleTimer.current),
+    []
+  );
 
-  // Long list for infinite feel
   const extended = useMemo(
-    () => Array.from({ length: data.length * LOOP_MULTIPLIER }, (_, i) => data[i % data.length]),
+    () =>
+      Array.from(
+        { length: data.length * LOOP_MULTIPLIER },
+        (_, i) => data[i % data.length]
+      ),
     [data]
   );
 
-  // Start centered on the first buddy but deep in the list
   const mid = Math.floor(LOOP_MULTIPLIER / 2);
   const startIndex = mid * data.length;
 
   const [centerExtIndex, setCenterExtIndex] = useState(startIndex);
 
-  // Report normalized base index to parent
   useEffect(() => {
     const base = ((centerExtIndex % data.length) + data.length) % data.length;
     onChange?.(base);
   }, [centerExtIndex, data.length, onChange]);
 
-  // Offset/index math (no SIDE_SPACING here — header/footer provide centering)
   const getItemLayout = (_: any, index: number) => ({
     length: CELL_W,
     offset: CELL_W * index,
@@ -107,7 +101,6 @@ export default function BuddyCarousel({
     const i = Math.round(e.nativeEvent.contentOffset.x / CELL_W);
     if (i !== centerExtIndex) setCenterExtIndex(i);
 
-    // Re-center near middle to keep the infinite illusion
     const cycle = data.length;
     const center = mid * cycle;
     if (Math.abs(i - center) > cycle * 6) {
@@ -132,24 +125,20 @@ export default function BuddyCarousel({
     const baseIdx = ((index % data.length) + data.length) % data.length;
     const src = buddyAssets[data[baseIdx].id][sex];
 
-    // Center offset in scroll space
     const centerOffset = index * CELL_W;
 
-    // ±35° rotation for neighbors, 0° for center
     const rotate = scrollX.interpolate({
       inputRange: [centerOffset - CELL_W, centerOffset, centerOffset + CELL_W],
       outputRange: ["35deg", "0deg", "-35deg"],
       extrapolate: "clamp",
     });
 
-    // Side cards down by 30px, center at 0
     const translateY = scrollX.interpolate({
       inputRange: [centerOffset - CELL_W, centerOffset, centerOffset + CELL_W],
       outputRange: [60, 0, 60],
       extrapolate: "clamp",
     });
 
-    // Opacity: unselected 0.5, center 1
     const opacity = scrollX.interpolate({
       inputRange: [centerOffset - CELL_W, centerOffset, centerOffset + CELL_W],
       outputRange: [0.5, 1, 0.5],
@@ -159,11 +148,19 @@ export default function BuddyCarousel({
     const showBadge = isCenter && !isSettling;
 
     return (
-      <View style={{ width: CELL_W, overflow: "visible" }} className="items-center">
+      <View
+        style={{ width: CELL_W, overflow: "visible" }}
+        className="items-center"
+      >
         <Pressable onPress={() => scrollTo(index)}>
-          {/* OUTER wrapper: allow badge to hang; inner rotated/masked */}
-          <View className="relative" style={{ width: ITEM_W, height: ITEM_H, overflow: "visible" as any }}>
-            {/* Rotated + translated MASK: clips the tall image */}
+          <View
+            className="relative"
+            style={{
+              width: ITEM_W,
+              height: ITEM_H,
+              overflow: "visible" as any,
+            }}
+          >
             <Animated.View
               className="rounded-3xl bg-blue-300"
               style={{
@@ -182,7 +179,6 @@ export default function BuddyCarousel({
               />
             </Animated.View>
 
-            {/* Selected badge (not rotated) */}
             {showBadge && (
               <View
                 className="bg-green-500 rounded-full p-1 absolute left-1/2 -translate-x-1/2"
@@ -205,28 +201,23 @@ export default function BuddyCarousel({
       renderItem={renderItem}
       horizontal
       showsHorizontalScrollIndicator={false}
-      // Center first card via header/footer spacers (these create side peeks)
       ListHeaderComponent={<View style={{ width: SIDE_SPACING }} />}
       ListFooterComponent={<View style={{ width: SIDE_SPACING }} />}
-      // Snap card-by-card
       snapToInterval={CELL_W}
       snapToAlignment="start"
       decelerationRate="fast"
       disableIntervalMomentum
       bounces={false}
-      // Start deep near the middle for "infinite"
       initialScrollIndex={startIndex}
       getItemLayout={getItemLayout}
       onScrollToIndexFailed={onScrollToIndexFailed}
       onMomentumScrollBegin={handleMomentumBegin}
       onMomentumScrollEnd={handleMomentumEnd}
-      // Rotation/translate driver
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { x: scrollX } } }],
         { useNativeDriver: true }
       )}
       scrollEventThrottle={16}
-      // leave space for badge overhang
       style={{ marginBottom: 16, overflow: "visible" }}
       removeClippedSubviews={false}
     />
