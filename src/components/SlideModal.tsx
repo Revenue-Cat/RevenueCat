@@ -39,12 +39,12 @@ const SlideModal: React.FC<SlideModalProps> = ({
         Animated.timing(slideAnim, {
           toValue: 0,
           duration: 500,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }),
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 400,
-          useNativeDriver: true,
+          useNativeDriver: false,
         })
       ]).start();
     } else {
@@ -53,12 +53,12 @@ const SlideModal: React.FC<SlideModalProps> = ({
         Animated.timing(slideAnim, {
           toValue: screenHeight,
           duration: 500,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }),
         Animated.timing(fadeAnim, {
           toValue: 0,
           duration: 400,
-          useNativeDriver: true,
+          useNativeDriver: false,
         })
       ]).start(() => {
         // Hide modal after animation completes
