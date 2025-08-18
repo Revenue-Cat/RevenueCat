@@ -3,12 +3,12 @@ import {
   View,
   Text,
   Pressable,
-  Modal,
   StyleSheet,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
+import SlideModal from './SlideModal';
 
 const { width } = Dimensions.get('window');
 
@@ -40,66 +40,48 @@ const CoinPurchaseModal: React.FC = () => {
   };
 
   return (
-    <Modal
-      visible={showCoinPurchase}
-      transparent={true}
-      animationType="slide"
-      onRequestClose={() => setShowCoinPurchase(false)}
-    >
-      <View style={styles.overlay}>
-        <View style={styles.container}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.characterContainer}>
-              <Text style={styles.characterEmoji}>{selectedCharacter.emoji}</Text>
-            </View>
-            <View style={styles.coinsDisplay}>
-              <Ionicons name="logo-bitcoin" size={16} color="#FFD700" />
-              <Text style={styles.coinsText}>{userCoins}</Text>
-            </View>
-          </View>
-
-          <Text style={styles.title}>Get More Buddy Coins</Text>
-
-          {/* Coin Packages */}
-          <View style={styles.packagesContainer}>
-            {coinPackages.map((pkg, index) => (
-              <Pressable
-                key={index}
-                style={[
-                  styles.packageCard,
-                  pkg.popular && styles.popularPackage
-                ]}
-                onPress={() => handleCoinPurchase(pkg.amount)}
-              >
-                {pkg.popular && (
-                  <View style={styles.popularBadge}>
-                    <Text style={styles.popularText}>Popular ✓</Text>
-                  </View>
-                )}
-                <View style={styles.packageContent}>
-                  <View style={styles.packageLeft}>
-                    <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-                    <Text style={styles.packageAmount}>+{pkg.amount} Buddy coins</Text>
-                  </View>
-                  <View style={styles.packageRight}>
-                    <Text style={styles.packagePrice}>{pkg.price}</Text>
-                    {pkg.strikethrough && (
-                      <Text style={styles.strikethroughPrice}>{pkg.strikethrough}</Text>
-                    )}
-                  </View>
-                </View>
-              </Pressable>
-            ))}
-          </View>
-
-          {/* Close Button */}
-          <Pressable style={styles.closeButton} onPress={() => setShowCoinPurchase(false)}>
-            <Ionicons name="close" size={24} color="#000000" />
-          </Pressable>
+    <SlideModal visible={showCoinPurchase} onClose={() => setShowCoinPurchase(false)} title="Get More Buddy Coins">
+      <View style={styles.header}>
+        <View style={styles.characterContainer}>
+          <Text style={styles.characterEmoji}>{selectedCharacter.emoji}</Text>
+        </View>
+        <View style={styles.coinsDisplay}>
+          <Ionicons name="logo-bitcoin" size={16} color="#FFD700" />
+          <Text style={styles.coinsText}>{userCoins}</Text>
         </View>
       </View>
-    </Modal>
+
+      <View style={styles.packagesContainer}>
+        {coinPackages.map((pkg, index) => (
+          <Pressable
+            key={index}
+            style={[
+              styles.packageCard,
+              pkg.popular && styles.popularPackage
+            ]}
+            onPress={() => handleCoinPurchase(pkg.amount)}
+          >
+            {pkg.popular && (
+              <View style={styles.popularBadge}>
+                <Text style={styles.popularText}>Popular ✓</Text>
+              </View>
+            )}
+            <View style={styles.packageContent}>
+              <View style={styles.packageLeft}>
+                <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
+                <Text style={styles.packageAmount}>+{pkg.amount} Buddy coins</Text>
+              </View>
+              <View style={styles.packageRight}>
+                <Text style={styles.packagePrice}>{pkg.price}</Text>
+                {pkg.strikethrough && (
+                  <Text style={styles.strikethroughPrice}>{pkg.strikethrough}</Text>
+                )}
+              </View>
+            </View>
+          </Pressable>
+        ))}
+      </View>
+    </SlideModal>
   );
 };
 

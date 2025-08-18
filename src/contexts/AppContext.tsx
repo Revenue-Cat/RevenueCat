@@ -26,6 +26,13 @@ interface AppState {
   selectedBuddyId: string;      // which buddy was chosen (id from buddies list)
   buddyName: string;            // custom display name for buddy
 
+  // Setup selections
+  smokeType: string;
+  dailyAmount: string;
+  packPrice: string;
+  packPriceCurrency: string;
+  goal: string;
+
   // UI state
   showShop: boolean;
   showCoinPurchase: boolean;
@@ -45,6 +52,13 @@ interface AppState {
   setGender: (gender: UserGender) => void;
   setSelectedBuddyId: (id: string) => void;
   setBuddyName: (name: string) => void;
+
+  // Setup setters
+  setSmokeType: (value: string) => void;
+  setDailyAmount: (value: string) => void;
+  setPackPrice: (value: string) => void;
+  setPackPriceCurrency: (value: string) => void;
+  setGoal: (value: string) => void;
 }
 
 const defaultCharacter: ShopItem = {
@@ -87,6 +101,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedBuddyId, setSelectedBuddyIdState] = useState<string>('alpaca');
   const [buddyName, setBuddyNameState] = useState<string>('Alpaca Calmington');
 
+  // Setup selections
+  const [smokeType, setSmokeTypeState] = useState<string>('');
+  const [dailyAmount, setDailyAmountState] = useState<string>('');
+  const [packPrice, setPackPriceState] = useState<string>('');
+  const [packPriceCurrency, setPackPriceCurrencyState] = useState<string>('$');
+  const [goal, setGoalState] = useState<string>('');
+
   // UI state
   const [showShop, setShowShop] = useState(false);
   const [showCoinPurchase, setShowCoinPurchase] = useState(false);
@@ -109,6 +130,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       gender,
       selectedBuddyId,
       buddyName,
+      smokeType,
+      dailyAmount,
+      packPrice,
+      packPriceCurrency,
+      goal,
     };
     // TODO: AsyncStorage.setItem('@app_state', JSON.stringify(stateToSave));
     console.log('State to save:', stateToSave);
@@ -122,6 +148,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     gender,
     selectedBuddyId,
     buddyName,
+    smokeType,
+    dailyAmount,
+    packPrice,
+    packPriceCurrency,
+    goal,
   ]);
 
   // Actions
@@ -157,6 +188,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setSelectedBuddyId = (id: string) => setSelectedBuddyIdState(id);
   const setBuddyName = (name: string) => setBuddyNameState(name);
 
+  // Setup setters (exposed)
+  const setSmokeType = (value: string) => setSmokeTypeState(value);
+  const setDailyAmount = (value: string) => setDailyAmountState(value);
+  const setPackPrice = (value: string) => setPackPriceState(value);
+  const setPackPriceCurrency = (value: string) => setPackPriceCurrencyState(value);
+  const setGoal = (value: string) => setGoalState(value);
+
   const value: AppState = {
     userCoins,
     selectedCharacter,
@@ -168,6 +206,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     gender,
     selectedBuddyId,
     buddyName,
+
+    smokeType,
+    dailyAmount,
+    packPrice,
+    packPriceCurrency,
+    goal,
 
     showShop,
     showCoinPurchase,
@@ -185,6 +229,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setGender,
     setSelectedBuddyId,
     setBuddyName,
+
+    setSmokeType,
+    setDailyAmount,
+    setPackPrice,
+    setPackPriceCurrency,
+    setGoal,
   };
 
   return (

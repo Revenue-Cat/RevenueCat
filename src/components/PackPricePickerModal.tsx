@@ -38,7 +38,8 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
       visible={visible}
       onClose={onClose}
       title={title}
-      showCloseButton={false}
+      onConfirm={handleConfirm}
+      confirmText="✓"
     >
       {/* Picker Container */}
       <View className="flex-row justify-center items-center gap-0 relative">
@@ -100,24 +101,7 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
         </View>
       </View>
 
-      {/* Action Buttons */}
-      <View className="flex-row justify-center gap-4">
-        <Pressable 
-          className={`w-16 h-16 rounded-2xl justify-center items-center ${
-            isDark ? 'bg-slate-700' : 'bg-slate-200'
-          }`} 
-          onPress={onClose}
-        >
-          <Text className="text-2xl font-bold text-slate-600">✕</Text>
-        </Pressable>
-        
-        <Pressable 
-          className="w-16 h-16 rounded-2xl justify-center items-center bg-indigo-600"
-          onPress={handleConfirm}
-        >
-          <Text className="text-2xl font-bold text-white">✓</Text>
-        </Pressable>
-      </View>
+      {/* Footer handled by SlideModal via onConfirm/showCloseButton */}
     </SlideModal>
   );
 };

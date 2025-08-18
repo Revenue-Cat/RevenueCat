@@ -98,7 +98,6 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
         visible={showLanguageModal}
         onClose={() => setShowLanguageModal(false)}
         title={t('welcome.selectLanguage')}
-        showCloseButton={false}
       >
         <View className="gap-4">
           {languages.map((lang) => (
@@ -130,15 +129,6 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
             </Pressable>
           ))}
         </View>
-        
-        <Pressable 
-          className={`w-15 h-15 rounded-full justify-center items-center self-center mt-6 ${
-            isDark ? 'bg-dark-surface' : 'bg-gray-100'
-          }`} 
-          onPress={() => setShowLanguageModal(false)}
-        >
-          <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
-        </Pressable>
       </SlideModal>
     </View>
   );

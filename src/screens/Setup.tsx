@@ -9,6 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
+import { useApp } from '../contexts/AppContext';
 import SlideModal from '../components/SlideModal';
 import PackPricePickerModal from '../components/PackPricePickerModal';
 import SmokeTypeModal from '../components/SmokeTypeModal';
@@ -46,14 +47,26 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const isDark = theme === 'dark';
+  const {
+    smokeType,
+    dailyAmount,
+    packPrice,
+    packPriceCurrency,
+    goal,
+    setSmokeType,
+    setDailyAmount,
+    setPackPrice,
+    setPackPriceCurrency,
+    setGoal,
+  } = useApp();
   
-  const [setupData, setSetupData] = useState<SetupData>({
-    smokeType: '',
-    dailyAmount: '',
-    packPrice: '',
-    packPriceCurrency: '$',
-    goal: ''
-  });
+  const setupData: SetupData = {
+    smokeType,
+    dailyAmount,
+    packPrice,
+    packPriceCurrency,
+    goal,
+  };
   
   const [currentStep, setCurrentStep] = useState<string | null>(null);
   const [pickerValue, setPickerValue] = useState(3);
@@ -64,8 +77,8 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
   const handleFieldClick = (field: string) => {
     if (field === 'packPrice') {
       // Initialize picker with current value if exists
-      const currentValue = setupData.packPrice;
-      const currentCurrency = setupData.packPriceCurrency;
+      const currentValue = packPrice;
+      const currentCurrency = packPriceCurrency;
       if (currentValue) {
         setPickerValue(parseInt(currentValue));
       }
@@ -77,16 +90,25 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
   };
 
   const handleSelection = (field: keyof SetupData, value: string) => {
-    setSetupData(prev => ({ ...prev, [field]: value }));
+    switch (field) {
+      case 'smokeType':
+        setSmokeType(value);
+        break;
+      case 'dailyAmount':
+        setDailyAmount(value);
+        break;
+      case 'goal':
+        setGoal(value);
+        break;
+      default:
+        break;
+    }
     setCurrentStep(null);
   };
 
   const handlePickerConfirm = () => {
-    setSetupData(prev => ({ 
-      ...prev, 
-      packPrice: pickerValue.toString(),
-      packPriceCurrency: pickerCurrency
-    }));
+    setPackPrice(pickerValue.toString());
+    setPackPriceCurrency(pickerCurrency);
     setCurrentStep(null);
   };
 
@@ -157,21 +179,6 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
 
   return (
     <View className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
-      {/* Back Button */}
-      <Pressable
-        className={`absolute top-10 left-1 p-1 rounded-full z-10 ${isDark ? 'bg-slate-700' : 'bg-indigo-50'}`}
-        onPress={() => {
-          console.log('Back button pressed');
-          onBack();
-        }}
-      >
-        <Ionicons 
-          name="arrow-back" 
-          size={24} 
-          color={isDark ? '#f1f5f9' : '#1e1b4b'} 
-        />
-      </Pressable>
-
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 40 }}>
         {/* Header */}

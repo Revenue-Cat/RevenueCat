@@ -3,13 +3,13 @@ import {
   View,
   Text,
   Pressable,
-  Modal,
   ScrollView,
   StyleSheet,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
+import SlideModal from './SlideModal';
 
 const { width } = Dimensions.get('window');
 
@@ -160,113 +160,84 @@ const ShopModal: React.FC = () => {
 
   return (
     <>
-      <Modal
-        visible={showShop}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setShowShop(false)}
-      >
-        <View style={styles.overlay}>
-          <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-              <Pressable style={styles.backButton} onPress={() => setShowShop(false)}>
-                <Ionicons name="arrow-back" size={24} color="#000000" />
-              </Pressable>
-              <Text style={styles.title}>Shop</Text>
-              <Pressable style={styles.coinsButton} onPress={() => setShowCoinPurchase(true)}>
-                <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-                <Text style={styles.coinsText}>{userCoins}</Text>
-              </Pressable>
-            </View>
-
-            <ScrollView style={styles.content}>
-              {/* Character Preview */}
-              <View style={styles.characterPreview}>
-                <Text style={styles.characterEmoji}>{selectedCharacter.emoji}</Text>
-              </View>
-
-              {/* Shop Tabs */}
-              <View style={styles.tabsContainer}>
-                <View style={styles.tabs}>
-                  <Pressable
-                    style={[styles.tab, selectedShopTab === 'characters' && styles.tabActive]}
-                    onPress={() => setSelectedShopTab('characters')}
-                  >
-                    <Text style={[styles.tabText, selectedShopTab === 'characters' && styles.tabTextActive]}>
-                      Characters
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={[styles.tab, selectedShopTab === 'backgrounds' && styles.tabActive]}
-                    onPress={() => setSelectedShopTab('backgrounds')}
-                  >
-                    <Text style={[styles.tabText, selectedShopTab === 'backgrounds' && styles.tabTextActive]}>
-                      Backgrounds
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={[styles.tab, selectedShopTab === 'accessories' && styles.tabActive]}
-                    onPress={() => setSelectedShopTab('accessories')}
-                  >
-                    <Text style={[styles.tabText, selectedShopTab === 'accessories' && styles.tabTextActive]}>
-                      Accessories
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
-
-              {/* Items Grid */}
-              <View style={styles.itemsContainer}>
-                {renderItemGrid(getCurrentItems())}
-              </View>
-            </ScrollView>
-          </View>
+      <SlideModal visible={showShop} onClose={() => setShowShop(false)} title="Shop">
+        <View style={styles.header}>
+          <Pressable style={styles.backButton} onPress={() => setShowShop(false)}>
+            <Ionicons name="arrow-back" size={24} color="#000000" />
+          </Pressable>
+          <Text style={styles.title}>Shop</Text>
+          <Pressable style={styles.coinsButton} onPress={() => setShowCoinPurchase(true)}>
+            <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
+            <Text style={styles.coinsText}>{userCoins}</Text>
+          </Pressable>
         </View>
-      </Modal>
 
-      {/* Purchase Item Modal */}
-      {selectedItem && (
-        <Modal
-          visible={true}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setSelectedItem(null)}
-        >
-          <View style={styles.purchaseOverlay}>
-            <View style={styles.purchaseContainer}>
-              <View style={styles.purchaseContent}>
-                <View style={styles.purchaseHeader}>
-                  <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-                  <Text style={styles.purchaseCoins}>{userCoins}</Text>
-                </View>
-                
-                <Text style={styles.purchaseTitle}>Buy {selectedItem.name}</Text>
-                
-                <Text style={styles.purchaseEmoji}>{selectedItem.emoji}</Text>
-                
-                <View style={styles.purchaseDetails}>
-                  <Text style={styles.purchaseName}>{selectedItem.name}</Text>
-                  <Text style={styles.purchaseDescription}>
-                    Stays calm when cravings creep in — too chill to care, too lazy to light up. 😎🦫
-                  </Text>
-                </View>
-                
-                <Pressable style={styles.purchaseButton} onPress={() => handlePurchase(selectedItem)}>
-                  <View style={styles.purchaseButtonContent}>
-                    <Text style={styles.purchaseButtonText}>Buy for </Text>
-                    <Ionicons name="logo-bitcoin" size={16} color="white" />
-                    <Text style={styles.purchaseButtonText}> {selectedItem.price}</Text>
-                  </View>
-                </Pressable>
-                
-                <Pressable style={styles.closePurchaseButton} onPress={() => setSelectedItem(null)}>
-                  <Ionicons name="close" size={24} color="#000000" />
-                </Pressable>
-              </View>
+        <ScrollView style={styles.content}>
+          <View style={styles.characterPreview}>
+            <Text style={styles.characterEmoji}>{selectedCharacter.emoji}</Text>
+          </View>
+
+          <View style={styles.tabsContainer}>
+            <View style={styles.tabs}>
+              <Pressable
+                style={[styles.tab, selectedShopTab === 'characters' && styles.tabActive]}
+                onPress={() => setSelectedShopTab('characters')}
+              >
+                <Text style={[styles.tabText, selectedShopTab === 'characters' && styles.tabTextActive]}>
+                  Characters
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[styles.tab, selectedShopTab === 'backgrounds' && styles.tabActive]}
+                onPress={() => setSelectedShopTab('backgrounds')}
+              >
+                <Text style={[styles.tabText, selectedShopTab === 'backgrounds' && styles.tabTextActive]}>
+                  Backgrounds
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[styles.tab, selectedShopTab === 'accessories' && styles.tabActive]}
+                onPress={() => setSelectedShopTab('accessories')}
+              >
+                <Text style={[styles.tabText, selectedShopTab === 'accessories' && styles.tabTextActive]}>
+                  Accessories
+                </Text>
+              </Pressable>
             </View>
           </View>
-        </Modal>
+
+          <View style={styles.itemsContainer}>
+            {renderItemGrid(getCurrentItems())}
+          </View>
+        </ScrollView>
+      </SlideModal>
+
+      {selectedItem && (
+        <SlideModal visible={true} onClose={() => setSelectedItem(null)} title={`Buy ${selectedItem.name}`}>
+          <View style={styles.purchaseContent}>
+            <View style={styles.purchaseHeader}>
+              <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
+              <Text style={styles.purchaseCoins}>{userCoins}</Text>
+            </View>
+            
+            <Text style={styles.purchaseEmoji}>{selectedItem.emoji}</Text>
+            
+            <View style={styles.purchaseDetails}>
+              <Text style={styles.purchaseName}>{selectedItem.name}</Text>
+              <Text style={styles.purchaseDescription}>
+                Stays calm when cravings creep in — too chill to care, too lazy to light up. 😎🦫
+              </Text>
+            </View>
+            
+            <Pressable style={styles.purchaseButton} onPress={() => handlePurchase(selectedItem)}>
+              <View style={styles.purchaseButtonContent}>
+                <Text style={styles.purchaseButtonText}>Buy for </Text>
+                <Ionicons name="logo-bitcoin" size={16} color="white" />
+                <Text style={styles.purchaseButtonText}> {selectedItem.price}</Text>
+              </View>
+            </Pressable>
+          </View>
+        </SlideModal>
       )}
     </>
   );

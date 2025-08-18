@@ -5,6 +5,7 @@ import {
   Pressable,
   Modal,
   Animated,
+  Easing,
   Dimensions,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
@@ -15,6 +16,8 @@ interface SlideModalProps {
   title: string;
   children: React.ReactNode;
   showCloseButton?: boolean;
+  onConfirm?: () => void;
+  confirmText?: string;
 }
 
 const SlideModal: React.FC<SlideModalProps> = ({
@@ -23,13 +26,18 @@ const SlideModal: React.FC<SlideModalProps> = ({
   title,
   children,
   showCloseButton = true,
+  onConfirm,
+  confirmText = '✓',
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const hasConfirm = typeof onConfirm === 'function';
   const { height: screenHeight } = Dimensions.get('window');
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [modalVisible, setModalVisible] = useState(false);
+  const easeOut = Easing.bezier(0, 0, 0.2, 1);
+  const easeIn = Easing.bezier(0.4, 0, 1, 1);
 
   useEffect(() => {
     if (visible) {
@@ -38,13 +46,15 @@ const SlideModal: React.FC<SlideModalProps> = ({
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: 0,
-          duration: 500,
-          useNativeDriver: false,
+          duration: 250,
+          easing: easeOut,
+          useNativeDriver: true,
         }),
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 400,
-          useNativeDriver: false,
+          duration: 250,
+          easing: easeOut,
+          useNativeDriver: true,
         })
       ]).start();
     } else {
@@ -52,13 +62,15 @@ const SlideModal: React.FC<SlideModalProps> = ({
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: screenHeight,
-          duration: 500,
-          useNativeDriver: false,
+          duration: 250,
+          easing: easeIn,
+          useNativeDriver: true,
         }),
         Animated.timing(fadeAnim, {
           toValue: 0,
-          duration: 400,
-          useNativeDriver: false,
+          duration: 250,
+          easing: easeIn,
+          useNativeDriver: true,
         })
       ]).start(() => {
         // Hide modal after animation completes
@@ -96,16 +108,29 @@ const SlideModal: React.FC<SlideModalProps> = ({
             </Text>
             
             {children}
-            
-            {showCloseButton && (
-              <Pressable 
-                className={`w-15 h-15 rounded-full justify-center items-center self-center mt-6 ${
-                  isDark ? 'bg-slate-700' : 'bg-indigo-50'
-                }`} 
-                onPress={onClose}
-              >
-                <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
-              </Pressable>
+
+            {/* Footer actions: confirm and/or close buttons */}
+            {(hasConfirm || showCloseButton) && (
+              <View className={`mt-6 ${hasConfirm && showCloseButton ? 'flex-row justify-center gap-4' : ''}`}>
+                {hasConfirm && (
+                  <Pressable 
+                    className={`w-15 h-15 rounded-2xl justify-center items-center ${hasConfirm && showCloseButton ? '' : 'self-center'} bg-indigo-600`}
+                    onPress={onConfirm}
+                  >
+                    <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">{confirmText}</Text>
+                  </Pressable>
+                )}
+                {showCloseButton && (
+                  <Pressable 
+                    className={`w-15 h-15 rounded-2xl justify-center items-center ${hasConfirm && showCloseButton ? '' : 'self-center'} ${
+                      isDark ? 'bg-slate-700' : 'bg-indigo-50'
+                    }`} 
+                    onPress={onClose}
+                  >
+                    <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
+                  </Pressable>
+                )}
+              </View>
             )}
           </View>
         </View>

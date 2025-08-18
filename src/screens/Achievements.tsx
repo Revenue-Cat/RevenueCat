@@ -4,13 +4,13 @@ import {
   Text,
   Pressable,
   ScrollView,
-  Modal,
   Dimensions,
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
+import SlideModal from '../components/SlideModal';
 
 const { width } = Dimensions.get('window');
 
@@ -133,39 +133,23 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
         </View>
       </ScrollView>
 
-      {/* Achievement Details Modal */}
       {selectedAchievement && (
-        <Modal
-          visible={true}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setSelectedAchievement(null)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Achievement details</Text>
-                
-                <View style={styles.achievementIconContainer}>
-                  {selectedAchievement.unlocked ? (
-                    <Text style={styles.achievementIconEmoji}>{selectedAchievement.emoji}</Text>
-                  ) : (
-                    <View style={styles.achievementIconPlaceholder} />
-                  )}
-                </View>
-                
-                <View style={styles.achievementDetails}>
-                  <Text style={styles.achievementName}>{selectedAchievement.name}</Text>
-                  <Text style={styles.achievementDescription}>{selectedAchievement.description}</Text>
-                </View>
-                
-                <Pressable style={styles.closeButton} onPress={() => setSelectedAchievement(null)}>
-                  <Ionicons name="close" size={24} color="#000000" />
-                </Pressable>
-              </View>
+        <SlideModal visible={true} onClose={() => setSelectedAchievement(null)} title="Achievement details">
+          <View style={styles.modalContent}>
+            <View style={styles.achievementIconContainer}>
+              {selectedAchievement.unlocked ? (
+                <Text style={styles.achievementIconEmoji}>{selectedAchievement.emoji}</Text>
+              ) : (
+                <View style={styles.achievementIconPlaceholder} />
+              )}
+            </View>
+            
+            <View style={styles.achievementDetails}>
+              <Text style={styles.achievementName}>{selectedAchievement.name}</Text>
+              <Text style={styles.achievementDescription}>{selectedAchievement.description}</Text>
             </View>
           </View>
-        </Modal>
+        </SlideModal>
       )}
     </View>
   );
