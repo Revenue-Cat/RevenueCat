@@ -46,9 +46,16 @@
       "motivation": "Recordatorios de motivación diaria"
     },
     "enable": "Activar Notificaciones",
+    "preview": {
+      "title": "30 días sin fumar",
+      "message": "El recuerdo permanece, pero el tabaco está en el pasado."
+    },
     "skip": "Omitir por ahora",
     "subtitle": "Te enviaremos recordatorios para mantenerte en el camino y celebrar tu progreso.",
-    "title": "Activar Notificaciones"
+    "title": "Activar Notificaciones",
+    "mainTitle": "Mantente en el rumbo, a tu manera",
+    "mainSubtitle": "Deja que tu compañero te recuerde con suaves nudges — sin presión, solo progreso.",
+    "actionButton": "¡Hagámoslo!"
   },
   "setup": {
     "fields": {

@@ -46,9 +46,16 @@
       "motivation": "Daily motivation reminders"
     },
     "enable": "Enable Notifications",
+    "preview": {
+      "title": "30 days smoke-free",
+      "message": "The memory lives on, but tobacco is in the past."
+    },
     "skip": "Skip for now",
     "subtitle": "We'll send you reminders to stay on track and celebrate your progress.",
-    "title": "Enable Notifications"
+    "title": "Enable Notifications",
+    "mainTitle": "Stay on track, your way",
+    "mainSubtitle": "Let buddy nudge you with chill reminders — no pressure, just progress.",
+    "actionButton": "Let's do it!"
   },
   "setup": {
     "fields": {
