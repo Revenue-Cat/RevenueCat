@@ -55,7 +55,13 @@
     "title": "Activar Notificaciones",
     "mainTitle": "Mantente en el rumbo, a tu manera",
     "mainSubtitle": "Deja que tu compañero te recuerde con suaves nudges — sin presión, solo progreso.",
-    "actionButton": "¡Hagámoslo!"
+    "actionButton": "¡Hagámoslo!",
+    "permissionDialog": {
+      "title": "\"QuitBuddy\" Quiere Enviarte\nNotificaciones",
+      "message": "Las notificaciones pueden incluir alertas, sonidos e insignias de iconos. Estas se pueden configurar en Ajustes.",
+      "dontAllow": "No Permitir",
+      "allow": "Permitir"
+    }
   },
   "setup": {
     "fields": {

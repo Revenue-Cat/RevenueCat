@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import NotificationIcon from '../assets/notification/notification.svg';
+import NotificationPermissionModal from '../components/NotificationPermissionModal';
 
 const { width } = Dimensions.get('window');
 
@@ -22,6 +23,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
   const { theme } = useTheme();
   const { t } = useTranslation();
   const isDark = theme === 'dark';
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
 
   // Get current time for timestamp
   const now = new Date();
@@ -30,6 +32,20 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
     minute: '2-digit',
     hour12: true 
   });
+
+  const handleButtonPress = () => {
+    setShowPermissionModal(true);
+  };
+
+  const handlePermissionAllow = () => {
+    setShowPermissionModal(false);
+    onNext(); // Navigate to home
+  };
+
+  const handlePermissionDontAllow = () => {
+    setShowPermissionModal(false);
+    onNext(); // Navigate to home anyway
+  };
 
   return (
     <View className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
@@ -101,10 +117,10 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
     </ScrollView>
        {/* Next Button - Fixed at bottom */}
       <View className="px-6 pb-8 items-center">
-        <Pressable
-          className={'rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600'}
-          onPress={onNext}
-        >
+                 <Pressable
+           className={'rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600'}
+           onPress={handleButtonPress}
+         >
                      <Text className="font-semibold text-xl mr-2 text-white">
              {t('notificationPermission.actionButton')}
            </Text>
@@ -115,6 +131,13 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
           />
         </Pressable>
       </View>
+
+      {/* Notification Permission Modal */}
+      <NotificationPermissionModal
+        visible={showPermissionModal}
+        onAllow={handlePermissionAllow}
+        onDontAllow={handlePermissionDontAllow}
+      />
     </View>
   );
 };

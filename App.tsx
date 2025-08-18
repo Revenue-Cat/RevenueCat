@@ -1,6 +1,8 @@
 import "./global.css";
 import React, { useState, useEffect } from "react";
 import { View, SafeAreaView, Modal } from "react-native";
+// Include the OneSignal package
+import { OneSignal, LogLevel } from 'react-native-onesignal';
 import { AppProvider } from "./src/contexts/AppContext";
 import { ThemeProvider, useTheme } from "./src/contexts/ThemeContext";
 import { LanguageProvider } from "./src/contexts/LanguageContext";
@@ -18,6 +20,7 @@ import BreathingExercise from "./src/screens/BreathingExercise";
 import ChatAssistance from "./src/screens/ChatAssistance";
 import CoinPurchaseModal from "./src/components/CoinPurchaseModal";
 import ShopModal from "./src/components/ShopModal";
+import Constants from "expo-constants";
 
 type Screen =
   | "welcome"
@@ -157,6 +160,17 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  useEffect(() => {
+    console.log('TEST', Constants.expoConfig)
+    // Enable verbose logging for debugging (remove in production)
+    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+    // Initialize with your OneSignal App ID (replace with your actual App ID)
+    // OneSignal.initialize('7b5c7621-a7f6-4b26-99cb-92ddd23db156');
+    OneSignal.initialize(Constants.expoConfig?.extra?.oneSignalAppId);
+
+    // Note: We'll handle permission request manually in the NotificationPermission screen
+  }, []);
+
   return (
     <ThemeProvider>
       <LanguageProvider>

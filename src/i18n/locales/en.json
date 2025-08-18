@@ -55,7 +55,13 @@
     "title": "Enable Notifications",
     "mainTitle": "Stay on track, your way",
     "mainSubtitle": "Let buddy nudge you with chill reminders — no pressure, just progress.",
-    "actionButton": "Let's do it!"
+    "actionButton": "Let's do it!",
+    "permissionDialog": {
+      "title": "\"QuitBuddy\" Would Like To Send\nYou Notifications",
+      "message": "Notifications may include alerts, sounds, and icon badges. These can be configured in Settings.",
+      "dontAllow": "Don't Allow",
+      "allow": "Allow"
+    }
   },
   "setup": {
     "fields": {
