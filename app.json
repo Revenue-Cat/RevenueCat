@@ -15,7 +15,12 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.revenuecat.app"
+      "bundleIdentifier": "com.revenuecat.app",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -29,16 +34,38 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-     "plugins": [
+    "plugins": [
       [
         "onesignal-expo-plugin",
         {
-          "mode": "development"
+          "mode": "development",
+          "devTeam": "YOUR_APPLE_TEAM_ID",
+          "iPhoneDeploymentTarget": "12.0"
         }
       ]
     ],
     "extra": {
-      "oneSignalAppId": "7b5c7621-a7f6-4b26-99cb-92ddd23db156"
+      "oneSignalAppId": "7b5c7621-a7f6-4b26-99cb-92ddd23db156",
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "OneSignalNotificationServiceExtension",
+                  "bundleIdentifier": "com.revenuecat.app.OneSignalNotificationServiceExtension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.revenuecat.app.onesignal"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "fa73541d-8663-4670-ac22-3e816319138c"
+      }
     }
   }
 }
