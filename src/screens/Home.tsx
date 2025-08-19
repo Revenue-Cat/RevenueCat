@@ -4,14 +4,21 @@ import {
   Text,
   Pressable,
   ScrollView,
-  StyleSheet,
   Dimensions,
   Alert,
+  ImageBackground,
+  Animated
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../contexts/ThemeContext';
 import { useApp } from '../contexts/AppContext';
-
-const { width } = Dimensions.get('window');
+import AchievementCard from '../components/AchievementCard';
+import AchievementCascadeCard from '../components/AchievementCascadeCard';
+import Challenges from './Challenges';
+import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
+import ParallaxBackground from '../components/ParallaxBackground';
 
 interface HomeProps {
   onShowCravingSOS: () => void;
@@ -30,6 +37,10 @@ const Home: React.FC<HomeProps> = ({
   onNavigateToAchievements,
   onNavigateToShop,
 }) => {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const isDark = theme === 'dark';
+  
   const {
     userCoins,
     selectedCharacter,
@@ -39,7 +50,9 @@ const Home: React.FC<HomeProps> = ({
     setSelectedCharacter,
     setSelectedBackground,
     setShowCoinPurchase,
-    purchaseItem
+    purchaseItem,
+    selectedBuddyId,
+    gender,
   } = useApp();
 
   const [selectedPurchaseItem, setSelectedPurchaseItem] = useState<any>(null);
@@ -51,6 +64,37 @@ const Home: React.FC<HomeProps> = ({
     seconds: 32
   });
   const [selectedTab, setSelectedTab] = useState<'achievements' | 'characters' | 'backgrounds'>('achievements');
+  const [isAchievementsCollapsed, setIsAchievementsCollapsed] = useState(true);
+
+  // Achievement Cards Data
+  const achievementCards = [
+    {
+      id: 1,
+      title: "First spark",
+      description: "First 24 hours without smoke...",
+      reward: 150,
+      timeLeft: "4h left",
+      emoji: "🐻"
+    },
+    {
+      id: 2,
+      title: "Hold on",
+      description: "Three days smoke-free — pro...",
+      reward: 300,
+      timeLeft: "2d 23h left",
+      emoji: "🐨"
+    },
+    {
+      id: 3,
+      title: "Steel week",
+      description: "One week without nicotine —...",
+      reward: 500,
+      timeLeft: "5d 12h left",
+      emoji: "🦓"
+    }
+  ];
+
+  const sexKey: SexKey = gender === "lady" ? "w" : "m";
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -97,6 +141,7 @@ const Home: React.FC<HomeProps> = ({
     { id: "4", emoji: "💜", name: "Purple", price: 200, gradient: "from-purple-400 to-pink-600" },
     { id: "5", emoji: "🌑", name: "Dark", price: 250, gradient: "from-gray-800 to-gray-900" }
   ];
+  console.log('selectedCharacter', selectedCharacter)
 
   const handleCharacterSelect = (character: any) => {
     const isOwned = ownedCharacters.includes(character.id);
@@ -114,6 +159,14 @@ const Home: React.FC<HomeProps> = ({
       Alert.alert('Purchase Required', `Would you like to purchase ${character.name} for ${character.price} coins?`);
     }
   };
+
+    // Scroll animation for parallax effect
+  const scrollY = new Animated.Value(0);
+
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    { useNativeDriver: false }
+  );
 
   const handleBackgroundSelect = (background: any) => {
     const isOwned = ownedBackgrounds.includes(background.id);
@@ -133,465 +186,195 @@ const Home: React.FC<HomeProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable style={styles.profileButton} onPress={onNavigateToProfile}>
-            <Ionicons name="person-outline" size={24} color="#000000" />
-          </Pressable>
+    <Animated.ScrollView 
+      className="flex-1 bg-[#1F1943]"
+      onScroll={handleScroll}
+      scrollEventThrottle={16}
+      contentContainerStyle={{ paddingBottom: 40 }}
+    >
+      {/* Background Image */}
+      <ParallaxBackground scrollY={scrollY} height={330} />
+
+      {/* Header - On top of ParallaxBackground */}
+      <View className="absolute top-0 left-0 right-0 z-[1000] p-6">
+        <View className="flex-row justify-between items-start mb-8">
           <Pressable 
-            style={styles.coinsButton} 
+            className="w-10 h-10 rounded-full bg-white/20 justify-center items-center"
+            onPress={onNavigateToProfile}
+          >
+            <Ionicons name="person-outline" size={24} color="#ffffff" />
+          </Pressable>
+
+          {/* Timer */}
+          <View className="rounded-xl items-center">
+            <Text className="text-xl font-bold text-white">Zero Poofs</Text>
+            
+            {/* Timer Units */}
+            <View className="flex-row gap-6">
+              {/* Days */}
+              <View className="items-center">
+                <Text className="text-4xl font-bold text-white">{timeElapsed.days}</Text>
+                <Text className="text-sm text-white opacity-80">Days</Text>
+              </View>
+              
+              {/* Hours */}
+              <View className="items-center">
+                <Text className="text-4xl font-bold text-white">{timeElapsed.hours}</Text>
+                <Text className="text-sm text-white opacity-80">Hours</Text>
+              </View>
+              
+              {/* Minutes */}
+              <View className="items-center">
+                <Text className="text-4xl font-bold text-white">{timeElapsed.minutes}</Text>
+                <Text className="text-sm text-white opacity-80">Minutes</Text>
+              </View>
+            </View>
+          </View>
+          
+          <Pressable 
+            className="flex-row items-center bg-white/20 px-3 py-2 rounded-full gap-2"
             onPress={() => setShowCoinPurchase(true)}
           >
             <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-            <Text style={styles.coinsText}>{userCoins}</Text>
+            <Text className="text-base font-bold text-white">{userCoins}</Text>
           </Pressable>
         </View>
+      </View>
 
-        {/* Buddy */}
-        <View style={styles.buddySection}>
-          <Text style={styles.buddyEmoji}>{selectedCharacter.emoji}</Text>
-          <Text style={styles.buddyMessage}>
-            "You've got this! Every smoke-free moment counts."
-          </Text>
+      {/* Buddy Icon and Achievement Cards Container */}
+      <Animated.View className="absolute top-0 left-0 right-0 z-[99]" style={{ height: 330 }}>
+        {/* Buddy Icon */}
+        <Animated.View className="absolute inset-0 items-center justify-end">
+          <Animated.Image
+            source={buddyAssets[selectedBuddyId as BuddyKey][sexKey]}
+            style={{ 
+              width: 100, 
+              height: 220,
+              transform: [{
+                translateY: scrollY.interpolate({
+                  inputRange: [0, 200],
+                  outputRange: [0, -30],
+                  extrapolate: 'clamp'
+                })
+              }]
+            }}
+            resizeMode="contain"
+          />
+        </Animated.View>
+
+        {/* Achievement Cards - On top of Buddy Icon */}
+        <View className="absolute top-0 left-5 right-5 z-[999]" style={{ top: 300 }}>
+          {!isAchievementsCollapsed ? (
+           <View className="mb-1">            
+             {achievementCards.map((card) => (
+               <AchievementCard
+                 key={card.id}
+                 title={card.title}
+                 description={card.description}
+                 reward={card.reward}
+                 timeLeft={card.timeLeft}
+                 emoji={card.emoji}
+               />
+             ))}
+           </View>
+         ) : (
+           /* Main Achievement Card - Collapsed View with Cascade Effect */
+           <View className="mb-1 relative">
+             {/* Card Stack Background - Cascade Effect */}
+             <View className="absolute top-8 left-5 right-5 h-32">
+               {/* Card 3 - Back (smallest) */}
+               <View className="absolute top-5 left-7 right-6 h-20 bg-white/5 rounded-xl" />
+               {/* Card 2 - Middle (medium) */}
+               <View className="absolute top-4 left-5 right-5 h-24 bg-white/10 rounded-xl" />
+             </View>
+
+             <AchievementCard
+               title={achievementCards[0].title}
+               description={achievementCards[0].description}
+               reward={achievementCards[0].reward}
+               timeLeft={achievementCards[0].timeLeft}
+               emoji={achievementCards[0].emoji}
+               containerClassName="relative z-10"
+             />
+
+             <View className="relative">
+               {/* Medium and Small cascade cards overlapping 50% under Card 1 */}
+               <AchievementCascadeCard
+                 variant="medium"
+                 title={achievementCards[1].title}
+                 description=""
+                 reward={achievementCards[1].reward}
+                 timeLeft=""
+                 emoji={achievementCards[1].emoji}
+                 containerClassName="relative z-5 mx-2"
+                 overlapRatio={0.99}
+               />
+               <AchievementCascadeCard
+                 variant="small"
+                 title=""
+                 description=""
+                 reward={achievementCards[2].reward}
+                 timeLeft=""
+                 emoji={achievementCards[2].emoji}
+                 containerClassName="relative z-0 mx-4"
+                 overlapRatio={0.99}
+               />
+             </View>
+           </View>
+         )}
+
+        {/* Collapse Button */}
+        <View className="items-center mb-8">
+          <Pressable 
+            className="w-10 h-10 rounded-full bg-gray-600 justify-center items-center shadow-lg"
+            onPress={() => setIsAchievementsCollapsed(!isAchievementsCollapsed)}
+          >
+            <Ionicons 
+              name={isAchievementsCollapsed ? "chevron-down" : "chevron-up"} 
+              size={20} 
+              color="#ffffff" 
+            />
+          </Pressable>
         </View>
+      </View>
+      </Animated.View>
+
+      {/* Spacer for Achievement Cards */}
+      <View style={{ height: isAchievementsCollapsed ? 150 : 400 }} />
+
+      {/* Content */}
+      <View style={{ paddingHorizontal: 24 }}>
 
         {/* Stats */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Cigarettes Avoided</Text>
-            <Text style={styles.statValue}>47</Text>
+        <View className="flex-row gap-1 mb-1">
+          <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+            <Text className="text-2xl font-bold text-white">145</Text>
+            <Text className="text-xs font-medium text-white">Cigs avoided</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Money Saved</Text>
-            <Text style={styles.statValue}>€23.50</Text>
-          </View>
-        </View>
-
-        {/* Timer */}
-        <View style={styles.timerCard}>
-          <Text style={styles.timerTitle}>Smoke-Free Time</Text>
-          <Text style={styles.timerValue}>
-            {timeElapsed.days}d {timeElapsed.hours}h {timeElapsed.minutes}m {timeElapsed.seconds}s
-          </Text>
-          <Text style={styles.timerSubtitle}>Keep going strong!</Text>
-        </View>
-
-        {/* Challenges */}
-        <View style={styles.challengeCard}>
-          <View style={styles.challengeHeader}>
-            <Ionicons name="star" size={20} color="#000000" />
-            <Text style={styles.challengeTitle}>Challenges</Text>
-          </View>
-          <View style={styles.challengeItem}>
-            <View style={styles.challengeInfo}>
-              <Text style={styles.challengeText}>Go one full day without a single puff</Text>
-              <View style={styles.challengeBadge}>
-                <Text style={styles.challengeBadgeText}>+25 coins</Text>
-              </View>
-            </View>
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: '75%' }]} />
-            </View>
-            <Text style={styles.challengeTime}>18 hours left</Text>
+          <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+            <Text className="text-2xl font-bold text-white">127$</Text>
+            <Text className="text-xs font-medium text-white">Money saved</Text>
           </View>
         </View>
-
-        {/* Tabs */}
-        <View style={styles.tabsContainer}>
-          <View style={styles.tabs}>
-            <Pressable
-              style={[styles.tab, selectedTab === 'achievements' && styles.tabActive]}
-              onPress={() => setSelectedTab('achievements')}
-            >
-              <Text style={[styles.tabText, selectedTab === 'achievements' && styles.tabTextActive]}>
-                Achievements
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.tab, selectedTab === 'characters' && styles.tabActive]}
-              onPress={() => setSelectedTab('characters')}
-            >
-              <Text style={[styles.tabText, selectedTab === 'characters' && styles.tabTextActive]}>
-                Characters
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.tab, selectedTab === 'backgrounds' && styles.tabActive]}
-              onPress={() => setSelectedTab('backgrounds')}
-            >
-              <Text style={[styles.tabText, selectedTab === 'backgrounds' && styles.tabTextActive]}>
-                Backgrounds
-              </Text>
-            </Pressable>
+         <View className="flex-row gap-1 mb-6">
+          <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+            <Text className="text-2xl font-bold text-white">2h</Text>
+            <Text className="text-xs font-medium text-white">Time saved</Text>
           </View>
-
-          {/* Tab Content */}
-          <View style={styles.tabContent}>
-            {selectedTab === 'achievements' && (
-              <View style={styles.achievementsGrid}>
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Pressable
-                    key={i}
-                    style={styles.achievementCard}
-                    onPress={onNavigateToAchievements}
-                  >
-                    <Ionicons name="trophy" size={32} color="#666666" />
-                    <Text style={styles.achievementText}>Day {i}</Text>
-                  </Pressable>
-                ))}
-              </View>
-            )}
-
-            {selectedTab === 'characters' && (
-              <View style={styles.charactersGrid}>
-                {characters.map((character) => {
-                  const isOwned = ownedCharacters.includes(character.id);
-                  const isSelected = character.id === selectedCharacter.id;
-                  
-                  return (
-                    <Pressable
-                      key={character.id}
-                      style={[
-                        styles.characterCard,
-                        isSelected && styles.selectedCharacterCard
-                      ]}
-                      onPress={() => handleCharacterSelect(character)}
-                    >
-                      <Text style={styles.characterEmoji}>{character.emoji}</Text>
-                      <Text style={styles.characterName}>{character.name}</Text>
-                      <Text style={styles.characterStatus}>
-                        {isSelected ? "Selected" : isOwned ? "Owned" : 
-                         character.price === 0 ? "Free" : `${character.price} coins`}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            )}
-
-            {selectedTab === 'backgrounds' && (
-              <View style={styles.backgroundsGrid}>
-                {backgrounds.map((background) => {
-                  const isOwned = ownedBackgrounds.includes(background.id);
-                  const isSelected = background.id === selectedBackground.id;
-                  
-                  return (
-                    <Pressable
-                      key={background.id}
-                      style={[
-                        styles.backgroundCard,
-                        isSelected && styles.selectedBackgroundCard
-                      ]}
-                      onPress={() => handleBackgroundSelect(background)}
-                    >
-                      <View style={styles.backgroundPreview} />
-                      <Text style={styles.backgroundName}>{background.name}</Text>
-                      <Text style={styles.backgroundStatus}>
-                        {isSelected ? "Selected" : isOwned ? "Owned" : 
-                         background.price === 0 ? "Free" : `${background.price} coins`}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            )}
+          <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+            <Text className="text-2xl font-bold text-white">8/20</Text>
+            <Text className="text-xs font-medium text-white">Slips</Text>
           </View>
         </View>
+        <Challenges />
 
         {/* Craving SOS Button */}
-        <Pressable style={styles.sosButton} onPress={onShowCravingSOS}>
-          <Text style={styles.sosButtonText}>Craving SOS</Text>
+        <Pressable className="bg-red-500 rounded-xl py-4 items-center" onPress={onShowCravingSOS}>
+          <Text className="text-white text-lg font-bold">Craving SOS</Text>
         </Pressable>
-      </ScrollView>
-    </View>
+      </View>
+    </Animated.ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  profileButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  coinsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 8,
-  },
-  coinsText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  buddySection: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  buddyEmoji: {
-    fontSize: 96,
-    marginBottom: 16,
-  },
-  buddyMessage: {
-    fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666666',
-    marginBottom: 4,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  timerCard: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 20,
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  timerTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 8,
-  },
-  timerValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  timerSubtitle: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  challengeCard: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 24,
-  },
-  challengeHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    gap: 8,
-  },
-  challengeTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  challengeItem: {
-    gap: 8,
-  },
-  challengeInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  challengeText: {
-    fontSize: 14,
-    color: '#000000',
-    flex: 1,
-  },
-  challengeBadge: {
-    backgroundColor: '#e5e5e5',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  challengeBadgeText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: '#e5e5e5',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#000000',
-  },
-  challengeTime: {
-    fontSize: 12,
-    color: '#666666',
-  },
-  tabsContainer: {
-    marginBottom: 24,
-  },
-  tabs: {
-    flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 16,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  tabActive: {
-    backgroundColor: '#ffffff',
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#666666',
-  },
-  tabTextActive: {
-    color: '#000000',
-    fontWeight: 'bold',
-  },
-  tabContent: {
-    minHeight: 200,
-  },
-  achievementsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  achievementCard: {
-    width: (width - 72) / 3,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  achievementText: {
-    fontSize: 12,
-    color: '#666666',
-    marginTop: 8,
-  },
-  charactersGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  characterCard: {
-    width: (width - 72) / 2,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  selectedCharacterCard: {
-    backgroundColor: '#e5e5e5',
-    borderWidth: 2,
-    borderColor: '#000000',
-  },
-  characterEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  characterName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  characterStatus: {
-    fontSize: 12,
-    color: '#666666',
-    textAlign: 'center',
-  },
-  backgroundsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  backgroundCard: {
-    width: (width - 72) / 2,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  selectedBackgroundCard: {
-    backgroundColor: '#e5e5e5',
-    borderWidth: 2,
-    borderColor: '#000000',
-  },
-  backgroundPreview: {
-    width: 40,
-    height: 20,
-    backgroundColor: '#e5e5e5',
-    borderRadius: 4,
-    marginBottom: 8,
-  },
-  backgroundName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  backgroundStatus: {
-    fontSize: 12,
-    color: '#666666',
-    textAlign: 'center',
-  },
-  sosButton: {
-    backgroundColor: '#ff4444',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  sosButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
-
-export default Home; 
+export default Home;
