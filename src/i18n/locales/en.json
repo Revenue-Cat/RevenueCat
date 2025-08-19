@@ -57,6 +57,11 @@
     "mainSubtitle": "Let buddy nudge you with chill reminders — no pressure, just progress.",
     "actionButton": "Let's do it!"
   },
+  "challengeStart": {
+    "mainTitle": "Start Your First 24-Hour Challenge",
+    "mainSubtitle": "24 hours, one buddy, and a fresh start.",
+    "actionButton": "Go Smoke-Free"
+  },
   "setup": {
     "fields": {
       "dailyAmount": {

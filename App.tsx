@@ -9,6 +9,7 @@ import Welcome from "./src/screens/Welcome";
 import Setup from "./src/screens/Setup";
 import BuddySelection from "./src/screens/BuddySelection";
 import NotificationPermission from "./src/screens/NotificationPermission";
+import ChallengeStart from "./src/screens/ChallengeStart";
 import Home from "./src/screens/Home";
 import Profile from "./src/screens/Profile";
 import Achievements from "./src/screens/Achievements";
@@ -24,6 +25,7 @@ type Screen =
   | "setup"
   | "buddy-selection"
   | "notification-permission"
+  | "challenge-start"
   | "home"
   | "profile"
   | "achievements"
@@ -87,7 +89,11 @@ const AppContent: React.FC = () => {
         )}
 
         {currentScreen === "notification-permission" && (
-          <NotificationPermission onNext={() => navigateTo("home")} />
+          <NotificationPermission onNext={() => navigateTo("challenge-start")} />
+        )}
+
+        {currentScreen === "challenge-start" && (
+          <ChallengeStart onNext={() => navigateTo("home")} />
         )}
 
         {currentScreen === "home" && (

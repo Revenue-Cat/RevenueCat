@@ -57,6 +57,11 @@
     "mainSubtitle": "Нехай ваш друг м'яко нагадує вам — без тиску, лише прогрес.",
     "actionButton": "Давайте зробимо це!"
   },
+  "challengeStart": {
+    "mainTitle": "Почніть свій Перший 24-годинний Виклик",
+    "mainSubtitle": "24 години, один друг і свіжий початок.",
+    "actionButton": "Йди Без Куріння"
+  },
   "setup": {
     "fields": {
       "dailyAmount": {

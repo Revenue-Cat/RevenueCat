@@ -105,9 +105,9 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
           className={'rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600'}
           onPress={onNext}
         >
-                     <Text className="font-semibold text-xl mr-2 text-white">
+          <Text className="font-semibold text-xl mr-2 text-white">
              {t('notificationPermission.actionButton')}
-           </Text>
+          </Text>
           <Ionicons 
             name="arrow-forward" 
             size={24} 

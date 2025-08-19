@@ -57,6 +57,11 @@
     "mainSubtitle": "Deja que tu compañero te recuerde con suaves nudges — sin presión, solo progreso.",
     "actionButton": "¡Hagámoslo!"
   },
+  "challengeStart": {
+    "mainTitle": "Comienza tu Primer Desafío de 24 Horas",
+    "mainSubtitle": "24 horas, un compañero y un nuevo comienzo.",
+    "actionButton": "Ve Sin Fumar"
+  },
   "setup": {
     "fields": {
       "dailyAmount": {
