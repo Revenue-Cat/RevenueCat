@@ -1,6 +1,7 @@
 import "./global.css";
 import React, { useState, useEffect } from "react";
 import { View, SafeAreaView, Modal } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AppProvider } from "./src/contexts/AppContext";
 import { ThemeProvider, useTheme } from "./src/contexts/ThemeContext";
 import { LanguageProvider } from "./src/contexts/LanguageContext";
@@ -164,11 +165,13 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <ThemeProvider>
-      <LanguageProvider>
-        <AppContent />
-      </LanguageProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider>
+        <LanguageProvider>
+          <AppContent />
+        </LanguageProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 };
 

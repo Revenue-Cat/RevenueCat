@@ -5,12 +5,15 @@ import {
   Pressable,
   ScrollView,
   Dimensions,
-  StyleSheet,
+  Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
+import { useApp } from '../contexts/AppContext';
 import SlideModal from '../components/SlideModal';
+import ParallaxBackground from '../components/ParallaxBackground';
+import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
 
 const { width } = Dimensions.get('window');
 
@@ -30,6 +33,9 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const { selectedBuddyId, gender, userCoins, setShowCoinPurchase } = useApp();
+  const sexKey: SexKey = gender === "lady" ? "w" : "m";
+  const scrollY = new Animated.Value(0);
   
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
 
@@ -101,32 +107,22 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   ];
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={onBack}>
-            <Ionicons name="arrow-back" size={24} color="#000000" />
-          </Pressable>
-          <Text style={styles.title}>Achievements</Text>
-          <View style={styles.placeholder} />
-        </View>
-
+    <View className="flex-1">
+      <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
         {/* Achievements Grid */}
-        <View style={styles.achievementsGrid}>
+        <View className="flex-row flex-wrap gap-2 justify-center">
           {achievements.map((achievement) => (
             <Pressable
               key={achievement.id}
-              style={[
-                styles.achievementCard,
-                achievement.unlocked ? styles.unlockedCard : styles.lockedCard
-              ]}
+              className={`w-[70px] aspect-square rounded-xl justify-center items-center ${
+                achievement.unlocked ? 'bg-white/10' : 'bg-white/5'
+              }`}
               onPress={() => setSelectedAchievement(achievement)}
             >
               {achievement.unlocked ? (
-                <Text style={styles.achievementEmoji}>{achievement.emoji}</Text>
+                <Text className="text-2xl">{achievement.emoji}</Text>
               ) : (
-                <View style={styles.lockedPlaceholder} />
+                <View className="w-8 h-8 bg-white/30 rounded-full" />
               )}
             </Pressable>
           ))}
@@ -135,18 +131,22 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
 
       {selectedAchievement && (
         <SlideModal visible={true} onClose={() => setSelectedAchievement(null)} title="Achievement details">
-          <View style={styles.modalContent}>
-            <View style={styles.achievementIconContainer}>
+          <View className="items-center">
+            <View className="w-24 h-24 bg-white/10 rounded-full justify-center items-center mb-4">
               {selectedAchievement.unlocked ? (
-                <Text style={styles.achievementIconEmoji}>{selectedAchievement.emoji}</Text>
+                <Text className="text-5xl">{selectedAchievement.emoji}</Text>
               ) : (
-                <View style={styles.achievementIconPlaceholder} />
+                <View className="w-12 h-12 bg-white/30 rounded-full" />
               )}
             </View>
             
-            <View style={styles.achievementDetails}>
-              <Text style={styles.achievementName}>{selectedAchievement.name}</Text>
-              <Text style={styles.achievementDescription}>{selectedAchievement.description}</Text>
+            <View className="items-center mb-6">
+              <Text className="text-lg font-bold text-white mb-2 text-center">
+                {selectedAchievement.name}
+              </Text>
+              <Text className="text-sm text-white/70 text-center leading-5">
+                {selectedAchievement.description}
+              </Text>
             </View>
           </View>
         </SlideModal>
@@ -155,133 +155,6 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  placeholder: {
-    width: 40,
-  },
-  achievementsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  achievementCard: {
-    width: (width - 72) / 4,
-    aspectRatio: 1,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  unlockedCard: {
-    backgroundColor: '#e5f3ff',
-  },
-  lockedCard: {
-    backgroundColor: '#f5f5f5',
-  },
-  achievementEmoji: {
-    fontSize: 24,
-  },
-  lockedPlaceholder: {
-    width: 32,
-    height: 32,
-    backgroundColor: '#cccccc',
-    borderRadius: 16,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 24,
-    margin: 24,
-    maxWidth: 300,
-    alignItems: 'center',
-  },
-  modalContent: {
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 16,
-  },
-  achievementIconContainer: {
-    width: 96,
-    height: 96,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  achievementIconEmoji: {
-    fontSize: 48,
-  },
-  achievementIconPlaceholder: {
-    width: 48,
-    height: 48,
-    backgroundColor: '#cccccc',
-    borderRadius: 24,
-  },
-  achievementDetails: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  achievementName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  achievementDescription: {
-    fontSize: 14,
-    color: '#666666',
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+
 
 export default Achievements; 

@@ -18,33 +18,6 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   const floatAnim3 = useRef(new Animated.Value(0)).current;
   const floatAnim4 = useRef(new Animated.Value(0)).current;
 
-  // Start floating animations
-  useEffect(() => {
-    const createFloatAnimation = (animValue: Animated.Value, duration: number, delay: number) => {
-      return Animated.loop(
-        Animated.sequence([
-          Animated.timing(animValue, {
-            toValue: 1,
-            duration,
-            delay,
-            useNativeDriver: true,
-          }),
-          Animated.timing(animValue, {
-            toValue: 0,
-            duration,
-            delay: 0,
-            useNativeDriver: true,
-          }),
-        ])
-      );
-    };
-
-    createFloatAnimation(floatAnim1, 3000, 0).start();
-    createFloatAnimation(floatAnim2, 2500, 500).start();
-    createFloatAnimation(floatAnim3, 3500, 1000).start();
-    createFloatAnimation(floatAnim4, 2800, 1500).start();
-  }, []);
-
   return (
     <View 
       className="relative w-full z-10 overflow-hidden" 

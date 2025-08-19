@@ -4,13 +4,10 @@ import {
   Text,
   Pressable,
   ScrollView,
-  Dimensions,
-  Alert,
-  ImageBackground,
-  Animated
+  Animated,
 } from 'react-native';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import { useApp } from '../contexts/AppContext';
@@ -19,6 +16,7 @@ import AchievementCascadeCard from '../components/AchievementCascadeCard';
 import Challenges from './Challenges';
 import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
 import ParallaxBackground from '../components/ParallaxBackground';
+import Achievements from './Achievements';
 
 interface HomeProps {
   onShowCravingSOS: () => void;
@@ -43,28 +41,50 @@ const Home: React.FC<HomeProps> = ({
   
   const {
     userCoins,
-    selectedCharacter,
-    selectedBackground,
-    ownedCharacters,
-    ownedBackgrounds,
-    setSelectedCharacter,
-    setSelectedBackground,
     setShowCoinPurchase,
-    purchaseItem,
     selectedBuddyId,
     gender,
   } = useApp();
 
-  const [selectedPurchaseItem, setSelectedPurchaseItem] = useState<any>(null);
-  const [purchaseItemType, setPurchaseItemType] = useState<'characters' | 'backgrounds'>('characters');
+  const sexKey: SexKey = gender === "lady" ? "w" : "m";
+  const scrollY = new Animated.Value(0);
+
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    { useNativeDriver: false }
+  );
+
+  const handleHeaderGesture = (event: any) => {
+    if (event.nativeEvent.state === State.END) {
+      const { translationX } = event.nativeEvent;
+      const threshold = 50;
+
+      if (translationX > threshold) {
+        // Swipe right - go to previous view
+        if (currentView === 'shop') {
+          setCurrentView('home');
+        } else if (currentView === 'home') {
+          setCurrentView('achievements');
+        }
+      } else if (translationX < -threshold) {
+        // Swipe left - go to next view
+        if (currentView === 'achievements') {
+          setCurrentView('home');
+        } else if (currentView === 'home') {
+          setCurrentView('shop');
+        }
+      }
+    }
+  };
+
   const [timeElapsed, setTimeElapsed] = useState({
     days: 0,
     hours: 23,
     minutes: 47,
     seconds: 32
   });
-  const [selectedTab, setSelectedTab] = useState<'achievements' | 'characters' | 'backgrounds'>('achievements');
   const [isAchievementsCollapsed, setIsAchievementsCollapsed] = useState(true);
+  const [currentView, setCurrentView] = useState<'home' | 'achievements' | 'shop'>('home');
 
   // Achievement Cards Data
   const achievementCards = [
@@ -94,8 +114,6 @@ const Home: React.FC<HomeProps> = ({
     }
   ];
 
-  const sexKey: SexKey = gender === "lady" ? "w" : "m";
-
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeElapsed(prev => {
@@ -123,67 +141,7 @@ const Home: React.FC<HomeProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  const characters = [
-    { id: "1", emoji: "🦫", name: "Chill Capybara", price: 0 },
-    { id: "2", emoji: "🐨", name: "Zen Koala", price: 150 },
-    { id: "3", emoji: "🦥", name: "Slow Sloth", price: 200 },
-    { id: "4", emoji: "🐧", name: "Cool Penguin", price: 100 },
-    { id: "5", emoji: "🐼", name: "Panda Bear", price: 200 },
-    { id: "6", emoji: "🦉", name: "Wise Owl", price: 100 },
-    { id: "7", emoji: "🦆", name: "Duck Friend", price: 150 }
-  ];
 
-  const backgrounds = [
-    { id: "default", emoji: "🌅", name: "Default", price: 0, gradient: "from-blue-50 to-indigo-100" },
-    { id: "1", emoji: "🌅", name: "Sunset", price: 50, gradient: "from-orange-400 to-pink-500" },
-    { id: "2", emoji: "🌊", name: "Ocean", price: 100, gradient: "from-blue-400 to-cyan-500" },
-    { id: "3", emoji: "🌲", name: "Forest", price: 150, gradient: "from-green-400 to-emerald-600" },
-    { id: "4", emoji: "💜", name: "Purple", price: 200, gradient: "from-purple-400 to-pink-600" },
-    { id: "5", emoji: "🌑", name: "Dark", price: 250, gradient: "from-gray-800 to-gray-900" }
-  ];
-  console.log('selectedCharacter', selectedCharacter)
-
-  const handleCharacterSelect = (character: any) => {
-    const isOwned = ownedCharacters.includes(character.id);
-    const isSelected = character.id === selectedCharacter.id;
-    
-    if (isSelected) {
-      return;
-    }
-    
-    if (isOwned) {
-      setSelectedCharacter({...character, owned: true});
-    } else {
-      setSelectedPurchaseItem({...character, owned: false});
-      setPurchaseItemType('characters');
-      Alert.alert('Purchase Required', `Would you like to purchase ${character.name} for ${character.price} coins?`);
-    }
-  };
-
-    // Scroll animation for parallax effect
-  const scrollY = new Animated.Value(0);
-
-  const handleScroll = Animated.event(
-    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-    { useNativeDriver: false }
-  );
-
-  const handleBackgroundSelect = (background: any) => {
-    const isOwned = ownedBackgrounds.includes(background.id);
-    const isSelected = background.id === selectedBackground.id;
-    
-    if (isSelected) {
-      return;
-    }
-    
-    if (isOwned) {
-      setSelectedBackground({...background, owned: true});
-    } else {
-      setSelectedPurchaseItem({...background, owned: false});
-      setPurchaseItemType('backgrounds');
-      Alert.alert('Purchase Required', `Would you like to purchase ${background.name} for ${background.price} coins?`);
-    }
-  };
 
   return (
     <Animated.ScrollView 
@@ -196,53 +154,96 @@ const Home: React.FC<HomeProps> = ({
       <ParallaxBackground scrollY={scrollY} height={330} />
 
       {/* Header - On top of ParallaxBackground */}
-      <View className="absolute top-0 left-0 right-0 z-[1000] p-6">
-        <View className="flex-row justify-between items-start mb-8">
-          <Pressable 
-            className="w-10 h-10 rounded-full bg-white/20 justify-center items-center"
-            onPress={onNavigateToProfile}
-          >
-            <Ionicons name="person-outline" size={24} color="#ffffff" />
-          </Pressable>
+      <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
+        <View className="absolute top-0 left-0 right-0 z-[1000] p-6" style={{ height: 140 }}>
+          <View className="flex-row justify-between items-start mb-8">
+            <Pressable 
+              className="w-10 h-10 rounded-full bg-white/20 justify-center items-center"
+              onPress={onNavigateToProfile}
+            >
+              <Ionicons name="person-outline" size={24} color="#ffffff" />
+            </Pressable>
 
-          {/* Timer */}
-          <View className="rounded-xl items-center">
-            <Text className="text-xl font-bold text-white">Zero Poofs</Text>
-            
-            {/* Timer Units */}
-            <View className="flex-row gap-6">
-              {/* Days */}
-              <View className="items-center">
-                <Text className="text-4xl font-bold text-white">{timeElapsed.days}</Text>
-                <Text className="text-sm text-white opacity-80">Days</Text>
-              </View>
+            {/* Carousel Header */}
+            <View className="rounded-xl items-center">
+              {/* Title */}
+              <Text className="text-xl font-bold text-white">
+                {currentView === 'home' ? 'Zero Poofs' : 
+                 currentView === 'achievements' ? 'Achievements' : 'Shop'}
+              </Text>
               
-              {/* Hours */}
-              <View className="items-center">
-                <Text className="text-4xl font-bold text-white">{timeElapsed.hours}</Text>
-                <Text className="text-sm text-white opacity-80">Hours</Text>
-              </View>
-              
-              {/* Minutes */}
-              <View className="items-center">
-                <Text className="text-4xl font-bold text-white">{timeElapsed.minutes}</Text>
-                <Text className="text-sm text-white opacity-80">Minutes</Text>
-              </View>
+              {/* Timer Units - Only show for Home view */}
+              {currentView === 'home' && (
+                <View className="flex-row gap-6">
+                  {/* Days */}
+                  <View className="items-center">
+                    <Text className="text-4xl font-bold text-white">{timeElapsed.days}</Text>
+                    <Text className="text-sm text-white opacity-80">Days</Text>
+                  </View>
+                  
+                  {/* Hours */}
+                  <View className="items-center">
+                    <Text className="text-4xl font-bold text-white">{timeElapsed.hours}</Text>
+                    <Text className="text-sm text-white opacity-80">Hours</Text>
+                  </View>
+                  
+                  {/* Minutes */}
+                  <View className="items-center">
+                    <Text className="text-4xl font-bold text-white">{timeElapsed.minutes}</Text>
+                    <Text className="text-sm text-white opacity-80">Minutes</Text>
+                  </View>
+                </View>
+              )}
+
+              {/* Preview content for other views */}
+              {currentView === 'achievements' && (
+                <View className="items-center mt-2">
+                  <Text className="text-sm text-white opacity-80">Tap to view achievements</Text>
+                </View>
+              )}
+
+              {currentView === 'shop' && (
+                <View className="items-center mt-2">
+                  <Text className="text-sm text-white opacity-80">Tap to open shop</Text>
+                </View>
+              )}
             </View>
+            
+            <Pressable 
+              className="flex-row items-center bg-white/20 px-3 py-2 rounded-full gap-2"
+              onPress={() => setShowCoinPurchase(true)}
+            >
+              <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
+              <Text className="text-base font-bold text-white">{userCoins}</Text>
+            </Pressable>
           </View>
-          
-          <Pressable 
-            className="flex-row items-center bg-white/20 px-3 py-2 rounded-full gap-2"
-            onPress={() => setShowCoinPurchase(true)}
-          >
-            <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-            <Text className="text-base font-bold text-white">{userCoins}</Text>
-          </Pressable>
+
+          {/* Carousel Navigation Dots - Inside Header Area */}
+          <View className="flex-row justify-center mt-4">
+            <Pressable 
+              className={`w-2 h-2 rounded-full mx-1 ${
+                currentView === 'achievements' ? 'bg-white' : 'bg-white/40'
+              }`}
+              onPress={() => setCurrentView('achievements')}
+            />
+            <Pressable 
+              className={`w-2 h-2 rounded-full mx-1 ${
+                currentView === 'home' ? 'bg-white' : 'bg-white/40'
+              }`}
+              onPress={() => setCurrentView('home')}
+            />
+            <Pressable 
+              className={`w-2 h-2 rounded-full mx-1 ${
+                currentView === 'shop' ? 'bg-white' : 'bg-white/40'
+              }`}
+              onPress={() => setCurrentView('shop')}
+            />
+          </View>
         </View>
-      </View>
+      </PanGestureHandler>
 
       {/* Buddy Icon and Achievement Cards Container */}
-      <Animated.View className="absolute top-0 left-0 right-0 z-[99]" style={{ height: 330 }}>
+      <Animated.View className="absolute top-0 left-0 right-0 z-[99]" style={{ height: 350 }}>
         {/* Buddy Icon */}
         <Animated.View className="absolute inset-0 items-center justify-end">
           <Animated.Image
@@ -262,116 +263,144 @@ const Home: React.FC<HomeProps> = ({
           />
         </Animated.View>
 
-        {/* Achievement Cards - On top of Buddy Icon */}
-        <View className="absolute top-0 left-5 right-5 z-[999]" style={{ top: 300 }}>
-          {!isAchievementsCollapsed ? (
-           <View className="mb-1">            
-             {achievementCards.map((card) => (
+        {/* Achievement Cards - On top of Buddy Icon - Only show for Home view */}
+        {currentView === 'home' && (
+          <View className="absolute top-0 left-5 right-5 z-[999]" style={{ top: 300 }}>
+            {!isAchievementsCollapsed ? (
+             <View className="mb-1">            
+               {achievementCards.map((card) => (
+                 <AchievementCard
+                   key={card.id}
+                   title={card.title}
+                   description={card.description}
+                   reward={card.reward}
+                   timeLeft={card.timeLeft}
+                   emoji={card.emoji}
+                 />
+               ))}
+             </View>
+           ) : (
+             /* Main Achievement Card - Collapsed View with Cascade Effect */
+             <View className="mb-1 relative">
+               {/* Card Stack Background - Cascade Effect */}
+               <View className="absolute top-8 left-5 right-5 h-32">
+                 {/* Card 3 - Back (smallest) */}
+                 <View className="absolute top-5 left-7 right-6 h-20 bg-white/5 rounded-xl" />
+                 {/* Card 2 - Middle (medium) */}
+                 <View className="absolute top-4 left-5 right-5 h-24 bg-white/10 rounded-xl" />
+               </View>
+
                <AchievementCard
-                 key={card.id}
-                 title={card.title}
-                 description={card.description}
-                 reward={card.reward}
-                 timeLeft={card.timeLeft}
-                 emoji={card.emoji}
+                 title={achievementCards[0].title}
+                 description={achievementCards[0].description}
+                 reward={achievementCards[0].reward}
+                 timeLeft={achievementCards[0].timeLeft}
+                 emoji={achievementCards[0].emoji}
+                 containerClassName="relative z-10"
                />
-             ))}
-           </View>
-         ) : (
-           /* Main Achievement Card - Collapsed View with Cascade Effect */
-           <View className="mb-1 relative">
-             {/* Card Stack Background - Cascade Effect */}
-             <View className="absolute top-8 left-5 right-5 h-32">
-               {/* Card 3 - Back (smallest) */}
-               <View className="absolute top-5 left-7 right-6 h-20 bg-white/5 rounded-xl" />
-               {/* Card 2 - Middle (medium) */}
-               <View className="absolute top-4 left-5 right-5 h-24 bg-white/10 rounded-xl" />
+
+               <View className="relative">
+                 {/* Medium and Small cascade cards overlapping 50% under Card 1 */}
+                 <AchievementCascadeCard
+                   variant="medium"
+                   title={achievementCards[1].title}
+                   description=""
+                   reward={achievementCards[1].reward}
+                   timeLeft=""
+                   emoji={achievementCards[1].emoji}
+                   containerClassName="relative z-5 mx-2"
+                   overlapRatio={0.99}
+                 />
+                 <AchievementCascadeCard
+                   variant="small"
+                   title=""
+                   description=""
+                   reward={achievementCards[2].reward}
+                   timeLeft=""
+                   emoji={achievementCards[2].emoji}
+                   containerClassName="relative z-0 mx-4"
+                   overlapRatio={0.99}
+                 />
+               </View>
              </View>
+           )}
 
-             <AchievementCard
-               title={achievementCards[0].title}
-               description={achievementCards[0].description}
-               reward={achievementCards[0].reward}
-               timeLeft={achievementCards[0].timeLeft}
-               emoji={achievementCards[0].emoji}
-               containerClassName="relative z-10"
-             />
-
-             <View className="relative">
-               {/* Medium and Small cascade cards overlapping 50% under Card 1 */}
-               <AchievementCascadeCard
-                 variant="medium"
-                 title={achievementCards[1].title}
-                 description=""
-                 reward={achievementCards[1].reward}
-                 timeLeft=""
-                 emoji={achievementCards[1].emoji}
-                 containerClassName="relative z-5 mx-2"
-                 overlapRatio={0.99}
-               />
-               <AchievementCascadeCard
-                 variant="small"
-                 title=""
-                 description=""
-                 reward={achievementCards[2].reward}
-                 timeLeft=""
-                 emoji={achievementCards[2].emoji}
-                 containerClassName="relative z-0 mx-4"
-                 overlapRatio={0.99}
-               />
-             </View>
-           </View>
-         )}
-
-        {/* Collapse Button */}
-        <View className="items-center mb-8">
-          <Pressable 
-            className="w-10 h-10 rounded-full bg-gray-600 justify-center items-center shadow-lg"
-            onPress={() => setIsAchievementsCollapsed(!isAchievementsCollapsed)}
-          >
-            <Ionicons 
-              name={isAchievementsCollapsed ? "chevron-down" : "chevron-up"} 
-              size={20} 
-              color="#ffffff" 
-            />
-          </Pressable>
-        </View>
-      </View>
+          {/* Collapse Button */}
+          <View className="items-center mb-8">
+            <Pressable 
+              className="w-10 h-10 rounded-full bg-gray-600 justify-center items-center shadow-lg"
+              onPress={() => setIsAchievementsCollapsed(!isAchievementsCollapsed)}
+            >
+              <Ionicons 
+                name={isAchievementsCollapsed ? "chevron-down" : "chevron-up"} 
+                size={20} 
+                color="#ffffff" 
+              />
+            </Pressable>
+          </View>
+          </View>
+        )}
       </Animated.View>
 
-      {/* Spacer for Achievement Cards */}
-      <View style={{ height: isAchievementsCollapsed ? 150 : 400 }} />
+      {/* Spacer for Achievement Cards - Only for Home view */}
+      {currentView === 'home' && (
+        <View style={{ height: isAchievementsCollapsed ? 150 : 400 }} />
+      )}
 
-      {/* Content */}
+      {/* Content with Carousel */}
       <View style={{ paddingHorizontal: 24 }}>
+       
 
-        {/* Stats */}
-        <View className="flex-row gap-1 mb-1">
-          <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-            <Text className="text-2xl font-bold text-white">145</Text>
-            <Text className="text-xs font-medium text-white">Cigs avoided</Text>
-          </View>
-          <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-            <Text className="text-2xl font-bold text-white">127$</Text>
-            <Text className="text-xs font-medium text-white">Money saved</Text>
-          </View>
-        </View>
-         <View className="flex-row gap-1 mb-6">
-          <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-            <Text className="text-2xl font-bold text-white">2h</Text>
-            <Text className="text-xs font-medium text-white">Time saved</Text>
-          </View>
-          <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-            <Text className="text-2xl font-bold text-white">8/20</Text>
-            <Text className="text-xs font-medium text-white">Slips</Text>
-          </View>
-        </View>
-        <Challenges />
+        {/* Conditional Content Based on View */}
+        {currentView === 'home' && (
+          <>
+            {/* Stats */}
+            <View className="flex-row gap-1 mb-1">
+              <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+                <Text className="text-2xl font-bold text-white">145</Text>
+                <Text className="text-xs font-medium text-white">Cigs avoided</Text>
+              </View>
+              <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+                <Text className="text-2xl font-bold text-white">127$</Text>
+                <Text className="text-xs font-medium text-white">Money saved</Text>
+              </View>
+            </View>
+             <View className="flex-row gap-1 mb-6">
+              <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+                <Text className="text-2xl font-bold text-white">2h</Text>
+                <Text className="text-xs font-medium text-white">Time saved</Text>
+              </View>
+              <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+                <Text className="text-2xl font-bold text-white">8/20</Text>
+                <Text className="text-xs font-medium text-white">Slips</Text>
+              </View>
+            </View>
+            <Challenges />
 
-        {/* Craving SOS Button */}
-        <Pressable className="bg-red-500 rounded-xl py-4 items-center" onPress={onShowCravingSOS}>
-          <Text className="text-white text-lg font-bold">Craving SOS</Text>
-        </Pressable>
+            {/* Craving SOS Button */}
+            <Pressable className="bg-red-500 rounded-xl py-4 items-center" onPress={onShowCravingSOS}>
+              <Text className="text-white text-lg font-bold">Craving SOS</Text>
+            </Pressable>
+          </>
+        )}
+
+        {currentView === 'achievements' && (
+          <View className="items-center py-8 border-2 border-white">
+            <Achievements onBack={ () => {}} />
+          </View>
+        )}
+
+        {currentView === 'shop' && (
+          <View className="items-center py-8">
+            <Text className="text-white text-lg mb-4">Shop Preview</Text>
+            <Pressable 
+              className="bg-green-500 rounded-xl px-6 py-3"
+              onPress={onNavigateToShop}
+            >
+              <Text className="text-white font-bold">Open Shop</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
     </Animated.ScrollView>
   );
