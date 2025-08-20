@@ -5,7 +5,6 @@ import {
   Pressable,
   ScrollView,
   Dimensions,
-  Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +34,6 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   const isDark = theme === 'dark';
   const { selectedBuddyId, gender, userCoins, setShowCoinPurchase } = useApp();
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
-  const scrollY = new Animated.Value(0);
   
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
 
