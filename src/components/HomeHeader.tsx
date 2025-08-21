@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Timer from './Timer';
+import CoinIcon from "../assets/icons/coins.svg";
 
 interface HomeHeaderProps {
   currentView: 'home' | 'achievements' | 'shop';
@@ -30,17 +31,18 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   return (
     <View className="absolute top-0 left-0 right-0 p-6" style={{ height: 140 }}>
       <View className="flex-row justify-between items-start mb-8">
+        {/* Profile Icon */}
         <Pressable 
-          className="w-10 h-10 rounded-full bg-white/20 justify-center items-center"
+          className="w-8 h-8 rounded-full bg-black/50 justify-center items-center p-1"
           onPress={onNavigateToProfile}
         >
-          <Ionicons name="person-outline" size={24} color="#ffffff" />
+          <Ionicons name="person-outline" size={18} color="#ffffff" />
         </Pressable>
 
         {/* Carousel Header */}
         <View className="rounded-xl items-center">
           {/* Title */}
-          <Text className="text-xl font-bold text-white">
+          <Text className="text-lg font-bold text-indigo-950 leading-7 text-center">
             {getViewTitle()}
           </Text>
           
@@ -49,44 +51,51 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
 
           {/* Preview content for other views */}
           {currentView === 'achievements' && (
-            <View className="items-center mt-2">
-              <Text className="text-sm text-white opacity-80">Tap to view achievements</Text>
+            <View className="items-center">
+              <View className="flex-row items-baseline">
+                <Text className="text-3xl font-bold text-indigo-950">16</Text>
+                <Text className="text-lg font-bold text-indigo-950/50">/20</Text>
+              </View>
+              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-1">Badges collected</Text>
             </View>
           )}
 
           {currentView === 'shop' && (
-            <View className="items-center mt-2">
-              <Text className="text-sm text-white opacity-80">Tap to open shop</Text>
+           <View className="items-center">
+              <View className="flex-row items-baseline">
+                <Text className="text-3xl font-bold text-indigo-950">13</Text>
+              </View>
+              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-1">Goodies available</Text>
             </View>
           )}
         </View>
-        
+        {/* user Coins */}
         <Pressable 
-          className="flex-row items-center bg-white/20 px-3 py-2 rounded-full gap-2"
+          className="flex-row items-center bg-black/50 w-[66px] h-8 rounded-3xl py-1 px-2.5 gap-2"
           onPress={onCoinPurchase}
         >
-          <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-          <Text className="text-base font-bold text-white">{userCoins}</Text>
+          <Text className="text-base font-semibold text-amber-500 leading-6">{userCoins}</Text>
+          <CoinIcon width={16} height={16} />
         </Pressable>
       </View>
 
       {/* Carousel Navigation Dots - Inside Header Area */}
-      <View className="flex-row justify-center mt-4">
+      <View className="absolute top-[110px] left-[167px] flex-row bg-black/30 w-10 h-3 rounded-full px-1 py-0.5 gap-1">
         <Pressable 
-          className={`w-2 h-2 rounded-full mx-1 ${
-            currentView === 'achievements' ? 'bg-white' : 'bg-white/40'
+          className={`w-2 h-2 rounded-full ${
+            currentView === 'achievements' ? 'bg-white' : 'bg-black/30'
           }`}
           onPress={() => onViewChange('achievements')}
         />
         <Pressable 
-          className={`w-2 h-2 rounded-full mx-1 ${
-            currentView === 'home' ? 'bg-white' : 'bg-white/40'
+          className={`w-2 h-2 rounded-full ${
+            currentView === 'home' ? 'bg-white' : 'bg-black/30'
           }`}
           onPress={() => onViewChange('home')}
         />
         <Pressable 
-          className={`w-2 h-2 rounded-full mx-1 ${
-            currentView === 'shop' ? 'bg-white' : 'bg-white/40'
+          className={`w-2 h-2 rounded-full ${
+            currentView === 'shop' ? 'bg-white' : 'bg-black/30'
           }`}
           onPress={() => onViewChange('shop')}
         />

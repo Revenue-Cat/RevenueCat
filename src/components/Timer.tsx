@@ -37,23 +37,23 @@ const Timer: React.FC = () => {
   }, []);
 
   return (
-    <View className="flex-row gap-6">
+    <View className="flex-row gap-1">
       {/* Days */}
       <View className="items-center">
-        <Text className="text-4xl font-bold text-white">{timeElapsed.days}</Text>
-        <Text className="text-sm text-white opacity-80">Days</Text>
+        <Text className="text-3xl font-semibold text-indigo-950 leading-9 text-center">{timeElapsed.days}</Text>
+        <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">Days</Text>
       </View>
       
       {/* Hours */}
       <View className="items-center">
-        <Text className="text-4xl font-bold text-white">{timeElapsed.hours}</Text>
-        <Text className="text-sm text-white opacity-80">Hours</Text>
+        <Text className="text-3xl font-semibold text-indigo-950 leading-9 text-center">{timeElapsed.hours}</Text>
+        <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">Hours</Text>
       </View>
       
       {/* Minutes */}
       <View className="items-center">
-        <Text className="text-4xl font-bold text-white">{timeElapsed.minutes}</Text>
-        <Text className="text-sm text-white opacity-80">Minutes</Text>
+        <Text className="text-3xl font-semibold text-indigo-950 leading-9 text-center">{timeElapsed.minutes}</Text>
+        <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">Minutes</Text>
       </View>
     </View>
   );
