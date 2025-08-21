@@ -313,7 +313,7 @@ const Home: React.FC<HomeProps> = ({
           >
             {/* Achievement Cards - Only show for Home view */}
             {currentView === 'home' && (
-              <View className="relative px-5 border-2 border-orange-500">
+              <View className="relative px-5">
                 {/* Toggle Arrow Button */}
                 <Pressable 
                   className="absolute bottom-5 left-1/2 transform -translate-x-1/2 z-10 bg-black/20 rounded-full justify-center items-center border-2 border-green-500"
