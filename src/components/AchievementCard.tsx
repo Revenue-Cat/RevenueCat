@@ -48,4 +48,4 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
   );
 };
 
-export default AchievementCard;
+export default React.memo(AchievementCard);

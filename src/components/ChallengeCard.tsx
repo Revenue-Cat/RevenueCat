@@ -106,4 +106,4 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   );
 };
 
-export default ChallengeCard;
+export default React.memo(ChallengeCard);

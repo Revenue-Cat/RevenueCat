@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ChallengeCard, { ChallengeCardProps } from '../components/ChallengeCard';
 import Challenge1Icon from '../assets/challenges/challenge1.svg';
 
+// Move challenges array outside component to prevent recreation
 const sampleChallenges: ChallengeCardProps[] = [
   {
     title: 'Master of air',
@@ -86,7 +87,41 @@ const sampleChallenges: ChallengeCardProps[] = [
 
 const Challenges: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const visibleChallenges = isCollapsed ? sampleChallenges.slice(0, 3) : sampleChallenges;
+  
+  // Memoize the visible challenges to prevent recalculation
+  const visibleChallenges = useMemo(() => 
+    isCollapsed ? sampleChallenges.slice(0, 3) : sampleChallenges,
+    [isCollapsed]
+  );
+
+  // Memoize the toggle callback
+  const toggleCollapsed = useCallback(() => {
+    setIsCollapsed(!isCollapsed);
+  }, [isCollapsed]);
+
+  // Memoize the check-in callback
+  const handleCheckIn = useCallback(() => {
+    // Handle check-in logic here
+  }, []);
+
+  // Memoize the challenges list
+  const challengesList = useMemo(() => (
+    <View className="px-0">
+      {visibleChallenges.map((ch, idx) => (
+        <ChallengeCard key={`${ch.title}-${idx}`} {...ch} onCheckIn={handleCheckIn} />
+      ))}
+
+      {/* Collapse/Expand Button */}
+      <View className="items-center mt-2 mb-8">
+        <Pressable
+          className="w-10 h-10 rounded-full bg-gray-600 justify-center items-center shadow-lg"
+          onPress={toggleCollapsed}
+        >
+          <Ionicons name={isCollapsed ? 'chevron-down' : 'chevron-up'} size={20} color="#ffffff" />
+        </Pressable>
+      </View>
+    </View>
+  ), [visibleChallenges, handleCheckIn, toggleCollapsed, isCollapsed]);
 
   return (
     <View className="flex-1">
@@ -95,24 +130,10 @@ const Challenges: React.FC = () => {
         <Text className="text-white text-center text-3xl font-bold mb-6">Challenges</Text>
 
         {/* Challenge List */}
-        <View className="px-0">
-          {visibleChallenges.map((ch, idx) => (
-            <ChallengeCard key={`${ch.title}-${idx}`} {...ch} onCheckIn={() => {}} />
-          ))}
-
-          {/* Collapse/Expand Button */}
-          <View className="items-center mt-2 mb-8">
-            <Pressable
-              className="w-10 h-10 rounded-full bg-gray-600 justify-center items-center shadow-lg"
-              onPress={() => setIsCollapsed(!isCollapsed)}
-            >
-              <Ionicons name={isCollapsed ? 'chevron-down' : 'chevron-up'} size={20} color="#ffffff" />
-            </Pressable>
-          </View>
-        </View>
+        {challengesList}
       </ScrollView>
     </View>
   );
 };
 
-export default Challenges;
+export default React.memo(Challenges);

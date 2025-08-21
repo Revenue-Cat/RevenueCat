@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -41,14 +41,15 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
   
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
-
-  const achievements: Achievement[] = [
+  
+  // Memoize the achievements array to prevent recreation on every render
+  const achievements: Achievement[] = useMemo(() => [
     {
       id: "1",
       name: "Breathe",
       description: "Complete your first breathing exercise session",
       emoji: "🦙",
-              icon: AchievementBreatheIcon,
+      icon: AchievementBreatheIcon,
       unlocked: true,
       notificationCount: 13
     },
@@ -213,56 +214,71 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
       emoji: "🙏",
       unlocked: false
     }
-  ];
+  ], []);
+
+  // Memoize the achievement selection callback
+  const handleAchievementPress = useCallback((achievement: Achievement) => {
+    setSelectedAchievement(achievement);
+  }, []);
+
+  // Memoize the modal close callback
+  const handleCloseModal = useCallback(() => {
+    setSelectedAchievement(null);
+  }, []);
+
+  // Memoize the achievements grid
+  const achievementsGrid = useMemo(() => (
+    <View className="flex-row flex-wrap gap-0">
+      {achievements.map((achievement, index) => (
+        <View key={`${achievement.id}-${index}`} className="items-center w-1/4 p-2">
+          <Pressable
+            className={`w-[75px] h-[75px] rounded-full relative ${
+              achievement.unlocked 
+                ? 'bg-gradient-to-br from-green-400 to-yellow-400 border-2 border-green-300 shadow-lg' 
+                : 'bg-white/10 border border-white/20'
+            }`}
+            onPress={() => handleAchievementPress(achievement)}
+          >
+            {achievement.unlocked ? (
+              <>
+                {achievement.icon ? (
+                    <Image source={AchievementBreatheIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                ) : (
+                    <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+                  
+                )}
+                <View className="absolute -top-2 -right-2 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
+                  <Text className="text-xs font-bold text-white">{achievement.notificationCount}</Text>
+                </View>
+              </>
+            ) : (
+              <>
+                <View className="items-center w-full h-full">
+                    <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+                </View>
+                <View className="absolute -top-2 -right-2 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
+                  <Image source={LockIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+                </View>
+              </>
+            )}
+          </Pressable>
+          <Text className={`text-xs mt-2 text-center ${achievement.unlocked ? 'text-white' : 'text-white/50'}`}>
+            {achievement.name}
+          </Text>
+        </View>
+      ))}
+    </View>
+  ), [achievements, handleAchievementPress]);
 
   return (
     <View className="flex-1 h-full py-2">
       <ScrollView className="flex-1" >
         {/* Achievements Grid */}
-        <View className="flex-row flex-wrap gap-0">
-          {achievements.map((achievement, index) => (
-            <View key={`${achievement.id}-${index}`} className="items-center w-1/4 p-2">
-              <Pressable
-                className={`w-[75px] h-[75px] rounded-full relative ${
-                  achievement.unlocked 
-                    ? 'bg-gradient-to-br from-green-400 to-yellow-400 border-2 border-green-300 shadow-lg' 
-                    : 'bg-white/10 border border-white/20'
-                }`}
-                onPress={() => setSelectedAchievement(achievement)}
-              >
-                {achievement.unlocked ? (
-                  <>
-                    {achievement.icon ? (
-                        <Image source={AchievementBreatheIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
-                    ) : (
-                        <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
-                      
-                    )}
-                    <View className="absolute -top-2 -right-2 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
-                      <Text className="text-xs font-bold text-white">{achievement.notificationCount}</Text>
-                    </View>
-                  </>
-                ) : (
-                  <>
-                    <View className="items-center w-full h-full">
-                        <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
-                    </View>
-                    <View className="absolute -top-2 -right-2 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
-                      <Image source={LockIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
-                    </View>
-                  </>
-                )}
-              </Pressable>
-              <Text className={`text-xs mt-2 text-center ${achievement.unlocked ? 'text-white' : 'text-white/50'}`}>
-                {achievement.name}
-              </Text>
-            </View>
-          ))}
-        </View>
+        {achievementsGrid}
       </ScrollView>
 
       {selectedAchievement && (
-        <SlideModal visible={true} onClose={() => setSelectedAchievement(null)} title="Achievement details">
+        <SlideModal visible={true} onClose={handleCloseModal} title="Achievement details">
           <View className="items-center">
             <View className="w-24 h-24 bg-white/10 rounded-full justify-center items-center mb-4">
               {selectedAchievement.unlocked ? (
@@ -287,6 +303,4 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   );
 };
 
-
-
-export default Achievements; 
+export default React.memo(Achievements); 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -27,6 +27,34 @@ interface HomeProps {
   onNavigateToShop: () => void;
 }
 
+// Achievement Cards Data - moved outside component to prevent recreation
+const achievementCards = [
+  {
+    id: 1,
+    title: "First spark",
+    description: "First 24 hours without smoke...",
+    reward: 150,
+    timeLeft: "4h left",
+    emoji: "🐻"
+  },
+  {
+    id: 2,
+    title: "Hold on",
+    description: "Three days smoke-free — pro...",
+    reward: 300,
+    timeLeft: "2d 23h left",
+    emoji: "🐨"
+  },
+  {
+    id: 3,
+    title: "Steel week",
+    description: "One week without nicotine —...",
+    reward: 500,
+    timeLeft: "5d 12h left",
+    emoji: "🦓"
+  }
+];
+
 const Home: React.FC<HomeProps> = ({
   onShowCravingSOS,
   onShowBreathingExercise,
@@ -52,7 +80,7 @@ const Home: React.FC<HomeProps> = ({
   const maxScrollReached = useRef(0);
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  // Timer logic
+  // Timer logic - optimized to prevent unnecessary re-renders
   const [timeElapsed, setTimeElapsed] = useState({
     days: 0,
     hours: 0,
@@ -61,57 +89,34 @@ const Home: React.FC<HomeProps> = ({
   });
   const [currentView, setCurrentView] = useState<'home' | 'achievements' | 'shop'>('home');
 
-  // Achievement Cards Data
-  const achievementCards = [
-    {
-      id: 1,
-      title: "First spark",
-      description: "First 24 hours without smoke...",
-      reward: 150,
-      timeLeft: "4h left",
-      emoji: "🐻"
-    },
-    {
-      id: 2,
-      title: "Hold on",
-      description: "Three days smoke-free — pro...",
-      reward: 300,
-      timeLeft: "2d 23h left",
-      emoji: "🐨"
-    },
-    {
-      id: 3,
-      title: "Steel week",
-      description: "One week without nicotine —...",
-      reward: 500,
-      timeLeft: "5d 12h left",
-      emoji: "🦓"
-    }
-  ];
+  // Memoize the handleScroll callback to prevent recreation on every render
+  const handleScroll = useCallback(
+    Animated.event(
+      [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+      { 
+        useNativeDriver: false,
+        listener: (event: any) => {
+          const scrollPosition = event.nativeEvent.contentOffset.y;
+          // Track the maximum scroll position reached
+          maxScrollReached.current = Math.max(maxScrollReached.current, scrollPosition);
+          
+          // Only shrink when scrolling down past threshold, and stay shrunk once reached
+          if (maxScrollReached.current > 50 && !isBackgroundShrunk) {
+            setIsBackgroundShrunk(true);
+          }
 
-  const handleScroll = Animated.event(
-    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-    { 
-      useNativeDriver: false,
-      listener: (event: any) => {
-        const scrollPosition = event.nativeEvent.contentOffset.y;
-        // Track the maximum scroll position reached
-        maxScrollReached.current = Math.max(maxScrollReached.current, scrollPosition);
-        
-        // Only shrink when scrolling down past threshold, and stay shrunk once reached
-        if (maxScrollReached.current > 50 && !isBackgroundShrunk) {
-          setIsBackgroundShrunk(true);
-        }
-
-        // Auto-collapse Achievement Cards when scrolling
-        if (scrollPosition > 10 && !isAchievementsCollapsed) {
-          setIsAchievementsCollapsed(true);
+          // Auto-collapse Achievement Cards when scrolling
+          if (scrollPosition > 10 && !isAchievementsCollapsed) {
+            setIsAchievementsCollapsed(true);
+          }
         }
       }
-    }
+    ),
+    [isBackgroundShrunk, isAchievementsCollapsed]
   );
 
-  const handleHeaderGesture = (event: any) => {
+  // Memoize the header gesture handler
+  const handleHeaderGesture = useCallback((event: any) => {
     if (event.nativeEvent.state === State.END) {
       const { translationX } = event.nativeEvent;
       const threshold = 50;
@@ -132,8 +137,9 @@ const Home: React.FC<HomeProps> = ({
         }
       }
     }
-  };
+  }, [currentView]);
 
+  // Optimized timer effect - only updates when necessary
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeElapsed(prev => {
@@ -161,11 +167,100 @@ const Home: React.FC<HomeProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Preserve scroll state when view changes
-  useEffect(() => {
-    // Don't reset scrollY when view changes - keep the current scroll position
-    // This prevents the ParallaxBackground from jumping back to original position
-  }, [currentView]);
+  // Memoize the buddy image source to prevent recreation
+  const buddyImageSource = useMemo(() => 
+    buddyAssets[selectedBuddyId as BuddyKey][sexKey], 
+    [selectedBuddyId, sexKey]
+  );
+
+  // Memoize the achievement cards rendering
+  const achievementCardsContent = useMemo(() => (
+    <View className="mb-1">            
+      {achievementCards.map((card) => (
+        <AchievementCard
+          key={card.id}
+          title={card.title}
+          description={card.description}
+          reward={card.reward}
+          timeLeft={card.timeLeft}
+          emoji={card.emoji}
+        />
+      ))}
+    </View>
+  ), []);
+
+  // Memoize the collapsed achievement view
+  const collapsedAchievementView = useMemo(() => (
+    <View className="mb-1 relative" style={{ minHeight: 160 }}>
+      {/* Card Stack Background - Cascade Effect */}
+      <View className="absolute top-0 left-0 right-0 h-56" style={{ zIndex: 1 }}>
+        {/* Card 2 - Middle (medium) - positioned in middle */}
+        <View className="absolute top-28 left-4 right-4 h-10 bg-white/55 rounded-xl" />
+        {/* Card 3 - Back (smallest) - positioned behind everything */}
+        <View className="absolute top-24 left-2 right-2 h-12 bg-white/75 rounded-xl" />
+      </View>
+
+      {/* Main Card - Front layer */}
+      <View style={{ zIndex: 2, marginTop: 0 }}>
+        <AchievementCard
+          title={achievementCards[0].title}
+          description={achievementCards[0].description}
+          reward={achievementCards[0].reward}
+          timeLeft={achievementCards[0].timeLeft}
+          emoji={achievementCards[0].emoji}
+        />
+      </View>
+    </View>
+  ), []);
+
+  // Memoize the stats content
+  const statsContent = useMemo(() => (
+    <>
+      <View className="flex-row gap-1 mb-1">
+        <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+          <Text className="text-2xl font-bold text-white">145</Text>
+          <Text className="text-xs font-medium text-white">Cigs avoided</Text>
+        </View>
+        <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+          <Text className="text-2xl font-bold text-white">127$</Text>
+          <Text className="text-xs font-medium text-white">Money saved</Text>
+        </View>
+      </View>
+      <View className="flex-row gap-1 mb-6">
+        <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+          <Text className="text-2xl font-bold text-white">2h</Text>
+          <Text className="text-xs font-medium text-white">Time saved</Text>
+        </View>
+        <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
+          <Text className="text-2xl font-bold text-white">8/20</Text>
+          <Text className="text-xs font-medium text-white">Slips</Text>
+        </View>
+      </View>
+    </>
+  ), []);
+
+  // Memoize the toggle achievements callback
+  const toggleAchievements = useCallback(() => {
+    setIsAchievementsCollapsed(!isAchievementsCollapsed);
+  }, [isAchievementsCollapsed]);
+
+  // Memoize the coin purchase callback
+  const handleCoinPurchase = useCallback(() => {
+    setShowCoinPurchase(true);
+  }, [setShowCoinPurchase]);
+
+  // Memoize the navigation callbacks
+  const handleNavigateToProfile = useCallback(() => {
+    onNavigateToProfile();
+  }, [onNavigateToProfile]);
+
+  const handleNavigateToShop = useCallback(() => {
+    onNavigateToShop();
+  }, [onNavigateToShop]);
+
+  const handleShowCravingSOS = useCallback(() => {
+    onShowCravingSOS();
+  }, [onShowCravingSOS]);
 
   return (
     <View className="flex-1 bg-[#1F1943]">
@@ -190,7 +285,7 @@ const Home: React.FC<HomeProps> = ({
             <View className="flex-row justify-between items-start mb-8">
               <Pressable 
                 className="w-10 h-10 rounded-full bg-white/20 justify-center items-center"
-                onPress={onNavigateToProfile}
+                onPress={handleNavigateToProfile}
               >
                 <Ionicons name="person-outline" size={24} color="#ffffff" />
               </Pressable>
@@ -242,7 +337,7 @@ const Home: React.FC<HomeProps> = ({
               
               <Pressable 
                 className="flex-row items-center bg-white/20 px-3 py-2 rounded-full gap-2"
-                onPress={() => setShowCoinPurchase(true)}
+                onPress={handleCoinPurchase}
               >
                 <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
                 <Text className="text-base font-bold text-white">{userCoins}</Text>
@@ -275,7 +370,7 @@ const Home: React.FC<HomeProps> = ({
           {/* Fixed Buddy Icon - On top of ParallaxBackground */}
           <Animated.View className="absolute top-0 left-0 right-0 z-[60] items-center justify-end" style={{ height: 360 }}>
             <Animated.Image
-              source={buddyAssets[selectedBuddyId as BuddyKey][sexKey]}
+              source={buddyImageSource}
               style={{ 
                 width: 100, 
                 height: 220,
@@ -317,7 +412,7 @@ const Home: React.FC<HomeProps> = ({
                 {/* Toggle Arrow Button */}
                 <Pressable 
                   className="absolute bottom-5 left-1/2 transform -translate-x-1/2 z-10 bg-black/20 rounded-full justify-center items-center border-2 border-green-500"
-                  onPress={() => setIsAchievementsCollapsed(!isAchievementsCollapsed)}
+                  onPress={toggleAchievements}
                 >
                   <Ionicons 
                     name={isAchievementsCollapsed ? "chevron-down" : "chevron-up"} 
@@ -326,42 +421,7 @@ const Home: React.FC<HomeProps> = ({
                   />
                 </Pressable>
 
-                {!isAchievementsCollapsed ? (
-                 <View className="mb-1">            
-                   {achievementCards.map((card) => (
-                     <AchievementCard
-                       key={card.id}
-                       title={card.title}
-                       description={card.description}
-                       reward={card.reward}
-                       timeLeft={card.timeLeft}
-                       emoji={card.emoji}
-                     />
-                   ))}
-                 </View>
-               ) : (
-                 /* Main Achievement Card - Collapsed View with Cascade Effect */
-                 <View className="mb-1 relative" style={{ minHeight: 160 }}>
-                    {/* Card Stack Background - Cascade Effect */}
-                    <View className="absolute top-0 left-0 right-0 h-56" style={{ zIndex: 1 }}>
-                    {/* Card 2 - Middle (medium) - positioned in middle */}
-                    <View className="absolute top-28 left-4 right-4 h-10 bg-white/55 rounded-xl" />
-                    {/* Card 3 - Back (smallest) - positioned behind everything */}
-                    <View className="absolute top-24 left-2 right-2 h-12 bg-white/75 rounded-xl" />
-                  </View>
-
-                   {/* Main Card - Front layer */}
-                   <View style={{ zIndex: 2, marginTop: 0 }}>
-                     <AchievementCard
-                       title={achievementCards[0].title}
-                       description={achievementCards[0].description}
-                       reward={achievementCards[0].reward}
-                       timeLeft={achievementCards[0].timeLeft}
-                       emoji={achievementCards[0].emoji}
-                     />
-                   </View>
-                 </View>
-               )}
+                {!isAchievementsCollapsed ? achievementCardsContent : collapsedAchievementView}
               </View>
             )}
 
@@ -378,30 +438,11 @@ const Home: React.FC<HomeProps> = ({
              {currentView === 'home' && (
                <>
                  {/* Stats */}
-                 <View className="flex-row gap-1 mb-1">
-                   <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-                     <Text className="text-2xl font-bold text-white">145</Text>
-                     <Text className="text-xs font-medium text-white">Cigs avoided</Text>
-                   </View>
-                   <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-                     <Text className="text-2xl font-bold text-white">127$</Text>
-                     <Text className="text-xs font-medium text-white">Money saved</Text>
-                   </View>
-                 </View>
-                  <View className="flex-row gap-1 mb-6">
-                   <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-                     <Text className="text-2xl font-bold text-white">2h</Text>
-                     <Text className="text-xs font-medium text-white">Time saved</Text>
-                   </View>
-                   <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-                     <Text className="text-2xl font-bold text-white">8/20</Text>
-                     <Text className="text-xs font-medium text-white">Slips</Text>
-                   </View>
-                 </View>
+                 {statsContent}
                  <Challenges />
 
                  {/* Craving SOS Button */}
-                 <Pressable className="bg-red-500 rounded-xl py-4 items-center" onPress={onShowCravingSOS}>
+                 <Pressable className="bg-red-500 rounded-xl py-4 items-center" onPress={handleShowCravingSOS}>
                    <Text className="text-white text-lg font-bold">Craving SOS</Text>
                  </Pressable>
                </>
@@ -416,7 +457,7 @@ const Home: React.FC<HomeProps> = ({
                  <Text className="text-white text-lg mb-4">Shop Preview</Text>
                  <Pressable 
                    className="bg-green-500 rounded-xl px-6 py-3"
-                   onPress={onNavigateToShop}
+                   onPress={handleNavigateToShop}
                  >
                    <Text className="text-white font-bold">Open Shop</Text>
                  </Pressable>
@@ -430,4 +471,4 @@ const Home: React.FC<HomeProps> = ({
   );
 };
 
-export default Home;
+export default React.memo(Home);

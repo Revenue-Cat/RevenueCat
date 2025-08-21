@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 
 type ShopTab = 'characters' | 'backgrounds' | 'accessories';
 export type UserGender = 'man' | 'lady' | 'any';
@@ -155,12 +155,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     goal,
   ]);
 
-  // Actions
-  const setUserCoins = (coins: number) => setUserCoinsState(coins);
-  const setSelectedCharacter = (character: ShopItem) => setSelectedCharacterState(character);
-  const setSelectedBackground = (background: ShopItem) => setSelectedBackgroundState(background);
+  // Memoize all action functions to prevent recreation
+  const setUserCoins = useCallback((coins: number) => setUserCoinsState(coins), []);
+  const setSelectedCharacter = useCallback((character: ShopItem) => setSelectedCharacterState(character), []);
+  const setSelectedBackground = useCallback((background: ShopItem) => setSelectedBackgroundState(background), []);
 
-  const purchaseItem = (item: ShopItem, category: ShopTab): boolean => {
+  const purchaseItem = useCallback((item: ShopItem, category: ShopTab): boolean => {
     if (userCoins < item.price) return false;
     setUserCoinsState(prev => prev - item.price);
 
@@ -176,26 +176,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         break;
     }
     return true;
-  };
+  }, [userCoins]);
 
-  const openShopWithTab = (tab: ShopTab) => {
+  const openShopWithTab = useCallback((tab: ShopTab) => {
     setSelectedShopTab(tab);
     setShowShop(true);
-  };
+  }, []);
 
-  // Selection setters (exposed)
-  const setGender = (g: UserGender) => setGenderState(g);
-  const setSelectedBuddyId = (id: string) => setSelectedBuddyIdState(id);
-  const setBuddyName = (name: string) => setBuddyNameState(name);
+  // Selection setters (exposed) - memoized
+  const setGender = useCallback((g: UserGender) => setGenderState(g), []);
+  const setSelectedBuddyId = useCallback((id: string) => setSelectedBuddyIdState(id), []);
+  const setBuddyName = useCallback((name: string) => setBuddyNameState(name), []);
 
-  // Setup setters (exposed)
-  const setSmokeType = (value: string) => setSmokeTypeState(value);
-  const setDailyAmount = (value: string) => setDailyAmountState(value);
-  const setPackPrice = (value: string) => setPackPriceState(value);
-  const setPackPriceCurrency = (value: string) => setPackPriceCurrencyState(value);
-  const setGoal = (value: string) => setGoalState(value);
+  // Setup setters (exposed) - memoized
+  const setSmokeType = useCallback((value: string) => setSmokeTypeState(value), []);
+  const setDailyAmount = useCallback((value: string) => setDailyAmountState(value), []);
+  const setPackPrice = useCallback((value: string) => setPackPriceState(value), []);
+  const setPackPriceCurrency = useCallback((value: string) => setPackPriceCurrencyState(value), []);
+  const setGoal = useCallback((value: string) => setGoalState(value), []);
 
-  const value: AppState = {
+  // Memoize the context value to prevent unnecessary re-renders
+  const value: AppState = useMemo(() => ({
     userCoins,
     selectedCharacter,
     selectedBackground,
@@ -235,7 +236,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setPackPrice,
     setPackPriceCurrency,
     setGoal,
-  };
+  }), [
+    userCoins,
+    selectedCharacter,
+    selectedBackground,
+    ownedCharacters,
+    ownedBackgrounds,
+    ownedAccessories,
+    gender,
+    selectedBuddyId,
+    buddyName,
+    smokeType,
+    dailyAmount,
+    packPrice,
+    packPriceCurrency,
+    goal,
+    showShop,
+    showCoinPurchase,
+    selectedShopTab,
+    setUserCoins,
+    setSelectedCharacter,
+    setSelectedBackground,
+    purchaseItem,
+    setShowShop,
+    setShowCoinPurchase,
+    setSelectedShopTab,
+    openShopWithTab,
+    setGender,
+    setSelectedBuddyId,
+    setBuddyName,
+    setSmokeType,
+    setDailyAmount,
+    setPackPrice,
+    setPackPriceCurrency,
+    setGoal,
+  ]);
 
   return (
     <AppContext.Provider value={value}>
