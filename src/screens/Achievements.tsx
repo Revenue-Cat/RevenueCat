@@ -105,14 +105,14 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   ];
 
   return (
-    <View className="flex-1">
-      <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
+    <View className="flex-1 h-full border-2 border-red-500">
+      <ScrollView className="flex-1" >
         {/* Achievements Grid */}
-        <View className="flex-row flex-wrap gap-2 justify-center">
+        <View className="flex-row flex-wrap gap-2 justify-center ">
           {achievements.map((achievement) => (
             <Pressable
               key={achievement.id}
-              className={`w-[70px] aspect-square rounded-xl justify-center items-center ${
+              className={`w-[70px] aspect-square rounded-xl justify-center items-center p-2 ${
                 achievement.unlocked ? 'bg-white/10' : 'bg-white/5'
               }`}
               onPress={() => setSelectedAchievement(achievement)}

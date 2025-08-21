@@ -9,7 +9,7 @@ interface ParallaxBackgroundProps {
 
 const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({ 
   scrollY, 
-  height = 330,
+  height = 300,
   children
 }) => {
   // Floating animation values
@@ -23,24 +23,24 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       className="relative w-full z-10 overflow-hidden" 
       style={{ height }}
     >
-      {/* Background Layer 4 - Furthest back (slowest) */}
+      {/* Background Layer 4 - Furthest back (fastest) */}
       <Animated.View className="absolute top-0 left-0 right-0" style={{ zIndex: 40 }}>
         <Animated.Image
           source={require('../assets/backgrounds/parallax/slice4.png')}
           style={{ 
             width: '100%', 
-            height: 320,
+            height: 375,
             transform: [
               {
                 translateY: Animated.add(
                   scrollY.interpolate({
-                    inputRange: [0, 50],
-                    outputRange: [0, -20],
+                    inputRange: [0, 80],
+                    outputRange: [0, -40],
                     extrapolate: 'clamp'
                   }),
                   floatAnim1.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [0, -9]
+                    outputRange: [0, -40]
                   })
                 )
               }
@@ -56,7 +56,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
           source={require('../assets/backgrounds/parallax/slice3.png')}
           style={{ 
             width: '100%', 
-            height: 300,
+            height: 350,
             transform: [
               {
                 translateY: Animated.add(
@@ -67,7 +67,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
                   }),
                   floatAnim2.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [0, -6]
+                    outputRange: [0, -7]
                   })
                 )
               },
@@ -90,7 +90,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
           source={require('../assets/backgrounds/parallax/slice2.png')}
           style={{ 
             width: '100%', 
-            height: 260,
+            height: 325,
             transform: [
               {
                 translateY: Animated.add(
@@ -101,14 +101,14 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
                   }),
                   floatAnim3.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [0, -4]
+                    outputRange: [0, -5]
                   })
                 )
               },
               {
                 rotate: scrollY.interpolate({
                   inputRange: [0, 50],
-                  outputRange: ['0deg', '-1.5deg'],
+                  outputRange: ['0deg', '-1deg'],
                   extrapolate: 'clamp'
                 })
               }
@@ -118,24 +118,24 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
         />
       </Animated.View>
       
-      {/* Background Layer 1 - Front layer (fastest) */}
+      {/* Background Layer 1 - Front layer (slowest) */}
       <Animated.View className="absolute top-0 left-0 right-0" style={{ zIndex: 10 }}>
         <Animated.Image
           source={require('../assets/backgrounds/parallax/slice1.png')}
           style={{ 
             width: '100%', 
-            height: 210,
+            height: 300,
             transform: [
               {
                 translateY: Animated.add(
                   scrollY.interpolate({
                     inputRange: [0, 50],
-                    outputRange: [0, -5],
+                    outputRange: [0, -2],
                     extrapolate: 'clamp'
                   }),
                   floatAnim4.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [0, -2]
+                    outputRange: [0, -1]
                   })
                 )
               },

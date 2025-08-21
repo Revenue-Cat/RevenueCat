@@ -273,7 +273,7 @@ const Home: React.FC<HomeProps> = ({
           </View>
 
           {/* Fixed Buddy Icon - On top of ParallaxBackground */}
-          <Animated.View className="absolute top-0 left-0 right-0 z-[60] items-center justify-end" style={{ height: 330 }}>
+          <Animated.View className="absolute top-0 left-0 right-0 z-[60] items-center justify-end" style={{ height: 360 }}>
             <Animated.Image
               source={buddyAssets[selectedBuddyId as BuddyKey][sexKey]}
               style={{ 
@@ -281,8 +281,8 @@ const Home: React.FC<HomeProps> = ({
                 height: 220,
                 transform: [{
                   translateY: scrollY.interpolate({
-                    inputRange: [0, 200],
-                    outputRange: [0, -30],
+                    inputRange: [0, 80],
+                    outputRange: [0, -100],
                     extrapolate: 'clamp'
                   })
                 }]
@@ -292,13 +292,24 @@ const Home: React.FC<HomeProps> = ({
           </Animated.View>
 
           {/* Scrollable Content */}
-          <ScrollView
+          <Animated.ScrollView
             onScroll={handleScroll}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 40 }}
-            style={{ flex: 1, marginTop: 200, zIndex: 1000 }}
+            // contentContainerStyle={{ paddingBottom: 40 }}
+            style={{ 
+              flex: 1, 
+              marginTop: 270, 
+              zIndex: 1000,
+              transform: [{
+                translateY: scrollY.interpolate({
+                  inputRange: [0, 100],
+                  outputRange: [0, -100],
+                  extrapolate: 'clamp'
+                })
+              }]
+            }}
           >
             {/* Achievement Cards - Only show for Home view */}
             {currentView === 'home' && (
@@ -397,9 +408,7 @@ const Home: React.FC<HomeProps> = ({
              )}
 
              {currentView === 'achievements' && (
-               <View className="items-center border-2 border-white">
                  <Achievements onBack={ () => {}} />
-               </View>
              )}
 
              {currentView === 'shop' && (
@@ -414,7 +423,7 @@ const Home: React.FC<HomeProps> = ({
                </View>
              )}
            </View>
-         </ScrollView>
+         </Animated.ScrollView>
         </View>
       </PanGestureHandler>
     </View>
