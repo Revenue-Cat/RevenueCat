@@ -254,22 +254,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showShop,
     showCoinPurchase,
     selectedShopTab,
-    setUserCoins,
-    setSelectedCharacter,
-    setSelectedBackground,
     purchaseItem,
-    setShowShop,
-    setShowCoinPurchase,
-    setSelectedShopTab,
     openShopWithTab,
-    setGender,
-    setSelectedBuddyId,
-    setBuddyName,
-    setSmokeType,
-    setDailyAmount,
-    setPackPrice,
-    setPackPriceCurrency,
-    setGoal,
   ]);
 
   return (

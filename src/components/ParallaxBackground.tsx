@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { View, Animated } from 'react-native';
 
 interface ParallaxBackgroundProps {
@@ -18,6 +18,92 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   const floatAnim3 = useRef(new Animated.Value(0)).current;
   const floatAnim4 = useRef(new Animated.Value(0)).current;
 
+  // Memoize the transform calculations to prevent recreation
+  const layer4Transform = useMemo(() => [
+    {
+      translateY: Animated.add(
+        scrollY.interpolate({
+          inputRange: [0, 80],
+          outputRange: [0, -40],
+          extrapolate: 'clamp'
+        }),
+        floatAnim1.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -40]
+        })
+      )
+    }
+  ], [scrollY, floatAnim1]);
+
+  const layer3Transform = useMemo(() => [
+    {
+      translateY: Animated.add(
+        scrollY.interpolate({
+          inputRange: [0, 50],
+          outputRange: [0, -15],
+          extrapolate: 'clamp'
+        }),
+        floatAnim2.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -7]
+        })
+      )
+    },
+    {
+      rotate: scrollY.interpolate({
+        inputRange: [0, 50],
+        outputRange: ['0deg', '2deg'],
+        extrapolate: 'clamp'
+      })
+    }
+  ], [scrollY, floatAnim2]);
+
+  const layer2Transform = useMemo(() => [
+    {
+      translateY: Animated.add(
+        scrollY.interpolate({
+          inputRange: [0, 50],
+          outputRange: [0, -10],
+          extrapolate: 'clamp'
+        }),
+        floatAnim3.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -5]
+        })
+      )
+    },
+    {
+      rotate: scrollY.interpolate({
+        inputRange: [0, 50],
+        outputRange: ['0deg', '-1deg'],
+        extrapolate: 'clamp'
+      })
+    }
+  ], [scrollY, floatAnim3]);
+
+  const layer1Transform = useMemo(() => [
+    {
+      translateY: Animated.add(
+        scrollY.interpolate({
+          inputRange: [0, 50],
+          outputRange: [0, -2],
+          extrapolate: 'clamp'
+        }),
+        floatAnim4.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -1]
+        })
+      )
+    },
+    {
+      rotate: scrollY.interpolate({
+        inputRange: [0, 50],
+        outputRange: ['0deg', '1deg'],
+        extrapolate: 'clamp'
+      })
+    }
+  ], [scrollY, floatAnim4]);
+
   return (
     <View 
       className="relative w-full z-10 overflow-hidden" 
@@ -30,21 +116,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
           style={{ 
             width: '100%', 
             height: 375,
-            transform: [
-              {
-                translateY: Animated.add(
-                  scrollY.interpolate({
-                    inputRange: [0, 80],
-                    outputRange: [0, -40],
-                    extrapolate: 'clamp'
-                  }),
-                  floatAnim1.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, -40]
-                  })
-                )
-              }
-            ]
+            transform: layer4Transform
           }}
           resizeMode="cover"
         />
@@ -57,28 +129,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
           style={{ 
             width: '100%', 
             height: 350,
-            transform: [
-              {
-                translateY: Animated.add(
-                  scrollY.interpolate({
-                    inputRange: [0, 50],
-                    outputRange: [0, -15],
-                    extrapolate: 'clamp'
-                  }),
-                  floatAnim2.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, -7]
-                  })
-                )
-              },
-              {
-                rotate: scrollY.interpolate({
-                  inputRange: [0, 50],
-                  outputRange: ['0deg', '2deg'],
-                  extrapolate: 'clamp'
-                })
-              }
-            ]
+            transform: layer3Transform
           }}
           resizeMode="cover"
         />
@@ -91,28 +142,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
           style={{ 
             width: '100%', 
             height: 325,
-            transform: [
-              {
-                translateY: Animated.add(
-                  scrollY.interpolate({
-                    inputRange: [0, 50],
-                    outputRange: [0, -10],
-                    extrapolate: 'clamp'
-                  }),
-                  floatAnim3.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, -5]
-                  })
-                )
-              },
-              {
-                rotate: scrollY.interpolate({
-                  inputRange: [0, 50],
-                  outputRange: ['0deg', '-1deg'],
-                  extrapolate: 'clamp'
-                })
-              }
-            ]
+            transform: layer2Transform
           }}
           resizeMode="cover"
         />
@@ -125,28 +155,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
           style={{ 
             width: '100%', 
             height: 300,
-            transform: [
-              {
-                translateY: Animated.add(
-                  scrollY.interpolate({
-                    inputRange: [0, 50],
-                    outputRange: [0, -2],
-                    extrapolate: 'clamp'
-                  }),
-                  floatAnim4.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, -1]
-                  })
-                )
-              },
-              {
-                rotate: scrollY.interpolate({
-                  inputRange: [0, 50],
-                  outputRange: ['0deg', '1deg'],
-                  extrapolate: 'clamp'
-                })
-              }
-            ]
+            transform: layer1Transform
           }}
           resizeMode="cover"
         />
@@ -158,4 +167,4 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   );
 };
 
-export default ParallaxBackground;
+export default React.memo(ParallaxBackground);

@@ -85,6 +85,11 @@ const sampleChallenges: ChallengeCardProps[] = [
   
 ];
 
+// Memoized ChallengeCard component to prevent unnecessary re-renders
+const MemoizedChallengeCard = React.memo<ChallengeCardProps>((props) => (
+  <ChallengeCard {...props} />
+));
+
 const Challenges: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   
@@ -96,8 +101,8 @@ const Challenges: React.FC = () => {
 
   // Memoize the toggle callback
   const toggleCollapsed = useCallback(() => {
-    setIsCollapsed(!isCollapsed);
-  }, [isCollapsed]);
+    setIsCollapsed(prev => !prev);
+  }, []);
 
   // Memoize the check-in callback
   const handleCheckIn = useCallback(() => {
@@ -108,7 +113,7 @@ const Challenges: React.FC = () => {
   const challengesList = useMemo(() => (
     <View className="px-0">
       {visibleChallenges.map((ch, idx) => (
-        <ChallengeCard key={`${ch.title}-${idx}`} {...ch} onCheckIn={handleCheckIn} />
+        <MemoizedChallengeCard key={`${ch.title}-${idx}`} {...ch} onCheckIn={handleCheckIn} />
       ))}
 
       {/* Collapse/Expand Button */}
@@ -123,11 +128,16 @@ const Challenges: React.FC = () => {
     </View>
   ), [visibleChallenges, handleCheckIn, toggleCollapsed, isCollapsed]);
 
+  // Memoize the title
+  const title = useMemo(() => (
+    <Text className="text-white text-center text-3xl font-bold mb-6">Challenges</Text>
+  ), []);
+
   return (
     <View className="flex-1">
       <ScrollView className="flex-1" >
         {/* Title */}
-        <Text className="text-white text-center text-3xl font-bold mb-6">Challenges</Text>
+        {title}
 
         {/* Challenge List */}
         {challengesList}

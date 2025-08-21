@@ -225,6 +225,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   const handleCloseModal = useCallback(() => {
     setSelectedAchievement(null);
   }, []);
+  console.log("TESTSS")
 
   // Memoize the achievements grid
   const achievementsGrid = useMemo(() => (

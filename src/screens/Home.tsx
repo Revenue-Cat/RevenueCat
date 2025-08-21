@@ -55,91 +55,15 @@ const achievementCards = [
   }
 ];
 
-const Home: React.FC<HomeProps> = ({
-  onShowCravingSOS,
-  onShowBreathingExercise,
-  onShowChatAssistance,
-  onNavigateToProfile,
-  onNavigateToAchievements,
-  onNavigateToShop,
-}) => {
-  const { theme } = useTheme();
-  const { t } = useTranslation();
-  const isDark = theme === 'dark';
-  
-  const {
-    userCoins,
-    setShowCoinPurchase,
-    selectedBuddyId,
-    gender,
-  } = useApp();
-
-  const sexKey: SexKey = gender === "lady" ? "w" : "m";
-  const [isAchievementsCollapsed, setIsAchievementsCollapsed] = useState(true);
-  const [isBackgroundShrunk, setIsBackgroundShrunk] = useState(false);
-  const maxScrollReached = useRef(0);
-  const scrollY = useRef(new Animated.Value(0)).current;
-
-  // Timer logic - optimized to prevent unnecessary re-renders
+// Timer component to isolate timer logic and prevent parent re-renders
+const Timer: React.FC = () => {
   const [timeElapsed, setTimeElapsed] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 32
   });
-  const [currentView, setCurrentView] = useState<'home' | 'achievements' | 'shop'>('home');
 
-  // Memoize the handleScroll callback to prevent recreation on every render
-  const handleScroll = useCallback(
-    Animated.event(
-      [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-      { 
-        useNativeDriver: false,
-        listener: (event: any) => {
-          const scrollPosition = event.nativeEvent.contentOffset.y;
-          // Track the maximum scroll position reached
-          maxScrollReached.current = Math.max(maxScrollReached.current, scrollPosition);
-          
-          // Only shrink when scrolling down past threshold, and stay shrunk once reached
-          if (maxScrollReached.current > 50 && !isBackgroundShrunk) {
-            setIsBackgroundShrunk(true);
-          }
-
-          // Auto-collapse Achievement Cards when scrolling
-          if (scrollPosition > 10 && !isAchievementsCollapsed) {
-            setIsAchievementsCollapsed(true);
-          }
-        }
-      }
-    ),
-    [isBackgroundShrunk, isAchievementsCollapsed]
-  );
-
-  // Memoize the header gesture handler
-  const handleHeaderGesture = useCallback((event: any) => {
-    if (event.nativeEvent.state === State.END) {
-      const { translationX } = event.nativeEvent;
-      const threshold = 50;
-
-      if (translationX > threshold) {
-        // Swipe right - go to previous view
-        if (currentView === 'shop') {
-          setCurrentView('home');
-        } else if (currentView === 'home') {
-          setCurrentView('achievements');
-        }
-      } else if (translationX < -threshold) {
-        // Swipe left - go to next view
-        if (currentView === 'achievements') {
-          setCurrentView('home');
-        } else if (currentView === 'home') {
-          setCurrentView('shop');
-        }
-      }
-    }
-  }, [currentView]);
-
-  // Optimized timer effect - only updates when necessary
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeElapsed(prev => {
@@ -166,6 +90,108 @@ const Home: React.FC<HomeProps> = ({
 
     return () => clearInterval(timer);
   }, []);
+
+  return (
+    <View className="flex-row gap-6">
+      {/* Days */}
+      <View className="items-center">
+        <Text className="text-4xl font-bold text-white">{timeElapsed.days}</Text>
+        <Text className="text-sm text-white opacity-80">Days</Text>
+      </View>
+      
+      {/* Hours */}
+      <View className="items-center">
+        <Text className="text-4xl font-bold text-white">{timeElapsed.hours}</Text>
+        <Text className="text-sm text-white opacity-80">Hours</Text>
+      </View>
+      
+      {/* Minutes */}
+      <View className="items-center">
+        <Text className="text-4xl font-bold text-white">{timeElapsed.minutes}</Text>
+        <Text className="text-sm text-white opacity-80">Minutes</Text>
+      </View>
+    </View>
+  );
+};
+
+const Home: React.FC<HomeProps> = ({
+  onShowCravingSOS,
+  onShowBreathingExercise,
+  onShowChatAssistance,
+  onNavigateToProfile,
+  onNavigateToAchievements,
+  onNavigateToShop,
+}) => {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const isDark = theme === 'dark';
+  
+  const {
+    userCoins,
+    setShowCoinPurchase,
+    selectedBuddyId,
+    gender,
+  } = useApp();
+
+  const sexKey: SexKey = gender === "lady" ? "w" : "m";
+  const [isAchievementsCollapsed, setIsAchievementsCollapsed] = useState(true);
+  const [isBackgroundShrunk, setIsBackgroundShrunk] = useState(false);
+  const maxScrollReached = useRef(0);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [currentView, setCurrentView] = useState<'home' | 'achievements' | 'shop'>('home');
+
+  // Memoize the scroll listener to prevent recreation
+  const scrollListener = useCallback((event: any) => {
+    const scrollPosition = event.nativeEvent.contentOffset.y;
+    // Track the maximum scroll position reached
+    maxScrollReached.current = Math.max(maxScrollReached.current, scrollPosition);
+    
+    // Only shrink when scrolling down past threshold, and stay shrunk once reached
+    if (maxScrollReached.current > 50 && !isBackgroundShrunk) {
+      setIsBackgroundShrunk(true);
+    }
+
+    // Auto-collapse Achievement Cards when scrolling
+    if (scrollPosition > 10 && !isAchievementsCollapsed) {
+      setIsAchievementsCollapsed(true);
+    }
+  }, [isBackgroundShrunk, isAchievementsCollapsed]);
+
+  // Memoize the handleScroll callback to prevent recreation on every render
+  const handleScroll = useCallback(
+    Animated.event(
+      [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+      { 
+        useNativeDriver: false,
+        listener: scrollListener
+      }
+    ),
+    [scrollListener]
+  );
+
+  // Memoize the header gesture handler
+  const handleHeaderGesture = useCallback((event: any) => {
+    if (event.nativeEvent.state === State.END) {
+      const { translationX } = event.nativeEvent;
+      const threshold = 50;
+
+      if (translationX > threshold) {
+        // Swipe right - go to previous view
+        if (currentView === 'shop') {
+          setCurrentView('home');
+        } else if (currentView === 'home') {
+          setCurrentView('achievements');
+        }
+      } else if (translationX < -threshold) {
+        // Swipe left - go to next view
+        if (currentView === 'achievements') {
+          setCurrentView('home');
+        } else if (currentView === 'home') {
+          setCurrentView('shop');
+        }
+      }
+    }
+  }, [currentView]);
 
   // Memoize the buddy image source to prevent recreation
   const buddyImageSource = useMemo(() => 
@@ -241,8 +267,8 @@ const Home: React.FC<HomeProps> = ({
 
   // Memoize the toggle achievements callback
   const toggleAchievements = useCallback(() => {
-    setIsAchievementsCollapsed(!isAchievementsCollapsed);
-  }, [isAchievementsCollapsed]);
+    setIsAchievementsCollapsed(prev => !prev);
+  }, []);
 
   // Memoize the coin purchase callback
   const handleCoinPurchase = useCallback(() => {
@@ -262,21 +288,51 @@ const Home: React.FC<HomeProps> = ({
     onShowCravingSOS();
   }, [onShowCravingSOS]);
 
+  // Memoize the view title
+  const viewTitle = useMemo(() => {
+    switch (currentView) {
+      case 'home': return 'Zero Poofs';
+      case 'achievements': return 'Achievements';
+      case 'shop': return 'Shop';
+      default: return 'Zero Poofs';
+    }
+  }, [currentView]);
+
+  // Memoize the background height interpolation
+  const backgroundHeight = useMemo(() => 
+    isBackgroundShrunk ? 100 : scrollY.interpolate({
+      inputRange: [0, 100],
+      outputRange: [330, 100],
+      extrapolate: 'clamp'
+    }),
+    [isBackgroundShrunk, scrollY]
+  );
+
+  // Memoize the scroll view transform
+  const scrollViewTransform = useMemo(() => [{
+    translateY: scrollY.interpolate({
+      inputRange: [0, 100],
+      outputRange: [0, -100],
+      extrapolate: 'clamp'
+    })
+  }], [scrollY]);
+
+  // Memoize the buddy transform
+  const buddyTransform = useMemo(() => [{
+    translateY: scrollY.interpolate({
+      inputRange: [0, 80],
+      outputRange: [0, -100],
+      extrapolate: 'clamp'
+    })
+  }], [scrollY]);
+
   return (
     <View className="flex-1 bg-[#1F1943]">
       {/* Full Screen PanGestureHandler for left/right navigation */}
       <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[1000]">
           {/* Shrinking ParallaxBackground - shrinks when scrolling achievements */}
-          <Animated.View 
-            style={{ 
-              height: isBackgroundShrunk ? 100 : scrollY.interpolate({
-                inputRange: [0, 100],
-                outputRange: [330, 100],
-                extrapolate: 'clamp'
-              })
-            }}
-          >
+          <Animated.View style={{ height: backgroundHeight }}>
             <ParallaxBackground scrollY={scrollY} height={330} />
           </Animated.View>
 
@@ -294,32 +350,11 @@ const Home: React.FC<HomeProps> = ({
               <View className="rounded-xl items-center">
                 {/* Title */}
                 <Text className="text-xl font-bold text-white">
-                  {currentView === 'home' ? 'Zero Poofs' : 
-                   currentView === 'achievements' ? 'Achievements' : 'Shop'}
+                  {viewTitle}
                 </Text>
                 
                 {/* Timer Units - Only show for Home view */}
-                {currentView === 'home' && (
-                  <View className="flex-row gap-6">
-                    {/* Days */}
-                    <View className="items-center">
-                      <Text className="text-4xl font-bold text-white">{timeElapsed.days}</Text>
-                      <Text className="text-sm text-white opacity-80">Days</Text>
-                    </View>
-                    
-                    {/* Hours */}
-                    <View className="items-center">
-                      <Text className="text-4xl font-bold text-white">{timeElapsed.hours}</Text>
-                      <Text className="text-sm text-white opacity-80">Hours</Text>
-                    </View>
-                    
-                    {/* Minutes */}
-                    <View className="items-center">
-                      <Text className="text-4xl font-bold text-white">{timeElapsed.minutes}</Text>
-                      <Text className="text-sm text-white opacity-80">Minutes</Text>
-                    </View>
-                  </View>
-                )}
+                {currentView === 'home' && <Timer />}
 
                 {/* Preview content for other views */}
                 {currentView === 'achievements' && (
@@ -374,13 +409,7 @@ const Home: React.FC<HomeProps> = ({
               style={{ 
                 width: 100, 
                 height: 220,
-                transform: [{
-                  translateY: scrollY.interpolate({
-                    inputRange: [0, 80],
-                    outputRange: [0, -100],
-                    extrapolate: 'clamp'
-                  })
-                }]
+                transform: buddyTransform
               }}
               resizeMode="contain"
             />
@@ -392,18 +421,11 @@ const Home: React.FC<HomeProps> = ({
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
-            // contentContainerStyle={{ paddingBottom: 40 }}
             style={{ 
               flex: 1, 
               marginTop: 270, 
               zIndex: 1000,
-              transform: [{
-                translateY: scrollY.interpolate({
-                  inputRange: [0, 100],
-                  outputRange: [0, -100],
-                  extrapolate: 'clamp'
-                })
-              }]
+              transform: scrollViewTransform
             }}
           >
             {/* Achievement Cards - Only show for Home view */}
