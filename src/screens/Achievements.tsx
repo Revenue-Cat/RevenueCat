@@ -225,7 +225,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   const handleCloseModal = useCallback(() => {
     setSelectedAchievement(null);
   }, []);
-  console.log("TESTSS")
+  console.log("Achievements TESTSS");
 
   // Memoize the achievements grid
   const achievementsGrid = useMemo(() => (
@@ -270,7 +270,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
       ))}
     </View>
   ), [achievements, handleAchievementPress]);
-
+  
   return (
     <View className="flex-1 h-full py-2">
       <ScrollView className="flex-1" >
