@@ -56,12 +56,20 @@ const Home: React.FC<HomeProps> = ({
 
   // Calculate dynamic ScrollView height based on scroll position
   const scrollViewHeight = useMemo(() => {
-    return scrollY.interpolate({
-      inputRange: [0, 100],
-      outputRange: ['50%', '60%'], // Height increases as you scroll up
-      extrapolate: 'clamp'
-    });
-  }, [scrollY]);
+    if (currentView === 'home') {
+      return scrollY.interpolate({
+        inputRange: [0, 100],
+        outputRange: ['60%', '70%'], // Fixed pixel values for home view
+        extrapolate: 'clamp'
+      });
+    } else {
+      return scrollY.interpolate({
+        inputRange: [0, 100],
+        outputRange: ['55%', '60%'], // Height increases// Fixed pixel values for other views
+        extrapolate: 'clamp'
+      });
+    }
+  }, [scrollY, currentView]);
 
   // Memoize the buddy image source to prevent recreation
   const buddyImageSource = useMemo(() => 
@@ -99,7 +107,7 @@ const Home: React.FC<HomeProps> = ({
   }
 
   return (
-    <View className="flex-1 bg-[#1F1943]">
+    <View className="flex-1 bg-[#1F1943] absolute inset-0">
       {/* Full Screen PanGestureHandler for left/right navigation */}
       <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[1000]">
@@ -139,7 +147,6 @@ const Home: React.FC<HomeProps> = ({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ 
                 flexGrow: 1,
-                paddingBottom: 20,
               }}
             style={{ 
                 position: 'absolute',

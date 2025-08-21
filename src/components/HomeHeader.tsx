@@ -28,19 +28,21 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     }
   };
 
-  return (
-    <View className="absolute top-0 left-0 right-0 p-6" style={{ height: 140 }}>
-      <View className="flex-row justify-between items-start mb-8">
+    return (
+    <View className="absolute top-10 left-0 right-0 p-6" style={{ height: 140 }}>
+      {/* Top Row */}
+      <View className="flex-row justify-between items-start">
         {/* Profile Icon */}
-        <Pressable 
-          className="w-8 h-8 rounded-full bg-black/50 justify-center items-center p-1"
-          onPress={onNavigateToProfile}
-        >
-          <Ionicons name="person-outline" size={18} color="#ffffff" />
-        </Pressable>
-
-        {/* Carousel Header */}
-        <View className="rounded-xl items-center">
+        <View className="w-[66px]">
+            <Pressable 
+            className="w-8 h-8 rounded-full bg-black/50 justify-center items-center p-1"
+            onPress={onNavigateToProfile}
+          >
+            <Ionicons name="person-outline" size={18} color="#ffffff" />
+          </Pressable>
+        </View>
+        {/* Carousel Header - Centered */}
+        <View className="items-center justify-center flex-1">
           {/* Title */}
           <Text className="text-lg font-bold text-indigo-950 leading-7 text-center">
             {getViewTitle()}
@@ -61,7 +63,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           )}
 
           {currentView === 'shop' && (
-           <View className="items-center">
+           <View className="items-center mt-2">
               <View className="flex-row items-baseline">
                 <Text className="text-3xl font-bold text-indigo-950">13</Text>
               </View>
@@ -69,7 +71,8 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
             </View>
           )}
         </View>
-        {/* user Coins */}
+
+        {/* User Coins */}
         <Pressable 
           className="flex-row items-center bg-black/50 w-[66px] h-8 rounded-3xl py-1 px-2.5 gap-2"
           onPress={onCoinPurchase}
@@ -79,26 +82,28 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
         </Pressable>
       </View>
 
-      {/* Carousel Navigation Dots - Inside Header Area */}
-      <View className="absolute top-[110px] left-[167px] flex-row bg-black/30 w-10 h-3 rounded-full px-1 py-0.5 gap-1">
-        <Pressable 
-          className={`w-2 h-2 rounded-full ${
-            currentView === 'achievements' ? 'bg-white' : 'bg-black/30'
-          }`}
-          onPress={() => onViewChange('achievements')}
-        />
-        <Pressable 
-          className={`w-2 h-2 rounded-full ${
-            currentView === 'home' ? 'bg-white' : 'bg-black/30'
-          }`}
-          onPress={() => onViewChange('home')}
-        />
-        <Pressable 
-          className={`w-2 h-2 rounded-full ${
-            currentView === 'shop' ? 'bg-white' : 'bg-black/30'
-          }`}
-          onPress={() => onViewChange('shop')}
-        />
+      {/* Bottom Row - Navigation Dots */}
+      <View className="flex-row justify-center mt-1">
+        <View className="flex-row bg-black/30 w-10 h-3 rounded-full px-1 py-0.5 gap-1">
+          <Pressable 
+            className={`w-2 h-2 rounded-full ${
+              currentView === 'achievements' ? 'bg-white' : 'bg-black/30'
+            }`}
+            onPress={() => onViewChange('achievements')}
+          />
+          <Pressable 
+            className={`w-2 h-2 rounded-full ${
+              currentView === 'home' ? 'bg-white' : 'bg-black/30'
+            }`}
+            onPress={() => onViewChange('home')}
+          />
+          <Pressable 
+            className={`w-2 h-2 rounded-full ${
+              currentView === 'shop' ? 'bg-white' : 'bg-black/30'
+            }`}
+            onPress={() => onViewChange('shop')}
+          />
+        </View>
       </View>
     </View>
   );

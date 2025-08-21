@@ -3,14 +3,13 @@ import { Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const useHomeScroll = () => {
-    const [isAchievementsCollapsed, setIsAchievementsCollapsed] = useState(true);
+  const [isAchievementsCollapsed, setIsAchievementsCollapsed] = useState(true);
   const [isBackgroundShrunk, setIsBackgroundShrunk] = useState(false);
   const maxScrollReached = useRef(0);
   const [isInitialized, setIsInitialized] = useState(false);
   
   // Create Animated.Value with proper initial value
   const [scrollY] = useState(() => new Animated.Value(0));
-  console.log("scrollY", scrollY);
 
 
   // Load saved scroll position on mount
