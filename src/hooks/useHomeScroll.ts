@@ -1,15 +1,54 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { Animated } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const useHomeScroll = () => {
-  const [isAchievementsCollapsed, setIsAchievementsCollapsed] = useState(true);
+    const [isAchievementsCollapsed, setIsAchievementsCollapsed] = useState(true);
   const [isBackgroundShrunk, setIsBackgroundShrunk] = useState(false);
   const maxScrollReached = useRef(0);
-  const scrollY = useRef(new Animated.Value(0)).current;
+  const [isInitialized, setIsInitialized] = useState(false);
+  
+  // Create Animated.Value with proper initial value
+  const [scrollY] = useState(() => new Animated.Value(0));
+  console.log("scrollY", scrollY);
 
+
+  // Load saved scroll position on mount
+  useEffect(() => {
+    const loadScrollPosition = async () => {
+      try {
+        const savedPosition = await AsyncStorage.getItem('homeScrollPosition');
+        if (savedPosition) {
+          const position = parseFloat(savedPosition);
+          console.log("Loading saved position:", position);
+          scrollY.setValue(position);
+          maxScrollReached.current = position;
+          
+          // Update background state based on saved position
+          if (position > 50) {
+            setIsBackgroundShrunk(true);
+          }
+        } else {
+          console.log("No saved position found, starting at 0");
+        }
+      } catch (error) {
+        console.log('Error loading scroll position:', error);
+      } finally {
+        setIsInitialized(true);
+      }
+    };
+
+    loadScrollPosition();
+  }, [scrollY]);
   // Memoize the scroll listener to prevent recreation
   const scrollListener = useCallback((event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.y;
+    
+    // Save scroll position to AsyncStorage
+    AsyncStorage.setItem('homeScrollPosition', scrollPosition.toString()).catch(error => {
+      console.log('Error saving scroll position:', error);
+    });
+    
     // Track the maximum scroll position reached
     maxScrollReached.current = Math.max(maxScrollReached.current, scrollPosition);
     
@@ -18,10 +57,7 @@ export const useHomeScroll = () => {
       setIsBackgroundShrunk(true);
     }
 
-    // Auto-collapse Achievement Cards when scrolling
-    if (scrollPosition > 10 && !isAchievementsCollapsed) {
-      setIsAchievementsCollapsed(true);
-    }
+    // Note: Achievement Cards no longer auto-collapse on scroll
   }, [isBackgroundShrunk, isAchievementsCollapsed]);
 
   // Memoize the handleScroll callback to prevent recreation on every render
@@ -45,7 +81,7 @@ export const useHomeScroll = () => {
   const backgroundHeight = useMemo(() => 
     isBackgroundShrunk ? 100 : scrollY.interpolate({
       inputRange: [0, 100],
-      outputRange: [330, 100],
+      outputRange: [300, 100],
       extrapolate: 'clamp'
     }),
     [isBackgroundShrunk, scrollY]
@@ -64,7 +100,7 @@ export const useHomeScroll = () => {
   const buddyTransform = useMemo(() => [{
     translateY: scrollY.interpolate({
       inputRange: [0, 80],
-      outputRange: [0, -100],
+      outputRange: [0, -70],
       extrapolate: 'clamp'
     })
   }], [scrollY]);
@@ -77,6 +113,7 @@ export const useHomeScroll = () => {
     toggleAchievements,
     backgroundHeight,
     scrollViewTransform,
-    buddyTransform
+    buddyTransform,
+    isInitialized
   };
 };

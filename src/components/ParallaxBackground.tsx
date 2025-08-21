@@ -106,7 +106,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
 
   return (
     <View 
-      className="relative w-full z-10 overflow-hidden" 
+      className="relative w-full z-10 overflow-hidden"  
       style={{ height }}
     >
       {/* Background Layer 4 - Furthest back (fastest) */}

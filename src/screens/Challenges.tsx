@@ -135,13 +135,11 @@ const Challenges: React.FC = () => {
 
   return (
     <View className="flex-1">
-      <ScrollView className="flex-1" >
-        {/* Title */}
-        {title}
+      {/* Title */}
+      {title}
 
-        {/* Challenge List */}
-        {challengesList}
-      </ScrollView>
+      {/* Challenge List */}
+      {challengesList}
     </View>
   );
 };

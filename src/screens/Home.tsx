@@ -50,8 +50,18 @@ const Home: React.FC<HomeProps> = ({
     toggleAchievements,
     backgroundHeight,
     scrollViewTransform,
-    buddyTransform
+    buddyTransform,
+    isInitialized
   } = useHomeScroll();
+
+  // Calculate dynamic ScrollView height based on scroll position
+  const scrollViewHeight = useMemo(() => {
+    return scrollY.interpolate({
+      inputRange: [0, 100],
+      outputRange: ['50%', '60%'], // Height increases as you scroll up
+      extrapolate: 'clamp'
+    });
+  }, [scrollY]);
 
   // Memoize the buddy image source to prevent recreation
   const buddyImageSource = useMemo(() => 
@@ -76,6 +86,17 @@ const Home: React.FC<HomeProps> = ({
   const handleShowCravingSOS = useCallback(() => {
     onShowCravingSOS();
   }, [onShowCravingSOS]);
+  
+  console.log("backgroundHeight", backgroundHeight);
+  
+  // Don't render until scroll position is loaded
+  if (!isInitialized) {
+    return (
+      <View className="flex-1 bg-[#1F1943]">
+        {/* Loading state */}
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-[#1F1943]">
@@ -97,7 +118,7 @@ const Home: React.FC<HomeProps> = ({
           />
 
           {/* Fixed Buddy Icon - On top of ParallaxBackground */}
-          <Animated.View className="absolute top-0 left-0 right-0 z-[60] items-center justify-end" style={{ height: 360 }}>
+          <Animated.View className="absolute top-0 left-0 right-0 z-[50] items-center justify-end" style={{ height: 360 }}>
             <Animated.Image
               source={buddyImageSource}
               style={{ 
@@ -109,32 +130,49 @@ const Home: React.FC<HomeProps> = ({
             />
           </Animated.View>
 
+
           {/* Scrollable Content */}
           <Animated.ScrollView
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ 
+                flexGrow: 1,
+                paddingBottom: 20,
+              }}
             style={{ 
-              flex: 1, 
-              marginTop: 270, 
-              zIndex: 1000,
-              transform: scrollViewTransform
-            }}
+                position: 'absolute',
+                top: currentView === 'home' ? 320 : 360,
+                left: 0,
+                right: 0,
+                height: scrollViewHeight,
+                zIndex: 1000,
+                transform: currentView === 'home' ? scrollViewTransform : [
+                  {
+                    translateY: scrollY.interpolate({
+                      inputRange: [-70, 0, 100],
+                      outputRange: [40, 0, -60],
+                      extrapolate: 'clamp'
+                    })
+                  }
+                ],
+        
+              }}
           >
-            {/* Achievement Cards - Only show for Home view */}
+            {/* Achievement Cards - Dynamic height */}
             {currentView === 'home' && (
-              <AchievementSection
-                isCollapsed={isAchievementsCollapsed}
-                onToggle={toggleAchievements}
-              />
+              <View style={{ 
+                marginTop: 0, 
+                backgroundColor: "#1F1943"
+              }}>
+                <AchievementSection
+                  isCollapsed={isAchievementsCollapsed}
+                  onToggle={toggleAchievements}
+                />
+              </View>
             )}
-
-            {/* Spacer for Achievement Cards - Only for Home view */}
-            {currentView === 'home' && (
-              <View style={{ height: isAchievementsCollapsed ? 200 : 400 }} />
-            )}
-
+            
             {/* Content with Carousel */}
             <HomeContent
               currentView={currentView}

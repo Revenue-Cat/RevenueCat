@@ -18,7 +18,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
   onNavigateToShop
 }) => {
   return (
-    <View style={{ paddingHorizontal: 24 }}>
+    <View style={{ paddingHorizontal: 24, backgroundColor: "#1F1943" }}>
       {/* Conditional Content Based on View */}
       {currentView === 'home' && (
         <>
