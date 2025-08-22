@@ -346,30 +346,23 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
   const { theme } = useTheme();
   const { selectedBuddyId, gender, userCoins } = useApp();
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
-  const [fadeAnim] = useState(new Animated.Value(1));
+  const [parallaxAnim] = useState(new Animated.Value(0));
 
   // Use the appropriate achievements array based on toggle selection
   const filteredAchievements = useMemo(() => {
-    // Fade out
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 150,
+    // Parallax animation
+    Animated.timing(parallaxAnim, {
+      toValue: isExclusiveSelected ? 1 : 0,
+      duration: 400,
       useNativeDriver: true,
-    }).start(() => {
-      // Fade in after a brief delay
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }).start();
-    });
+    }).start();
 
     if (isExclusiveSelected) {
       return EXCLUSIVE_ACHIEVEMENTS_DATA;
     } else {
       return REGULAR_ACHIEVEMENTS_DATA;
     }
-  }, [isExclusiveSelected, fadeAnim]);
+  }, [isExclusiveSelected, parallaxAnim]);
 
   // Memoize the achievement selection callback
   const handleAchievementPress = useCallback((achievement: Achievement) => {
@@ -435,8 +428,54 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
         contentContainerStyle={{ paddingBottom: 200 }}
         showsVerticalScrollIndicator={false}
       >
+        {/* Background Layer - moves slowest */}
         <Animated.View 
-          style={{ opacity: fadeAnim }}
+          style={{ 
+            transform: [{ 
+              translateY: parallaxAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, -30],
+              })
+            }],
+            opacity: parallaxAnim.interpolate({
+              inputRange: [0, 0.5, 1],
+              outputRange: [0.3, 0.1, 0.3],
+            })
+          }}
+          className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-blue-900/20"
+        />
+        
+        {/* Middle Layer - moves at medium speed */}
+        <Animated.View 
+          style={{ 
+            transform: [{ 
+              translateY: parallaxAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, -15],
+              })
+            }],
+            opacity: parallaxAnim.interpolate({
+              inputRange: [0, 0.5, 1],
+              outputRange: [0.6, 0.3, 0.6],
+            })
+          }}
+          className="absolute inset-0 bg-gradient-to-b from-indigo-800/30 to-purple-800/30"
+        />
+        
+        {/* Foreground Layer - moves fastest */}
+        <Animated.View 
+          style={{ 
+            transform: [{ 
+              translateY: parallaxAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 20],
+              })
+            }],
+            opacity: parallaxAnim.interpolate({
+              inputRange: [0, 0.5, 1],
+              outputRange: [1, 0.8, 1],
+            })
+          }}
           className="flex-row flex-wrap justify-center gap-0"
         >
           {filteredAchievements.map((achievement, index) => (
