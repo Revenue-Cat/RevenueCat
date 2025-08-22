@@ -7,9 +7,12 @@ import {
   StyleSheet,
   Dimensions,
   Alert,
+  Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
+import ParallaxBackground from '../components/ParallaxBackground';
+import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
 
 const { width } = Dimensions.get('window');
 
@@ -29,7 +32,11 @@ const Shop: React.FC<ShopProps> = ({ onBack }) => {
     setSelectedBackground,
     purchaseItem,
     setShowCoinPurchase,
+    selectedBuddyId,
+    gender,
   } = useApp();
+  const sexKey: SexKey = gender === "lady" ? "w" : "m";
+  const scrollY = new Animated.Value(0);
 
   const [selectedTab, setSelectedTab] = useState<'characters' | 'backgrounds' | 'accessories'>('characters');
 
@@ -149,18 +156,38 @@ const Shop: React.FC<ShopProps> = ({ onBack }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={onBack}>
-            <Ionicons name="arrow-back" size={24} color="#000000" />
-          </Pressable>
-          <Text style={styles.title}>Shop</Text>
-          <Pressable style={styles.coinsButton} onPress={() => setShowCoinPurchase(true)}>
-            <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-            <Text style={styles.coinsText}>{userCoins}</Text>
-          </Pressable>
+      {/* Header with ParallaxBackground */}
+      <View style={{ height: 330 }}>
+        <ParallaxBackground scrollY={scrollY} height={330} />
+        
+        {/* Header - On top of ParallaxBackground */}
+        <View style={styles.headerOverlay}>
+          <View style={styles.header}>
+            <Pressable style={styles.backButton} onPress={onBack}>
+              <Ionicons name="arrow-back" size={24} color="#ffffff" />
+            </Pressable>
+            <Text style={styles.titleOverlay}>Shop</Text>
+            <Pressable 
+              style={styles.coinsButton}
+              onPress={() => setShowCoinPurchase(true)}
+            >
+              <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
+              <Text style={styles.coinsTextOverlay}>{userCoins}</Text>
+            </Pressable>
+          </View>
         </View>
+
+        {/* Buddy Icon */}
+        <Animated.View style={styles.buddyContainer}>
+          <Animated.Image
+            source={buddyAssets[selectedBuddyId as BuddyKey][sexKey]}
+            style={styles.buddyImage}
+            resizeMode="contain"
+          />
+        </Animated.View>
+      </View>
+
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
 
         {/* Tabs */}
         <View style={styles.tabsContainer}>
@@ -206,14 +233,22 @@ const Shop: React.FC<ShopProps> = ({ onBack }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#1F1943',
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingVertical: 40,
+    paddingVertical: 20,
+  },
+  headerOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    padding: 24,
   },
   header: {
     flexDirection: 'row',
@@ -225,23 +260,46 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  titleOverlay: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  coinsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 8,
+  },
+  coinsTextOverlay: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  buddyContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    zIndex: 99,
+  },
+  buddyImage: {
+    width: 100,
+    height: 220,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#000000',
-  },
-  coinsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 8,
   },
   coinsText: {
     fontSize: 16,
@@ -253,7 +311,7 @@ const styles = StyleSheet.create({
   },
   tabs: {
     flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 12,
     padding: 4,
   },
@@ -265,15 +323,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabActive: {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   tabText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#666666',
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   tabTextActive: {
-    color: '#000000',
+    color: '#ffffff',
     fontWeight: 'bold',
   },
   itemsContainer: {
@@ -286,19 +344,19 @@ const styles = StyleSheet.create({
   },
   itemCard: {
     width: (width - 72) / 2,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     position: 'relative',
   },
   selectedItemCard: {
-    backgroundColor: '#e5e5e5',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderWidth: 2,
-    borderColor: '#000000',
+    borderColor: '#ffffff',
   },
   ownedItemCard: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
   itemEmoji: {
     fontSize: 32,
@@ -307,13 +365,13 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#000000',
+    color: '#ffffff',
     marginBottom: 4,
     textAlign: 'center',
   },
   itemPrice: {
     fontSize: 12,
-    color: '#666666',
+    color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
   },
   selectedBadge: {

@@ -1,6 +1,7 @@
 import "./global.css";
 import React, { useState, useEffect } from "react";
 import { View, SafeAreaView, Modal } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AppProvider } from "./src/contexts/AppContext";
 import { ThemeProvider, useTheme } from "./src/contexts/ThemeContext";
 import { LanguageProvider } from "./src/contexts/LanguageContext";
@@ -32,7 +33,7 @@ type Screen =
   | "shop";
 
 const AppContent: React.FC = () => {
-  const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
+  const [currentScreen, setCurrentScreen] = useState<Screen>("home");
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
@@ -116,7 +117,7 @@ const AppContent: React.FC = () => {
         )}
 
         {currentScreen === "achievements" && (
-          <Achievements onBack={() => navigateTo("home")} />
+          <Achievements onBack={() => navigateTo("home")} isExclusiveSelected={false} />
         )}
 
         {currentScreen === "shop" && <Shop onBack={() => navigateTo("home")} />}
@@ -164,11 +165,13 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <ThemeProvider>
-      <LanguageProvider>
-        <AppContent />
-      </LanguageProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider>
+        <LanguageProvider>
+          <AppContent />
+        </LanguageProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 };
 

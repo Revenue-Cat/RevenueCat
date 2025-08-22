@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
-  Text,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Dimensions,
-  Alert,
+  Animated,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useApp } from '../contexts/AppContext';
-
-const { width } = Dimensions.get('window');
+import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
+import ParallaxBackground from '../components/ParallaxBackground';
+import HomeHeader from '../components/HomeHeader';
+import HomeContent from '../components/HomeContent';
+import AchievementSection from '../components/AchievementSection';
+import AchievementsToggle from '../components/AchievementsToggle';
+import { useHomeNavigation } from '../hooks/useHomeNavigation';
+import { useHomeScroll } from '../hooks/useHomeScroll';
 
 interface HomeProps {
   onShowCravingSOS: () => void;
@@ -21,6 +22,8 @@ interface HomeProps {
   onNavigateToAchievements: () => void;
   onNavigateToShop: () => void;
 }
+
+
 
 const Home: React.FC<HomeProps> = ({
   onShowCravingSOS,
@@ -32,566 +35,179 @@ const Home: React.FC<HomeProps> = ({
 }) => {
   const {
     userCoins,
-    selectedCharacter,
-    selectedBackground,
-    ownedCharacters,
-    ownedBackgrounds,
-    setSelectedCharacter,
-    setSelectedBackground,
     setShowCoinPurchase,
-    purchaseItem
+    selectedBuddyId,
+    gender,
   } = useApp();
 
-  const [selectedPurchaseItem, setSelectedPurchaseItem] = useState<any>(null);
-  const [purchaseItemType, setPurchaseItemType] = useState<'characters' | 'backgrounds'>('characters');
-  const [timeElapsed, setTimeElapsed] = useState({
-    days: 0,
-    hours: 23,
-    minutes: 47,
-    seconds: 32
-  });
-  const [selectedTab, setSelectedTab] = useState<'achievements' | 'characters' | 'backgrounds'>('achievements');
+  const sexKey: SexKey = gender === "lady" ? "w" : "m";
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeElapsed(prev => {
-        const newSeconds = prev.seconds + 1;
-        if (newSeconds >= 60) {
-          const newMinutes = prev.minutes + 1;
-          if (newMinutes >= 60) {
-            const newHours = prev.hours + 1;
-            if (newHours >= 24) {
-              return {
-                days: prev.days + 1,
-                hours: 0,
-                minutes: 0,
-                seconds: 0
-              };
-            }
-            return { ...prev, hours: newHours, minutes: 0, seconds: 0 };
-          }
-          return { ...prev, minutes: newMinutes, seconds: 0 };
-        }
-        return { ...prev, seconds: newSeconds };
+  // Add state for achievements toggle
+  const [isExclusiveSelected, setIsExclusiveSelected] = useState(true);
+
+  // Use custom hooks for navigation and scroll handling
+  const { currentView, handleHeaderGesture, changeView } = useHomeNavigation();
+  const {
+    isAchievementsCollapsed,
+    scrollY,
+    handleScroll,
+    toggleAchievements,
+    backgroundHeight,
+    scrollViewTransform,
+    buddyTransform,
+    isInitialized
+  } = useHomeScroll();
+
+  // Calculate dynamic ScrollView height based on scroll position
+  const scrollViewHeight = useMemo(() => {
+    if (currentView === 'home') {
+      return scrollY.interpolate({
+        inputRange: [0, 100],
+        outputRange: ['60%', '70%'], // Fixed pixel values for home view
+        extrapolate: 'clamp'
       });
-    }, 1000);
+    } else {
+      return scrollY.interpolate({
+        inputRange: [0, 100],
+        outputRange: ['55%', '60%'], // Height increases// Fixed pixel values for other views
+        extrapolate: 'clamp'
+      });
+    }
+  }, [scrollY, currentView]);
 
-    return () => clearInterval(timer);
+  // Memoize the buddy image source to prevent recreation
+  const buddyImageSource = useMemo(() => 
+    buddyAssets[selectedBuddyId as BuddyKey][sexKey], 
+    [selectedBuddyId, sexKey]
+  );
+
+  // Memoize the coin purchase callback
+  const handleCoinPurchase = useCallback(() => {
+    setShowCoinPurchase(true);
+  }, [setShowCoinPurchase]);
+
+  // Memoize the navigation callbacks
+  const handleNavigateToProfile = useCallback(() => {
+    onNavigateToProfile();
+  }, [onNavigateToProfile]);
+
+  const handleNavigateToShop = useCallback(() => {
+    onNavigateToShop();
+  }, [onNavigateToShop]);
+
+  const handleShowCravingSOS = useCallback(() => {
+    onShowCravingSOS();
+  }, [onShowCravingSOS]);
+
+  // Memoize the achievements toggle callback
+  const handleSetIsExclusiveSelected = useCallback((isExclusive: boolean) => {
+    setIsExclusiveSelected(isExclusive);
   }, []);
-
-  const characters = [
-    { id: "1", emoji: "🦫", name: "Chill Capybara", price: 0 },
-    { id: "2", emoji: "🐨", name: "Zen Koala", price: 150 },
-    { id: "3", emoji: "🦥", name: "Slow Sloth", price: 200 },
-    { id: "4", emoji: "🐧", name: "Cool Penguin", price: 100 },
-    { id: "5", emoji: "🐼", name: "Panda Bear", price: 200 },
-    { id: "6", emoji: "🦉", name: "Wise Owl", price: 100 },
-    { id: "7", emoji: "🦆", name: "Duck Friend", price: 150 }
-  ];
-
-  const backgrounds = [
-    { id: "default", emoji: "🌅", name: "Default", price: 0, gradient: "from-blue-50 to-indigo-100" },
-    { id: "1", emoji: "🌅", name: "Sunset", price: 50, gradient: "from-orange-400 to-pink-500" },
-    { id: "2", emoji: "🌊", name: "Ocean", price: 100, gradient: "from-blue-400 to-cyan-500" },
-    { id: "3", emoji: "🌲", name: "Forest", price: 150, gradient: "from-green-400 to-emerald-600" },
-    { id: "4", emoji: "💜", name: "Purple", price: 200, gradient: "from-purple-400 to-pink-600" },
-    { id: "5", emoji: "🌑", name: "Dark", price: 250, gradient: "from-gray-800 to-gray-900" }
-  ];
-
-  const handleCharacterSelect = (character: any) => {
-    const isOwned = ownedCharacters.includes(character.id);
-    const isSelected = character.id === selectedCharacter.id;
-    
-    if (isSelected) {
-      return;
-    }
-    
-    if (isOwned) {
-      setSelectedCharacter({...character, owned: true});
-    } else {
-      setSelectedPurchaseItem({...character, owned: false});
-      setPurchaseItemType('characters');
-      Alert.alert('Purchase Required', `Would you like to purchase ${character.name} for ${character.price} coins?`);
-    }
-  };
-
-  const handleBackgroundSelect = (background: any) => {
-    const isOwned = ownedBackgrounds.includes(background.id);
-    const isSelected = background.id === selectedBackground.id;
-    
-    if (isSelected) {
-      return;
-    }
-    
-    if (isOwned) {
-      setSelectedBackground({...background, owned: true});
-    } else {
-      setSelectedPurchaseItem({...background, owned: false});
-      setPurchaseItemType('backgrounds');
-      Alert.alert('Purchase Required', `Would you like to purchase ${background.name} for ${background.price} coins?`);
-    }
-  };
+  
+  // Don't render until scroll position is loaded
+  if (!isInitialized) {
+    return (
+      <View className="flex-1 bg-[#1F1943]">
+        {/* Loading state */}
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable style={styles.profileButton} onPress={onNavigateToProfile}>
-            <Ionicons name="person-outline" size={24} color="#000000" />
-          </Pressable>
-          <Pressable 
-            style={styles.coinsButton} 
-            onPress={() => setShowCoinPurchase(true)}
+    <View className="flex-1 bg-[#1F1943] absolute inset-0">
+      {/* Full Screen PanGestureHandler for left/right navigation */}
+      <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
+        <View className="absolute top-0 left-0 right-0 bottom-0 z-[1000]">
+          {/* Shrinking ParallaxBackground - shrinks when scrolling achievements */}
+          <Animated.View style={{ height: backgroundHeight }}>
+            <ParallaxBackground scrollY={scrollY} height={330} />
+          </Animated.View>
+
+          {/* Fixed Header - On top of ParallaxBackground */}
+          <HomeHeader
+            currentView={currentView}
+            userCoins={userCoins}
+            onNavigateToProfile={handleNavigateToProfile}
+            onCoinPurchase={handleCoinPurchase}
+            onViewChange={changeView}
+          />
+
+          {/* Fixed Buddy Icon - On top of ParallaxBackground */}
+          <Animated.View className="absolute top-0 left-0 right-0 z-[50] items-center justify-end" style={{ height: 360 }}>
+            <Animated.Image
+              source={buddyImageSource}
+              style={{ 
+                width: 100, 
+                height: 220,
+                transform: buddyTransform
+              }}
+              resizeMode="contain"
+            />
+          </Animated.View>
+
+          {/* Achievements Toggle - On top of Buddy Icon */}
+          {currentView === 'achievements' && (
+            <AchievementsToggle
+              scrollY={scrollY}
+              isExclusiveSelected={isExclusiveSelected}
+              setIsExclusiveSelected={handleSetIsExclusiveSelected}
+            />
+          )}
+
+          {/* Scrollable Content */}
+          <Animated.ScrollView
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ 
+                flexGrow: 1,
+              }}
+            style={{ 
+                position: 'absolute',
+                top: currentView === 'home' ? 320 : 360,
+                left: 0,
+                right: 0,
+                height: scrollViewHeight,
+                zIndex: 1000,
+                transform: currentView === 'home' ? scrollViewTransform : [
+                  {
+                    translateY: scrollY.interpolate({
+                      inputRange: [-70, 0, 100],
+                      outputRange: [40, 0, -60],
+                      extrapolate: 'clamp'
+                    })
+                  }
+                ],
+        
+              }}
           >
-            <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-            <Text style={styles.coinsText}>{userCoins}</Text>
-          </Pressable>
-        </View>
-
-        {/* Buddy */}
-        <View style={styles.buddySection}>
-          <Text style={styles.buddyEmoji}>{selectedCharacter.emoji}</Text>
-          <Text style={styles.buddyMessage}>
-            "You've got this! Every smoke-free moment counts."
-          </Text>
-        </View>
-
-        {/* Stats */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Cigarettes Avoided</Text>
-            <Text style={styles.statValue}>47</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Money Saved</Text>
-            <Text style={styles.statValue}>€23.50</Text>
-          </View>
-        </View>
-
-        {/* Timer */}
-        <View style={styles.timerCard}>
-          <Text style={styles.timerTitle}>Smoke-Free Time</Text>
-          <Text style={styles.timerValue}>
-            {timeElapsed.days}d {timeElapsed.hours}h {timeElapsed.minutes}m {timeElapsed.seconds}s
-          </Text>
-          <Text style={styles.timerSubtitle}>Keep going strong!</Text>
-        </View>
-
-        {/* Challenges */}
-        <View style={styles.challengeCard}>
-          <View style={styles.challengeHeader}>
-            <Ionicons name="star" size={20} color="#000000" />
-            <Text style={styles.challengeTitle}>Challenges</Text>
-          </View>
-          <View style={styles.challengeItem}>
-            <View style={styles.challengeInfo}>
-              <Text style={styles.challengeText}>Go one full day without a single puff</Text>
-              <View style={styles.challengeBadge}>
-                <Text style={styles.challengeBadgeText}>+25 coins</Text>
-              </View>
-            </View>
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: '75%' }]} />
-            </View>
-            <Text style={styles.challengeTime}>18 hours left</Text>
-          </View>
-        </View>
-
-        {/* Tabs */}
-        <View style={styles.tabsContainer}>
-          <View style={styles.tabs}>
-            <Pressable
-              style={[styles.tab, selectedTab === 'achievements' && styles.tabActive]}
-              onPress={() => setSelectedTab('achievements')}
-            >
-              <Text style={[styles.tabText, selectedTab === 'achievements' && styles.tabTextActive]}>
-                Achievements
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.tab, selectedTab === 'characters' && styles.tabActive]}
-              onPress={() => setSelectedTab('characters')}
-            >
-              <Text style={[styles.tabText, selectedTab === 'characters' && styles.tabTextActive]}>
-                Characters
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.tab, selectedTab === 'backgrounds' && styles.tabActive]}
-              onPress={() => setSelectedTab('backgrounds')}
-            >
-              <Text style={[styles.tabText, selectedTab === 'backgrounds' && styles.tabTextActive]}>
-                Backgrounds
-              </Text>
-            </Pressable>
-          </View>
-
-          {/* Tab Content */}
-          <View style={styles.tabContent}>
-            {selectedTab === 'achievements' && (
-              <View style={styles.achievementsGrid}>
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Pressable
-                    key={i}
-                    style={styles.achievementCard}
-                    onPress={onNavigateToAchievements}
-                  >
-                    <Ionicons name="trophy" size={32} color="#666666" />
-                    <Text style={styles.achievementText}>Day {i}</Text>
-                  </Pressable>
-                ))}
+            {/* Achievement Cards - Dynamic height */}
+            {currentView === 'home' && (
+              <View style={{ 
+                marginTop: 0, 
+                backgroundColor: "#1F1943"
+              }}>
+                <AchievementSection
+                  isCollapsed={isAchievementsCollapsed}
+                  onToggle={toggleAchievements}
+                />
               </View>
             )}
-
-            {selectedTab === 'characters' && (
-              <View style={styles.charactersGrid}>
-                {characters.map((character) => {
-                  const isOwned = ownedCharacters.includes(character.id);
-                  const isSelected = character.id === selectedCharacter.id;
-                  
-                  return (
-                    <Pressable
-                      key={character.id}
-                      style={[
-                        styles.characterCard,
-                        isSelected && styles.selectedCharacterCard
-                      ]}
-                      onPress={() => handleCharacterSelect(character)}
-                    >
-                      <Text style={styles.characterEmoji}>{character.emoji}</Text>
-                      <Text style={styles.characterName}>{character.name}</Text>
-                      <Text style={styles.characterStatus}>
-                        {isSelected ? "Selected" : isOwned ? "Owned" : 
-                         character.price === 0 ? "Free" : `${character.price} coins`}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            )}
-
-            {selectedTab === 'backgrounds' && (
-              <View style={styles.backgroundsGrid}>
-                {backgrounds.map((background) => {
-                  const isOwned = ownedBackgrounds.includes(background.id);
-                  const isSelected = background.id === selectedBackground.id;
-                  
-                  return (
-                    <Pressable
-                      key={background.id}
-                      style={[
-                        styles.backgroundCard,
-                        isSelected && styles.selectedBackgroundCard
-                      ]}
-                      onPress={() => handleBackgroundSelect(background)}
-                    >
-                      <View style={styles.backgroundPreview} />
-                      <Text style={styles.backgroundName}>{background.name}</Text>
-                      <Text style={styles.backgroundStatus}>
-                        {isSelected ? "Selected" : isOwned ? "Owned" : 
-                         background.price === 0 ? "Free" : `${background.price} coins`}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            )}
-          </View>
+            
+            {/* Content with Carousel */}
+            <HomeContent
+              currentView={currentView}
+              isAchievementsCollapsed={isAchievementsCollapsed}
+              isExclusiveSelected={isExclusiveSelected}
+              onShowCravingSOS={handleShowCravingSOS}
+              onNavigateToShop={handleNavigateToShop}
+            />
+          </Animated.ScrollView>
         </View>
-
-        {/* Craving SOS Button */}
-        <Pressable style={styles.sosButton} onPress={onShowCravingSOS}>
-          <Text style={styles.sosButtonText}>Craving SOS</Text>
-        </Pressable>
-      </ScrollView>
+      </PanGestureHandler>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  profileButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  coinsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 8,
-  },
-  coinsText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  buddySection: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  buddyEmoji: {
-    fontSize: 96,
-    marginBottom: 16,
-  },
-  buddyMessage: {
-    fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666666',
-    marginBottom: 4,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  timerCard: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 20,
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  timerTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 8,
-  },
-  timerValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  timerSubtitle: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  challengeCard: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 24,
-  },
-  challengeHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    gap: 8,
-  },
-  challengeTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  challengeItem: {
-    gap: 8,
-  },
-  challengeInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  challengeText: {
-    fontSize: 14,
-    color: '#000000',
-    flex: 1,
-  },
-  challengeBadge: {
-    backgroundColor: '#e5e5e5',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  challengeBadgeText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: '#e5e5e5',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#000000',
-  },
-  challengeTime: {
-    fontSize: 12,
-    color: '#666666',
-  },
-  tabsContainer: {
-    marginBottom: 24,
-  },
-  tabs: {
-    flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 16,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  tabActive: {
-    backgroundColor: '#ffffff',
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#666666',
-  },
-  tabTextActive: {
-    color: '#000000',
-    fontWeight: 'bold',
-  },
-  tabContent: {
-    minHeight: 200,
-  },
-  achievementsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  achievementCard: {
-    width: (width - 72) / 3,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  achievementText: {
-    fontSize: 12,
-    color: '#666666',
-    marginTop: 8,
-  },
-  charactersGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  characterCard: {
-    width: (width - 72) / 2,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  selectedCharacterCard: {
-    backgroundColor: '#e5e5e5',
-    borderWidth: 2,
-    borderColor: '#000000',
-  },
-  characterEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  characterName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  characterStatus: {
-    fontSize: 12,
-    color: '#666666',
-    textAlign: 'center',
-  },
-  backgroundsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  backgroundCard: {
-    width: (width - 72) / 2,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  selectedBackgroundCard: {
-    backgroundColor: '#e5e5e5',
-    borderWidth: 2,
-    borderColor: '#000000',
-  },
-  backgroundPreview: {
-    width: 40,
-    height: 20,
-    backgroundColor: '#e5e5e5',
-    borderRadius: 4,
-    marginBottom: 8,
-  },
-  backgroundName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  backgroundStatus: {
-    fontSize: 12,
-    color: '#666666',
-    textAlign: 'center',
-  },
-  sosButton: {
-    backgroundColor: '#ff4444',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  sosButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
-
-export default Home; 
+export default Home;
