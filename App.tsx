@@ -117,7 +117,7 @@ const AppContent: React.FC = () => {
         )}
 
         {currentScreen === "achievements" && (
-          <Achievements onBack={() => navigateTo("home")} />
+          <Achievements onBack={() => navigateTo("home")} isExclusiveSelected={false} />
         )}
 
         {currentScreen === "shop" && <Shop onBack={() => navigateTo("home")} />}

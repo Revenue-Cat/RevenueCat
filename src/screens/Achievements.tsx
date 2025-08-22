@@ -6,6 +6,9 @@ import {
   ScrollView,
   Dimensions,
   Image,
+  TouchableOpacity,
+  Modal,
+  Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -31,19 +34,11 @@ interface Achievement {
 
 interface AchievementsProps {
   onBack: () => void;
+  isExclusiveSelected: boolean;
 }
 
-const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
-  const { t } = useTranslation();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
-  const { selectedBuddyId, gender, userCoins, setShowCoinPurchase } = useApp();
-  const sexKey: SexKey = gender === "lady" ? "w" : "m";
-  
-  const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
-  
-  // Memoize the achievements array to prevent recreation on every render
-  const achievements: Achievement[] = useMemo(() => [
+// Move achievements arrays outside component to prevent recreation
+const EXCLUSIVE_ACHIEVEMENTS_DATA: Achievement[] = [
     {
       id: "1",
       name: "Breathe",
@@ -214,7 +209,167 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
       emoji: "🙏",
       unlocked: false
     }
-  ], []);
+];
+
+const REGULAR_ACHIEVEMENTS_DATA: Achievement[] = [
+  {
+    id: "1",
+    name: "Fresh path",
+    description: "Start your wellness journey",
+    emoji: "🌱",
+    unlocked: false
+  },
+  {
+    id: "2",
+    name: "Freedom",
+    description: "Break free from old habits",
+    emoji: "🕊️",
+    unlocked: false
+  },
+  {
+    id: "3",
+    name: "Fist step",
+    description: "Take your first step towards change",
+    emoji: "👣",
+    unlocked: false
+  },
+  {
+    id: "4",
+    name: "Legend",
+    description: "Become a legend in your own story",
+    emoji: "⭐",
+    unlocked: false
+  },
+  {
+    id: "5",
+    name: "Title",
+    description: "Earn your first title",
+    emoji: "👑",
+    unlocked: false
+  },
+  {
+    id: "6",
+    name: "Grip",
+    description: "Get a grip on your goals",
+    emoji: "💪",
+    unlocked: false
+  },
+  {
+    id: "7",
+    name: "Drow",
+    description: "Discover your inner strength",
+    emoji: "🌟",
+    unlocked: false
+  },
+      {
+      id: "14",
+      name: "Hydration Hero",
+      description: "Drink 2L of water daily for 30 days",
+      emoji: "💧",
+      unlocked: false
+    },
+    {
+      id: "15",
+      name: "Early Bird",
+      description: "Wake up at 6 AM for 2 weeks",
+      emoji: "🌅",
+      unlocked: false
+    },
+    {
+      id: "16",
+      name: "Night Owl",
+      description: "Get 8 hours of sleep for 30 days",
+      emoji: "🌙",
+      unlocked: false
+    },
+    {
+      id: "17",
+      name: "Fitness Fanatic",
+      description: "Exercise 5 days a week for a month",
+      emoji: "🏃‍♂️",
+      unlocked: false
+    },
+    {
+      id: "18",
+      name: "Meditation Master",
+      description: "Complete 50 meditation sessions",
+      emoji: "🧘‍♂️",
+      unlocked: false
+    },
+    {
+      id: "19",
+      name: "Nutritionist",
+      description: "Eat healthy meals for 60 days",
+      emoji: "🥗",
+      unlocked: false
+    },
+    {
+      id: "20",
+      name: "Stress Buster",
+      description: "Practice stress relief for 45 days",
+      emoji: "😌",
+      unlocked: false
+    },
+    {
+      id: "21",
+      name: "Productivity Pro",
+      description: "Complete 100 focused work sessions",
+      emoji: "📈",
+      unlocked: false
+    },
+    {
+      id: "22",
+      name: "Social Butterfly",
+      description: "Connect with 10 new people",
+      emoji: "🦋",
+      unlocked: false
+    },
+    {
+      id: "23",
+      name: "Learning Legend",
+      description: "Learn something new for 90 days",
+      emoji: "📚",
+      unlocked: false
+    },
+    {
+      id: "24",
+      name: "Gratitude Guru",
+      description: "Practice gratitude for 100 days",
+      emoji: "🙏",
+      unlocked: false
+    }
+
+];
+
+const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected }) => {
+  const { t } = useTranslation();
+  const { theme } = useTheme();
+  const { selectedBuddyId, gender, userCoins } = useApp();
+  const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
+  const [fadeAnim] = useState(new Animated.Value(1));
+
+  // Use the appropriate achievements array based on toggle selection
+  const filteredAchievements = useMemo(() => {
+    // Fade out
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 150,
+      useNativeDriver: true,
+    }).start(() => {
+      // Fade in after a brief delay
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 150,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    if (isExclusiveSelected) {
+      return EXCLUSIVE_ACHIEVEMENTS_DATA;
+    } else {
+      return REGULAR_ACHIEVEMENTS_DATA;
+    }
+  }, [isExclusiveSelected, fadeAnim]);
 
   // Memoize the achievement selection callback
   const handleAchievementPress = useCallback((achievement: Achievement) => {
@@ -225,13 +380,12 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   const handleCloseModal = useCallback(() => {
     setSelectedAchievement(null);
   }, []);
-  console.log("Achievements TESTSS");
 
   // Memoize the achievements grid
   const achievementsGrid = useMemo(() => (
     <View className="flex-row flex-wrap gap-0">
-      {achievements.map((achievement, index) => (
-        <View key={`${achievement.id}-${index}`} className="items-center w-1/4 p-2">
+      {filteredAchievements.map((achievement, index) => (
+        <View key={`${achievement.id}-${index}`} className="items-center w-1/4 p-3">
           <Pressable
             className={`w-[75px] h-[75px] rounded-full relative ${
               achievement.unlocked 
@@ -269,13 +423,61 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
         </View>
       ))}
     </View>
-  ), [achievements, handleAchievementPress]);
+  ), [filteredAchievements, handleAchievementPress]);
   
   return (
-    <View className="flex-1 h-full py-2">
-      <ScrollView className="flex-1" >
-        {/* Achievements Grid */}
-        {achievementsGrid}
+    <View className="flex-1 bg-[#1F1943]">
+      
+
+      {/* Achievements Grid */}
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ paddingBottom: 200 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animated.View 
+          style={{ opacity: fadeAnim }}
+          className="flex-row flex-wrap justify-center gap-0"
+        >
+          {filteredAchievements.map((achievement, index) => (
+            <View key={`${achievement.id}-${index}`} className="items-center w-1/4 p-3">
+              <Pressable
+                className={`w-[75px] h-[75px] rounded-full relative ${
+                  achievement.unlocked 
+                    ? 'bg-gradient-to-br from-green-400 to-yellow-400 border-2 border-green-300 shadow-lg' 
+                    : 'bg-white/10 border border-white/20'
+                }`}
+                onPress={() => handleAchievementPress(achievement)}
+              >
+                {achievement.unlocked ? (
+                  <>
+                    {achievement.icon ? (
+                        <Image source={AchievementBreatheIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                    ) : (
+                        <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+                      
+                    )}
+                    <View className="absolute -top-2 -right-2 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
+                      <Text className="text-xs font-bold text-white">{achievement.notificationCount}</Text>
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <View className="items-center w-full h-full">
+                        <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+                    </View>
+                    <View className="absolute -top-2 -right-2 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
+                      <Image source={LockIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+                    </View>
+                  </>
+                )}
+              </Pressable>
+              <Text className={`text-xs mt-2 text-center ${achievement.unlocked ? 'text-white' : 'text-white/50'}`}>
+                {achievement.name}
+              </Text>
+            </View>
+          ))}
+        </Animated.View>
       </ScrollView>
 
       {selectedAchievement && (
@@ -304,4 +506,4 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack }) => {
   );
 };
 
-export default React.memo(Achievements); 
+export default Achievements; 

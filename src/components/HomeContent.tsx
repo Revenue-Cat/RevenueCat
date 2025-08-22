@@ -7,6 +7,7 @@ import Achievements from '../screens/Achievements';
 interface HomeContentProps {
   currentView: 'home' | 'achievements' | 'shop';
   isAchievementsCollapsed: boolean;
+  isExclusiveSelected: boolean;
   onShowCravingSOS: () => void;
   onNavigateToShop: () => void;
 }
@@ -14,9 +15,12 @@ interface HomeContentProps {
 const HomeContent: React.FC<HomeContentProps> = ({
   currentView,
   isAchievementsCollapsed,
+  isExclusiveSelected,
   onShowCravingSOS,
   onNavigateToShop
 }) => {
+  console.log("HomeContent render - currentView:", currentView, "isExclusiveSelected:", isExclusiveSelected);
+  
   return (
     <View style={{ paddingHorizontal: 24, backgroundColor: "#1F1943" }}>
       {/* Conditional Content Based on View */}
@@ -34,7 +38,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
       )}
 
       {currentView === 'achievements' && (
-        <Achievements onBack={() => {}} />
+        <Achievements onBack={() => {}} isExclusiveSelected={isExclusiveSelected} />
       )}
 
       {currentView === 'shop' && (

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Animated,
@@ -10,6 +10,7 @@ import ParallaxBackground from '../components/ParallaxBackground';
 import HomeHeader from '../components/HomeHeader';
 import HomeContent from '../components/HomeContent';
 import AchievementSection from '../components/AchievementSection';
+import AchievementsToggle from '../components/AchievementsToggle';
 import { useHomeNavigation } from '../hooks/useHomeNavigation';
 import { useHomeScroll } from '../hooks/useHomeScroll';
 
@@ -40,6 +41,9 @@ const Home: React.FC<HomeProps> = ({
   } = useApp();
 
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
+
+  // Add state for achievements toggle
+  const [isExclusiveSelected, setIsExclusiveSelected] = useState(true);
 
   // Use custom hooks for navigation and scroll handling
   const { currentView, handleHeaderGesture, changeView } = useHomeNavigation();
@@ -94,8 +98,11 @@ const Home: React.FC<HomeProps> = ({
   const handleShowCravingSOS = useCallback(() => {
     onShowCravingSOS();
   }, [onShowCravingSOS]);
-  
-  console.log("backgroundHeight", backgroundHeight);
+
+  // Memoize the achievements toggle callback
+  const handleSetIsExclusiveSelected = useCallback((isExclusive: boolean) => {
+    setIsExclusiveSelected(isExclusive);
+  }, []);
   
   // Don't render until scroll position is loaded
   if (!isInitialized) {
@@ -138,6 +145,14 @@ const Home: React.FC<HomeProps> = ({
             />
           </Animated.View>
 
+          {/* Achievements Toggle - On top of Buddy Icon */}
+          {currentView === 'achievements' && (
+            <AchievementsToggle
+              scrollY={scrollY}
+              isExclusiveSelected={isExclusiveSelected}
+              setIsExclusiveSelected={handleSetIsExclusiveSelected}
+            />
+          )}
 
           {/* Scrollable Content */}
           <Animated.ScrollView
@@ -184,6 +199,7 @@ const Home: React.FC<HomeProps> = ({
             <HomeContent
               currentView={currentView}
               isAchievementsCollapsed={isAchievementsCollapsed}
+              isExclusiveSelected={isExclusiveSelected}
               onShowCravingSOS={handleShowCravingSOS}
               onNavigateToShop={handleNavigateToShop}
             />
@@ -194,4 +210,4 @@ const Home: React.FC<HomeProps> = ({
   );
 };
 
-export default React.memo(Home);
+export default Home;

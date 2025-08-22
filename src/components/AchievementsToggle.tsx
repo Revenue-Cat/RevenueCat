@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { View, Text, Pressable, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 interface AchievementsToggleProps {
@@ -9,11 +9,12 @@ interface AchievementsToggleProps {
 }
 
 const AchievementsToggle: React.FC<AchievementsToggleProps> = ({ 
-  scrollY, 
+  scrollY,
   isExclusiveSelected, 
   setIsExclusiveSelected 
 }) => {
 
+  // Use the same transform as the Buddy icon
   const transform = useMemo(() => [{
     translateY: scrollY.interpolate({
       inputRange: [0, 80],
@@ -22,84 +23,103 @@ const AchievementsToggle: React.FC<AchievementsToggleProps> = ({
     })
   }], [scrollY]);
 
+  const handleRegularPress = useCallback(() => {
+    setIsExclusiveSelected(false);
+  }, [setIsExclusiveSelected]);
+
+  const handleExclusivePress = useCallback(() => {
+    setIsExclusiveSelected(true);
+  }, [setIsExclusiveSelected]);
+
   return (
-    <Animated.View 
-      className="absolute left-0 right-0 z-[60] items-center"
-      style={{ 
-        top: 300,
-        transform
-      }}
-    >
-      <View 
-        className="rounded-2xl flex-row w-[220px] h-[44px] p-0.5 gap-1 bg-slate-100 shadow-lg"
-        style={{ 
-          shadowColor: '#000000',
-          shadowOffset: { width: 0, height: 10 },
-          shadowOpacity: 0.1,
-          shadowRadius: 15,
-          elevation: 8
-        }}
-      >
-        <Pressable 
-          className={`rounded-2xl flex-row items-center justify-center flex-1 ${
-            !isExclusiveSelected 
-              ? 'bg-white shadow-sm' 
-              : ''
-          }`}
+    <Animated.View style={{ 
+      position: 'absolute',
+      top: 300,
+      left: 0,
+      right: 0,
+      zIndex: 9999,
+      alignItems: 'center',
+      justifyContent: 'center',
+      transform
+    }}>
+      <View style={{ 
+        flexDirection: 'row', 
+        backgroundColor: '#f1f5f9', 
+        borderRadius: 16, 
+        padding: 2, 
+        width: 220, 
+        height: 44,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.1,
+        shadowRadius: 15,
+        elevation: 8
+      }}>
+        <TouchableOpacity 
           style={{ 
+            flex: 1,
+            backgroundColor: !isExclusiveSelected ? '#ffffff' : 'transparent',
+            borderRadius: 14,
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'row',
             shadowColor: !isExclusiveSelected ? '#000000' : 'transparent',
             shadowOffset: !isExclusiveSelected ? { width: 0, height: 1 } : { width: 0, height: 0 },
             shadowOpacity: !isExclusiveSelected ? 0.1 : 0,
             shadowRadius: !isExclusiveSelected ? 3 : 0,
             elevation: !isExclusiveSelected ? 2 : 0
           }}
-          onPress={() => setIsExclusiveSelected(false)}
+          onPress={handleRegularPress}
+          activeOpacity={0.7}
         >
           <Ionicons 
             name="ribbon" 
             size={16} 
             color={!isExclusiveSelected ? '#1E293B' : '#64748B'} 
           />
-          <Text 
-            className={`font-medium ml-2 ${
-              !isExclusiveSelected ? 'text-slate-800' : 'text-slate-400'
-            }`}
-          >
+          <Text style={{ 
+            marginLeft: 8,
+            fontWeight: '500',
+            color: !isExclusiveSelected ? '#1E293B' : '#64748B'
+          }}>
             Regular
           </Text>
-        </Pressable>
-        <Pressable 
-          className={`rounded-2xl flex-row items-center justify-center flex-1 ${
-            isExclusiveSelected 
-              ? 'bg-white shadow-sm' 
-              : ''
-          }`}
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
           style={{ 
+            flex: 1,
+            backgroundColor: isExclusiveSelected ? '#ffffff' : 'transparent',
+            borderRadius: 14,
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'row',
             shadowColor: isExclusiveSelected ? '#000000' : 'transparent',
             shadowOffset: isExclusiveSelected ? { width: 0, height: 1 } : { width: 0, height: 0 },
             shadowOpacity: isExclusiveSelected ? 0.1 : 0,
             shadowRadius: isExclusiveSelected ? 3 : 0,
             elevation: isExclusiveSelected ? 2 : 0
           }}
-          onPress={() => setIsExclusiveSelected(true)}
+          onPress={handleExclusivePress}
+          activeOpacity={0.7}
         >
           <Ionicons 
             name="star" 
             size={16} 
             color={isExclusiveSelected ? '#1E293B' : '#64748B'} 
           />
-          <Text 
-            className={`font-medium ml-2 ${
-              isExclusiveSelected ? 'text-slate-800' : 'text-slate-400'
-            }`}
-          >
+          <Text style={{ 
+            marginLeft: 8,
+            fontWeight: '500',
+            color: isExclusiveSelected ? '#1E293B' : '#64748B'
+          }}>
             Exclusive
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </Animated.View>
   );
 };
 
-export default React.memo(AchievementsToggle);
+export default AchievementsToggle;
 
