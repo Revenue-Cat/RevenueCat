@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Timer from './Timer';
+import CountdownTimer from './CountdownTimer';
 import CoinIcon from "../assets/icons/coins.svg";
 
 interface HomeHeaderProps {
   currentView: 'home' | 'achievements' | 'shop';
   userCoins: number;
+  startDate?: Date | null;
   onNavigateToProfile: () => void;
   onCoinPurchase: () => void;
   onViewChange: (view: 'home' | 'achievements' | 'shop') => void;
@@ -15,6 +16,7 @@ interface HomeHeaderProps {
 const HomeHeader: React.FC<HomeHeaderProps> = ({
   currentView,
   userCoins,
+  startDate,
   onNavigateToProfile,
   onCoinPurchase,
   onViewChange
@@ -49,7 +51,14 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           </Text>
           
           {/* Timer Units - Only show for Home view */}
-          {currentView === 'home' && <Timer />}
+          {currentView === 'home' && startDate && (
+            <CountdownTimer
+              targetDate={startDate}
+              textColor="text-indigo-950"
+              textSize="lg"
+              showSeconds={false}
+            />
+          )}
 
           {/* Preview content for other views */}
           {currentView === 'achievements' && (

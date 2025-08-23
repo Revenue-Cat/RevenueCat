@@ -10,6 +10,19 @@ import { Ionicons } from '@expo/vector-icons';
 import CoinIcon from "../assets/icons/coins.svg";
 import SlideModal from './SlideModal';
 import { Achievement } from '../services/achievementService';
+import CountdownTimer from './CountdownTimer';
+import { useApp } from '../contexts/AppContext';
+
+// Helper function to format time remaining
+const formatTimeRemaining = (daysRemaining: number): string => {
+  if (daysRemaining <= 0) return 'Ready to unlock!';
+  
+  if (daysRemaining === 1) return '1 day left';
+  if (daysRemaining < 7) return `${daysRemaining} days left`;
+  if (daysRemaining < 30) return `${Math.ceil(daysRemaining / 7)} weeks left`;
+  if (daysRemaining < 365) return `${Math.ceil(daysRemaining / 30)} months left`;
+  return `${Math.ceil(daysRemaining / 365)} years left`;
+};
 
 const LockIcon = require('../assets/achievements/lock.png');
 
@@ -18,14 +31,18 @@ interface AchievementModalProps {
   achievement: Achievement | null;
   onClose: () => void;
   onShare?: (achievement: Achievement) => void;
+  progress?: { current: number; max: number; percentage: number };
 }
 
 const AchievementModal: React.FC<AchievementModalProps> = ({
   visible,
   achievement,
   onClose,
-  onShare
+  onShare,
+  progress
 }) => {
+  const { startDate } = useApp();
+  
   if (!achievement) return null;
 
   const handleShare = async () => {
@@ -106,8 +123,8 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                   <Text className="text-6xl">{achievement.emoji}</Text>
                 )}
                 {/* Notification Badge */}
-                <View className="absolute -top-2 -right-2 bg-green-500 rounded-full w-8 h-8 justify-center items-center border-2 border-white">
-                  <Text className="text-sm font-bold text-white">13</Text>
+                <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center border-2 border-white">
+                  <Text className="text-sm font-bold text-white">{achievement.notificationCount || 1}</Text>
                 </View>
               </View>
             </View>
@@ -140,7 +157,7 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
             </Text>
 
             {/* Achievement Icon */}
-            <View className="items-center mb-6 pb-4">
+            <View className="items-center pb-4">
               <View className="w-32 h-32 bg-gradient-to-br from-green-400 to-yellow-400 rounded-full justify-center items-center border-4 border-white/90 relative">
                 {achievement.icon ? (
                   <Image 
@@ -156,7 +173,35 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                   <Image source={LockIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
                 </View>
               </View>
-            </View>
+              </View>
+              {/* Time Left Section */}
+         {progress && !achievement.unlocked && (
+           <View>
+             <View className="flex-row items-center justify-center mb-3">
+               <Text className="text-indigo-950 font-semibold text-center ml-2">
+                 Time left
+               </Text>
+             </View>
+             
+             {/* Countdown Timer */}
+             <View className="items-center">
+                <CountdownTimer
+                   targetDate={(() => {
+                     // Calculate target date based on start date + required days
+                     if (!startDate) return new Date();
+                     
+                     const targetDate = new Date(startDate);
+                     targetDate.setDate(targetDate.getDate() + progress.max);
+                     
+                     return targetDate;
+                   })()}
+                   textColor="text-indigo-950"
+                   textSize="md"
+                   showSeconds={true}
+                 />
+             </View>
+           </View>
+         )}
         </View>
         <View className='flex-row justify-center items-center mt-4'>
            <Ionicons name="information-circle" size={16} color="#64748B" />
@@ -164,6 +209,8 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
              Locked. Update your plan to unlock this achivemet.
            </Text>
          </View>
+
+         
         </>
           )}
           <View className={`my-6 flex-row justify-center gap-4`}>

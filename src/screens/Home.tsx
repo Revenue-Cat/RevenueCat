@@ -38,6 +38,7 @@ const Home: React.FC<HomeProps> = ({
     setShowCoinPurchase,
     selectedBuddyId,
     gender,
+    startDate,
   } = useApp();
 
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
@@ -127,6 +128,7 @@ const Home: React.FC<HomeProps> = ({
           <HomeHeader
             currentView={currentView}
             userCoins={userCoins}
+            startDate={startDate}
             onNavigateToProfile={handleNavigateToProfile}
             onCoinPurchase={handleCoinPurchase}
             onViewChange={changeView}

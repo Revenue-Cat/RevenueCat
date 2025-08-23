@@ -50,6 +50,16 @@ class AchievementService {
   constructor() {
     this.initializeAchievements();
     this.loadUserProgress();
+    
+    // Hardcode start date to 2 days ago for testing
+    if (!this.userProgress.startDate) {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 2); // 2 days ago
+      this.setStartDate(startDate);
+    } else {
+      // Update achievements based on existing start date
+      this.updateAchievements();
+    }
   }
 
   private initializeAchievements() {
@@ -60,7 +70,7 @@ class AchievementService {
         description: "First 24 hours without smoke or vape — your start.",
         emoji: "🔥",
         icon: AchievementSplashIcon,
-        unlocked: true,
+        unlocked: false,
         coins: 50,
         requiredDays: 1,
       },
@@ -70,7 +80,7 @@ class AchievementService {
         description: "Three days smoke-free — proving your willpower.",
         emoji: "💪",
         icon: AchievementHoldOnIcon,
-        unlocked: true,
+        unlocked: false,
         coins: 100,
         requiredDays: 3,
       },
@@ -80,7 +90,7 @@ class AchievementService {
         description: "One week without nicotine — your strength grows.",
         emoji: "⚔️",
         icon: AchievementSteelWeekIcon,
-        unlocked: true,
+        unlocked: false,
         coins: 150,
         requiredDays: 7,
       },
@@ -90,7 +100,7 @@ class AchievementService {
         description: "Two weeks smoke-free — feel the change.",
         emoji: "🌙",
         icon: AchievementBrightMoonIcon,
-        unlocked: true,
+        unlocked: false,
         coins: 200,
         requiredDays: 14,
       },
@@ -100,7 +110,7 @@ class AchievementService {
         description: "A full month smoke-free — new habits forming.",
         emoji: "🌱",
         icon: AchievementFreshPathIcon,
-        unlocked: true,
+        unlocked: false,
         coins: 300,
         requiredDays: 30,
       },
@@ -110,7 +120,7 @@ class AchievementService {
         description: "Three months without nicotine — enjoy your freedom.",
         emoji: "🕊️",
         icon: AchievementFreedomIcon,
-        unlocked: true,
+        unlocked: false,
         coins: 500,
         requiredDays: 90,
       },
@@ -120,7 +130,7 @@ class AchievementService {
         description: "Half a year smoke-free — you are unstoppable.",
         emoji: "🦸",
         icon: AchievementHeroIcon,
-        unlocked: true,
+        unlocked: false,
         coins: 750,
         requiredDays: 180,
       },
@@ -130,7 +140,7 @@ class AchievementService {
         description: "Almost a year without smoking — become a true legend.",
         emoji: "👑",
         icon: AchievementLegendIcon,
-        unlocked: true,
+        unlocked: false,
         coins: 1000,
         requiredDays: 360,
       },
@@ -194,6 +204,11 @@ class AchievementService {
       if (shouldBeUnlocked && !achievement.unlocked) {
         achievement.unlocked = true;
         achievement.unlockedDate = new Date();
+        hasChanges = true;
+      } else if (!shouldBeUnlocked && achievement.unlocked) {
+        // Reset if days passed is less than required (for testing)
+        achievement.unlocked = false;
+        achievement.unlockedDate = undefined;
         hasChanges = true;
       }
     });

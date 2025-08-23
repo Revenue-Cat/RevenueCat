@@ -38,6 +38,7 @@ interface AppState {
   achievements: Achievement[];
   userProgress: UserProgress;
   daysSmokeFree: number;
+  startDate: Date | null;
 
   // UI state
   showShop: boolean;
@@ -276,6 +277,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     achievements,
     userProgress,
     daysSmokeFree,
+    startDate: userProgress.startDate,
 
     showShop,
     showCoinPurchase,
