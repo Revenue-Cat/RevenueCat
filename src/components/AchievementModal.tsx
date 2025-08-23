@@ -4,6 +4,7 @@ import {
   Text,
   Pressable,
   Image,
+  Share,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import CoinIcon from "../assets/icons/coins.svg";
@@ -37,12 +38,29 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
 }) => {
   if (!achievement) return null;
 
-  const handleShare = () => {
-    if (onShare) {
-      onShare(achievement);
-    } else {
-      // Default share functionality
-      console.log('Share achievement:', achievement.name);
+  const handleShare = async () => {
+    console.log('Share button pressed for achievement:', achievement.name);
+    
+    // Test share functionality directly
+    try {
+      const message = `🎉 I just unlocked the "${achievement.name}" achievement! ${achievement.description}${achievement.coins ? `\n💰 Reward: ${achievement.coins} coins` : ''}`;
+      
+      console.log('Attempting to share message:', message);
+      
+      const result = await Share.share({
+        message: message,
+        title: 'Achievement Unlocked!'
+      });
+      
+      console.log('Share result:', result);
+      
+      // If onShare callback is provided, also call it
+      if (onShare) {
+        onShare(achievement);
+      }
+    } catch (error) {
+      console.error('Error sharing achievement:', error);
+      alert('Share failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };
     
@@ -170,7 +188,20 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
 
                   <Pressable 
                     className={`flex-1 rounded-2xl justify-center items-center bg-indigo-600`}
-                    onPress={achievement.unlocked ? handleShare : handleUpdate}
+                    onPress={() => {
+                      console.log('Button pressed! Achievement unlocked:', achievement.unlocked);
+                      if (achievement.unlocked) {
+                        handleShare();
+                      } else {
+                        handleUpdate();
+                      }
+                    }}
+                    style={({ pressed }) => [
+                      {
+                        opacity: pressed ? 0.7 : 1,
+                        backgroundColor: pressed ? '#4F46E5' : '#4F46E5'
+                      }
+                    ]}
                   >
                     <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">{achievement.unlocked ? "Share" : "Update"}</Text>
                   </Pressable>
