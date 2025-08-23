@@ -38,7 +38,6 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
   visible,
   achievement,
   onClose,
-  onShare,
   progress
 }) => {
   const { startDate } = useApp();
@@ -59,12 +58,6 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
         title: 'Achievement Unlocked!'
       });
       
-      console.log('Share result:', result);
-      
-      // If onShare callback is provided, also call it
-      if (onShare) {
-        onShare(achievement);
-      }
     } catch (error) {
       console.error('Error sharing achievement:', error);
       alert('Share failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
