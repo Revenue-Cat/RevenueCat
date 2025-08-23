@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { achievementService, Achievement, UserProgress } from '../services/achievementService';
 
 type ShopTab = 'characters' | 'backgrounds' | 'accessories';
 export type UserGender = 'man' | 'lady' | 'any';
@@ -33,6 +34,11 @@ interface AppState {
   packPriceCurrency: string;
   goal: string;
 
+  // Achievement system
+  achievements: Achievement[];
+  userProgress: UserProgress;
+  daysSmokeFree: number;
+
   // UI state
   showShop: boolean;
   showCoinPurchase: boolean;
@@ -47,6 +53,12 @@ interface AppState {
   setShowCoinPurchase: (show: boolean) => void;
   setSelectedShopTab: (tab: ShopTab) => void;
   openShopWithTab: (tab: ShopTab) => void;
+
+  // Achievement actions
+  setStartDate: (startDate: Date) => Promise<void>;
+  getProgressForAchievement: (achievementId: string) => { current: number; max: number; percentage: number };
+  resetProgress: () => Promise<void>;
+  setSampleData: () => Promise<void>;
 
   // Selection setters
   setGender: (gender: UserGender) => void;
@@ -108,6 +120,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [packPriceCurrency, setPackPriceCurrencyState] = useState<string>('$');
   const [goal, setGoalState] = useState<string>('');
 
+  // Achievement system state
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [userProgress, setUserProgress] = useState<UserProgress>({
+    startDate: null,
+    daysSmokeFree: 0,
+    totalMoneySaved: 0,
+    cigarettesAvoided: 0,
+    breathingExercisesCompleted: 0,
+    challengesCompleted: 0,
+    purchasesMade: 0,
+  });
+  const [daysSmokeFree, setDaysSmokeFree] = useState(0);
+
   // UI state
   const [showShop, setShowShop] = useState(false);
   const [showCoinPurchase, setShowCoinPurchase] = useState(false);
@@ -116,6 +141,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Load from AsyncStorage on mount (TODO)
   useEffect(() => {
     // TODO: Implement AsyncStorage load if desired
+  }, []);
+
+  // Sync with achievement service
+  useEffect(() => {
+    const unsubscribe = achievementService.subscribe(() => {
+      setAchievements(achievementService.getAllAchievements());
+      setUserProgress(achievementService.getUserProgress());
+      setDaysSmokeFree(achievementService.calculateDaysPassed());
+    });
+
+    // Initial load
+    setAchievements(achievementService.getAllAchievements());
+    setUserProgress(achievementService.getUserProgress());
+    setDaysSmokeFree(achievementService.calculateDaysPassed());
+
+    return unsubscribe;
   }, []);
 
   // Save to AsyncStorage when state changes (TODO)
@@ -195,6 +236,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setPackPriceCurrency = useCallback((value: string) => setPackPriceCurrencyState(value), []);
   const setGoal = useCallback((value: string) => setGoalState(value), []);
 
+  // Achievement functions
+  const setStartDate = useCallback(async (startDate: Date) => {
+    await achievementService.setStartDate(startDate);
+  }, []);
+
+  const getProgressForAchievement = useCallback((achievementId: string) => {
+    return achievementService.getProgressForAchievement(achievementId);
+  }, []);
+
+  const resetProgress = useCallback(async () => {
+    await achievementService.resetProgress();
+  }, []);
+
+  const setSampleData = useCallback(async () => {
+    await achievementService.setSampleData();
+  }, []);
+
   // Memoize the context value to prevent unnecessary re-renders
   const value: AppState = useMemo(() => ({
     userCoins,
@@ -214,6 +272,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     packPriceCurrency,
     goal,
 
+    // Achievement system
+    achievements,
+    userProgress,
+    daysSmokeFree,
+
     showShop,
     showCoinPurchase,
     selectedShopTab,
@@ -226,6 +289,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setShowCoinPurchase,
     setSelectedShopTab,
     openShopWithTab,
+
+    // Achievement actions
+    setStartDate,
+    getProgressForAchievement,
+    resetProgress,
+    setSampleData,
 
     setGender,
     setSelectedBuddyId,
@@ -251,11 +320,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     packPrice,
     packPriceCurrency,
     goal,
+    achievements,
+    userProgress,
+    daysSmokeFree,
     showShop,
     showCoinPurchase,
     selectedShopTab,
     purchaseItem,
     openShopWithTab,
+    setStartDate,
+    getProgressForAchievement,
+    resetProgress,
+    setSampleData,
   ]);
 
   return (

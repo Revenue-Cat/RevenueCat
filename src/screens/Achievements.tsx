@@ -16,86 +16,20 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useApp } from '../contexts/AppContext';
 import AchievementModal from '../components/AchievementModal';
 import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
+import { Achievement } from '../services/achievementService';
 const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
 const AchievementBreatheIcon = require('../assets/achievements/achievement-breathe.png');
 const LockIcon = require('../assets/achievements/lock.png');
 
 
-interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  emoji: string;
-  icon?: any;
-  unlocked: boolean;
-  notificationCount?: number;
-  coins?: number;
-}
+
 
 interface AchievementsProps {
   onBack: () => void;
   isExclusiveSelected: boolean;
 }
-
-// Move achievements arrays outside component to prevent recreation
-const EXCLUSIVE_ACHIEVEMENTS_DATA: Achievement[] = [
-    {
-      id: "1",
-      name: "Breathe",
-      description: "Complete your first breathing exercise session",
-      emoji: "🦙",
-      icon: AchievementBreatheIcon,
-      unlocked: true,
-      notificationCount: 13,
-      coins: 100
-    },
-    {
-      id: "2",
-      name: "HydroWin",
-      description: "Drink 8 glasses of water for 7 days straight",
-      emoji: "💧",
-      icon: AchievementBreatheIcon, // Using existing icon for now
-      unlocked: true,
-      notificationCount: 5,
-      coins: 150
-    },
-    {
-      id: "3",
-      name: "Strider",
-      description: "Take 10,000 steps for 5 consecutive days",
-      emoji: "🚶",
-      icon: AchievementBreatheIcon, // Using existing icon for now
-      unlocked: true,
-      notificationCount: 2,
-      coins: 200
-    },
-    {
-      id: "4",
-      name: "Snackcess",
-      description: "Choose healthy snacks over junk food for a week",
-      icon: AchievementLockedIcon, // Using existing icon for now
-      emoji: "🥗",
-      unlocked: false,
-      coins: 100
-    },
-    {
-      id: "5",
-      name: "Zen",
-      description: "Complete 10 meditation sessions",
-      icon: AchievementLockedIcon,
-      emoji: "🧘",
-      unlocked: false,
-      coins: 150
-    },
-    {
-      id: "6",
-      name: "Gripped",
-      description: "Hold a plank for 2 minutes",
-      emoji: "💪",
-      unlocked: false,
-      coins: 200
-    },
-    {
+const achievements = [
+  {
       id: "7",
       name: "Splash",
       description: "Swim 20 laps in one session",
@@ -241,159 +175,12 @@ const EXCLUSIVE_ACHIEVEMENTS_DATA: Achievement[] = [
     }
 ];
 
-const REGULAR_ACHIEVEMENTS_DATA: Achievement[] = [
-  {
-    id: "1",
-    name: "Fresh path",
-    description: "Start your wellness journey",
-    emoji: "🌱",
-    unlocked: true,
-    notificationCount: 1,
-    coins: 100
-  },
-  {
-    id: "2",
-    name: "Freedom",
-    description: "Break free from old habits",
-    emoji: "🕊️",
-    unlocked: false,
-    coins: 150
-  },
-  {
-    id: "3",
-    name: "Fist step",
-    description: "Take your first step towards change",
-    emoji: "👣",
-    unlocked: false,
-    coins: 100
-  },
-  {
-    id: "4",
-    name: "Legend",
-    description: "Become a legend in your own story",
-    emoji: "⭐",
-    unlocked: false,
-    coins: 150
-  },
-  {
-    id: "5",
-    name: "Title",
-    description: "Earn your first title",
-    emoji: "👑",
-    unlocked: false,
-    coins: 250
-  },
-  {
-    id: "6",
-    name: "Grip",
-    description: "Get a grip on your goals",
-    emoji: "💪",
-    unlocked: false,
-    coins: 150
-  },
-  {
-    id: "7",
-    name: "Drow",
-    description: "Discover your inner strength",
-    emoji: "🌟",
-    unlocked: false,
-    coins: 100
-  },
-      {
-      id: "14",
-      name: "Hydration Hero",
-      description: "Drink 2L of water daily for 30 days",
-      emoji: "💧",
-      unlocked: false,
-      coins: 350
-    },
-    {
-      id: "15",
-      name: "Early Bird",
-      description: "Wake up at 6 AM for 2 weeks",
-      emoji: "🌅",
-      unlocked: false,
-      coins: 150
-    },
-    {
-      id: "16",
-      name: "Night Owl",
-      description: "Get 8 hours of sleep for 30 days",
-      emoji: "🌙",
-      unlocked: false,
-      coins: 200
-    },
-    {
-      id: "17",
-      name: "Fitness Fanatic",
-      description: "Exercise 5 days a week for a month",
-      emoji: "🏃‍♂️",
-      unlocked: false,
-      coins: 300
-    },
-    {
-      id: "18",
-      name: "Meditation Master",
-      description: "Complete 50 meditation sessions",
-      emoji: "🧘‍♂️",
-      unlocked: false,
-      coins: 400
-    },
-    {
-      id: "19",
-      name: "Nutritionist",
-      description: "Eat healthy meals for 60 days",
-      emoji: "🥗",
-      unlocked: false,
-      coins: 150
-    },
-    {
-      id: "20",
-      name: "Stress Buster",
-      description: "Practice stress relief for 45 days",
-      emoji: "😌",
-      unlocked: false,
-      coins: 200
-    },
-    {
-      id: "21",
-      name: "Productivity Pro",
-      description: "Complete 100 focused work sessions",
-      emoji: "📈",
-      unlocked: false,
-      coins: 500
-    },
-    {
-      id: "22",
-      name: "Social Butterfly",
-      description: "Connect with 10 new people",
-      emoji: "🦋",
-      unlocked: false,
-      coins: 150
-    },
-    {
-      id: "23",
-      name: "Learning Legend",
-      description: "Learn something new for 90 days",
-      emoji: "📚",
-      unlocked: false,
-      coins: 300
-    },
-    {
-      id: "24",
-      name: "Gratitude Guru",
-      description: "Practice gratitude for 100 days",
-      emoji: "🙏",
-      unlocked: false,
-      coins: 400
-    }
-
-];
+// Achievement data is now managed by the achievement service
 
 const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { selectedBuddyId, gender, userCoins } = useApp();
+  const { selectedBuddyId, gender, userCoins, achievements, getProgressForAchievement } = useApp();
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
   const [parallaxAnim] = useState(new Animated.Value(0));
 
@@ -406,12 +193,10 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
       useNativeDriver: true,
     }).start();
 
-    if (isExclusiveSelected) {
-      return EXCLUSIVE_ACHIEVEMENTS_DATA;
-    } else {
-      return REGULAR_ACHIEVEMENTS_DATA;
-    }
-  }, [isExclusiveSelected, parallaxAnim]);
+    // For now, return regular achievements from service
+    // TODO: Add exclusive achievements later
+    return achievements;
+  }, [isExclusiveSelected, parallaxAnim, achievements]);
 
   // Memoize the achievement selection callback
   const handleAchievementPress = useCallback((achievement: Achievement) => {
@@ -454,7 +239,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
             {achievement.unlocked ? (
               <>
                 {achievement.icon ? (
-                    <Image source={AchievementBreatheIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                    <Image source={achievement.icon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
                 ) : (
                     <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
                   
@@ -555,12 +340,12 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                 {achievement.unlocked ? (
                   <>
                     {achievement.icon ? (
-                        <Image source={AchievementBreatheIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                        <Image source={achievement.icon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
                     ) : (
                         <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
                       
                     )}
-                    <View className="absolute -top-2 -right-2 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
+                    <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
                       <Text className="text-xs font-bold text-white">{achievement.notificationCount}</Text>
                     </View>
                   </>

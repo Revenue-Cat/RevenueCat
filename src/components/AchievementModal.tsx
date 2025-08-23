@@ -9,19 +9,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import CoinIcon from "../assets/icons/coins.svg";
 import SlideModal from './SlideModal';
+import { Achievement } from '../services/achievementService';
 
 const LockIcon = require('../assets/achievements/lock.png');
-
-interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  emoji: string;
-  icon?: any;
-  unlocked: boolean;
-  notificationCount?: number;
-  coins?: number;
-}
 
 interface AchievementModalProps {
   visible: boolean;
