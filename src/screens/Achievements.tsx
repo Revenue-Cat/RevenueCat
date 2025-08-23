@@ -14,13 +14,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import { useApp } from '../contexts/AppContext';
-import SlideModal from '../components/SlideModal';
+import AchievementModal from '../components/AchievementModal';
 import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
 const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
 const AchievementBreatheIcon = require('../assets/achievements/achievement-breathe.png');
 const LockIcon = require('../assets/achievements/lock.png');
 
-const { width } = Dimensions.get('window');
 
 interface Achievement {
   id: string;
@@ -30,6 +29,7 @@ interface Achievement {
   icon?: any;
   unlocked: boolean;
   notificationCount?: number;
+  coins?: number;
 }
 
 interface AchievementsProps {
@@ -46,168 +46,198 @@ const EXCLUSIVE_ACHIEVEMENTS_DATA: Achievement[] = [
       emoji: "🦙",
       icon: AchievementBreatheIcon,
       unlocked: true,
-      notificationCount: 13
+      notificationCount: 13,
+      coins: 100
     },
     {
       id: "2",
       name: "HydroWin",
       description: "Drink 8 glasses of water for 7 days straight",
       emoji: "💧",
-      unlocked: false
+      icon: AchievementBreatheIcon, // Using existing icon for now
+      unlocked: true,
+      notificationCount: 5,
+      coins: 150
     },
     {
       id: "3",
       name: "Strider",
       description: "Take 10,000 steps for 5 consecutive days",
       emoji: "🚶",
-      unlocked: false
+      icon: AchievementBreatheIcon, // Using existing icon for now
+      unlocked: true,
+      notificationCount: 2,
+      coins: 200
     },
     {
       id: "4",
       name: "Snackcess",
       description: "Choose healthy snacks over junk food for a week",
+      icon: AchievementLockedIcon, // Using existing icon for now
       emoji: "🥗",
-      unlocked: false
+      unlocked: false,
+      coins: 100
     },
     {
       id: "5",
       name: "Zen",
       description: "Complete 10 meditation sessions",
+      icon: AchievementLockedIcon,
       emoji: "🧘",
-      unlocked: false
+      unlocked: false,
+      coins: 150
     },
     {
       id: "6",
       name: "Gripped",
       description: "Hold a plank for 2 minutes",
       emoji: "💪",
-      unlocked: false
+      unlocked: false,
+      coins: 200
     },
     {
       id: "7",
       name: "Splash",
       description: "Swim 20 laps in one session",
       emoji: "🏊",
-      unlocked: false
+      unlocked: false,
+      coins: 250
     },
     {
       id: "8",
       name: "Released",
       description: "Practice stress relief techniques for 30 days",
       emoji: "🕊️",
-      unlocked: false
+      unlocked: false,
+      coins: 300
     },
     {
       id: "9",
       name: "Stretched",
       description: "Complete daily stretching routine for 2 weeks",
       emoji: "🤸",
-      unlocked: false
+      unlocked: false,
+      coins: 150
     },
     {
       id: "10",
       name: "Title",
       description: "Earn your first wellness champion title",
       emoji: "👑",
-      unlocked: false
+      unlocked: false,
+      coins: 400
     },
     {
       id: "11",
       name: "Focus",
       description: "Complete 5 deep work sessions",
       emoji: "🎯",
-      unlocked: false
+      unlocked: false,
+      coins: 200
     },
     {
       id: "12",
       name: "Balance",
       description: "Maintain work-life balance for a month",
       emoji: "⚖️",
-      unlocked: false
+      unlocked: false,
+      coins: 300
     },
     {
       id: "13",
       name: "Mindful",
       description: "Practice mindfulness for 21 days straight",
       emoji: "🧘‍♀️",
-      unlocked: false
+      unlocked: false,
+      coins: 150
     },
     {
       id: "14",
       name: "Hydration Hero",
       description: "Drink 2L of water daily for 30 days",
       emoji: "💧",
-      unlocked: false
+      unlocked: false,
+      coins: 350
     },
     {
       id: "15",
       name: "Early Bird",
       description: "Wake up at 6 AM for 2 weeks",
       emoji: "🌅",
-      unlocked: false
+      unlocked: false,
+      coins: 150
     },
     {
       id: "16",
       name: "Night Owl",
       description: "Get 8 hours of sleep for 30 days",
       emoji: "🌙",
-      unlocked: false
+      unlocked: false,
+      coins: 200
     },
     {
       id: "17",
       name: "Fitness Fanatic",
       description: "Exercise 5 days a week for a month",
       emoji: "🏃‍♂️",
-      unlocked: false
+      unlocked: false,
+      coins: 300
     },
     {
       id: "18",
       name: "Meditation Master",
       description: "Complete 50 meditation sessions",
       emoji: "🧘‍♂️",
-      unlocked: false
+      unlocked: false,
+      coins: 400
     },
     {
       id: "19",
       name: "Nutritionist",
       description: "Eat healthy meals for 60 days",
       emoji: "🥗",
-      unlocked: false
+      unlocked: false,
+      coins: 150
     },
     {
       id: "20",
       name: "Stress Buster",
       description: "Practice stress relief for 45 days",
       emoji: "😌",
-      unlocked: false
+      unlocked: false,
+      coins: 200
     },
     {
       id: "21",
       name: "Productivity Pro",
       description: "Complete 100 focused work sessions",
       emoji: "📈",
-      unlocked: false
+      unlocked: false,
+      coins: 500
     },
     {
       id: "22",
       name: "Social Butterfly",
       description: "Connect with 10 new people",
       emoji: "🦋",
-      unlocked: false
+      unlocked: false,
+      coins: 150
     },
     {
       id: "23",
       name: "Learning Legend",
       description: "Learn something new for 90 days",
       emoji: "📚",
-      unlocked: false
+      unlocked: false,
+      coins: 300
     },
     {
       id: "24",
       name: "Gratitude Guru",
       description: "Practice gratitude for 100 days",
       emoji: "🙏",
-      unlocked: false
+      unlocked: false,
+      coins: 400
     }
 ];
 
@@ -217,126 +247,145 @@ const REGULAR_ACHIEVEMENTS_DATA: Achievement[] = [
     name: "Fresh path",
     description: "Start your wellness journey",
     emoji: "🌱",
-    unlocked: false
+    unlocked: true,
+    notificationCount: 1,
+    coins: 100
   },
   {
     id: "2",
     name: "Freedom",
     description: "Break free from old habits",
     emoji: "🕊️",
-    unlocked: false
+    unlocked: false,
+    coins: 150
   },
   {
     id: "3",
     name: "Fist step",
     description: "Take your first step towards change",
     emoji: "👣",
-    unlocked: false
+    unlocked: false,
+    coins: 100
   },
   {
     id: "4",
     name: "Legend",
     description: "Become a legend in your own story",
     emoji: "⭐",
-    unlocked: false
+    unlocked: false,
+    coins: 150
   },
   {
     id: "5",
     name: "Title",
     description: "Earn your first title",
     emoji: "👑",
-    unlocked: false
+    unlocked: false,
+    coins: 250
   },
   {
     id: "6",
     name: "Grip",
     description: "Get a grip on your goals",
     emoji: "💪",
-    unlocked: false
+    unlocked: false,
+    coins: 150
   },
   {
     id: "7",
     name: "Drow",
     description: "Discover your inner strength",
     emoji: "🌟",
-    unlocked: false
+    unlocked: false,
+    coins: 100
   },
       {
       id: "14",
       name: "Hydration Hero",
       description: "Drink 2L of water daily for 30 days",
       emoji: "💧",
-      unlocked: false
+      unlocked: false,
+      coins: 350
     },
     {
       id: "15",
       name: "Early Bird",
       description: "Wake up at 6 AM for 2 weeks",
       emoji: "🌅",
-      unlocked: false
+      unlocked: false,
+      coins: 150
     },
     {
       id: "16",
       name: "Night Owl",
       description: "Get 8 hours of sleep for 30 days",
       emoji: "🌙",
-      unlocked: false
+      unlocked: false,
+      coins: 200
     },
     {
       id: "17",
       name: "Fitness Fanatic",
       description: "Exercise 5 days a week for a month",
       emoji: "🏃‍♂️",
-      unlocked: false
+      unlocked: false,
+      coins: 300
     },
     {
       id: "18",
       name: "Meditation Master",
       description: "Complete 50 meditation sessions",
       emoji: "🧘‍♂️",
-      unlocked: false
+      unlocked: false,
+      coins: 400
     },
     {
       id: "19",
       name: "Nutritionist",
       description: "Eat healthy meals for 60 days",
       emoji: "🥗",
-      unlocked: false
+      unlocked: false,
+      coins: 150
     },
     {
       id: "20",
       name: "Stress Buster",
       description: "Practice stress relief for 45 days",
       emoji: "😌",
-      unlocked: false
+      unlocked: false,
+      coins: 200
     },
     {
       id: "21",
       name: "Productivity Pro",
       description: "Complete 100 focused work sessions",
       emoji: "📈",
-      unlocked: false
+      unlocked: false,
+      coins: 500
     },
     {
       id: "22",
       name: "Social Butterfly",
       description: "Connect with 10 new people",
       emoji: "🦋",
-      unlocked: false
+      unlocked: false,
+      coins: 150
     },
     {
       id: "23",
       name: "Learning Legend",
       description: "Learn something new for 90 days",
       emoji: "📚",
-      unlocked: false
+      unlocked: false,
+      coins: 300
     },
     {
       id: "24",
       name: "Gratitude Guru",
       description: "Practice gratitude for 100 days",
       emoji: "🙏",
-      unlocked: false
+      unlocked: false,
+      coins: 400
     }
 
 ];
@@ -372,6 +421,21 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
   // Memoize the modal close callback
   const handleCloseModal = useCallback(() => {
     setSelectedAchievement(null);
+  }, []);
+
+  // Handle sharing achievement
+  const handleShareAchievement = useCallback((achievement: Achievement) => {
+    // TODO: Implement actual sharing functionality
+    // For now, just log the achievement
+    console.log('Sharing achievement:', achievement.name);
+    
+    // You can implement actual sharing here using expo-sharing or other methods
+    // Example:
+    // import * as Sharing from 'expo-sharing';
+    // const message = `🎉 I just unlocked the "${achievement.name}" achievement! ${achievement.description}`;
+    // if (await Sharing.isAvailableAsync()) {
+    //   await Sharing.shareAsync(message);
+    // }
   }, []);
 
   // Memoize the achievements grid
@@ -417,7 +481,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
       ))}
     </View>
   ), [filteredAchievements, handleAchievementPress]);
-  
+  console.log('selectedAchievement', selectedAchievement)
   return (
     <View className="flex-1 bg-[#1F1943]">
       
@@ -520,26 +584,12 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
       </ScrollView>
 
       {selectedAchievement && (
-        <SlideModal visible={true} onClose={handleCloseModal} title="Achievement details">
-          <View className="items-center">
-            <View className="w-24 h-24 bg-white/10 rounded-full justify-center items-center mb-4">
-              {selectedAchievement.unlocked ? (
-                <Text className="text-5xl">{selectedAchievement.emoji}</Text>
-              ) : (
-                <View className="w-12 h-12 bg-white/30 rounded-full" />
-              )}
-            </View>
-            
-            <View className="items-center mb-6">
-              <Text className="text-lg font-bold text-white mb-2 text-center">
-                {selectedAchievement.name}
-              </Text>
-              <Text className="text-sm text-white/70 text-center leading-5">
-                {selectedAchievement.description}
-              </Text>
-            </View>
-          </View>
-        </SlideModal>
+        <AchievementModal 
+          visible={true} 
+          onClose={handleCloseModal} 
+          achievement={selectedAchievement} 
+          onShare={handleShareAchievement}
+        />
       )}
     </View>
   );
