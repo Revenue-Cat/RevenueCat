@@ -1,16 +1,20 @@
-import React, { useEffect, useRef, useMemo } from 'react';
-import { View, Animated } from 'react-native';
+import React, { useEffect, useRef, useMemo } from "react";
+import { View, Animated } from "react-native";
+
+type Anchor = "top" | "middle" | "bottom";
 
 interface ParallaxBackgroundProps {
   scrollY: Animated.Value;
   height?: number;
   children?: React.ReactNode;
+  anchor?: Anchor;
 }
 
-const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({ 
-  scrollY, 
+const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
+  scrollY,
   height = 300,
-  children
+  children,
+  anchor = "top",
 }) => {
   // Floating animation values
   const floatAnim1 = useRef(new Animated.Value(0)).current;
@@ -19,148 +23,175 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   const floatAnim4 = useRef(new Animated.Value(0)).current;
 
   // Memoize the transform calculations to prevent recreation
-  const layer4Transform = useMemo(() => [
-    {
-      translateY: Animated.add(
-        scrollY.interpolate({
-          inputRange: [0, 80],
-          outputRange: [0, -40],
-          extrapolate: 'clamp'
-        }),
-        floatAnim1.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -40]
-        })
-      )
-    }
-  ], [scrollY, floatAnim1]);
+  const layer4Transform = useMemo(
+    () => [
+      {
+        translateY: Animated.add(
+          scrollY.interpolate({
+            inputRange: [0, 80],
+            outputRange: [0, -40],
+            extrapolate: "clamp",
+          }),
+          floatAnim1.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, -40],
+          })
+        ),
+      },
+    ],
+    [scrollY, floatAnim1]
+  );
 
-  const layer3Transform = useMemo(() => [
-    {
-      translateY: Animated.add(
-        scrollY.interpolate({
+  const layer3Transform = useMemo(
+    () => [
+      {
+        translateY: Animated.add(
+          scrollY.interpolate({
+            inputRange: [0, 50],
+            outputRange: [0, -15],
+            extrapolate: "clamp",
+          }),
+          floatAnim2.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, -7],
+          })
+        ),
+      },
+      {
+        rotate: scrollY.interpolate({
           inputRange: [0, 50],
-          outputRange: [0, -15],
-          extrapolate: 'clamp'
+          outputRange: ["0deg", "2deg"],
+          extrapolate: "clamp",
         }),
-        floatAnim2.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -7]
-        })
-      )
-    },
-    {
-      rotate: scrollY.interpolate({
-        inputRange: [0, 50],
-        outputRange: ['0deg', '2deg'],
-        extrapolate: 'clamp'
-      })
-    }
-  ], [scrollY, floatAnim2]);
+      },
+    ],
+    [scrollY, floatAnim2]
+  );
 
-  const layer2Transform = useMemo(() => [
-    {
-      translateY: Animated.add(
-        scrollY.interpolate({
+  const layer2Transform = useMemo(
+    () => [
+      {
+        translateY: Animated.add(
+          scrollY.interpolate({
+            inputRange: [0, 50],
+            outputRange: [0, -10],
+            extrapolate: "clamp",
+          }),
+          floatAnim3.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, -5],
+          })
+        ),
+      },
+      {
+        rotate: scrollY.interpolate({
           inputRange: [0, 50],
-          outputRange: [0, -10],
-          extrapolate: 'clamp'
+          outputRange: ["0deg", "-1deg"],
+          extrapolate: "clamp",
         }),
-        floatAnim3.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -5]
-        })
-      )
-    },
-    {
-      rotate: scrollY.interpolate({
-        inputRange: [0, 50],
-        outputRange: ['0deg', '-1deg'],
-        extrapolate: 'clamp'
-      })
-    }
-  ], [scrollY, floatAnim3]);
+      },
+    ],
+    [scrollY, floatAnim3]
+  );
 
-  const layer1Transform = useMemo(() => [
-    {
-      translateY: Animated.add(
-        scrollY.interpolate({
+  const layer1Transform = useMemo(
+    () => [
+      {
+        translateY: Animated.add(
+          scrollY.interpolate({
+            inputRange: [0, 50],
+            outputRange: [0, -2],
+            extrapolate: "clamp",
+          }),
+          floatAnim4.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, -1],
+          })
+        ),
+      },
+      {
+        rotate: scrollY.interpolate({
           inputRange: [0, 50],
-          outputRange: [0, -2],
-          extrapolate: 'clamp'
+          outputRange: ["0deg", "1deg"],
+          extrapolate: "clamp",
         }),
-        floatAnim4.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -1]
-        })
-      )
-    },
-    {
-      rotate: scrollY.interpolate({
-        inputRange: [0, 50],
-        outputRange: ['0deg', '1deg'],
-        extrapolate: 'clamp'
-      })
-    }
-  ], [scrollY, floatAnim4]);
+      },
+    ],
+    [scrollY, floatAnim4]
+  );
+
+  const edge = (layerH: number) => {
+    if (anchor === "top") return { top: 0 } as const;
+    if (anchor === "bottom") return { bottom: 0 } as const;
+    return { top: (height - layerH) / 2 } as const;
+  };
 
   return (
-    <View 
-      className="relative w-full z-10 overflow-hidden"  
-      style={{ height }}
-    >
+    <View className="relative w-full z-10 overflow-hidden" style={{ height }}>
       {/* Background Layer 4 - Furthest back (fastest) */}
-      <Animated.View className="absolute top-0 left-0 right-0" style={{ zIndex: 40 }}>
+      <Animated.View
+        className="absolute left-0 right-0"
+        style={{ zIndex: 40, ...edge(400) }}
+      >
         <Animated.Image
-          source={require('../assets/backgrounds/parallax/slice4.png')}
-          style={{ 
-            width: '100%', 
+          source={require("../assets/backgrounds/parallax/slice4.png")}
+          style={{
+            width: "100%",
             height: 400,
-            transform: layer4Transform
+            transform: layer4Transform,
           }}
           resizeMode="cover"
         />
       </Animated.View>
-      
+
       {/* Background Layer 3 - Third layer */}
-      <Animated.View className="absolute top-0 left-0 right-0" style={{ zIndex: 30 }}>
+      <Animated.View
+        className="absolute left-0 right-0"
+        style={{ zIndex: 30, ...edge(350) }}
+      >
         <Animated.Image
-          source={require('../assets/backgrounds/parallax/slice3.png')}
-          style={{ 
-            width: '100%', 
+          source={require("../assets/backgrounds/parallax/slice3.png")}
+          style={{
+            width: "100%",
             height: 350,
-            transform: layer3Transform
+            transform: layer3Transform,
           }}
           resizeMode="cover"
         />
       </Animated.View>
-      
+
       {/* Background Layer 2 - Second layer */}
-      <Animated.View className="absolute top-0 left-0 right-0" style={{ zIndex: 20 }}>
+      <Animated.View
+        className="absolute left-0 right-0"
+        style={{ zIndex: 20, ...edge(325) }}
+      >
         <Animated.Image
-          source={require('../assets/backgrounds/parallax/slice2.png')}
-          style={{ 
-            width: '100%', 
+          source={require("../assets/backgrounds/parallax/slice2.png")}
+          style={{
+            width: "100%",
             height: 325,
-            transform: layer2Transform
+            transform: layer2Transform,
           }}
           resizeMode="cover"
         />
       </Animated.View>
-      
+
       {/* Background Layer 1 - Front layer (slowest) */}
-      <Animated.View className="absolute top-0 left-0 right-0" style={{ zIndex: 10 }}>
+      <Animated.View
+        className="absolute left-0 right-0"
+        style={{ zIndex: 10, ...edge(320) }}
+      >
         <Animated.Image
-          source={require('../assets/backgrounds/parallax/slice1.png')}
-          style={{ 
-            width: '100%', 
+          source={require("../assets/backgrounds/parallax/slice1.png")}
+          style={{
+            width: "100%",
             height: 320,
-            transform: layer1Transform
+            transform: layer1Transform,
           }}
           resizeMode="cover"
         />
       </Animated.View>
-      
+
       {/* Children components (like Buddy Icon) */}
       {children}
     </View>

@@ -20,8 +20,8 @@ import BreathingExercise from "./src/screens/BreathingExercise";
 import ChatAssistance from "./src/screens/ChatAssistance";
 import CoinPurchaseModal from "./src/components/CoinPurchaseModal";
 import ShopModal from "./src/components/ShopModal";
-import Purchases, { LOG_LEVEL } from 'react-native-purchases';
-import { Platform } from 'react-native';
+import Purchases, { LOG_LEVEL } from "react-native-purchases";
+import { Platform } from "react-native";
 
 type Screen =
   | "welcome"
@@ -35,7 +35,7 @@ type Screen =
   | "shop";
 
 const AppContent: React.FC = () => {
-  const [currentScreen, setCurrentScreen] = useState<Screen>("home");
+  const [currentScreen, setCurrentScreen] = useState<Screen>("profile");
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
@@ -72,18 +72,19 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
 
-    if (Platform.OS === 'ios') {
-       Purchases.configure({apiKey: "appl_KopTWcANzpTAMEriDmzPeFhFiVu"});
-    } else if (Platform.OS === 'android') {
-       Purchases.configure({apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ"});
+    if (Platform.OS === "ios") {
+      Purchases.configure({ apiKey: "appl_KopTWcANzpTAMEriDmzPeFhFiVu" });
+    } else if (Platform.OS === "android") {
+      Purchases.configure({ apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ" });
     }
-
   }, []);
 
   return (
     <AppProvider>
       <SafeAreaView
-        className={`flex-1 ${theme === "dark" ? "bg-dark-background" : "bg-light-background"}`}
+        className={`flex-1 ${
+          theme === "dark" ? "bg-dark-background" : "bg-light-background"
+        }`}
       >
         {currentScreen === "welcome" && (
           <Welcome onNext={() => navigateTo("setup")} />
@@ -103,7 +104,9 @@ const AppContent: React.FC = () => {
         )}
 
         {currentScreen === "notification-permission" && (
-          <NotificationPermission onNext={() => navigateTo("challenge-start")} />
+          <NotificationPermission
+            onNext={() => navigateTo("challenge-start")}
+          />
         )}
 
         {currentScreen === "challenge-start" && (
@@ -130,7 +133,10 @@ const AppContent: React.FC = () => {
         )}
 
         {currentScreen === "achievements" && (
-          <Achievements onBack={() => navigateTo("home")} isExclusiveSelected={false} />
+          <Achievements
+            onBack={() => navigateTo("home")}
+            isExclusiveSelected={false}
+          />
         )}
 
         {currentScreen === "shop" && <Shop onBack={() => navigateTo("home")} />}
