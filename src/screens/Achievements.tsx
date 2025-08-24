@@ -21,6 +21,21 @@ const AchievementLockedIcon = require('../assets/achievements/achievement-locked
 const AchievementBreatheIcon = require('../assets/achievements/achievement-breathe.png');
 const LockIcon = require('../assets/achievements/lock.png');
 
+// Helper function to identify regular achievements
+const isRegularAchievement = (achievementId: string): boolean => {
+  const regularAchievementIds = [
+    'first-spark',
+    'hold-on', 
+    'steel-week',
+    'bright-moon',
+    'fresh-path',
+    'freedom',
+    'hero',
+    'legend'
+  ];
+  return regularAchievementIds.includes(achievementId);
+};
+
 // Simple Progress Ring Component
 const ProgressRing: React.FC<{ progress: number; size: number; strokeWidth: number; color: string }> = ({ 
   progress, 
@@ -333,7 +348,11 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                         )}
                         {/* Notification badge for unlocked achievements */}
                         <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
-                          <Text className="text-xs font-bold text-white">{achievement.notificationCount || 1}</Text>
+                          {isRegularAchievement(achievement.id) ? (
+                            <Ionicons name="checkmark" size={12} color="white" />
+                          ) : (
+                            <Text className="text-xs font-bold text-white">{achievement.notificationCount || 1}</Text>
+                          )}
                         </View>
                       </>
                     ) : (

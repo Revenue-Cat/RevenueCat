@@ -132,7 +132,11 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                 )}
                 {/* Notification Badge */}
                 <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center border-2 border-white">
-                  <Text className="text-sm font-bold text-white">{achievement.notificationCount || 1}</Text>
+                  {isRegularAchievement(achievement.id) ? (
+                    <Ionicons name="checkmark" size={16} color="white" />
+                  ) : (
+                    <Text className="text-sm font-bold text-white">{achievement.notificationCount || 1}</Text>
+                  )}
                 </View>
               </View>
             </View>
@@ -231,13 +235,17 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                     <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold  'text-indigo-900 bg-indigo-50`}>✕</Text>
                   </Pressable>
 
-                  {isRegularAchievement(achievement.id) ? null : (<Pressable 
+                  <Pressable 
                     className={`flex-1 rounded-2xl justify-center items-center bg-indigo-600`}
                     onPress={() => {
                       console.log('Button pressed! Achievement unlocked:', achievement.unlocked);
                       if (achievement.unlocked) {
                         handleShare();
+                      } else if (isRegularAchievement(achievement.id)) {
+                        // Regular achievements don't have Update button when locked
+                        console.log('Regular achievement locked - no action');
                       } else {
+                        // Exclusive achievements have Update button when locked
                         handleUpdate();
                       }
                     }}
@@ -248,8 +256,10 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                       }
                     ]}
                   >
-                    <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">{achievement.unlocked ? "Share" : "Update"}</Text>
-                  </Pressable>)}
+                    <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">
+                      {achievement.unlocked ? "Share" : (isRegularAchievement(achievement.id) ? "Close" : "Update")}
+                    </Text>
+                  </Pressable>
                  
               </View>
     </SlideModal>
