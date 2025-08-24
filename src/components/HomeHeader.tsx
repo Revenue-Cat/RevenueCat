@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import CountdownTimer from './CountdownTimer';
+import CountdownTimer from './Timer';
 import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from '../contexts/AppContext';
 
@@ -21,6 +21,13 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   onViewChange
 }) => {
   const { startDate } = useApp();
+  
+  // Debug logging
+  console.log('HomeHeader Debug:', {
+    currentView,
+    startDate: startDate?.toISOString(),
+    hasStartDate: !!startDate
+  });
   const getViewTitle = () => {
     switch (currentView) {
       case 'home': return 'Zero Poofs';
@@ -51,7 +58,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           </Text>
           
           {/* Timer Units - Only show for Home view */}
-          {currentView === 'home' && startDate && (
+          {currentView === 'home' && startDate ? (
             <CountdownTimer
               targetDate={startDate}
               textColor="text-indigo-950"
@@ -59,6 +66,11 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
               showSeconds={false}
               countUp={true}
             />
+          ) : currentView === 'home' && (
+            <View className="items-center">
+              <Text className="text-3xl font-bold text-indigo-950">00</Text>
+              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">Days</Text>
+            </View>
           )}
 
           {/* Preview content for other views */}

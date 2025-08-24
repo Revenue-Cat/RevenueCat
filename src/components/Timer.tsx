@@ -1,59 +1,74 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
+import { useApp } from '../contexts/AppContext';
 
 const Timer: React.FC = () => {
+  const { startDate } = useApp();
+  console.log('startDate', startDate)
   const [timeElapsed, setTimeElapsed] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 32
+    seconds: 0
   });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeElapsed(prev => {
-        const newSeconds = prev.seconds + 1;
-        if (newSeconds >= 60) {
-          const newMinutes = prev.minutes + 1;
-          if (newMinutes >= 60) {
-            const newHours = prev.hours + 1;
-            if (newHours >= 24) {
-              return {
-                days: prev.days + 1,
-                hours: 0,
-                minutes: 0,
-                seconds: 0
-              };
-            }
-            return { ...prev, hours: newHours, minutes: 0, seconds: 0 };
-          }
-          return { ...prev, minutes: newMinutes, seconds: 0 };
-        }
-        return { ...prev, seconds: newSeconds };
-      });
-    }, 1000);
+    const calculateElapsedTime = () => {
+      if (!startDate) {
+        setTimeElapsed({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      const now = new Date().getTime();
+      const start = new Date(startDate).getTime();
+      const difference = now - start;
+
+      if (difference < 0) {
+        setTimeElapsed({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      setTimeElapsed({ days, hours, minutes, seconds });
+    };
+
+    // Calculate immediately
+    calculateElapsedTime();
+
+    // Update every second
+    const timer = setInterval(calculateElapsedTime, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [startDate]);
 
   return (
     <View className="flex-row gap-1">
       {/* Days */}
       <View className="items-center">
-        <Text className="text-3xl font-semibold text-indigo-950  text-center">{timeElapsed.days}</Text>
+        <Text className="text-3xl font-semibold text-indigo-950 text-center">
+          {timeElapsed.days.toString().padStart(2, '0')}
+        </Text>
         <Text className="text-xs font-medium text-indigo-950/50 text-center">Days</Text>
       </View>
       
       {/* Hours */}
       <View className="items-center">
-        <Text className="text-3xl font-semibold text-indigo-950  text-center">{timeElapsed.hours}</Text>
-        <Text className="text-xs font-medium text-indigo-950/50  text-center">Hours</Text>
+        <Text className="text-3xl font-semibold text-indigo-950 text-center">
+          {timeElapsed.hours.toString().padStart(2, '0')}
+        </Text>
+        <Text className="text-xs font-medium text-indigo-950/50 text-center">Hours</Text>
       </View>
       
       {/* Minutes */}
       <View className="items-center">
-        <Text className="text-3xl font-semibold text-indigo-950  text-center">{timeElapsed.minutes}</Text>
-        <Text className="text-xs font-medium text-indigo-950/50  text-center">Minutes</Text>
+        <Text className="text-3xl font-semibold text-indigo-950 text-center">
+          {timeElapsed.minutes.toString().padStart(2, '0')}
+        </Text>
+        <Text className="text-xs font-medium text-indigo-950/50 text-center">Minutes</Text>
       </View>
     </View>
   );

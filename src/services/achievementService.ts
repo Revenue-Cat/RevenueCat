@@ -51,13 +51,8 @@ class AchievementService {
     this.initializeAchievements();
     this.loadUserProgress();
     
-    // Hardcode start date to 2 days ago for testing
-    if (!this.userProgress.startDate) {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 1); // 2 days ago
-      this.setStartDate(startDate);
-    } else {
-      // Update achievements based on existing start date
+    // Update achievements based on existing start date if available
+    if (this.userProgress.startDate) {
       this.updateAchievements();
     }
   }
@@ -352,13 +347,6 @@ class AchievementService {
     this.notifySubscribers();
   }
 
-  // Set sample data for testing (2 days progress)
-  public async setSampleData(): Promise<void> {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 2); // 2 days ago
-    
-    await this.setStartDate(startDate);
-  }
 }
 
 // Export singleton instance

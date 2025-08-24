@@ -60,6 +60,7 @@ interface AppState {
   getProgressForAchievement: (achievementId: string) => { current: number; max: number; percentage: number };
   resetProgress: () => Promise<void>;
   setSampleData: () => Promise<void>;
+  setAugustStartDate: () => Promise<void>;
 
   // Selection setters
   setGender: (gender: UserGender) => void;
@@ -160,6 +161,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return unsubscribe;
   }, []);
 
+  // Sync start date changes with achievement service
+  useEffect(() => {
+    if (userProgress.startDate) {
+      achievementService.setStartDate(userProgress.startDate);
+    }
+  }, [userProgress.startDate]);
+
   // Save to AsyncStorage when state changes (TODO)
   useEffect(() => {
     const stateToSave = {
@@ -239,6 +247,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Achievement functions
   const setStartDate = useCallback(async (startDate: Date) => {
+    setUserProgress(prev => ({ ...prev, startDate }));
     await achievementService.setStartDate(startDate);
   }, []);
 
@@ -251,8 +260,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const setSampleData = useCallback(async () => {
-    await achievementService.setSampleData();
+    // Set to 2 hours ago for testing - should show ~2 hours elapsed
+    const startDate = new Date();
+    startDate.setHours(startDate.getHours() - 2);
+    startDate.setMinutes(30);
+    startDate.setSeconds(0);
+    
+    console.log('setSampleData: Setting startDate to:', startDate.toISOString());
+    setUserProgress(prev => ({ ...prev, startDate }));
+    await achievementService.setStartDate(startDate);
   }, []);
+
+  // Function to set August 21st start date for specific testing
+  const setAugustStartDate = useCallback(async () => {
+    const startDate = new Date(2025, 7, 21, 10, 30, 0); // August 21st, 2024 at 10:30 AM
+    console.log('setAugustStartDate: Setting startDate to:', startDate.toISOString());
+    setUserProgress(prev => ({ ...prev, startDate }));
+    await achievementService.setStartDate(startDate);
+  }, []);
+
+  // Set August start date as default when app initializes
+  useEffect(() => {
+    if (!userProgress.startDate) {
+      console.log('AppContext: Setting default August start date');
+      setAugustStartDate();
+    }
+  }, [userProgress.startDate, setAugustStartDate]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const value: AppState = useMemo(() => ({
@@ -297,6 +330,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     getProgressForAchievement,
     resetProgress,
     setSampleData,
+    setAugustStartDate,
 
     setGender,
     setSelectedBuddyId,
@@ -334,6 +368,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     getProgressForAchievement,
     resetProgress,
     setSampleData,
+    setAugustStartDate,
   ]);
 
   return (

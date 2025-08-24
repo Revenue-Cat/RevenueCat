@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import { useApp } from '../contexts/AppContext';
 import AchievementModal from '../components/AchievementModal';
+import ProgressRing from '../components/ProgressRing';
 import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
 import { Achievement } from '../services/achievementService';
 const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
@@ -62,48 +63,7 @@ const isFirstThreeAchievement = (achievementId: string, allAchievements: any[], 
   return firstThreeNonCompleted.includes(achievementId);
 };
 
-// Simple Progress Ring Component
-const ProgressRing: React.FC<{ progress: number; size: number; strokeWidth: number; color: string }> = ({ 
-  progress, 
-  size, 
-  strokeWidth, 
-  color 
-}) => {
-  return (
-    <View style={{ width: size, height: size, position: 'relative' }}>
-      {/* Background circle */}
-      <View 
-        style={{
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          borderWidth: strokeWidth,
-          borderColor: '#374151',
-          position: 'absolute',
-        }}
-      />
-      
-      {/* Progress indicator - simple border approach */}
-      {progress > 0 && (
-        <View
-          style={{
-            width: size,
-            height: size,
-            borderRadius: size / 2,
-            borderWidth: strokeWidth,
-            borderColor: color,
-            borderTopColor: progress > 0 ? color : 'transparent',
-            borderRightColor: progress > 25 ? color : 'transparent',
-            borderBottomColor: progress > 50 ? color : 'transparent',
-            borderLeftColor: progress > 75 ? color : 'transparent',
-            position: 'absolute',
-            transform: [{ rotate: '-90deg' }],
-          }}
-        />
-      )}
-    </View>
-  );
-};
+
 
 interface AchievementsProps {
   onBack: () => void;
@@ -241,7 +201,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
   const { t } = useTranslation();
   const { theme } = useTheme();
   const {achievements, getProgressForAchievement, startDate } = useApp();
-  const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
+  const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
   const [parallaxAnim] = useState(new Animated.Value(0));
   
   // Gesture handler for parallax effect
@@ -280,8 +240,8 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
   }, [isExclusiveSelected, parallaxAnim, achievements]);
 
   // Memoize the achievement selection callback
-  const handleAchievementPress = useCallback((achievement: Achievement) => {
-    setSelectedAchievement(achievement);
+  const handleAchievementPress = useCallback((achievement: Achievement, progress: any) => {
+    setSelectedAchievement({...achievement, progress: progress});
   }, []);
 
   // Memoize the modal close callback
@@ -289,7 +249,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
     setSelectedAchievement(null);
   }, []);
 
-  console.log('startDate', startDate)
+  console.log('filteredAchievements', filteredAchievements)
   
     return (
     <View className="flex-1 bg-[#1F1943]">
@@ -360,7 +320,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
               <View key={`${achievement.id}-${index}`} className="items-center w-1/4 p-3">
                 <Pressable
                   className="w-[75px] h-[75px] rounded-full relative justify-center items-center"
-                  onPress={() => handleAchievementPress(achievement)}
+                  onPress={() => handleAchievementPress(achievement, progress)}
                 >
                   {/* Progress Ring */}
                   <ProgressRing
@@ -368,6 +328,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                     size={75}
                     strokeWidth={3}
                     color={isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100 ? '#22C55E' : '#6B7280'}
+                    // borderColor={!(isRegularAchievement(achievement.id) && (isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100)) ? '#374151' : 'transparent'}
                   />
                   
                   {/* Achievement Icon */}
@@ -447,7 +408,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
           visible={true} 
           onClose={handleCloseModal} 
           achievement={selectedAchievement} 
-          progress={getProgressForAchievement(selectedAchievement.id)}
+          progress={selectedAchievement?.progress}
           getProgressForAchievement={getProgressForAchievement}
         />
       )}
