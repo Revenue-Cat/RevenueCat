@@ -3,11 +3,11 @@ import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import CountdownTimer from './CountdownTimer';
 import CoinIcon from "../assets/icons/coins.svg";
+import { useApp } from '../contexts/AppContext';
 
 interface HomeHeaderProps {
   currentView: 'home' | 'achievements' | 'shop';
   userCoins: number;
-  startDate?: Date | null;
   onNavigateToProfile: () => void;
   onCoinPurchase: () => void;
   onViewChange: (view: 'home' | 'achievements' | 'shop') => void;
@@ -16,11 +16,11 @@ interface HomeHeaderProps {
 const HomeHeader: React.FC<HomeHeaderProps> = ({
   currentView,
   userCoins,
-  startDate,
   onNavigateToProfile,
   onCoinPurchase,
   onViewChange
 }) => {
+  const { startDate } = useApp();
   const getViewTitle = () => {
     switch (currentView) {
       case 'home': return 'Zero Poofs';
@@ -57,6 +57,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
               textColor="text-indigo-950"
               textSize="lg"
               showSeconds={false}
+              countUp={true}
             />
           )}
 

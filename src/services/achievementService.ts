@@ -54,7 +54,7 @@ class AchievementService {
     // Hardcode start date to 2 days ago for testing
     if (!this.userProgress.startDate) {
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 2); // 2 days ago
+      startDate.setDate(startDate.getDate() - 1); // 2 days ago
       this.setStartDate(startDate);
     } else {
       // Update achievements based on existing start date
@@ -197,19 +197,45 @@ class AchievementService {
     this.userProgress.daysSmokeFree = daysPassed;
 
     let hasChanges = false;
+    const achievementIds = Array.from(this.achievements.keys());
 
-    this.achievements.forEach(achievement => {
-      const shouldBeUnlocked = daysPassed >= achievement.requiredDays;
-      
+    // First, unlock achievements that are done (progress = 100%)
+    achievementIds.forEach((achievementId) => {
+      const achievement = this.achievements.get(achievementId);
+      if (!achievement) return;
+            const shouldBeUnlocked = daysPassed >= achievement.requiredDays;
+
+      console.log('shouldBeUnlocked', shouldBeUnlocked, daysPassed, achievement.requiredDays)
+
       if (shouldBeUnlocked && !achievement.unlocked) {
+        // Unlock achievements that are done (progress = 100%)
         achievement.unlocked = true;
         achievement.unlockedDate = new Date();
         hasChanges = true;
-      } else if (!shouldBeUnlocked && achievement.unlocked) {
-        // Reset if days passed is less than required (for testing)
+      }
+    });
+
+    // Then, unlock the first 3 non-done achievements
+    let unlockedCount = 0;
+    achievementIds.forEach((achievementId) => {
+      const achievement = this.achievements.get(achievementId);
+      if (!achievement) return;
+      
+      const shouldBeUnlocked = daysPassed >= achievement.requiredDays;
+      
+      // If this achievement is not done and we haven't unlocked 3 yet
+      if (!shouldBeUnlocked && unlockedCount < 3 && !achievement.unlocked) {
+        achievement.unlocked = true;
+        achievement.unlockedDate = undefined; // No unlock date for default unlocks
+        unlockedCount++;
+        hasChanges = true;
+        console.log('Unlocking achievement:', achievementId, 'unlockedCount:', unlockedCount);
+      } else if (!shouldBeUnlocked && achievement.unlocked && unlockedCount >= 3) {
+        // Reset achievements that shouldn't be unlocked (for testing)
         achievement.unlocked = false;
         achievement.unlockedDate = undefined;
         hasChanges = true;
+        console.log('Locking achievement:', achievementId, 'unlockedCount:', unlockedCount);
       }
     });
 
@@ -245,6 +271,8 @@ class AchievementService {
     const current = Math.min(daysPassed, achievement.requiredDays);
     const max = achievement.requiredDays;
     const percentage = Math.min((current / max) * 100, 100);
+
+    console.log('Progress for', achievementId, ':', { current, max, percentage, daysPassed });
 
     return { current, max, percentage };
   }

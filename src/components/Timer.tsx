@@ -40,20 +40,20 @@ const Timer: React.FC = () => {
     <View className="flex-row gap-1">
       {/* Days */}
       <View className="items-center">
-        <Text className="text-3xl font-semibold text-indigo-950 leading-9 text-center">{timeElapsed.days}</Text>
-        <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">Days</Text>
+        <Text className="text-3xl font-semibold text-indigo-950  text-center">{timeElapsed.days}</Text>
+        <Text className="text-xs font-medium text-indigo-950/50 text-center">Days</Text>
       </View>
       
       {/* Hours */}
       <View className="items-center">
-        <Text className="text-3xl font-semibold text-indigo-950 leading-9 text-center">{timeElapsed.hours}</Text>
-        <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">Hours</Text>
+        <Text className="text-3xl font-semibold text-indigo-950  text-center">{timeElapsed.hours}</Text>
+        <Text className="text-xs font-medium text-indigo-950/50  text-center">Hours</Text>
       </View>
       
       {/* Minutes */}
       <View className="items-center">
-        <Text className="text-3xl font-semibold text-indigo-950 leading-9 text-center">{timeElapsed.minutes}</Text>
-        <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">Minutes</Text>
+        <Text className="text-3xl font-semibold text-indigo-950  text-center">{timeElapsed.minutes}</Text>
+        <Text className="text-xs font-medium text-indigo-950/50  text-center">Minutes</Text>
       </View>
     </View>
   );

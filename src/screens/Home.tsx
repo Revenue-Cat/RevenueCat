@@ -128,7 +128,6 @@ const Home: React.FC<HomeProps> = ({
           <HomeHeader
             currentView={currentView}
             userCoins={userCoins}
-            startDate={startDate}
             onNavigateToProfile={handleNavigateToProfile}
             onCoinPurchase={handleCoinPurchase}
             onViewChange={changeView}

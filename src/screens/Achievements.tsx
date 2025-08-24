@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   Animated,
+  ScrollView,
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,7 +21,7 @@ import { Achievement } from '../services/achievementService';
 const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
 const AchievementBreatheIcon = require('../assets/achievements/achievement-breathe.png');
 const LockIcon = require('../assets/achievements/lock.png');
-
+const TimeIcon = require('../assets/achievements/time.png');
 // Helper function to identify regular achievements
 const isRegularAchievement = (achievementId: string): boolean => {
   const regularAchievementIds = [
@@ -34,6 +35,31 @@ const isRegularAchievement = (achievementId: string): boolean => {
     'legend'
   ];
   return regularAchievementIds.includes(achievementId);
+};
+
+// Helper function to check if achievement is in first 3 (excluding 100% progress achievements)
+const isFirstThreeAchievement = (achievementId: string, allAchievements: any[], getProgressForAchievement: any): boolean => {
+  const regularAchievementIds = [
+    'first-spark',
+    'hold-on', 
+    'steel-week',
+    'bright-moon',
+    'fresh-path',
+    'freedom',
+    'hero',
+    'legend'
+  ];
+  
+  // Filter regular achievements that don't have 100% progress
+  const nonCompletedRegularAchievements = regularAchievementIds.filter(id => {
+    const progress = getProgressForAchievement(id);
+    return progress.percentage < 100;
+  });
+  
+  // Take the first 3 non-completed regular achievements
+  const firstThreeNonCompleted = nonCompletedRegularAchievements.slice(0, 3);
+  
+  return firstThreeNonCompleted.includes(achievementId);
 };
 
 // Simple Progress Ring Component
@@ -265,15 +291,9 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
 
   console.log('startDate', startDate)
   
-  return (
-    <PanGestureHandler
-      onGestureEvent={onGestureEvent}
-      onHandlerStateChange={onHandlerStateChange}
-    >
-      <View className="flex-1 bg-[#1F1943]">
-        
-
-        {/* Background Parallax Layers */}
+    return (
+    <View className="flex-1 bg-[#1F1943]">
+      {/* Background Parallax Layers */}
       <Animated.View 
         style={{ 
           position: 'absolute',
@@ -316,8 +336,21 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
         className="bg-gradient-to-b from-indigo-800/30 to-purple-800/30"
       />
 
-      {/* Achievements Grid - Fixed Position */}
-      <View className="flex-1 justify-center items-center pt-20">
+      <ScrollView 
+        className="flex-1"
+        contentContainerStyle={{
+          paddingTop: 10,
+          paddingBottom: 50,
+          minHeight: Dimensions.get('window').height * 0.8,
+        }}
+        bounces={false}
+        overScrollMode="never"
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: parallaxAnim } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+      >
         <View className="flex-row flex-wrap justify-center gap-0">
           {filteredAchievements.map((achievement, index) => {
             const progress = getProgressForAchievement(achievement.id);
@@ -331,38 +364,70 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                 >
                   {/* Progress Ring */}
                   <ProgressRing
-                    progress={progressPercentage}
+                    progress={isRegularAchievement(achievement.id) ? progressPercentage : 0}
                     size={75}
                     strokeWidth={3}
-                    color={achievement.unlocked ? '#10B981' : '#6B7280'}
+                    color={isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100 ? '#22C55E' : '#6B7280'}
                   />
                   
                   {/* Achievement Icon */}
                   <View className="absolute w-[75px] h-[75px] rounded-full justify-center items-center">
-                    {achievement.unlocked ? (
+                    {isRegularAchievement(achievement.id) ? (
+                      // Regular achievements logic
                       <>
-                        {achievement.icon ? (
-                          <Image source={achievement.icon} className='w-[80px] h-[80px]' resizeMode="stretch" />
+                        {isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100 ? (
+                          // First 3 achievements OR 100% progress: show achievement icon and green progress
+                          <>
+                            {achievement.icon ? (
+                              <Image source={achievement.icon} className='w-[80px] h-[80px]' resizeMode="stretch" />
+                            ) : (
+                              <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                            )}
+                            {/* Check icon for 100% progress */}
+                            {progressPercentage === 100 && (
+                              <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
+                                <Ionicons name="checkmark" size={12} color="white" />
+                              </View>
+                            )}
+                            {/* Time icon for progress > 0 but < 100% */}
+                            {progressPercentage > 0 && progressPercentage < 100 && (
+                              <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
+                                <Image className='color-white p-0.5' source={TimeIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                              </View>
+                            )}
+                          </>
                         ) : (
-                          <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                          // Other regular achievements: show lock icon and gray progress
+                          <>
+                            <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                            {/* Time icon for progress > 0 but < 100% */}
+                            {progressPercentage > 0 && progressPercentage < 100 && (
+                              <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
+                                <Image className='color-white p-0.5' source={TimeIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                              </View>
+                            )}
+                          </>
                         )}
-                        {/* Notification badge for unlocked achievements */}
-                        <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
-                          {isRegularAchievement(achievement.id) ? (
-                            <Ionicons name="checkmark" size={12} color="white" />
-                          ) : (
-                            <Text className="text-xs font-bold text-white">{achievement.notificationCount || 1}</Text>
-                          )}
-                        </View>
                       </>
                     ) : (
+                      // Exclusive achievements logic (unchanged)
                       <>
-                        <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
-                        {/* Progress indicator for locked achievements */}
-                        {progressPercentage > 0 && (
-                          <View className="absolute -top-1 -right-1 bg-blue-500 rounded-full w-6 h-6 justify-center items-center">
-                            <Text className="text-xs font-bold text-white">{Math.round(progressPercentage)}%</Text>
-                          </View>
+                        {achievement.unlocked ? (
+                          <>
+                            {achievement.icon ? (
+                              <Image source={achievement.icon} className='w-[80px] h-[80px]' resizeMode="stretch" />
+                            ) : (
+                              <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                            )}
+                            {/* Notification badge for unlocked exclusive achievements */}
+                            <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
+                              <Text className="text-xs font-bold text-white">{achievement.notificationCount || 1}</Text>
+                            </View>
+                          </>
+                        ) : (
+                          <>
+                            <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                          </>
                         )}
                       </>
                     )}
@@ -375,7 +440,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
             );
           })}
         </View>
-      </View>
+      </ScrollView>
 
       {selectedAchievement && (
         <AchievementModal 
@@ -383,10 +448,10 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
           onClose={handleCloseModal} 
           achievement={selectedAchievement} 
           progress={getProgressForAchievement(selectedAchievement.id)}
+          getProgressForAchievement={getProgressForAchievement}
         />
       )}
-      </View>
-    </PanGestureHandler>
+    </View>
   );
 };
 

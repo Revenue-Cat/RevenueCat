@@ -7,6 +7,7 @@ interface CountdownTimerProps {
   showSeconds?: boolean;
   textColor?: string;
   textSize?: 'sm' | 'md' | 'lg' | 'xl';
+  countUp?: boolean; // If true, count up from targetDate (elapsed time)
 }
 
 const CountdownTimer: React.FC<CountdownTimerProps> = ({
@@ -14,7 +15,8 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   onComplete,
   showSeconds = false,
   textColor = 'text-indigo-950',
-  textSize = 'lg'
+  textSize = 'lg',
+  countUp = false
 }) => {
   const [timeRemaining, setTimeRemaining] = useState({
     days: 0,
@@ -27,12 +29,23 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
     const calculateTimeRemaining = () => {
       const now = new Date().getTime();
       const target = new Date(targetDate).getTime();
-      const difference = target - now;
-
-      if (difference <= 0) {
-        setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        onComplete?.();
-        return;
+      
+      let difference;
+      if (countUp) {
+        // Count up: elapsed time since targetDate
+        difference = now - target;
+        if (difference < 0) {
+          setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+          return;
+        }
+      } else {
+        // Count down: time remaining until targetDate
+        difference = target - now;
+        if (difference <= 0) {
+          setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+          onComplete?.();
+          return;
+        }
       }
 
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));

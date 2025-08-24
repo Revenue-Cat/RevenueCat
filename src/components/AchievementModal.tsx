@@ -12,19 +12,9 @@ import SlideModal from './SlideModal';
 import { Achievement } from '../services/achievementService';
 import CountdownTimer from './CountdownTimer';
 import { useApp } from '../contexts/AppContext';
-
-// Helper function to format time remaining
-const formatTimeRemaining = (daysRemaining: number): string => {
-  if (daysRemaining <= 0) return 'Ready to unlock!';
-  
-  if (daysRemaining === 1) return '1 day left';
-  if (daysRemaining < 7) return `${daysRemaining} days left`;
-  if (daysRemaining < 30) return `${Math.ceil(daysRemaining / 7)} weeks left`;
-  if (daysRemaining < 365) return `${Math.ceil(daysRemaining / 30)} months left`;
-  return `${Math.ceil(daysRemaining / 365)} years left`;
-};
-
 const LockIcon = require('../assets/achievements/lock.png');
+const TimeIcon = require('../assets/achievements/time.png');
+const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
 
 // Helper function to identify regular achievements
 const isRegularAchievement = (achievementId: string): boolean => {
@@ -41,19 +31,89 @@ const isRegularAchievement = (achievementId: string): boolean => {
   return regularAchievementIds.includes(achievementId);
 };
 
+// Helper function to check if achievement is in first 3 (excluding 100% progress achievements)
+const isFirstThreeAchievement = (achievementId: string, getProgressForAchievement: any): boolean => {
+  const regularAchievementIds = [
+    'first-spark',
+    'hold-on', 
+    'steel-week',
+    'bright-moon',
+    'fresh-path',
+    'freedom',
+    'hero',
+    'legend'
+  ];
+  
+  // Filter regular achievements that don't have 100% progress
+  const nonCompletedRegularAchievements = regularAchievementIds.filter(id => {
+    const progress = getProgressForAchievement(id);
+    return progress.percentage < 100;
+  });
+  
+  // Take the first 3 non-completed regular achievements
+  const firstThreeNonCompleted = nonCompletedRegularAchievements.slice(0, 3);
+  
+  return firstThreeNonCompleted.includes(achievementId);
+};
+
+// Simple Progress Ring Component
+const ProgressRing: React.FC<{ progress: number; size: number; strokeWidth: number; color: string }> = ({ 
+  progress, 
+  size, 
+  strokeWidth, 
+  color 
+}) => {
+  return (
+    <View style={{ width: size, height: size, position: 'relative' }}>
+      {/* Background circle */}
+      <View 
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          borderWidth: strokeWidth,
+          borderColor: '#374151',
+          position: 'absolute',
+        }}
+      />
+      
+      {/* Progress indicator - simple border approach */}
+      {progress > 0 && (
+        <View
+          style={{
+            width: size,
+            height: size,
+            borderRadius: size / 2,
+            borderWidth: strokeWidth,
+            borderColor: color,
+            borderTopColor: progress > 0 ? color : 'transparent',
+            borderRightColor: progress > 25 ? color : 'transparent',
+            borderBottomColor: progress > 50 ? color : 'transparent',
+            borderLeftColor: progress > 75 ? color : 'transparent',
+            position: 'absolute',
+            transform: [{ rotate: '-90deg' }],
+          }}
+        />
+      )}
+    </View>
+  );
+};
+
 interface AchievementModalProps {
   visible: boolean;
   achievement: Achievement | null;
   onClose: () => void;
   onShare?: (achievement: Achievement) => void;
   progress?: { current: number; max: number; percentage: number };
+  getProgressForAchievement?: (achievementId: string) => { current: number; max: number; percentage: number };
 }
 
 const AchievementModal: React.FC<AchievementModalProps> = ({
   visible,
   achievement,
   onClose,
-  progress
+  progress,
+  getProgressForAchievement
 }) => {
   const { startDate } = useApp();
   
@@ -120,7 +180,7 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
 
             {/* Achievement Icon */}
             <View className="items-center mb-6 pb-7">
-              <View className="w-32 h-32 bg-gradient-to-br from-green-400 to-yellow-400 rounded-full justify-center items-center  border-4 border-green-500 relative">
+              <View className="w-32 h-32 bg-gradient-to-br from-green-400 to-yellow-400 rounded-full justify-center items-center border-4 border-green-500 relative">
                 {achievement.icon ? (
                   <Image 
                     source={achievement.icon} 
@@ -170,22 +230,78 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
 
             {/* Achievement Icon */}
             <View className="items-center pb-4">
-              <View className="w-32 h-32 bg-gradient-to-br from-green-400 to-yellow-400 rounded-full justify-center items-center border-4 border-white/90 relative">
-                {achievement.icon ? (
-                  <Image 
-                    source={achievement.icon} 
-                    className='w-36 h-36'
-                    resizeMode="cover" 
-                  />
+              {/* Progress Ring */}
+              {isRegularAchievement(achievement.id) && (
+                <ProgressRing
+                  progress={progress?.percentage || 0}
+                  size={128}
+                  strokeWidth={4}
+                  color={isFirstThreeAchievement(achievement.id, getProgressForAchievement) || (progress?.percentage || 0) === 100 ? '#22C55E' : '#6B7280'}
+                />
+              )}
+              
+              <View className="absolute w-32 h-32 bg-gradient-to-br from-green-400 to-yellow-400 rounded-full justify-center items-center border-4 border-white/90 relative">
+                {isRegularAchievement(achievement.id) ? (
+                  // Regular achievements logic
+                  <>
+                                       {(isFirstThreeAchievement(achievement.id, getProgressForAchievement) || (progress?.percentage || 0) === 100) ? (
+                                              // First 3 achievements OR 100% progress: show achievement icon and green progress
+                      <>
+                        {achievement.icon ? (
+                          <Image 
+                            source={achievement.icon} 
+                            className='w-36 h-36'
+                            resizeMode="stretch" 
+                          />
+                        ) : (
+                          <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                        )}
+                        {/* Check icon for 100% progress */}
+                        {(progress?.percentage || 0) === 100 && (
+                          <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center border-2 border-white">
+                            <Ionicons name="checkmark" size={16} color="white" />
+                          </View>
+                        )}
+                        {/* Time icon for progress > 0 but < 100% */}
+                        {(progress?.percentage || 0) > 0 && (progress?.percentage || 0) < 100 && (
+                          <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-8 h-8 justify-center items-center border-2 border-white">
+                            <Image source={TimeIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                          </View>
+                        )}
+                      </>
+                    ) : (
+                      // Other regular achievements: show lock icon
+                      <>
+                        <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                        {/* Time icon for progress > 0 but < 100% */}
+                        {(progress?.percentage || 0) > 0 && (progress?.percentage || 0) < 100 && (
+                          <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-8 h-8 justify-center items-center border-2 border-white">
+                            <Image source={TimeIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                          </View>
+                        )}
+                      </>
+                    )}
+                  </>
                 ) : (
-                  <Text className="text-6xl">{achievement.emoji}</Text>
+                  // Exclusive achievements logic (unchanged)
+                  <>
+                    {achievement.icon ? (
+                      <Image 
+                        source={achievement.icon} 
+                        className='w-36 h-36'
+                        resizeMode="stretch" 
+                      />
+                    ) : (
+                      <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                    )}
+                    {/* Notification Badge */}
+                    <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-8 h-8 justify-center items-center border-2 border-white">
+                      <Image source={LockIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+                    </View>
+                  </>
                 )}
-                {/* Notification Badge */}
-                <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-8 h-8 justify-center items-center border-2 border-white">
-                  <Image source={LockIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
-                </View>
               </View>
-              </View>
+            </View>
               {/* Time Left Section - Only for Regular Achievements */}
               {progress && !achievement.unlocked && isRegularAchievement(achievement.id) && (
                 <View>
@@ -235,11 +351,11 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                     <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold  'text-indigo-900 bg-indigo-50`}>✕</Text>
                   </Pressable>
 
-                  <Pressable 
+                  {(isRegularAchievement(achievement.id) && (progress?.percentage || 0) !== 100) ? null : <Pressable 
                     className={`flex-1 rounded-2xl justify-center items-center bg-indigo-600`}
                     onPress={() => {
                       console.log('Button pressed! Achievement unlocked:', achievement.unlocked);
-                      if (achievement.unlocked) {
+                      if (achievement.unlocked && (progress?.percentage || 0) === 100) {
                         handleShare();
                       } else if (isRegularAchievement(achievement.id)) {
                         // Regular achievements don't have Update button when locked
@@ -257,9 +373,9 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                     ]}
                   >
                     <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">
-                      {achievement.unlocked ? "Share" : (isRegularAchievement(achievement.id) ? "Close" : "Update")}
+                      {achievement.unlocked && (progress?.percentage || 0) === 100 ? "Share" : (isRegularAchievement(achievement.id) ? "Close" : "Update")}
                     </Text>
-                  </Pressable>
+                  </Pressable>}
                  
               </View>
     </SlideModal>
