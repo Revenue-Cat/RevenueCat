@@ -26,6 +26,21 @@ const formatTimeRemaining = (daysRemaining: number): string => {
 
 const LockIcon = require('../assets/achievements/lock.png');
 
+// Helper function to identify regular achievements
+const isRegularAchievement = (achievementId: string): boolean => {
+  const regularAchievementIds = [
+    'first-spark',
+    'hold-on', 
+    'steel-week',
+    'bright-moon',
+    'fresh-path',
+    'freedom',
+    'hero',
+    'legend'
+  ];
+  return regularAchievementIds.includes(achievementId);
+};
+
 interface AchievementModalProps {
   visible: boolean;
   achievement: Achievement | null;
@@ -162,39 +177,39 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                   <Text className="text-6xl">{achievement.emoji}</Text>
                 )}
                 {/* Notification Badge */}
-                <View className="absolute -top-2 -right-2 bg-white/20 rounded-full w-8 h-8 justify-center items-center border-2 border-white">
+                <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-8 h-8 justify-center items-center border-2 border-white">
                   <Image source={LockIcon} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
                 </View>
               </View>
               </View>
-              {/* Time Left Section */}
-         {progress && !achievement.unlocked && (
-           <View>
-             <View className="flex-row items-center justify-center mb-3">
-               <Text className="text-indigo-950 font-semibold text-center ml-2">
-                 Time left
-               </Text>
-             </View>
-             
-             {/* Countdown Timer */}
-             <View className="items-center">
-                <CountdownTimer
-                   targetDate={(() => {
-                     // Calculate target date based on start date + required days
-                     if (!startDate) return new Date();
-                     
-                     const targetDate = new Date(startDate);
-                     targetDate.setDate(targetDate.getDate() + progress.max);
-                     
-                     return targetDate;
-                   })()}
-                   textColor="text-indigo-950"
-                   textSize="md"
-                   showSeconds={true}
-                 />
-             </View>
-           </View>
-         )}
+              {/* Time Left Section - Only for Regular Achievements */}
+              {progress && !achievement.unlocked && isRegularAchievement(achievement.id) && (
+                <View>
+                  <View className="flex-row items-center justify-center mb-3">
+                    <Text className="text-indigo-950 font-semibold text-center ml-2">
+                      Time left
+                    </Text>
+                  </View>
+                  
+                  {/* Countdown Timer */}
+                  <View className="items-center">
+                     <CountdownTimer
+                        targetDate={(() => {
+                          // Calculate target date based on start date + required days
+                          if (!startDate) return new Date();
+                          
+                          const targetDate = new Date(startDate);
+                          targetDate.setDate(targetDate.getDate() + progress.max);
+                          
+                          return targetDate;
+                        })()}
+                        textColor="text-indigo-950"
+                        textSize="md"
+                        showSeconds={true}
+                      />
+                  </View>
+                </View>
+              )}
         </View>
         <View className='flex-row justify-center items-center mt-4'>
            <Ionicons name="information-circle" size={16} color="#64748B" />
@@ -216,7 +231,7 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                     <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold  'text-indigo-900 bg-indigo-50`}>✕</Text>
                   </Pressable>
 
-                  <Pressable 
+                  {isRegularAchievement(achievement.id) ? null : (<Pressable 
                     className={`flex-1 rounded-2xl justify-center items-center bg-indigo-600`}
                     onPress={() => {
                       console.log('Button pressed! Achievement unlocked:', achievement.unlocked);
@@ -234,7 +249,7 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                     ]}
                   >
                     <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">{achievement.unlocked ? "Share" : "Update"}</Text>
-                  </Pressable>
+                  </Pressable>)}
                  
               </View>
     </SlideModal>

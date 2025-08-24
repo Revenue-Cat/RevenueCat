@@ -69,7 +69,132 @@ interface AchievementsProps {
   isExclusiveSelected: boolean;
 }
 
-// Achievement data is now managed by the achievement service
+// Exclusive Achievements Data
+const EXCLUSIVE_ACHIEVEMENTS_DATA = [
+  {
+    id: "breathe",
+    name: "Breathe",
+    description: "Complete your first breathing exercise session",
+    emoji: "🦙",
+    icon: AchievementBreatheIcon,
+    unlocked: true,
+    notificationCount: 13,
+    coins: 100,
+    requiredDays: 1
+  },
+  {
+    id: "hydro-win",
+    name: "HydroWin",
+    description: "Drink 8 glasses of water for 7 days straight",
+    emoji: "💧",
+    icon: AchievementBreatheIcon,
+    unlocked: true,
+    notificationCount: 5,
+    coins: 150,
+    requiredDays: 7
+  },
+  {
+    id: "strider",
+    name: "Strider",
+    description: "Take 10,000 steps for 5 consecutive days",
+    emoji: "🚶",
+    icon: AchievementBreatheIcon,
+    unlocked: true,
+    notificationCount: 2,
+    coins: 200,
+    requiredDays: 5
+  },
+  {
+    id: "snackcess",
+    name: "Snackcess",
+    description: "Choose healthy snacks over junk food for a week",
+    emoji: "🥗",
+    icon: AchievementLockedIcon,
+    unlocked: false,
+    coins: 100,
+    requiredDays: 7
+  },
+  {
+    id: "zen",
+    name: "Zen",
+    description: "Complete 10 meditation sessions",
+    emoji: "🧘",
+    icon: AchievementLockedIcon,
+    unlocked: false,
+    coins: 150,
+    requiredDays: 10
+  },
+  {
+    id: "gripped",
+    name: "Gripped",
+    description: "Hold a plank for 2 minutes",
+    emoji: "💪",
+    icon: AchievementLockedIcon,
+    unlocked: false,
+    coins: 200,
+    requiredDays: 1
+  },
+  {
+    id: "splash",
+    name: "Splash",
+    description: "Swim 20 laps in one session",
+    emoji: "🏊",
+    icon: AchievementLockedIcon,
+    unlocked: false,
+    coins: 250,
+    requiredDays: 1
+  },
+  {
+    id: "released",
+    name: "Released",
+    description: "Practice stress relief techniques for 30 days",
+    emoji: "🕊️",
+    icon: AchievementLockedIcon,
+    unlocked: false,
+    coins: 300,
+    requiredDays: 30
+  },
+  {
+    id: "stretched",
+    name: "Stretched",
+    description: "Complete daily stretching routine for 2 weeks",
+    emoji: "🤸",
+    icon: AchievementLockedIcon,
+    unlocked: false,
+    coins: 150,
+    requiredDays: 14
+  },
+  {
+    id: "title-1",
+    name: "Title",
+    description: "Earn your first wellness champion title",
+    emoji: "👑",
+    icon: AchievementLockedIcon,
+    unlocked: false,
+    coins: 400,
+    requiredDays: 30
+  },
+  {
+    id: "title-2",
+    name: "Title",
+    description: "Earn your second wellness champion title",
+    emoji: "👑",
+    icon: AchievementLockedIcon,
+    unlocked: false,
+    coins: 400,
+    requiredDays: 60
+  },
+  {
+    id: "title-3",
+    name: "Title",
+    description: "Earn your third wellness champion title",
+    emoji: "👑",
+    icon: AchievementLockedIcon,
+    unlocked: false,
+    coins: 400,
+    requiredDays: 90
+  }
+];
 
 const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected }) => {
   const { t } = useTranslation();
@@ -105,9 +230,12 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
       useNativeDriver: true,
     }).start();
 
-    // For now, return regular achievements from service
-    // TODO: Add exclusive achievements later
-    return achievements;
+    // Return exclusive or regular achievements based on selection
+    if (isExclusiveSelected) {
+      return EXCLUSIVE_ACHIEVEMENTS_DATA;
+    } else {
+      return achievements;
+    }
   }, [isExclusiveSelected, parallaxAnim, achievements]);
 
   // Memoize the achievement selection callback
