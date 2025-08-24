@@ -20,7 +20,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   onCoinPurchase,
   onViewChange
 }) => {
-  const { startDate } = useApp();
+  const { startDate, achievements, getProgressForAchievement } = useApp();
   
   // Debug logging
   console.log('HomeHeader Debug:', {
@@ -28,6 +28,14 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     startDate: startDate?.toISOString(),
     hasStartDate: !!startDate
   });
+
+  // Calculate achievements with 100% progress
+  const completedAchievementsCount = achievements.filter(achievement => {
+    const progress = getProgressForAchievement(achievement.id);
+    return progress.percentage === 100;
+  }).length;
+
+  console.log('HomeHeader: Completed achievements count:', completedAchievementsCount, 'out of', achievements.length);
   const getViewTitle = () => {
     switch (currentView) {
       case 'home': return 'Zero Poofs';
@@ -77,8 +85,8 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           {currentView === 'achievements' && (
             <View className="items-center">
               <View className="flex-row items-baseline">
-                <Text className="text-3xl font-bold text-indigo-950">16</Text>
-                <Text className="text-lg font-bold text-indigo-950/50">/20</Text>
+                <Text className="text-3xl font-bold text-indigo-950">{completedAchievementsCount}</Text>
+                <Text className="text-lg font-bold text-indigo-950/50">/{achievements.length}</Text>
               </View>
               <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-1">Badges collected</Text>
             </View>

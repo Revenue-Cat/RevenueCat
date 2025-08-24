@@ -44,7 +44,7 @@ const Home: React.FC<HomeProps> = ({
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
 
   // Add state for achievements toggle
-  const [isExclusiveSelected, setIsExclusiveSelected] = useState(true);
+  const [isExclusiveSelected, setIsExclusiveSelected] = useState(false);
 
   // Use custom hooks for navigation and scroll handling
   const { currentView, handleHeaderGesture, changeView } = useHomeNavigation();

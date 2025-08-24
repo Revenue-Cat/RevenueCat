@@ -17,6 +17,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useApp } from '../contexts/AppContext';
 import AchievementModal from '../components/AchievementModal';
 import ProgressRing from '../components/ProgressRing';
+import ComingSoon from '../components/ComingSoon';
 import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
 import { Achievement } from '../services/achievementService';
 const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
@@ -251,7 +252,75 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
 
   console.log('filteredAchievements', filteredAchievements)
   
+  // Show Coming Soon for exclusive achievements
+  if (isExclusiveSelected) {
     return (
+      <View className="flex-1 bg-[#1F1943]">
+        {/* Background Parallax Layers */}
+        <Animated.View 
+          style={{ 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            transform: [{ 
+              translateY: parallaxAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, -100],
+              })
+            }],
+            opacity: parallaxAnim.interpolate({
+              inputRange: [0, 0.5, 1],
+              outputRange: [0.3, 0.1, 0.3],
+            })
+          }}
+          className="bg-gradient-to-b from-purple-900/20 to-blue-900/20"
+        />
+        
+        <Animated.View 
+          style={{ 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            transform: [{ 
+              translateY: parallaxAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, -50],
+              })
+            }],
+            opacity: parallaxAnim.interpolate({
+              inputRange: [0, 0.5, 1],
+              outputRange: [0.6, 0.3, 0.6],
+            })
+          }}
+          className="bg-gradient-to-b from-indigo-800/30 to-purple-800/30"
+        />
+
+        <ScrollView 
+          className="flex-1"
+          contentContainerStyle={{
+            paddingTop: 10,
+            paddingBottom: 150,
+            minHeight: Dimensions.get('window').height * 0.7,
+          }}
+          bounces={false}
+          overScrollMode="never"
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: parallaxAnim } } }],
+            { useNativeDriver: true }
+          )}
+          scrollEventThrottle={16}
+        >
+          <ComingSoon />
+        </ScrollView>
+      </View>
+    );
+  }
+  
+  return (
     <View className="flex-1 bg-[#1F1943]">
       {/* Background Parallax Layers */}
       <Animated.View 
