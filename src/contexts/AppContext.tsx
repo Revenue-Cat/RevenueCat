@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { achievementService, Achievement, UserProgress } from '../services/achievementService';
 
 type ShopTab = 'characters' | 'backgrounds' | 'accessories';
 export type UserGender = 'man' | 'lady' | 'any';
@@ -33,6 +34,12 @@ interface AppState {
   packPriceCurrency: string;
   goal: string;
 
+  // Achievement system
+  achievements: Achievement[];
+  userProgress: UserProgress;
+  daysSmokeFree: number;
+  startDate: Date | null;
+
   // UI state
   showShop: boolean;
   showCoinPurchase: boolean;
@@ -47,6 +54,13 @@ interface AppState {
   setShowCoinPurchase: (show: boolean) => void;
   setSelectedShopTab: (tab: ShopTab) => void;
   openShopWithTab: (tab: ShopTab) => void;
+
+  // Achievement actions
+  setStartDate: (startDate: Date) => Promise<void>;
+  getProgressForAchievement: (achievementId: string) => { current: number; max: number; percentage: number };
+  resetProgress: () => Promise<void>;
+  setSampleData: () => Promise<void>;
+  setAugustStartDate: () => Promise<void>;
 
   // Selection setters
   setGender: (gender: UserGender) => void;
@@ -108,6 +122,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [packPriceCurrency, setPackPriceCurrencyState] = useState<string>('$');
   const [goal, setGoalState] = useState<string>('');
 
+  // Achievement system state
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [userProgress, setUserProgress] = useState<UserProgress>({
+    startDate: null,
+    daysSmokeFree: 0,
+    totalMoneySaved: 0,
+    cigarettesAvoided: 0,
+    breathingExercisesCompleted: 0,
+    challengesCompleted: 0,
+    purchasesMade: 0,
+  });
+  const [daysSmokeFree, setDaysSmokeFree] = useState(0);
+
   // UI state
   const [showShop, setShowShop] = useState(false);
   const [showCoinPurchase, setShowCoinPurchase] = useState(false);
@@ -117,6 +144,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     // TODO: Implement AsyncStorage load if desired
   }, []);
+
+  // Sync with achievement service
+  useEffect(() => {
+    const unsubscribe = achievementService.subscribe(() => {
+      setAchievements(achievementService.getAllAchievements());
+      setUserProgress(achievementService.getUserProgress());
+      setDaysSmokeFree(achievementService.calculateDaysPassed());
+    });
+
+    // Initial load
+    setAchievements(achievementService.getAllAchievements());
+    setUserProgress(achievementService.getUserProgress());
+    setDaysSmokeFree(achievementService.calculateDaysPassed());
+
+    return unsubscribe;
+  }, []);
+
+  // Sync start date changes with achievement service
+  useEffect(() => {
+    if (userProgress.startDate) {
+      achievementService.setStartDate(userProgress.startDate);
+    }
+  }, [userProgress.startDate]);
 
   // Save to AsyncStorage when state changes (TODO)
   useEffect(() => {
@@ -195,6 +245,48 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setPackPriceCurrency = useCallback((value: string) => setPackPriceCurrencyState(value), []);
   const setGoal = useCallback((value: string) => setGoalState(value), []);
 
+  // Achievement functions
+  const setStartDate = useCallback(async (startDate: Date) => {
+    setUserProgress(prev => ({ ...prev, startDate }));
+    await achievementService.setStartDate(startDate);
+  }, []);
+
+  const getProgressForAchievement = useCallback((achievementId: string) => {
+    return achievementService.getProgressForAchievement(achievementId);
+  }, []);
+
+  const resetProgress = useCallback(async () => {
+    await achievementService.resetProgress();
+  }, []);
+
+  const setSampleData = useCallback(async () => {
+    // Set to 2 hours ago for testing - should show ~2 hours elapsed
+    const startDate = new Date();
+    startDate.setHours(startDate.getHours() - 2);
+    startDate.setMinutes(30);
+    startDate.setSeconds(0);
+    
+    console.log('setSampleData: Setting startDate to:', startDate.toISOString());
+    setUserProgress(prev => ({ ...prev, startDate }));
+    await achievementService.setStartDate(startDate);
+  }, []);
+
+  // Function to set August 21st start date for specific testing
+  const setAugustStartDate = useCallback(async () => {
+    const startDate = new Date(2025, 7, 21, 10, 30, 0); // August 21st, 2024 at 10:30 AM
+    console.log('setAugustStartDate: Setting startDate to:', startDate.toISOString());
+    setUserProgress(prev => ({ ...prev, startDate }));
+    await achievementService.setStartDate(startDate);
+  }, []);
+
+  // Set August start date as default when app initializes
+  useEffect(() => {
+    if (!userProgress.startDate) {
+      console.log('AppContext: Setting default August start date');
+      setAugustStartDate();
+    }
+  }, [userProgress.startDate, setAugustStartDate]);
+
   // Memoize the context value to prevent unnecessary re-renders
   const value: AppState = useMemo(() => ({
     userCoins,
@@ -214,6 +306,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     packPriceCurrency,
     goal,
 
+    // Achievement system
+    achievements,
+    userProgress,
+    daysSmokeFree,
+    startDate: userProgress.startDate,
+
     showShop,
     showCoinPurchase,
     selectedShopTab,
@@ -226,6 +324,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setShowCoinPurchase,
     setSelectedShopTab,
     openShopWithTab,
+
+    // Achievement actions
+    setStartDate,
+    getProgressForAchievement,
+    resetProgress,
+    setSampleData,
+    setAugustStartDate,
 
     setGender,
     setSelectedBuddyId,
@@ -251,11 +356,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     packPrice,
     packPriceCurrency,
     goal,
+    achievements,
+    userProgress,
+    daysSmokeFree,
     showShop,
     showCoinPurchase,
     selectedShopTab,
     purchaseItem,
     openShopWithTab,
+    setStartDate,
+    getProgressForAchievement,
+    resetProgress,
+    setSampleData,
+    setAugustStartDate,
   ]);
 
   return (

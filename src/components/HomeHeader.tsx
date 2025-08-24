@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Timer from './Timer';
+import CountdownTimer from './Timer';
 import CoinIcon from "../assets/icons/coins.svg";
+import { useApp } from '../contexts/AppContext';
 
 interface HomeHeaderProps {
   currentView: 'home' | 'achievements' | 'shop';
@@ -19,6 +20,22 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   onCoinPurchase,
   onViewChange
 }) => {
+  const { startDate, achievements, getProgressForAchievement } = useApp();
+  
+  // Debug logging
+  console.log('HomeHeader Debug:', {
+    currentView,
+    startDate: startDate?.toISOString(),
+    hasStartDate: !!startDate
+  });
+
+  // Calculate achievements with 100% progress
+  const completedAchievementsCount = achievements.filter(achievement => {
+    const progress = getProgressForAchievement(achievement.id);
+    return progress.percentage === 100;
+  }).length;
+
+  console.log('HomeHeader: Completed achievements count:', completedAchievementsCount, 'out of', achievements.length);
   const getViewTitle = () => {
     switch (currentView) {
       case 'home': return 'Zero Poofs';
@@ -49,14 +66,27 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           </Text>
           
           {/* Timer Units - Only show for Home view */}
-          {currentView === 'home' && <Timer />}
+          {currentView === 'home' && startDate ? (
+            <CountdownTimer
+              targetDate={startDate}
+              textColor="text-indigo-950"
+              textSize="lg"
+              showSeconds={false}
+              countUp={true}
+            />
+          ) : currentView === 'home' && (
+            <View className="items-center">
+              <Text className="text-3xl font-bold text-indigo-950">00</Text>
+              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">Days</Text>
+            </View>
+          )}
 
           {/* Preview content for other views */}
           {currentView === 'achievements' && (
             <View className="items-center">
               <View className="flex-row items-baseline">
-                <Text className="text-3xl font-bold text-indigo-950">16</Text>
-                <Text className="text-lg font-bold text-indigo-950/50">/20</Text>
+                <Text className="text-3xl font-bold text-indigo-950">{completedAchievementsCount}</Text>
+                <Text className="text-lg font-bold text-indigo-950/50">/{achievements.length}</Text>
               </View>
               <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-1">Badges collected</Text>
             </View>
