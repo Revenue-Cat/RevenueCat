@@ -5,6 +5,12 @@ export interface Scene {
   coin: number;
   owned: boolean;
   background: any; // Image source
+  parallaxSlices?: {
+    slice1: any;
+    slice2: any;
+    slice3: any;
+    slice4: any;
+  };
 }
 
 export const SCENES_DATA: Scene[] = [
@@ -14,7 +20,7 @@ export const SCENES_DATA: Scene[] = [
     price: 0, 
     coin: 0,
     owned: true,
-    background: require("../assets/backgrounds/BG7.png")
+    background: require("../assets/backgrounds/BG1.png")
   },
   { 
     id: "sunset", 
@@ -62,6 +68,6 @@ export const SCENES_DATA: Scene[] = [
     price: 175, 
     coin: 175,
     owned: false,
-    background: require("../assets/backgrounds/BG1.png")
+    background: require("../assets/backgrounds/BG7.png")
   },
 ];
