@@ -98,11 +98,11 @@ export const useApp = () => {
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Shop/state
-  const [userCoins, setUserCoinsState] = useState(100);
+  const [userCoins, setUserCoinsState] = useState(200);
   const [selectedBuddy, setSelectedBuddyState] = useState<ShopItem>(defaultCharacter);
   const [selectedBackground, setSelectedBackgroundState] = useState<Scene>(defaultBackground);
   const [ownedBuddies, setOwnedBuddies] = useState<string[]>(['zebra-m', 'dog-m']);
-  const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['bg1', 'bg2', 'bg3', 'bg4', 'bg5', 'bg6', 'bg7']);
+  const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['bg1']);
   const [ownedAccessories, setOwnedAccessories] = useState<string[]>([]);
 
   // Buddy/User selections
@@ -206,8 +206,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setSelectedBackground = useCallback((background: Scene) => setSelectedBackgroundState(background), []);
 
   const purchaseItem = useCallback((item: ShopItem | Scene, category: ShopTab): boolean => {
-    if (userCoins < item.price) return false;
-    setUserCoinsState(prev => prev - item.price);
+    // Use coin field for price (both buddies and scenes use coin)
+    const price = (item as any).coin || 0;
+    
+    if (userCoins < price) return false;
+    
+    setUserCoinsState(prev => prev - price);
 
     switch (category) {
       case 'buddies':

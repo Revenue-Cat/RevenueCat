@@ -31,6 +31,7 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
   const handlePurchase = () => {
     if (canAfford && !isOwned) {
       onPurchase();
+      // Don't close immediately, let the parent handle it
     }
   };
 
@@ -56,12 +57,12 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
       {/* Purchase Button - Only show if not owned */}
       {!isOwned && (
         <Pressable 
-          className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
+          className={`flex-1 rounded-2xl justify-center items-center ${canAfford ? 'bg-indigo-600' : 'bg-gray-400'}`}
           onPress={handlePurchase}
           disabled={!canAfford}
         >
-          <Text className="text-2xl font-bold text-white px-4 py-2">
-            {canAfford ? `Buy for ${scene.coin}` : 'Need Coins'}
+          <Text className={`text-2xl font-bold px-4 py-2 ${canAfford ? 'text-white' : 'text-gray-200'}`}>
+            {canAfford ? `Buy for ${scene.coin} coins` : `Purchase`}
           </Text>
         </Pressable>
       )}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 
 interface BuddyModalActionsProps {
@@ -19,7 +18,7 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
   const { ownedBuddies, selectedBuddyId, setSelectedBuddyId } = useApp();
   const isOwned = ownedBuddies?.includes(buddy.id) || false;
   const isSelected = selectedBuddyId === buddy.id;
-  const canAfford = userCoins >= (buddy.price || 0);
+  const canAfford = userCoins >= (buddy.coin || 0);
 
   const handleSelect = () => {
     if (isOwned) {
@@ -31,7 +30,7 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
   const handlePurchase = () => {
     if (canAfford && !isOwned) {
       onPurchase();
-      onClose();
+      // Don't close immediately, let the parent handle it
     }
   };
 
@@ -57,12 +56,12 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
       {/* Purchase Button - Only show if not owned */}
       {!isOwned && (
         <Pressable 
-          className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
+          className={`flex-1 rounded-2xl justify-center items-center ${canAfford ? 'bg-indigo-600' : 'bg-gray-400'}`}
           onPress={handlePurchase}
           disabled={!canAfford}
         >
-          <Text className="text-2xl font-bold text-white px-4 py-2">
-            {canAfford ? `Buy for ${buddy.coin}` : 'Need Coins'}
+          <Text className={`text-2xl font-bold px-4 py-2 ${canAfford ? 'text-white' : 'text-gray-200'}`}>
+            {canAfford ? `Buy for ${buddy.coin} coins` : `Purchase`}
           </Text>
         </Pressable>
       )}

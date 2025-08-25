@@ -17,6 +17,20 @@ const BuddyModal: React.FC<BuddyModalProps> = ({
 }) => {
   const { userCoins, purchaseItem } = useApp();
 
+  const handlePurchase = () => {
+    if (buddy) {
+      const success = purchaseItem(buddy, 'buddies');
+      if (success) {
+        // Show success feedback
+        console.log(`Successfully purchased ${buddy.name} for ${buddy.coin} coins!`);
+        onClose();
+      } else {
+        // Show error feedback
+        console.log('Purchase failed - not enough coins');
+      }
+    }
+  };
+
   if (!buddy) return null;
 
   return (
@@ -35,7 +49,7 @@ const BuddyModal: React.FC<BuddyModalProps> = ({
       <BuddyModalActions
         buddy={buddy}
         userCoins={userCoins}
-        onPurchase={() => purchaseItem(buddy.id, 'character')}
+        onPurchase={handlePurchase}
         onClose={onClose}
       />
     </SlideModal>

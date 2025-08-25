@@ -17,7 +17,12 @@ const SceneModal: React.FC<SceneModalProps> = ({ visible, scene, onClose }) => {
     if (scene) {
       const success = purchaseItem(scene, 'backgrounds');
       if (success) {
+        // Show success feedback
+        console.log(`Successfully purchased ${scene.name} for ${scene.coin} coins!`);
         onClose();
+      } else {
+        // Show error feedback
+        console.log('Purchase failed - not enough coins');
       }
     }
   };

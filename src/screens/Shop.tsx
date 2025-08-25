@@ -168,6 +168,14 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
   
   return (
     <View className="flex-1" style={{ backgroundColor: gradientColors[0] }}>
+      {/* Header with coins */}
+      {/* <View className="flex-row justify-between items-center px-4 py-3 bg-white/10">
+        <Text className="text-white text-lg font-bold">Shop</Text>
+        <View className="flex-row items-center">
+          <Text className="text-white text-lg font-bold mr-2">{userCoins}</Text>
+          <CoinIcon width={24} height={24} />
+        </View>
+      </View> */}
 
       <ScrollView 
         className="flex-1"
