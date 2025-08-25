@@ -128,7 +128,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
           source={parallaxSlices.slice4}
           style={{ 
             width: '100%', 
-            height: 400,
+            height: 370,
             transform: layer4Transform
           }}
           resizeMode="cover"
