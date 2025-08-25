@@ -38,6 +38,7 @@ const Home: React.FC<HomeProps> = ({
     userCoins,
     setShowCoinPurchase,
     selectedBuddyId,
+    selectedBackground,
     gender,
     startDate,
   } = useApp();
@@ -87,6 +88,24 @@ const Home: React.FC<HomeProps> = ({
     return buddyAssets[baseBuddyKey][sexKey];
   }, [selectedBuddyId, sexKey]);
 
+  // Helper function to parse gradient string and return colors
+  const parseGradient = useCallback((gradientString: string): [string, string] => {
+    console.log('Parsing gradient:', gradientString);
+    // Extract colors from linear-gradient string - handle both formats
+    const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
+    console.log('Color match:', colorMatch);
+    if (colorMatch && colorMatch.length >= 2) {
+      return [colorMatch[0], colorMatch[1]]; // Return first two colors
+    }
+    // Fallback: try to extract any hex colors
+    const fallbackMatch = gradientString.match(/#[A-Fa-f0-9]{3,6}/g);
+    if (fallbackMatch && fallbackMatch.length >= 2) {
+      return [fallbackMatch[0], fallbackMatch[1]];
+    }
+    console.log('Using fallback colors');
+    return ['#1F1943', '#4E3EA9']; // Default fallback
+  }, []);
+
   // Memoize the coin purchase callback
   const handleCoinPurchase = useCallback(() => {
     setShowCoinPurchase(true);
@@ -124,8 +143,12 @@ const Home: React.FC<HomeProps> = ({
     );
   }
 
+  const gradientColors = parseGradient(selectedBackground.backgroundColor);
+  console.log('Gradient colors:', gradientColors);
+  
+  // Temporary fallback to test if LinearGradient is the issue
   return (
-    <View className="flex-1 bg-[#1F1943] absolute inset-0">
+    <View className="flex-1 absolute inset-0" style={{ backgroundColor: gradientColors[0] }}>
       {/* Full Screen PanGestureHandler for left/right navigation */}
       <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[1000]">
@@ -204,10 +227,12 @@ const Home: React.FC<HomeProps> = ({
           >
             {/* Achievement Cards - Dynamic height */}
             {currentView === 'home' && (
-              <View style={{ 
-                marginTop: 0, 
-                backgroundColor: "#1F1943"
-              }}>
+              <View
+                style={{ 
+                  marginTop: 0,
+                  backgroundColor: gradientColors[0]
+                }}
+              >
                 <AchievementSection
                   isCollapsed={isAchievementsCollapsed}
                   onToggle={toggleAchievements}

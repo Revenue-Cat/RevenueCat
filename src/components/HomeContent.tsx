@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { useApp } from '../contexts/AppContext';
 import HomeStats from './HomeStats';
 import Challenges from '../screens/Challenges';
 import Achievements from '../screens/Achievements';
@@ -24,10 +25,24 @@ const HomeContent: React.FC<HomeContentProps> = ({
   onShowCravingSOS,
   onNavigateToShop
 }) => {
+  const { selectedBackground } = useApp();
+  
+  // Helper function to parse gradient string and return colors
+  const parseGradient = (gradientString: string): [string, string] => {
+    // Extract colors from linear-gradient string
+    const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
+    if (colorMatch && colorMatch.length >= 2) {
+      return [colorMatch[0], colorMatch[1]]; // Return first two colors
+    }
+    return ['#1F1943', '#4E3EA9']; // Default fallback
+  };
+  
   console.log("HomeContent render - currentView:", currentView, "isExclusiveSelected:", isExclusiveSelected);
   
+  const gradientColors = parseGradient(selectedBackground.backgroundColor);
+  
   return (
-    <View style={{ paddingHorizontal: 24, backgroundColor: "#1F1943" }}>
+    <View style={{ paddingHorizontal: 24, backgroundColor: gradientColors[0] }}>
       {/* Conditional Content Based on View */}
       {currentView === 'home' && (
         <>

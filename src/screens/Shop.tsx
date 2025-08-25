@@ -49,6 +49,16 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
   const [selectedSceneForModal, setSelectedSceneForModal] = useState<any>(null);
   const [showSceneModal, setShowSceneModal] = useState(false);
 
+  // Helper function to parse gradient string and return colors
+  const parseGradient = useCallback((gradientString: string): [string, string] => {
+    // Extract colors from linear-gradient string
+    const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
+    if (colorMatch && colorMatch.length >= 2) {
+      return [colorMatch[0], colorMatch[1]]; // Return first two colors
+    }
+    return ['#1F1943', '#4E3EA9']; // Default fallback
+  }, []);
+
   // Function to handle buddy selection
   const handleBuddySelect = (buddy: any) => {
     if (ownedBuddies?.includes(buddy.id)) {
@@ -154,12 +164,15 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
     </View>
   );
 
+  const gradientColors = parseGradient(selectedBackground.backgroundColor);
+  
   return (
-    <View className="flex-1 bg-[#1F1943]">
+    <View className="flex-1" style={{ backgroundColor: gradientColors[0] }}>
 
       <ScrollView 
         className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 4, paddingVertical: 20 }}
+        contentContainerStyle={{ paddingHorizontal: 4, paddingVertical: 20,  minHeight: Dimensions.get('window').height * 0.8,
+ }}
       >
 
         {/* Items */}
@@ -183,9 +196,9 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
           setShowSceneModal(false);
           setSelectedSceneForModal(null);
         }}
-      />
-    </View>
-  );
+              />
+      </View>
+    );
 };
 
 export default Shop; 

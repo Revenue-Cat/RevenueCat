@@ -201,7 +201,22 @@ const EXCLUSIVE_ACHIEVEMENTS_DATA = [
 const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const {achievements, getProgressForAchievement, startDate } = useApp();
+  const {achievements, getProgressForAchievement, startDate, selectedBackground } = useApp();
+  
+  // Helper function to parse gradient string and return colors
+  const parseGradient = (gradientString: string): [string, string] => {
+    // Extract colors from linear-gradient string - handle both formats
+    const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
+    if (colorMatch && colorMatch.length >= 2) {
+      return [colorMatch[0], colorMatch[1]]; // Return first two colors
+    }
+    // Fallback: try to extract any hex colors
+    const fallbackMatch = gradientString.match(/#[A-Fa-f0-9]{3,6}/g);
+    if (fallbackMatch && fallbackMatch.length >= 2) {
+      return [fallbackMatch[0], fallbackMatch[1]];
+    }
+    return ['#1F1943', '#4E3EA9']; // Default fallback
+  };
   const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
   const [parallaxAnim] = useState(new Animated.Value(0));
   
@@ -252,10 +267,12 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
 
   console.log('filteredAchievements', filteredAchievements)
   
+  const gradientColors = parseGradient(selectedBackground.backgroundColor);
+  
   // Show Coming Soon for exclusive achievements
   if (isExclusiveSelected) {
     return (
-      <View className="flex-1 bg-[#1F1943]">
+      <View className="flex-1" style={{ backgroundColor: gradientColors[0] }}>
         {/* Background Parallax Layers */}
         <Animated.View 
           style={{ 
@@ -321,7 +338,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
   }
   
   return (
-    <View className="flex-1 bg-[#1F1943]">
+    <View className="flex-1" style={{ backgroundColor: gradientColors[0] }}>
       {/* Background Parallax Layers */}
       <Animated.View 
         style={{ 
