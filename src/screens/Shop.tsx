@@ -13,7 +13,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
 import { BUDDIES_DATA } from '../data/buddiesData';
+import { SCENES_DATA } from '../data/scenesData';
 import BuddyModal from '../components/BuddyModal';
+import SceneModal from '../components/SceneModal';
 import CoinIcon from "../assets/icons/coins.svg";
 
 const { width } = Dimensions.get('window');
@@ -44,6 +46,8 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
   
   const [selectedBuddyForModal, setSelectedBuddyForModal] = useState<any>(null);
   const [showBuddyModal, setShowBuddyModal] = useState(false);
+  const [selectedSceneForModal, setSelectedSceneForModal] = useState<any>(null);
+  const [showSceneModal, setShowSceneModal] = useState(false);
 
   // Function to handle buddy selection
   const handleBuddySelect = (buddy: any) => {
@@ -57,19 +61,21 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
     }
   };
 
+  // Function to handle scene selection
+  const handleSceneSelect = (scene: any) => {
+    if (ownedBackgrounds.includes(scene.id)) {
+      // If scene is owned, select it directly
+      setSelectedBackground(scene);
+    } else {
+      // If scene is not owned, show the modal for purchase
+      setSelectedSceneForModal(scene);
+      setShowSceneModal(true);
+    }
+  };
 
-  // Scenes data - backgrounds only
-  const scenes = [
-    { id: "default", emoji: "🌅", name: "Default", price: 0, owned: true },
-    { id: "1", emoji: "🌅", name: "Sunset", price: 50, owned: false },
-    { id: "2", emoji: "🌊", name: "Ocean", price: 100, owned: false },
-    { id: "3", emoji: "🌲", name: "Forest", price: 150, owned: false },
-    { id: "4", emoji: "💜", name: "Purple", price: 200, owned: false },
-    { id: "5", emoji: "🌑", name: "Dark", price: 250, owned: false },
-    { id: "6", emoji: "🌸", name: "Cherry Blossom", price: 175, owned: false },
-    { id: "7", emoji: "🏔️", name: "Mountain", price: 225, owned: false },
-    { id: "8", emoji: "🌆", name: "City", price: 125, owned: false },
-  ];
+
+  // Use imported scenes data
+  const scenes = SCENES_DATA;
 
 
   console.log('selectedBuddy', selectedBuddy);
@@ -113,7 +119,7 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
   );
 
   const renderScenesGrid = () => (
-    <View className="flex-row flex-wrap gap-2">
+    <View className="w-full -mx-1 -my-1 flex-row flex-wrap">
       {scenes.map((item) => {
         const isOwned = ownedBackgrounds.includes(item.id);
         const isSelected = selectedBackground.id === item.id;
@@ -121,21 +127,27 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
         return (
           <Pressable
             key={item.id}
-            className={`w-[${(width - 80) / 4}px] bg-white/10 rounded-xl p-3 items-center relative ${
-              isSelected ? 'bg-white/20 border-2 border-white' : ''
-            } ${isOwned && !isSelected ? 'bg-white/15' : ''}`}
-            // onPress={() => handleSelect(item, 'backgrounds')}
+            className={`w-1/4 px-1 py-1`}
+            onPress={() => handleSceneSelect(item)}
           >
-            <Text className="text-2xl mb-1.5">{item.emoji}</Text>
-            <Text className="text-xs font-bold text-white mb-0.5 text-center">{item.name}</Text>
-            <Text className="text-[10px] text-white/70 text-center">
-              {isOwned ? (isSelected ? 'Selected' : 'Owned') : item.price === 0 ? 'Free' : `${item.price} coins`}
-            </Text>
-            {isSelected && (
-              <View className="absolute top-2 right-2">
-                <Ionicons name="checkmark-circle" size={16} color="#000000" />
+             <View className={`items-center bg-white/10 rounded-xl relative`}>
+              <View className="w-[80px] h-[80px] overflow-hidden relative">
+                <Image source={item.background} className="w-full h-full rounded-2xl" resizeMode="cover" />
+                {!isOwned && (
+                  <View className="absolute bottom-1 left-4 z-10 rounded-3xl bg-black/70 px-2 py-0.5">
+                    <View className="flex-row items-center justify-center">
+                      <Text className="text-xs font-bold text-amber-500 gap-2">{item.coin}</Text>
+                      <CoinIcon width={18} height={18} className="ml-1" />
+                    </View>
+                  </View>
+                )}
               </View>
-            )}
+              {isSelected && (
+                <View className="absolute top-1 right-1">
+                  <Ionicons className="bg-green-500 rounded-full p-0.5 bold" name="checkmark" size={18} color="white" />
+                </View>
+              )}
+            </View>
           </Pressable>
         );
       })}
@@ -162,6 +174,14 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
         onClose={() => {
           setShowBuddyModal(false);
           setSelectedBuddyForModal(null);
+        }}
+      />
+      <SceneModal
+        visible={showSceneModal}
+        scene={selectedSceneForModal}
+        onClose={() => {
+          setShowSceneModal(false);
+          setSelectedSceneForModal(null);
         }}
       />
     </View>

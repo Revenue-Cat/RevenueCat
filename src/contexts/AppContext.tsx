@@ -107,7 +107,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedBuddy, setSelectedBuddyState] = useState<ShopItem>(defaultCharacter);
   const [selectedBackground, setSelectedBackgroundState] = useState<ShopItem>(defaultBackground);
   const [ownedBuddies, setOwnedBuddies] = useState<string[]>(['zebra-m', 'dog-m']);
-  const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['default']);
+  const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['default', 'sunset', 'ocean']);
   const [ownedAccessories, setOwnedAccessories] = useState<string[]>([]);
 
   // Buddy/User selections
