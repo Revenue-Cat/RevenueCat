@@ -14,7 +14,7 @@ export interface Buddy {
 
 export const BUDDIES_DATA: Buddy[] = [
   {
-    id: "zebra-boy",
+    id: "zebra-m",
     emoji: "🦓",
     name: "ZebraBro",
     description: "Run with me, and we'll leave smoke behind faster than it can catch us.",
@@ -24,7 +24,7 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "bulldog-boy",
+    id: "dog-m",
     emoji: "🐶",
     name: "SpudDog",
     description: "Stick with me — we'll beat smoke faster than it thinks.",
@@ -34,7 +34,7 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "fox-boy",
+    id: "fox-m",
     emoji: "🦊",
     name: "GingerBoss",
     description: "With two clever heads, smoke stands no chance — we'll quit twice as fast.",
@@ -44,7 +44,7 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "llama-boy",
+    id: "alpaca-m",
     emoji: "🦙",
     name: "Lamburger",
     description: "Climb with me — and we'll reach the smoke-free top faster than we think.",
@@ -54,7 +54,7 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "koala-boy",
+    id: "koala-m",
     emoji: "🐨",
     name: "Don Snooze",
     description: "Embrace life with me — and we'll shake off smoke faster than it can cling.",
@@ -64,7 +64,7 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "bulldog-girl",
+    id: "dog-w",
     emoji: "🐶",
     name: "SpudQueen",
     description: "Together we shine brighter, and quitting smoke gets easier and faster.",
@@ -74,7 +74,7 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "llama-girl",
+    id: "alpaca-w",
     emoji: "🦙",
     name: "Lamazing",
     description: "Side by side we'll breathe fresh air and chase smoke away in no time.",
@@ -84,7 +84,7 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "fox-girl",
+    id: "fox-w",
     emoji: "🦊",
     name: "FoxyBossy",
     description: "Let's outsmart smoke together — the two of us will finish this game fast.",
@@ -94,7 +94,7 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "koala-girl",
+    id: "koala-w",
     emoji: "🐨",
     name: "NapCutie",
     description: "Together we'll find peace — and leave smoke far behind much faster.",
@@ -104,7 +104,7 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "zebra-girl",
+    id: "zebra-w",
     emoji: "🦓",
     name: "Zebrabelle",
     description: "If we dream side by side, smoke will disappear twice as fast.",

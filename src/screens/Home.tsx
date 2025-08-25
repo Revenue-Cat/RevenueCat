@@ -81,10 +81,11 @@ const Home: React.FC<HomeProps> = ({
   }, [scrollY, currentView]);
 
   // Memoize the buddy image source to prevent recreation
-  const buddyImageSource = useMemo(() => 
-    buddyAssets[selectedBuddyId as BuddyKey][sexKey], 
-    [selectedBuddyId, sexKey]
-  );
+  const buddyImageSource = useMemo(() => {
+    // Extract base buddy key from gender-specific ID (e.g., "alpaca-m" -> "alpaca")
+    const baseBuddyKey = selectedBuddyId.split('-')[0] as BuddyKey;
+    return buddyAssets[baseBuddyKey][sexKey];
+  }, [selectedBuddyId, sexKey]);
 
   // Memoize the coin purchase callback
   const handleCoinPurchase = useCallback(() => {

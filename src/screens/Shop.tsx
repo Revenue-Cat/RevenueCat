@@ -14,6 +14,7 @@ import { useApp } from '../contexts/AppContext';
 import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
 import { BUDDIES_DATA } from '../data/buddiesData';
 import BuddyModal from '../components/BuddyModal';
+import CoinIcon from "../assets/icons/coins.svg";
 
 const { width } = Dimensions.get('window');
 
@@ -26,190 +27,36 @@ interface ShopProps {
 const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelected }) => {
   const {
     userCoins,
-    selectedCharacter,
+    selectedBuddy,
     selectedBackground,
-    ownedCharacters,
+    ownedBuddies,
     ownedBackgrounds,
     ownedAccessories,
-    setSelectedCharacter,
+    setSelectedBuddy,
     setSelectedBackground,
     purchaseItem,
     setShowCoinPurchase,
     selectedBuddyId,
+    setSelectedBuddyId,
     gender,
   } = useApp();
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
   
-  const [selectedBuddy, setSelectedBuddy] = useState<any>(null);
+  const [selectedBuddyForModal, setSelectedBuddyForModal] = useState<any>(null);
   const [showBuddyModal, setShowBuddyModal] = useState(false);
 
-
-
-
-
-  // Buddies data with multi-language support
-  const buddies = [
-    {
-      id: "zebra-boy",
-      emoji: "🦓",
-      name: "Зебра",
-      gender: "👦",
-      genderType: "Хлопчик",
-      ukName: "ЗеброБро",
-      enName: "ZebraBro",
-      esName: "CebraCompas",
-      ukDescription: "«Біжи зі мною, і ми залишимо дим позаду швидше, ніж він встигне нас наздогнати.»",
-      enDescription: "Run with me, and we'll leave smoke behind faster than it can catch us.",
-      esDescription: "Corre conmigo y dejaremos el humo atrás antes de que pueda alcanzarnos.",
-      price: 150,
-      owned: false,
-      type: 'character'
-    },
-    {
-      id: "bulldog-boy",
-      emoji: "🐶",
-      name: "Бульдог",
-      gender: "👦",
-      genderType: "Хлопчик",
-      ukName: "БульбаДог",
-      enName: "SpudDog",
-      esName: "PerroPapa",
-      ukDescription: "«Тримайся поруч — ми здолаємо дим швидше, ніж він думає.»",
-      enDescription: "Stick with me — we'll beat smoke faster than it thinks.",
-      esDescription: "Quédate cerca: venceremos al humo más rápido de lo que cree.",
-      price: 200,
-      owned: false,
-      type: 'character'
-    },
-    {
-      id: "fox-boy",
-      emoji: "🦊",
-      name: "Лис",
-      gender: "👦",
-      genderType: "Хлопчик",
-      ukName: "Рижобосс",
-      enName: "GingerBoss",
-      esName: "JefeZorro",
-      ukDescription: "«З двома розумними головами дим не матиме жодного шансу — ми кинемо вдвічі швидше.»",
-      enDescription: "With two clever heads, smoke stands no chance — we'll quit twice as fast.",
-      esDescription: "Con dos cabezas listas, el humo no tendrá ninguna oportunidad: dejaremos el vicio el doble de rápido.",
-      price: 250,
-      owned: false,
-      type: 'character'
-    },
-    {
-      id: "llama-boy",
-      emoji: "🦙",
-      name: "Лама",
-      gender: "👦",
-      genderType: "Хлопчик",
-      ukName: "Ламбургер",
-      enName: "Lamburger",
-      esName: "Lamburguesa",
-      ukDescription: "«Піднімайся зі мною — і ми швидше, ніж думаємо, дістанемося вершини без диму.»",
-      enDescription: "Climb with me — and we'll reach the smoke-free top faster than we think.",
-      esDescription: "Sube conmigo: alcanzaremos la cima sin humo más rápido de lo que creemos.",
-      price: 175,
-      owned: false,
-      type: 'character'
-    },
-    {
-      id: "koala-boy",
-      emoji: "🐨",
-      name: "Коала",
-      gender: "👦",
-      genderType: "Хлопчик",
-      ukName: "ДонСон",
-      enName: "Don Snooze",
-      esName: "Don Siesta",
-      ukDescription: "«Обійми життя зі мною — і ми струснемо дим швидше, ніж він вчепиться.»",
-      enDescription: "Embrace life with me — and we'll shake off smoke faster than it can cling.",
-      esDescription: "Abraza la vida conmigo y sacudiremos el humo antes de que se aferre.",
-      price: 125,
-      owned: false,
-      type: 'character'
-    },
-    {
-      id: "bulldog-girl",
-      emoji: "🐶",
-      name: "Бульдог",
-      gender: "👧",
-      genderType: "Дівчинка",
-      ukName: "БульбаКвін",
-      enName: "SpudQueen",
-      esName: "ReinaPapa",
-      ukDescription: "«Разом ми сяємо яскравіше, і кидати дим стане легше й швидше.»",
-      enDescription: "Together we shine brighter, and quitting smoke gets easier and faster.",
-      esDescription: "Juntas brillamos más, y dejar el humo será más fácil y rápido.",
-      price: 200,
-      owned: false,
-      type: 'character'
-    },
-    {
-      id: "llama-girl",
-      emoji: "🦙",
-      name: "Лама",
-      gender: "👧",
-      genderType: "Дівчинка",
-      ukName: "Ламурка",
-      enName: "Lamazing",
-      esName: "Lamuriosa",
-      ukDescription: "«Пліч-о-пліч ми вдихнемо свіже повітря і виженемо дим за мить.»",
-      enDescription: "Side by side we'll breathe fresh air and chase smoke away in no time.",
-      esDescription: "Hombro a hombro respiraremos aire fresco y echaremos el humo en un instante.",
-      price: 175,
-      owned: false,
-      type: 'character'
-    },
-    {
-      id: "fox-girl",
-      emoji: "🦊",
-      name: "Лисиця",
-      gender: "👧",
-      genderType: "Дівчинка",
-      ukName: "ФоксіБоссі",
-      enName: "FoxyBossy",
-      esName: "JefaZorra",
-      ukDescription: "«Перехитрімо дим разом — удвох ми швидко закінчимо цю гру.»",
-      enDescription: "Let's outsmart smoke together — the two of us will finish this game fast.",
-      esDescription: "Engañemos al humo juntas: las dos acabaremos este juego rápido.",
-      price: 250,
-      owned: false,
-      type: 'character'
-    },
-    {
-      id: "koala-girl",
-      emoji: "🐨",
-      name: "Коала",
-      gender: "👧",
-      genderType: "Дівчинка",
-      ukName: "СоняЛав",
-      enName: "NapCutie",
-      esName: "SiestaAmor",
-      ukDescription: "«Разом ми знайдемо спокій — і покинемо дим набагато швидше.»",
-      enDescription: "Together we'll find peace — and leave smoke far behind much faster.",
-      esDescription: "Juntas encontraremos la calma y dejaremos el humo mucho más rápido.",
-      price: 125,
-      owned: false,
-      type: 'character'
-    },
-    {
-      id: "zebra-girl",
-      emoji: "🦓",
-      name: "Зебра",
-      gender: "👧",
-      genderType: "Дівчинка",
-      ukName: "ЧорноБілка",
-      enName: "Zebrabelle",
-      esName: "Zebrita",
-      ukDescription: "«Якщо ми мріятимемо пліч-о-пліч, дим зникне вдвічі швидше.»",
-      enDescription: "If we dream side by side, smoke will disappear twice as fast.",
-      esDescription: "Si soñamos lado a lado, el humo desaparecerá el doble de rápido.",
-      price: 150,
-      owned: false,
-      type: 'character'
+  // Function to handle buddy selection
+  const handleBuddySelect = (buddy: any) => {
+    if (ownedBuddies?.includes(buddy.id)) {
+      // If buddy is owned, select it directly
+      setSelectedBuddyId(buddy.id);
+    } else {
+      // If buddy is not owned, show the modal for purchase
+      setSelectedBuddyForModal(buddy);
+      setShowBuddyModal(true);
     }
-  ];
+  };
+
 
   // Scenes data - backgrounds only
   const scenes = [
@@ -225,28 +72,37 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
   ];
 
 
-
+  console.log('selectedBuddy', selectedBuddy);
+  
   const renderBuddiesGrid = () => (
     <View className="w-full -mx-1 -my-1 flex-row flex-wrap">
       {BUDDIES_DATA.map((item) => {
-        const isOwned = ownedCharacters.includes(item.id);
-        const isSelected = selectedCharacter.id === item.id;
+        const isOwned = ownedBuddies?.includes(item.id) || false;
+        const isSelected = selectedBuddyId === item.id;
         
         return (
           <Pressable
             key={item.id}
             className={`w-1/4 px-1 py-1`}
-            onPress={() => {
-              setSelectedBuddy(item);
-              setShowBuddyModal(true);
-            }}
+            onPress={() => handleBuddySelect(item)}
           >
-            <View className={`items-center bg-white/10 rounded-xl p-2 relative ${
-              isSelected ? 'bg-white/20 border-2 border-white' : ''
-            } ${isOwned && !isSelected ? 'bg-white/15' : ''}`}>
-              <View className="w-[80px] h-[80px] overflow-hidden">
+            <View className={`items-center bg-white/10 rounded-xl p-2 relative ${isOwned && !isSelected ? 'bg-white/15' : ''}`}>
+              <View className="w-[80px] h-[80px] overflow-hidden relative">
                 <Image source={item.icon} className='w-[80px] h-[110px]' resizeMode="contain" />
+                {!isOwned && (
+                  <View className="absolute bottom-1 left-4 z-10 rounded-3xl bg-black/70 px-2 py-0.5">
+                    <View className="flex-row items-center justify-center">
+                      <Text className="text-xs font-bold text-amber-500 gap-2">{item.coin}</Text>
+                      <CoinIcon width={18} height={18} className="ml-1" />
+                    </View>
+                  </View>
+                )}
               </View>
+              {isSelected && (
+                <View className="absolute top-1 right-1">
+                  <Ionicons className="bg-green-500 rounded-full p-0 bold" name="checkmark" size={18} color="white" fill="white" />
+                </View>
+              )}
             </View>
       
             
@@ -291,7 +147,7 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
 
       <ScrollView 
         className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 20 }}
+        contentContainerStyle={{ paddingHorizontal: 4, paddingVertical: 20 }}
       >
 
         {/* Items */}
@@ -302,10 +158,10 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
 
       <BuddyModal
         visible={showBuddyModal}
-        buddy={selectedBuddy}
+        buddy={selectedBuddyForModal}
         onClose={() => {
           setShowBuddyModal(false);
-          setSelectedBuddy(null);
+          setSelectedBuddyForModal(null);
         }}
       />
     </View>

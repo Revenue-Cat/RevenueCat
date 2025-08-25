@@ -13,9 +13,9 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
   buddy,
   userCoins,
 }) => {
-  const { ownedCharacters, selectedCharacter } = useApp();
-  const isOwned = ownedCharacters.includes(buddy.id);
-  const isSelected = selectedCharacter.id === buddy.id;
+  const { ownedBuddies, selectedBuddyId } = useApp();
+  const isOwned = ownedBuddies?.includes(buddy.id) || false;
+  const isSelected = selectedBuddyId === buddy.id;
 
   // Helper function to render buddy icon
   const renderBuddyIcon = () => {

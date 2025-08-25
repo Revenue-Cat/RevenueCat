@@ -16,14 +16,14 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
   onPurchase,
   onClose,
 }) => {
-  const { ownedCharacters, selectedCharacter, setSelectedCharacter } = useApp();
-  const isOwned = ownedCharacters.includes(buddy.id);
-  const isSelected = selectedCharacter.id === buddy.id;
+  const { ownedBuddies, selectedBuddyId, setSelectedBuddyId } = useApp();
+  const isOwned = ownedBuddies?.includes(buddy.id) || false;
+  const isSelected = selectedBuddyId === buddy.id;
   const canAfford = userCoins >= (buddy.price || 0);
 
   const handleSelect = () => {
     if (isOwned) {
-      setSelectedCharacter(buddy);
+      setSelectedBuddyId(buddy.id);
       onClose();
     }
   };
@@ -47,7 +47,7 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
       {/* Select Button - Only show if owned and not selected */}
       {isOwned && !isSelected && (
         <Pressable 
-          className="w-15 h-15 rounded-2xl justify-center items-center bg-green-600"
+          className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
           onPress={handleSelect}
         >
           <Text className="text-2xl font-bold text-white px-4 py-2">Select</Text>
