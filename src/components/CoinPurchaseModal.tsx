@@ -25,7 +25,7 @@ const CoinPurchaseModal: React.FC = () => {
     setShowCoinPurchase, 
     userCoins, 
     setUserCoins, 
-    selectedCharacter 
+    // selectedCharacter 
   } = useApp();
 
   const coinPackages: CoinPackage[] = [
@@ -43,7 +43,7 @@ const CoinPurchaseModal: React.FC = () => {
     <SlideModal visible={showCoinPurchase} onClose={() => setShowCoinPurchase(false)} title="Get More Buddy Coins">
       <View style={styles.header}>
         <View style={styles.characterContainer}>
-          <Text style={styles.characterEmoji}>{selectedCharacter.emoji}</Text>
+          {/* <Text style={styles.characterEmoji}>{selectedCharacter.emoji}</Text> */}
         </View>
         <View style={styles.coinsDisplay}>
           <Ionicons name="logo-bitcoin" size={16} color="#FFD700" />

@@ -11,6 +11,7 @@ import HomeHeader from '../components/HomeHeader';
 import HomeContent from '../components/HomeContent';
 import AchievementSection from '../components/AchievementSection';
 import AchievementsToggle from '../components/AchievementsToggle';
+import ShopToggle from '../components/ShopToggle';
 import { useHomeNavigation } from '../hooks/useHomeNavigation';
 import { useHomeScroll } from '../hooks/useHomeScroll';
 
@@ -45,6 +46,9 @@ const Home: React.FC<HomeProps> = ({
 
   // Add state for achievements toggle
   const [isExclusiveSelected, setIsExclusiveSelected] = useState(false);
+  
+  // Add state for shop toggle
+  const [isScenesSelected, setIsScenesSelected] = useState(false);
 
   // Use custom hooks for navigation and scroll handling
   const { currentView, handleHeaderGesture, changeView } = useHomeNavigation();
@@ -77,10 +81,11 @@ const Home: React.FC<HomeProps> = ({
   }, [scrollY, currentView]);
 
   // Memoize the buddy image source to prevent recreation
-  const buddyImageSource = useMemo(() => 
-    buddyAssets[selectedBuddyId as BuddyKey][sexKey], 
-    [selectedBuddyId, sexKey]
-  );
+  const buddyImageSource = useMemo(() => {
+    // Extract base buddy key from gender-specific ID (e.g., "alpaca-m" -> "alpaca")
+    const baseBuddyKey = selectedBuddyId.split('-')[0] as BuddyKey;
+    return buddyAssets[baseBuddyKey][sexKey];
+  }, [selectedBuddyId, sexKey]);
 
   // Memoize the coin purchase callback
   const handleCoinPurchase = useCallback(() => {
@@ -103,6 +108,11 @@ const Home: React.FC<HomeProps> = ({
   // Memoize the achievements toggle callback
   const handleSetIsExclusiveSelected = useCallback((isExclusive: boolean) => {
     setIsExclusiveSelected(isExclusive);
+  }, []);
+  
+  // Memoize the shop toggle callback
+  const handleSetIsScenesSelected = useCallback((isScenes: boolean) => {
+    setIsScenesSelected(isScenes);
   }, []);
   
   // Don't render until scroll position is loaded
@@ -155,6 +165,15 @@ const Home: React.FC<HomeProps> = ({
             />
           )}
 
+          {/* Shop Toggle - On top of Buddy Icon */}
+          {currentView === 'shop' && (
+            <ShopToggle
+              scrollY={scrollY}
+              isScenesSelected={isScenesSelected}
+              setIsScenesSelected={handleSetIsScenesSelected}
+            />
+          )}
+
           {/* Scrollable Content */}
           <Animated.ScrollView
               onScroll={handleScroll}
@@ -201,6 +220,8 @@ const Home: React.FC<HomeProps> = ({
               currentView={currentView}
               isAchievementsCollapsed={isAchievementsCollapsed}
               isExclusiveSelected={isExclusiveSelected}
+              isScenesSelected={isScenesSelected}
+              setIsScenesSelected={handleSetIsScenesSelected}
               onShowCravingSOS={handleShowCravingSOS}
               onNavigateToShop={handleNavigateToShop}
             />

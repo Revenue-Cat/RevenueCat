@@ -25,7 +25,7 @@ const ShopDrawer = () => {
     selectedBackground,
     ownedCharacters,
     ownedBackgrounds,
-    ownedAccessories,
+    // ownedAccessories,
     purchaseItem,
     setSelectedCharacter,
     setSelectedBackground,

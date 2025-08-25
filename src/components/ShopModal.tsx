@@ -28,13 +28,12 @@ const ShopModal: React.FC = () => {
     showShop, 
     setShowShop, 
     userCoins, 
-    selectedCharacter,
+    selectedBuddy,
     selectedBackground,
-    ownedCharacters,
+    ownedBuddies,
     ownedBackgrounds,
-    ownedAccessories,
     purchaseItem,
-    setSelectedCharacter,
+    setSelectedBuddy,
     setSelectedBackground,
     selectedShopTab,
     setSelectedShopTab,
@@ -43,15 +42,15 @@ const ShopModal: React.FC = () => {
   
   const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
 
-  const characters = useMemo(() => [
-    { id: "1", emoji: "🦫", name: "Chill Capybara", price: 0, owned: ownedCharacters.includes("1") },
-    { id: "2", emoji: "🐨", name: "Zen Koala", price: 150, owned: ownedCharacters.includes("2") },
-    { id: "3", emoji: "🦥", name: "Slow Sloth", price: 200, owned: ownedCharacters.includes("3") },
-    { id: "4", emoji: "🐧", name: "Cool Penguin", price: 100, owned: ownedCharacters.includes("4") },
-    { id: "5", emoji: "🐼", name: "Panda Bear", price: 200, owned: ownedCharacters.includes("5") },
-    { id: "6", emoji: "🦉", name: "Wise Owl", price: 100, owned: ownedCharacters.includes("6"), isNew: true },
-    { id: "7", emoji: "🦆", name: "Duck Friend", price: 150, owned: ownedCharacters.includes("7"), isNew: true }
-  ], [ownedCharacters]);
+  const buddies = useMemo(() => [
+    { id: "zebra-boy", emoji: "🦓", name: "ZebraBro", price: 0, owned: ownedBuddies.includes("zebra-boy") },
+    { id: "bulldog-boy", emoji: "🐶", name: "SpudDog", price: 150, owned: ownedBuddies.includes("bulldog-boy") },
+    { id: "fox-boy", emoji: "🦊", name: "GingerBoss", price: 200, owned: ownedBuddies.includes("fox-boy") },
+    { id: "llama-boy", emoji: "🦙", name: "Lamburger", price: 100, owned: ownedBuddies.includes("llama-boy") },
+    { id: "koala-boy", emoji: "🐨", name: "Don Snooze", price: 200, owned: ownedBuddies.includes("koala-boy") },
+    { id: "bulldog-girl", emoji: "🐶", name: "SpudQueen", price: 100, owned: ownedBuddies.includes("bulldog-girl") },
+    { id: "llama-girl", emoji: "🦙", name: "Lamazing", price: 150, owned: ownedBuddies.includes("llama-girl") }
+  ], [ownedBuddies]);
 
   const backgrounds = useMemo(() => [
     { id: "default", emoji: "🌅", name: "Default", price: 0, owned: ownedBackgrounds.includes("default") },
@@ -62,16 +61,11 @@ const ShopModal: React.FC = () => {
     { id: "5", emoji: "🌑", name: "Dark", price: 250, owned: ownedBackgrounds.includes("5") }
   ], [ownedBackgrounds]);
 
-  const accessories = useMemo(() => [
-    { id: "1", emoji: "🎩", name: "Top Hat", price: 50, owned: ownedAccessories.includes("1") },
-    { id: "2", emoji: "👓", name: "Glasses", price: 75, owned: ownedAccessories.includes("2") },
-    { id: "3", emoji: "🎪", name: "Party Hat", price: 100, owned: ownedAccessories.includes("3") },
-    { id: "4", emoji: "⚡", name: "Lightning", price: 300, owned: ownedAccessories.includes("4") }
-  ], [ownedAccessories]);
+  // accessories removed in buddies/backgrounds only flow
 
   const handleItemClick = (item: ShopItem) => {
-    if (item.owned && selectedShopTab === 'characters') {
-      setSelectedCharacter(item);
+    if (item.owned && selectedShopTab === 'buddies') {
+      setSelectedBuddy(item);
       setShowShop(false);
       return;
     }
@@ -90,9 +84,9 @@ const ShopModal: React.FC = () => {
     const success = purchaseItem(item, selectedShopTab);
     if (success) {
       setSelectedItem(null);
-      // Auto-select if it's a character or background
-      if (selectedShopTab === 'characters') {
-        setSelectedCharacter(item);
+      // Auto-select if it's a buddy or background
+      if (selectedShopTab === 'buddies') {
+        setSelectedBuddy(item);
       } else if (selectedShopTab === 'backgrounds') {
         setSelectedBackground(item);
       }
@@ -104,10 +98,9 @@ const ShopModal: React.FC = () => {
 
   const getCurrentItems = () => {
     switch (selectedShopTab) {
-      case 'characters': return characters;
+      case 'buddies': return buddies as unknown as ShopItem[];
       case 'backgrounds': return backgrounds;
-      case 'accessories': return accessories;
-      default: return characters;
+      default: return buddies as unknown as ShopItem[];
     }
   };
 
@@ -174,17 +167,17 @@ const ShopModal: React.FC = () => {
 
         <ScrollView style={styles.content}>
           <View style={styles.characterPreview}>
-            <Text style={styles.characterEmoji}>{selectedCharacter.emoji}</Text>
+            <Text style={styles.characterEmoji}>{selectedBuddy?.emoji || '🙂'}</Text>
           </View>
 
           <View style={styles.tabsContainer}>
             <View style={styles.tabs}>
               <Pressable
-                style={[styles.tab, selectedShopTab === 'characters' && styles.tabActive]}
-                onPress={() => setSelectedShopTab('characters')}
+                style={[styles.tab, selectedShopTab === 'buddies' && styles.tabActive]}
+                onPress={() => setSelectedShopTab('buddies')}
               >
-                <Text style={[styles.tabText, selectedShopTab === 'characters' && styles.tabTextActive]}>
-                  Characters
+                <Text style={[styles.tabText, selectedShopTab === 'buddies' && styles.tabTextActive]}>
+                  Buddies
                 </Text>
               </Pressable>
               <Pressable
@@ -195,14 +188,7 @@ const ShopModal: React.FC = () => {
                   Backgrounds
                 </Text>
               </Pressable>
-              <Pressable
-                style={[styles.tab, selectedShopTab === 'accessories' && styles.tabActive]}
-                onPress={() => setSelectedShopTab('accessories')}
-              >
-                <Text style={[styles.tabText, selectedShopTab === 'accessories' && styles.tabTextActive]}>
-                  Accessories
-                </Text>
-              </Pressable>
+              {/* Accessories tab removed */}
             </View>
           </View>
 
