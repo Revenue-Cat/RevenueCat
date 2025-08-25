@@ -396,7 +396,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                     progress={isRegularAchievement(achievement.id) ? progressPercentage : 0}
                     size={75}
                     strokeWidth={3}
-                    color={isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100 ? '#22C55E' : '#6B7280'}
+                    color={isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100 ? '#22C55E' : 'transparent'}
                     // borderColor={!(isRegularAchievement(achievement.id) && (isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100)) ? '#374151' : 'transparent'}
                   />
                   

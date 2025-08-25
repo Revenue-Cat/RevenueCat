@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import ProgressRing from './ProgressRing';
 
 const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
 const LockIcon = require('../assets/achievements/lock.png');
@@ -20,48 +21,6 @@ interface AchievementCardProps {
   isRegularAchievement?: boolean;
 }
 
-// Simple Progress Ring Component
-const ProgressRing: React.FC<{ progress: number; size: number; strokeWidth: number; color: string }> = ({
-  progress,
-  size,
-  strokeWidth,
-  color
-}) => {
-  return (
-    <View style={{ width: size, height: size, position: 'relative' }}>
-      {/* Background circle */}
-      <View
-        style={{
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          borderWidth: strokeWidth,
-          borderColor: '#374151',
-          position: 'absolute',
-        }}
-      />
-
-      {/* Progress indicator - simple border approach */}
-      {progress > 0 && (
-        <View
-          style={{
-            width: size,
-            height: size,
-            borderRadius: size / 2,
-            borderWidth: strokeWidth,
-            borderColor: color,
-            borderTopColor: progress > 0 ? color : 'transparent',
-            borderRightColor: progress > 25 ? color : 'transparent',
-            borderBottomColor: progress > 50 ? color : 'transparent',
-            borderLeftColor: progress > 75 ? color : 'transparent',
-            position: 'absolute',
-            transform: [{ rotate: '-90deg' }],
-          }}
-        />
-      )}
-    </View>
-  );
-};
 
 const AchievementCard: React.FC<AchievementCardProps> = ({
   title,
@@ -91,9 +50,10 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
         {isRegularAchievement && (
           <ProgressRing
             progress={progressPercentage}
-            size={60}
+            size={80}
             strokeWidth={3}
-            color={isFirstThree || progressPercentage === 100 ? '#22C55E' : '#6B7280'}
+            color={ '#22C55E'}
+            borderColor={'#d7d9df'}
           />
         )}
         
@@ -106,7 +66,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
                 // First 3 achievements OR 100% progress: show achievement icon and green progress
                 <>
                   {icon ? (
-                    <Image source={icon} className='w-[64px] h-[64px]' resizeMode="stretch" />
+                    <Image source={icon} className='w-[88px] h-[88px]' resizeMode="stretch" />
                   ) : (
                     <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
                   )}
