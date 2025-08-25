@@ -3,11 +3,14 @@ import { View, Text, Pressable } from 'react-native';
 import HomeStats from './HomeStats';
 import Challenges from '../screens/Challenges';
 import Achievements from '../screens/Achievements';
+import Shop from '../screens/Shop';
 
 interface HomeContentProps {
   currentView: 'home' | 'achievements' | 'shop';
   isAchievementsCollapsed: boolean;
   isExclusiveSelected: boolean;
+  isScenesSelected: boolean;
+  setIsScenesSelected: (isScenes: boolean) => void;
   onShowCravingSOS: () => void;
   onNavigateToShop: () => void;
 }
@@ -16,6 +19,8 @@ const HomeContent: React.FC<HomeContentProps> = ({
   currentView,
   isAchievementsCollapsed,
   isExclusiveSelected,
+  isScenesSelected,
+  setIsScenesSelected,
   onShowCravingSOS,
   onNavigateToShop
 }) => {
@@ -42,15 +47,11 @@ const HomeContent: React.FC<HomeContentProps> = ({
       )}
 
       {currentView === 'shop' && (
-        <View className="items-center py-8">
-          <Text className="text-white text-lg mb-4">Shop Preview</Text>
-          <Pressable 
-            className="bg-green-500 rounded-xl px-6 py-3"
-            onPress={onNavigateToShop}
-          >
-            <Text className="text-white font-bold">Open Shop</Text>
-          </Pressable>
-        </View>
+        <Shop 
+          onBack={() => {}} 
+          isScenesSelected={isScenesSelected}
+          setIsScenesSelected={setIsScenesSelected}
+        />
       )}
     </View>
   );

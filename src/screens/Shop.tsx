@@ -1,26 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   Pressable,
   ScrollView,
-  StyleSheet,
   Dimensions,
   Alert,
   Animated,
+  Image
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
-import ParallaxBackground from '../components/ParallaxBackground';
 import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
+import { BUDDIES_DATA } from '../data/buddiesData';
+import BuddyModal from '../components/BuddyModal';
 
 const { width } = Dimensions.get('window');
 
 interface ShopProps {
   onBack: () => void;
+  isScenesSelected: boolean;
+  setIsScenesSelected: (isScenes: boolean) => void;
 }
 
-const Shop: React.FC<ShopProps> = ({ onBack }) => {
+const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelected }) => {
   const {
     userCoins,
     selectedCharacter,
@@ -36,115 +39,244 @@ const Shop: React.FC<ShopProps> = ({ onBack }) => {
     gender,
   } = useApp();
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
-  const scrollY = new Animated.Value(0);
+  
+  const [selectedBuddy, setSelectedBuddy] = useState<any>(null);
+  const [showBuddyModal, setShowBuddyModal] = useState(false);
 
-  const [selectedTab, setSelectedTab] = useState<'characters' | 'backgrounds' | 'accessories'>('characters');
 
-  const characters = [
-    { id: "1", emoji: "🦫", name: "Chill Capybara", price: 0, owned: true },
-    { id: "2", emoji: "🐨", name: "Zen Koala", price: 150, owned: false },
-    { id: "3", emoji: "🦥", name: "Slow Sloth", price: 200, owned: false },
-    { id: "4", emoji: "🐧", name: "Cool Penguin", price: 100, owned: false },
-    { id: "5", emoji: "🐼", name: "Panda Bear", price: 200, owned: false },
-    { id: "6", emoji: "🦉", name: "Wise Owl", price: 100, owned: false },
-    { id: "7", emoji: "🦆", name: "Duck Friend", price: 150, owned: false },
+
+
+
+  // Buddies data with multi-language support
+  const buddies = [
+    {
+      id: "zebra-boy",
+      emoji: "🦓",
+      name: "Зебра",
+      gender: "👦",
+      genderType: "Хлопчик",
+      ukName: "ЗеброБро",
+      enName: "ZebraBro",
+      esName: "CebraCompas",
+      ukDescription: "«Біжи зі мною, і ми залишимо дим позаду швидше, ніж він встигне нас наздогнати.»",
+      enDescription: "Run with me, and we'll leave smoke behind faster than it can catch us.",
+      esDescription: "Corre conmigo y dejaremos el humo atrás antes de que pueda alcanzarnos.",
+      price: 150,
+      owned: false,
+      type: 'character'
+    },
+    {
+      id: "bulldog-boy",
+      emoji: "🐶",
+      name: "Бульдог",
+      gender: "👦",
+      genderType: "Хлопчик",
+      ukName: "БульбаДог",
+      enName: "SpudDog",
+      esName: "PerroPapa",
+      ukDescription: "«Тримайся поруч — ми здолаємо дим швидше, ніж він думає.»",
+      enDescription: "Stick with me — we'll beat smoke faster than it thinks.",
+      esDescription: "Quédate cerca: venceremos al humo más rápido de lo que cree.",
+      price: 200,
+      owned: false,
+      type: 'character'
+    },
+    {
+      id: "fox-boy",
+      emoji: "🦊",
+      name: "Лис",
+      gender: "👦",
+      genderType: "Хлопчик",
+      ukName: "Рижобосс",
+      enName: "GingerBoss",
+      esName: "JefeZorro",
+      ukDescription: "«З двома розумними головами дим не матиме жодного шансу — ми кинемо вдвічі швидше.»",
+      enDescription: "With two clever heads, smoke stands no chance — we'll quit twice as fast.",
+      esDescription: "Con dos cabezas listas, el humo no tendrá ninguna oportunidad: dejaremos el vicio el doble de rápido.",
+      price: 250,
+      owned: false,
+      type: 'character'
+    },
+    {
+      id: "llama-boy",
+      emoji: "🦙",
+      name: "Лама",
+      gender: "👦",
+      genderType: "Хлопчик",
+      ukName: "Ламбургер",
+      enName: "Lamburger",
+      esName: "Lamburguesa",
+      ukDescription: "«Піднімайся зі мною — і ми швидше, ніж думаємо, дістанемося вершини без диму.»",
+      enDescription: "Climb with me — and we'll reach the smoke-free top faster than we think.",
+      esDescription: "Sube conmigo: alcanzaremos la cima sin humo más rápido de lo que creemos.",
+      price: 175,
+      owned: false,
+      type: 'character'
+    },
+    {
+      id: "koala-boy",
+      emoji: "🐨",
+      name: "Коала",
+      gender: "👦",
+      genderType: "Хлопчик",
+      ukName: "ДонСон",
+      enName: "Don Snooze",
+      esName: "Don Siesta",
+      ukDescription: "«Обійми життя зі мною — і ми струснемо дим швидше, ніж він вчепиться.»",
+      enDescription: "Embrace life with me — and we'll shake off smoke faster than it can cling.",
+      esDescription: "Abraza la vida conmigo y sacudiremos el humo antes de que se aferre.",
+      price: 125,
+      owned: false,
+      type: 'character'
+    },
+    {
+      id: "bulldog-girl",
+      emoji: "🐶",
+      name: "Бульдог",
+      gender: "👧",
+      genderType: "Дівчинка",
+      ukName: "БульбаКвін",
+      enName: "SpudQueen",
+      esName: "ReinaPapa",
+      ukDescription: "«Разом ми сяємо яскравіше, і кидати дим стане легше й швидше.»",
+      enDescription: "Together we shine brighter, and quitting smoke gets easier and faster.",
+      esDescription: "Juntas brillamos más, y dejar el humo será más fácil y rápido.",
+      price: 200,
+      owned: false,
+      type: 'character'
+    },
+    {
+      id: "llama-girl",
+      emoji: "🦙",
+      name: "Лама",
+      gender: "👧",
+      genderType: "Дівчинка",
+      ukName: "Ламурка",
+      enName: "Lamazing",
+      esName: "Lamuriosa",
+      ukDescription: "«Пліч-о-пліч ми вдихнемо свіже повітря і виженемо дим за мить.»",
+      enDescription: "Side by side we'll breathe fresh air and chase smoke away in no time.",
+      esDescription: "Hombro a hombro respiraremos aire fresco y echaremos el humo en un instante.",
+      price: 175,
+      owned: false,
+      type: 'character'
+    },
+    {
+      id: "fox-girl",
+      emoji: "🦊",
+      name: "Лисиця",
+      gender: "👧",
+      genderType: "Дівчинка",
+      ukName: "ФоксіБоссі",
+      enName: "FoxyBossy",
+      esName: "JefaZorra",
+      ukDescription: "«Перехитрімо дим разом — удвох ми швидко закінчимо цю гру.»",
+      enDescription: "Let's outsmart smoke together — the two of us will finish this game fast.",
+      esDescription: "Engañemos al humo juntas: las dos acabaremos este juego rápido.",
+      price: 250,
+      owned: false,
+      type: 'character'
+    },
+    {
+      id: "koala-girl",
+      emoji: "🐨",
+      name: "Коала",
+      gender: "👧",
+      genderType: "Дівчинка",
+      ukName: "СоняЛав",
+      enName: "NapCutie",
+      esName: "SiestaAmor",
+      ukDescription: "«Разом ми знайдемо спокій — і покинемо дим набагато швидше.»",
+      enDescription: "Together we'll find peace — and leave smoke far behind much faster.",
+      esDescription: "Juntas encontraremos la calma y dejaremos el humo mucho más rápido.",
+      price: 125,
+      owned: false,
+      type: 'character'
+    },
+    {
+      id: "zebra-girl",
+      emoji: "🦓",
+      name: "Зебра",
+      gender: "👧",
+      genderType: "Дівчинка",
+      ukName: "ЧорноБілка",
+      enName: "Zebrabelle",
+      esName: "Zebrita",
+      ukDescription: "«Якщо ми мріятимемо пліч-о-пліч, дим зникне вдвічі швидше.»",
+      enDescription: "If we dream side by side, smoke will disappear twice as fast.",
+      esDescription: "Si soñamos lado a lado, el humo desaparecerá el doble de rápido.",
+      price: 150,
+      owned: false,
+      type: 'character'
+    }
   ];
 
-  const backgrounds = [
+  // Scenes data - backgrounds only
+  const scenes = [
     { id: "default", emoji: "🌅", name: "Default", price: 0, owned: true },
     { id: "1", emoji: "🌅", name: "Sunset", price: 50, owned: false },
     { id: "2", emoji: "🌊", name: "Ocean", price: 100, owned: false },
     { id: "3", emoji: "🌲", name: "Forest", price: 150, owned: false },
     { id: "4", emoji: "💜", name: "Purple", price: 200, owned: false },
     { id: "5", emoji: "🌑", name: "Dark", price: 250, owned: false },
+    { id: "6", emoji: "🌸", name: "Cherry Blossom", price: 175, owned: false },
+    { id: "7", emoji: "🏔️", name: "Mountain", price: 225, owned: false },
+    { id: "8", emoji: "🌆", name: "City", price: 125, owned: false },
   ];
 
-  const accessories = [
-    { id: "1", emoji: "🎩", name: "Top Hat", price: 75, owned: false },
-    { id: "2", emoji: "👓", name: "Sunglasses", price: 50, owned: false },
-    { id: "3", emoji: "🎀", name: "Bow Tie", price: 25, owned: false },
-    { id: "4", emoji: "💍", name: "Ring", price: 100, owned: false },
-    { id: "5", emoji: "👜", name: "Bag", price: 125, owned: false },
-    { id: "6", emoji: "👑", name: "Crown", price: 300, owned: false },
-  ];
 
-  const handlePurchase = (item: any, category: 'characters' | 'backgrounds' | 'accessories') => {
-    const isOwned = category === 'characters' 
-      ? ownedCharacters.includes(item.id)
-      : category === 'backgrounds'
-      ? ownedBackgrounds.includes(item.id)
-      : ownedAccessories.includes(item.id);
 
-    if (isOwned) {
-      Alert.alert('Already Owned', `${item.name} is already in your collection!`);
-      return;
-    }
-
-    if (userCoins < item.price) {
-      Alert.alert('Insufficient Coins', `You need ${item.price - userCoins} more coins to purchase ${item.name}.`);
-      setShowCoinPurchase(true);
-      return;
-    }
-
-    const success = purchaseItem(item, category);
-    if (success) {
-      Alert.alert('Purchase Successful', `${item.name} has been added to your collection!`);
-    } else {
-      Alert.alert('Purchase Failed', 'Something went wrong. Please try again.');
-    }
-  };
-
-  const handleSelect = (item: any, category: 'characters' | 'backgrounds' | 'accessories') => {
-    const isOwned = category === 'characters' 
-      ? ownedCharacters.includes(item.id)
-      : category === 'backgrounds'
-      ? ownedBackgrounds.includes(item.id)
-      : ownedAccessories.includes(item.id);
-
-    if (!isOwned) {
-      handlePurchase(item, category);
-      return;
-    }
-
-    if (category === 'characters') {
-      setSelectedCharacter({...item, owned: true});
-    } else if (category === 'backgrounds') {
-      setSelectedBackground({...item, owned: true});
-    }
-  };
-
-  const renderItems = (items: any[], category: 'characters' | 'backgrounds' | 'accessories') => (
-    <View style={styles.itemsGrid}>
-      {items.map((item) => {
-        const isOwned = category === 'characters' 
-          ? ownedCharacters.includes(item.id)
-          : category === 'backgrounds'
-          ? ownedBackgrounds.includes(item.id)
-          : ownedAccessories.includes(item.id);
+  const renderBuddiesGrid = () => (
+    <View className="w-full -mx-1 -my-1 flex-row flex-wrap">
+      {BUDDIES_DATA.map((item) => {
+        const isOwned = ownedCharacters.includes(item.id);
+        const isSelected = selectedCharacter.id === item.id;
         
-        const isSelected = category === 'characters'
-          ? selectedCharacter.id === item.id
-          : category === 'backgrounds'
-          ? selectedBackground.id === item.id
-          : false;
+        return (
+          <Pressable
+            key={item.id}
+            className={`w-1/4 px-1 py-1`}
+            onPress={() => {
+              setSelectedBuddy(item);
+              setShowBuddyModal(true);
+            }}
+          >
+            <View className={`items-center bg-white/10 rounded-xl p-2 relative ${
+              isSelected ? 'bg-white/20 border-2 border-white' : ''
+            } ${isOwned && !isSelected ? 'bg-white/15' : ''}`}>
+              <View className="w-[80px] h-[80px] overflow-hidden">
+                <Image source={item.icon} className='w-[80px] h-[110px]' resizeMode="contain" />
+              </View>
+            </View>
+      
+            
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+
+  const renderScenesGrid = () => (
+    <View className="flex-row flex-wrap gap-2">
+      {scenes.map((item) => {
+        const isOwned = ownedBackgrounds.includes(item.id);
+        const isSelected = selectedBackground.id === item.id;
 
         return (
           <Pressable
             key={item.id}
-            style={[
-              styles.itemCard,
-              isSelected && styles.selectedItemCard,
-              isOwned && !isSelected && styles.ownedItemCard
-            ]}
-            onPress={() => handleSelect(item, category)}
+            className={`w-[${(width - 80) / 4}px] bg-white/10 rounded-xl p-3 items-center relative ${
+              isSelected ? 'bg-white/20 border-2 border-white' : ''
+            } ${isOwned && !isSelected ? 'bg-white/15' : ''}`}
+            // onPress={() => handleSelect(item, 'backgrounds')}
           >
-            <Text style={styles.itemEmoji}>{item.emoji}</Text>
-            <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemPrice}>
+            <Text className="text-2xl mb-1.5">{item.emoji}</Text>
+            <Text className="text-xs font-bold text-white mb-0.5 text-center">{item.name}</Text>
+            <Text className="text-[10px] text-white/70 text-center">
               {isOwned ? (isSelected ? 'Selected' : 'Owned') : item.price === 0 ? 'Free' : `${item.price} coins`}
             </Text>
             {isSelected && (
-              <View style={styles.selectedBadge}>
+              <View className="absolute top-2 right-2">
                 <Ionicons name="checkmark-circle" size={16} color="#000000" />
               </View>
             )}
@@ -155,230 +287,29 @@ const Shop: React.FC<ShopProps> = ({ onBack }) => {
   );
 
   return (
-    <View style={styles.container}>
-      {/* Header with ParallaxBackground */}
-      <View style={{ height: 330 }}>
-        <ParallaxBackground scrollY={scrollY} height={330} />
-        
-        {/* Header - On top of ParallaxBackground */}
-        <View style={styles.headerOverlay}>
-          <View style={styles.header}>
-            <Pressable style={styles.backButton} onPress={onBack}>
-              <Ionicons name="arrow-back" size={24} color="#ffffff" />
-            </Pressable>
-            <Text style={styles.titleOverlay}>Shop</Text>
-            <Pressable 
-              style={styles.coinsButton}
-              onPress={() => setShowCoinPurchase(true)}
-            >
-              <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-              <Text style={styles.coinsTextOverlay}>{userCoins}</Text>
-            </Pressable>
-          </View>
-        </View>
+    <View className="flex-1 bg-[#1F1943]">
 
-        {/* Buddy Icon */}
-        <Animated.View style={styles.buddyContainer}>
-          <Animated.Image
-            source={buddyAssets[selectedBuddyId as BuddyKey][sexKey]}
-            style={styles.buddyImage}
-            resizeMode="contain"
-          />
-        </Animated.View>
-      </View>
-
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-
-        {/* Tabs */}
-        <View style={styles.tabsContainer}>
-          <View style={styles.tabs}>
-            <Pressable
-              style={[styles.tab, selectedTab === 'characters' && styles.tabActive]}
-              onPress={() => setSelectedTab('characters')}
-            >
-              <Text style={[styles.tabText, selectedTab === 'characters' && styles.tabTextActive]}>
-                Characters
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.tab, selectedTab === 'backgrounds' && styles.tabActive]}
-              onPress={() => setSelectedTab('backgrounds')}
-            >
-              <Text style={[styles.tabText, selectedTab === 'backgrounds' && styles.tabTextActive]}>
-                Backgrounds
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.tab, selectedTab === 'accessories' && styles.tabActive]}
-              onPress={() => setSelectedTab('accessories')}
-            >
-              <Text style={[styles.tabText, selectedTab === 'accessories' && styles.tabTextActive]}>
-                Accessories
-              </Text>
-            </Pressable>
-          </View>
-        </View>
+      <ScrollView 
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 20 }}
+      >
 
         {/* Items */}
-        <View style={styles.itemsContainer}>
-          {selectedTab === 'characters' && renderItems(characters, 'characters')}
-          {selectedTab === 'backgrounds' && renderItems(backgrounds, 'backgrounds')}
-          {selectedTab === 'accessories' && renderItems(accessories, 'accessories')}
+        <View className="flex-1">
+          {!isScenesSelected ? renderBuddiesGrid() : renderScenesGrid()}
         </View>
       </ScrollView>
+
+      <BuddyModal
+        visible={showBuddyModal}
+        buddy={selectedBuddy}
+        onClose={() => {
+          setShowBuddyModal(false);
+          setSelectedBuddy(null);
+        }}
+      />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1F1943',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingVertical: 20,
-  },
-  headerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    padding: 24,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  titleOverlay: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  coinsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 8,
-  },
-  coinsTextOverlay: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  buddyContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    zIndex: 99,
-  },
-  buddyImage: {
-    width: 100,
-    height: 220,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  coinsText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  tabsContainer: {
-    marginBottom: 24,
-  },
-  tabs: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  tabActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  tabTextActive: {
-    color: '#ffffff',
-    fontWeight: 'bold',
-  },
-  itemsContainer: {
-    flex: 1,
-  },
-  itemsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  itemCard: {
-    width: (width - 72) / 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    position: 'relative',
-  },
-  selectedItemCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderWidth: 2,
-    borderColor: '#ffffff',
-  },
-  ownedItemCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  itemEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  itemName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  itemPrice: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.7)',
-    textAlign: 'center',
-  },
-  selectedBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-  },
-});
 
 export default Shop; 
