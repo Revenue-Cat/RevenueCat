@@ -18,8 +18,6 @@ import Shop from "./src/screens/Shop";
 import CravingSOS from "./src/screens/CravingSOS";
 import BreathingExercise from "./src/screens/BreathingExercise";
 import ChatAssistance from "./src/screens/ChatAssistance";
-import CoinPurchaseModal from "./src/components/CoinPurchaseModal";
-import ShopModal from "./src/components/ShopModal";
 import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 import { Platform } from 'react-native';
 
@@ -167,10 +165,10 @@ const AppContent: React.FC = () => {
         </Modal>
 
         {/* Coin Purchase Modal */}
-        <CoinPurchaseModal />
+        {/* <CoinPurchaseModal /> */}
 
         {/* Shop Modal */}
-        <ShopModal />
+        {/* <ShopModal /> */}
       </SafeAreaView>
     </AppProvider>
   );

@@ -11,6 +11,7 @@ import HomeHeader from '../components/HomeHeader';
 import HomeContent from '../components/HomeContent';
 import AchievementSection from '../components/AchievementSection';
 import AchievementsToggle from '../components/AchievementsToggle';
+import ShopToggle from '../components/ShopToggle';
 import { useHomeNavigation } from '../hooks/useHomeNavigation';
 import { useHomeScroll } from '../hooks/useHomeScroll';
 
@@ -37,6 +38,7 @@ const Home: React.FC<HomeProps> = ({
     userCoins,
     setShowCoinPurchase,
     selectedBuddyId,
+    selectedBackground,
     gender,
     startDate,
   } = useApp();
@@ -45,6 +47,9 @@ const Home: React.FC<HomeProps> = ({
 
   // Add state for achievements toggle
   const [isExclusiveSelected, setIsExclusiveSelected] = useState(false);
+  
+  // Add state for shop toggle
+  const [isScenesSelected, setIsScenesSelected] = useState(false);
 
   // Use custom hooks for navigation and scroll handling
   const { currentView, handleHeaderGesture, changeView } = useHomeNavigation();
@@ -77,10 +82,29 @@ const Home: React.FC<HomeProps> = ({
   }, [scrollY, currentView]);
 
   // Memoize the buddy image source to prevent recreation
-  const buddyImageSource = useMemo(() => 
-    buddyAssets[selectedBuddyId as BuddyKey][sexKey], 
-    [selectedBuddyId, sexKey]
-  );
+  const buddyImageSource = useMemo(() => {
+    // Extract base buddy key from gender-specific ID (e.g., "alpaca-m" -> "alpaca")
+    const baseBuddyKey = selectedBuddyId.split('-')[0] as BuddyKey;
+    return buddyAssets[baseBuddyKey][sexKey];
+  }, [selectedBuddyId, sexKey]);
+
+  // Helper function to parse gradient string and return colors
+  const parseGradient = useCallback((gradientString: string): [string, string] => {
+    console.log('Parsing gradient:', gradientString);
+    // Extract colors from linear-gradient string - handle both formats
+    const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
+    console.log('Color match:', colorMatch);
+    if (colorMatch && colorMatch.length >= 2) {
+      return [colorMatch[0], colorMatch[1]]; // Return first two colors
+    }
+    // Fallback: try to extract any hex colors
+    const fallbackMatch = gradientString.match(/#[A-Fa-f0-9]{3,6}/g);
+    if (fallbackMatch && fallbackMatch.length >= 2) {
+      return [fallbackMatch[0], fallbackMatch[1]];
+    }
+    console.log('Using fallback colors');
+    return ['#1F1943', '#4E3EA9']; // Default fallback
+  }, []);
 
   // Memoize the coin purchase callback
   const handleCoinPurchase = useCallback(() => {
@@ -105,6 +129,11 @@ const Home: React.FC<HomeProps> = ({
     setIsExclusiveSelected(isExclusive);
   }, []);
   
+  // Memoize the shop toggle callback
+  const handleSetIsScenesSelected = useCallback((isScenes: boolean) => {
+    setIsScenesSelected(isScenes);
+  }, []);
+  
   // Don't render until scroll position is loaded
   if (!isInitialized) {
     return (
@@ -114,8 +143,12 @@ const Home: React.FC<HomeProps> = ({
     );
   }
 
+  const gradientColors = parseGradient(selectedBackground.backgroundColor);
+  console.log('Gradient colors:', gradientColors);
+  
+  // Temporary fallback to test if LinearGradient is the issue
   return (
-    <View className="flex-1 bg-[#1F1943] absolute inset-0">
+    <View className="flex-1 absolute inset-0" style={{ backgroundColor: gradientColors[0] }}>
       {/* Full Screen PanGestureHandler for left/right navigation */}
       <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[1000]">
@@ -155,6 +188,15 @@ const Home: React.FC<HomeProps> = ({
             />
           )}
 
+          {/* Shop Toggle - On top of Buddy Icon */}
+          {currentView === 'shop' && (
+            <ShopToggle
+              scrollY={scrollY}
+              isScenesSelected={isScenesSelected}
+              setIsScenesSelected={handleSetIsScenesSelected}
+            />
+          )}
+
           {/* Scrollable Content */}
           <Animated.ScrollView
               onScroll={handleScroll}
@@ -185,10 +227,12 @@ const Home: React.FC<HomeProps> = ({
           >
             {/* Achievement Cards - Dynamic height */}
             {currentView === 'home' && (
-              <View style={{ 
-                marginTop: 0, 
-                backgroundColor: "#1F1943"
-              }}>
+              <View
+                style={{ 
+                  marginTop: 0,
+                  backgroundColor: gradientColors[0]
+                }}
+              >
                 <AchievementSection
                   isCollapsed={isAchievementsCollapsed}
                   onToggle={toggleAchievements}
@@ -201,6 +245,8 @@ const Home: React.FC<HomeProps> = ({
               currentView={currentView}
               isAchievementsCollapsed={isAchievementsCollapsed}
               isExclusiveSelected={isExclusiveSelected}
+              isScenesSelected={isScenesSelected}
+              setIsScenesSelected={handleSetIsScenesSelected}
               onShowCravingSOS={handleShowCravingSOS}
               onNavigateToShop={handleNavigateToShop}
             />

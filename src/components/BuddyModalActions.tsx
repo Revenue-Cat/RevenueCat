@@ -1,0 +1,75 @@
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useApp } from '../contexts/AppContext';
+
+interface BuddyModalActionsProps {
+  buddy: any;
+  userCoins: number;
+  onPurchase: () => void;
+  onClose: () => void;
+}
+
+const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
+  buddy,
+  userCoins,
+  onPurchase,
+  onClose,
+}) => {
+  const { ownedBuddies, selectedBuddyId, setSelectedBuddyId } = useApp();
+  const isOwned = ownedBuddies?.includes(buddy.id) || false;
+  const isSelected = selectedBuddyId === buddy.id;
+  const canAfford = userCoins >= (buddy.price || 0);
+
+  const handleSelect = () => {
+    if (isOwned) {
+      setSelectedBuddyId(buddy.id);
+      onClose();
+    }
+  };
+
+  const handlePurchase = () => {
+    if (canAfford && !isOwned) {
+      onPurchase();
+      onClose();
+    }
+  };
+
+  return (
+    <View className="my-6 flex-row justify-center gap-4">
+      {/* Close Button */}
+       <Pressable 
+        className="w-15 h-15 rounded-2xl justify-center items-center bg-indigo-50"
+        onPress={onClose}
+      >
+        <Text className="text-2xl rounded-2xl px-4 py-2 font-bold text-indigo-900 bg-indigo-50">✕</Text>
+      </Pressable>
+      {/* Select Button - Only show if owned and not selected */}
+      {isOwned && !isSelected && (
+        <Pressable 
+          className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
+          onPress={handleSelect}
+        >
+          <Text className="text-2xl font-bold text-white px-4 py-2">Select</Text>
+        </Pressable>
+      )}
+
+      {/* Purchase Button - Only show if not owned */}
+      {!isOwned && (
+        <Pressable 
+          className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
+          onPress={handlePurchase}
+          disabled={!canAfford}
+        >
+          <Text className="text-2xl font-bold text-white px-4 py-2">
+            {canAfford ? `Buy for ${buddy.coin}` : 'Need Coins'}
+          </Text>
+        </Pressable>
+      )}
+
+  
+    </View>
+  );
+};
+
+export default BuddyModalActions;

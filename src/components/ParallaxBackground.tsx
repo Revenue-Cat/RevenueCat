@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 import { View, Animated } from 'react-native';
+import { useApp } from '../contexts/AppContext';
+import { SCENES_DATA } from '../data/scenesData';
 
 interface ParallaxBackgroundProps {
   scrollY: Animated.Value;
@@ -12,6 +14,17 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   height = 300,
   children
 }) => {
+  const { selectedBackground } = useApp();
+  const currentScene = useMemo(() => {
+    return SCENES_DATA.find(s => s.id === selectedBackground.id) || SCENES_DATA[0];
+  }, [selectedBackground.id]);
+
+  const parallaxSlices = currentScene.parallaxSlices || {
+    slice1: require('../assets/backgrounds/parallax/slice1.png'),
+    slice2: require('../assets/backgrounds/parallax/slice2.png'),
+    slice3: require('../assets/backgrounds/parallax/slice3.png'),
+    slice4: require('../assets/backgrounds/parallax/slice4.png'),
+  } as const;
   // Floating animation values
   const floatAnim1 = useRef(new Animated.Value(0)).current;
   const floatAnim2 = useRef(new Animated.Value(0)).current;
@@ -112,10 +125,10 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {/* Background Layer 4 - Furthest back (fastest) */}
       <Animated.View className="absolute top-0 left-0 right-0" style={{ zIndex: 40 }}>
         <Animated.Image
-          source={require('../assets/backgrounds/parallax/slice4.png')}
+          source={parallaxSlices.slice4}
           style={{ 
             width: '100%', 
-            height: 400,
+            height: 370,
             transform: layer4Transform
           }}
           resizeMode="cover"
@@ -125,7 +138,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {/* Background Layer 3 - Third layer */}
       <Animated.View className="absolute top-0 left-0 right-0" style={{ zIndex: 30 }}>
         <Animated.Image
-          source={require('../assets/backgrounds/parallax/slice3.png')}
+          source={parallaxSlices.slice3}
           style={{ 
             width: '100%', 
             height: 350,
@@ -138,7 +151,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {/* Background Layer 2 - Second layer */}
       <Animated.View className="absolute top-0 left-0 right-0" style={{ zIndex: 20 }}>
         <Animated.Image
-          source={require('../assets/backgrounds/parallax/slice2.png')}
+          source={parallaxSlices.slice2}
           style={{ 
             width: '100%', 
             height: 325,
@@ -151,7 +164,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {/* Background Layer 1 - Front layer (slowest) */}
       <Animated.View className="absolute top-0 left-0 right-0" style={{ zIndex: 10 }}>
         <Animated.Image
-          source={require('../assets/backgrounds/parallax/slice1.png')}
+          source={parallaxSlices.slice1}
           style={{ 
             width: '100%', 
             height: 320,

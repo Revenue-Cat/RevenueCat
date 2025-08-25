@@ -1,10 +1,30 @@
 import React from 'react';
 import { View, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useApp } from '../contexts/AppContext';
 
 const ComingSoon: React.FC = () => {
+  const { selectedBackground } = useApp();
+  
+  // Helper function to parse gradient string and return colors
+  const parseGradient = (gradientString: string): [string, string] => {
+    // Extract colors from linear-gradient string - handle both formats
+    const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
+    if (colorMatch && colorMatch.length >= 2) {
+      return [colorMatch[0], colorMatch[1]]; // Return first two colors
+    }
+    // Fallback: try to extract any hex colors
+    const fallbackMatch = gradientString.match(/#[A-Fa-f0-9]{3,6}/g);
+    if (fallbackMatch && fallbackMatch.length >= 2) {
+      return [fallbackMatch[0], fallbackMatch[1]];
+    }
+    return ['#1F1943', '#4E3EA9']; // Default fallback
+  };
+  
+  const gradientColors = parseGradient(selectedBackground.backgroundColor);
+  
   return (
-    <View className="flex-1 justify-center items-center bg-[#1F1943] px-6">
+    <View className="flex-1 justify-center items-center px-6" style={{ backgroundColor: gradientColors[0] }}>
       {/* Background decorative elements */}
       <View className="absolute top-20 left-10 opacity-20">
         <Ionicons name="star" size={40} color="#8B5CF6" />
