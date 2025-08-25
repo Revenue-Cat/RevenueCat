@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
+import { useTheme } from '../contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 interface CountdownTimerProps {
   targetDate: Date;
@@ -14,10 +16,18 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   targetDate,
   onComplete,
   showSeconds = false,
-  textColor = 'text-indigo-950',
+  textColor,
   textSize = 'lg',
   countUp = false
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const { t } = useTranslation();
+  
+  // Default text color based on theme if not provided
+  const defaultTextColor = isDark ? 'text-slate-100' : 'text-indigo-950';
+  const finalTextColor = textColor || defaultTextColor;
+  
   const [timeRemaining, setTimeRemaining] = useState({
     days: 0,
     hours: 0,
@@ -111,42 +121,42 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
     <View className="flex-row gap-1">
       {/* Days */}
       <View className="items-center">
-        <Text className={`${getTextSizeClass()} font-semibold ${textColor} leading-9 text-center`}>
+        <Text className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}>
           {timeRemaining.days.toString().padStart(2, '0')}
         </Text>
-        <Text className={`${getLabelSizeClass()} font-medium ${textColor}/50 leading-4 text-center`}>
-          Days
+        <Text className={`${getLabelSizeClass()} font-medium ${finalTextColor} opacity-50 leading-4 text-center`}>
+          {t('countdownTimer.days')}
         </Text>
       </View>
       
       {/* Hours */}
       <View className="items-center">
-        <Text className={`${getTextSizeClass()} font-semibold ${textColor} leading-9 text-center`}>
+        <Text className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}>
           {timeRemaining.hours.toString().padStart(2, '0')}
         </Text>
-        <Text className={`${getLabelSizeClass()} font-medium ${textColor}/50 leading-4 text-center`}>
-          Hours
+        <Text className={`${getLabelSizeClass()} font-medium ${finalTextColor} opacity-50 leading-4 text-center`}>
+          {t('countdownTimer.hours')}
         </Text>
       </View>
       
       {/* Minutes */}
       <View className="items-center">
-        <Text className={`${getTextSizeClass()} font-semibold ${textColor} leading-9 text-center`}>
+        <Text className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}>
           {timeRemaining.minutes.toString().padStart(2, '0')}
         </Text>
-        <Text className={`${getLabelSizeClass()} font-medium ${textColor}/50 leading-4 text-center`}>
-          Minutes
+        <Text className={`${getLabelSizeClass()} font-medium ${finalTextColor} opacity-50 leading-4 text-center`}>
+          {t('countdownTimer.minutes')}
         </Text>
       </View>
 
       {/* Seconds (optional) */}
       {showSeconds && (
         <View className="items-center">
-          <Text className={`${getTextSizeClass()} font-semibold ${textColor} leading-9 text-center`}>
+          <Text className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}>
             {timeRemaining.seconds.toString().padStart(2, '0')}
           </Text>
-          <Text className={`${getLabelSizeClass()} font-medium ${textColor}/50 leading-4 text-center`}>
-            Seconds
+          <Text className={`${getLabelSizeClass()} font-medium ${finalTextColor}/50 leading-4 text-center`}>
+            {t('countdownTimer.seconds')}
           </Text>
         </View>
       )}

@@ -244,6 +244,15 @@ class AchievementService {
     return Array.from(this.achievements.values());
   }
 
+  // Get translated achievements
+  public getTranslatedAchievements(t: (key: string) => string): Achievement[] {
+    return Array.from(this.achievements.values()).map(achievement => ({
+      ...achievement,
+      name: t(`regularAchievements.${achievement.id}.name`),
+      description: t(`regularAchievements.${achievement.id}.description`)
+    }));
+  }
+
   // Get achievements by category (for compatibility)
   public getAchievementsByCategory(category: string): Achievement[] {
     // For now, return all regular achievements

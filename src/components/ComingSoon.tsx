@@ -2,8 +2,13 @@ import React from 'react';
 import { View, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const ComingSoon: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const { t } = useTranslation();
   const { selectedBackground } = useApp();
   
   // Helper function to parse gradient string and return colors
@@ -24,38 +29,38 @@ const ComingSoon: React.FC = () => {
   const gradientColors = parseGradient(selectedBackground.backgroundColor);
   
   return (
-    <View className="flex-1 justify-center items-center px-6" style={{ backgroundColor: gradientColors[0] }}>
+    <View className={`flex-1 justify-center items-center px-6 ${isDark ? 'bg-dark-background' : ''}`} style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}>
       {/* Background decorative elements */}
       <View className="absolute top-20 left-10 opacity-20">
-        <Ionicons name="star" size={40} color="#8B5CF6" />
+        <Ionicons name="star" size={40} color={isDark ? "#A78BFA" : "#8B5CF6"} />
       </View>
       <View className="absolute top-40 right-8 opacity-15">
-        <Ionicons name="star" size={30} color="#6366F1" />
+        <Ionicons name="star" size={30} color={isDark ? "#818CF8" : "#6366F1"} />
       </View>
       <View className="absolute bottom-40 left-8 opacity-20">
-        <Ionicons name="star" size={35} color="#8B5CF6" />
+        <Ionicons name="star" size={35} color={isDark ? "#A78BFA" : "#8B5CF6"} />
       </View>
       
       {/* Main content */}
       <View className="items-center">
         {/* Icon */}
-        <View className="w-32 h-32 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full justify-center items-center mb-8">
+        <View className={`w-32 h-32 rounded-full justify-center items-center mb-8 ${isDark ? 'bg-gradient-to-br from-slate-600 to-slate-700' : 'bg-gradient-to-br from-purple-500 to-indigo-600'}`}>
           <Ionicons name="construct" size={60} color="white" />
         </View>
         
         {/* Title */}
-        <Text className="text-3xl font-bold text-white text-center mb-4">
-          Coming Soon
+        <Text className={`text-3xl font-bold text-center mb-4 ${isDark ? 'text-slate-100' : 'text-white'}`}>
+          {t('achievements.comingSoon.title')}
         </Text>
         
         {/* Subtitle */}
-        <Text className="text-lg text-white/70 text-center mb-6 leading-6">
-          Exclusive achievements are under construction
+        <Text className={`text-lg text-center mb-6 leading-6 ${isDark ? 'text-slate-300' : 'text-white/70'}`}>
+          {t('achievements.comingSoon.subtitle')}
         </Text>
         
         {/* Description */}
-        <Text className="text-base text-white/50 text-center leading-6 max-w-xs">
-          We're working hard to bring you amazing exclusive achievements. Stay tuned for updates!
+        <Text className={`text-base text-center leading-6 max-w-xs ${isDark ? 'text-slate-400' : 'text-white/50'}`}>
+          {t('achievements.comingSoon.description')}
         </Text>
         
       </View>

@@ -1,6 +1,7 @@
 import React from 'react';
 import SlideModal from './SlideModal';
 import { useApp } from '../contexts/AppContext';
+import { useTranslation } from 'react-i18next';
 import BuddyModalContent from './BuddyModalContent';
 import BuddyModalActions from './BuddyModalActions';
 
@@ -15,6 +16,7 @@ const BuddyModal: React.FC<BuddyModalProps> = ({
   buddy,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const { userCoins, purchaseItem } = useApp();
 
   const handlePurchase = () => {
@@ -39,7 +41,7 @@ const BuddyModal: React.FC<BuddyModalProps> = ({
       onClose={onClose}
       title={""}
       showCloseButton={false}
-      confirmText="Purchase"
+      confirmText={t('shop.purchase')}
     >
       <BuddyModalContent
         buddy={buddy}

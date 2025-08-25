@@ -131,5 +131,136 @@
     "subtitle": "Tu guía amigable para dejar de fumar — un pequeño paso a la vez.",
     "title": "¡Bienvenido a QuitQly!",
     "willYouQuit": "¿Dejarás... de fumar?"
+  },
+  "shop": {
+    "selected": "Seleccionado",
+    "owned": "Propiedad",
+    "balance": "Saldo {{coins}}",
+    "reward": "Recompensa {{coins}}",
+    "purchase": "Comprar",
+    "buyFor": "Comprar por {{coins}} monedas",
+    "select": "Seleccionar",
+    "close": "Cerrar",
+    "share": "Compartir",
+    "update": "Actualizar",
+    "description": "Un maravilloso compañero para tu viaje para dejar de fumar.",
+    "sceneDescription": "Un hermoso fondo para mejorar tu viaje para dejar de fumar."
+  },
+  "achievements": {
+    "comingSoon": {
+      "title": "Próximamente",
+      "subtitle": "Los logros exclusivos están en construcción",
+      "description": "¡Estamos trabajando duro para traerte increíbles logros exclusivos. ¡Mantente atento a las actualizaciones!"
+    },
+    "timeLeft": "Tiempo restante",
+    "locked": "Bloqueado. Actualiza tu plan para desbloquear este logro.",
+    "share": "Compartir",
+    "close": "Cerrar",
+    "update": "Actualizar"
+  },
+  "countdownTimer": {
+    "days": "Días",
+    "hours": "Horas",
+    "minutes": "Minutos",
+    "seconds": "Segundos"
+  },
+  "buddies": {
+    "zebra-m": {
+      "name": "ZebraBro",
+      "description": "Corre conmigo, y dejaremos el humo atrás más rápido de lo que puede alcanzarnos."
+    },
+    "dog-m": {
+      "name": "SpudDog",
+      "description": "Quédate conmigo — venceremos al humo más rápido de lo que piensa."
+    },
+    "fox-m": {
+      "name": "GingerBoss",
+      "description": "Con dos cabezas inteligentes, el humo no tiene oportunidad — dejaremos de fumar el doble de rápido."
+    },
+    "alpaca-m": {
+      "name": "Lamburger",
+      "description": "Escala conmigo — y llegaremos a la cima libre de humo más rápido de lo que pensamos."
+    },
+    "koala-m": {
+      "name": "Don Snooze",
+      "description": "Abraza la vida conmigo — y nos sacudiremos el humo más rápido de lo que puede aferrarse."
+    },
+    "dog-w": {
+      "name": "SpudQueen",
+      "description": "Juntos brillamos más, y dejar de fumar se vuelve más fácil y rápido."
+    },
+    "alpaca-w": {
+      "name": "Lamazing",
+      "description": "Lado a lado respiraremos aire fresco y ahuyentaremos el humo en poco tiempo."
+    },
+    "fox-w": {
+      "name": "FoxyBossy",
+      "description": "Vamos a ser más inteligentes que el humo juntos — los dos terminaremos este juego rápido."
+    },
+    "koala-w": {
+      "name": "NapCutie",
+      "description": "Juntos encontraremos paz — y dejaremos el humo muy atrás mucho más rápido."
+    },
+    "zebra-w": {
+      "name": "Zebrabelle",
+      "description": "Si soñamos lado a lado, el humo desaparecerá el doble de rápido."
+    }
+  },
+  "scenes": {
+    "bg1": {
+      "name": "Predeterminado"
+    },
+    "bg2": {
+      "name": "Atardecer"
+    },
+    "bg3": {
+      "name": "Océano"
+    },
+    "bg4": {
+      "name": "Bosque"
+    },
+    "bg5": {
+      "name": "Púrpura"
+    },
+    "bg6": {
+      "name": "Oscuro"
+    },
+    "bg7": {
+      "name": "Cerezo en Flor"
+    }
+  },
+  "regularAchievements": {
+    "first-spark": {
+      "name": "Primera chispa",
+      "description": "Primeras 24 horas sin humo o vapeo — tu comienzo."
+    },
+    "hold-on": {
+      "name": "Mantente Firme",
+      "description": "Tres días sin fumar — demostrando tu fuerza de voluntad."
+    },
+    "steel-week": {
+      "name": "Semana de acero",
+      "description": "Una semana sin nicotina — tu fuerza crece."
+    },
+    "bright-moon": {
+      "name": "Luna brillante",
+      "description": "Dos semanas sin fumar — siente el cambio."
+    },
+    "fresh-path": {
+      "name": "Camino fresco",
+      "description": "Un mes completo sin fumar — nuevos hábitos se forman."
+    },
+    "freedom": {
+      "name": "Libertad",
+      "description": "Tres meses sin nicotina — disfruta tu libertad."
+    },
+    "hero": {
+      "name": "Héroe",
+      "description": "Medio año sin fumar — eres imparable."
+    },
+    "legend": {
+      "name": "Leyenda",
+      "description": "Casi un año sin fumar — conviértete en una verdadera leyenda."
+    }
   }
 }

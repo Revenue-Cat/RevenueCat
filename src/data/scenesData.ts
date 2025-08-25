@@ -121,3 +121,11 @@ export const SCENES_DATA: Scene[] = [
     backgroundColor: 'linear-gradient(180deg, #02162F 55.17%, #4E3EA9 100%)',
   },
 ];
+
+// Helper function to get translated scene data
+export const getTranslatedSceneData = (t: (key: string) => string): Scene[] => {
+  return SCENES_DATA.map(scene => ({
+    ...scene,
+    name: t(`scenes.${scene.id}.name`)
+  }));
+};

@@ -3,6 +3,8 @@ import { View, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from '../contexts/AppContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 interface BuddyModalContentProps {
   buddy: any;
@@ -13,6 +15,9 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
   buddy,
   userCoins,
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const { t } = useTranslation();
   const { ownedBuddies, selectedBuddyId } = useApp();
   const isOwned = ownedBuddies?.includes(buddy.id) || false;
   const isSelected = selectedBuddyId === buddy.id;
@@ -51,24 +56,24 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
       <View className="items-center my-2">
         <View className="flex-row items-center px-4 py-2 rounded-3xl border-2 border-amber-500">
           <Text className="text-amber-500 font-bold text-base mr-2 text-xl">
-            {isOwned ? (isSelected ? 'Selected' : 'Owned') : `Balance ${buddy.coin || 0}`}
+            {isOwned ? (isSelected ? t('shop.selected') : t('shop.owned')) : t('shop.balance', { coins: buddy.coin || 0 })}
           </Text>
           {!isOwned && <CoinIcon width={18} height={18} />}
         </View>
       </View>
       <View className="items-center my-4">
         {/* Buddy Title */}
-        <Text className="text-2xl font-bold text-indigo-950 text-center">
+        <Text className={`text-2xl font-bold text-center ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
           {buddy.name}
         </Text>
 
         {/* Buddy Description */}
-        <Text className="text-sm text-slate-500 text-center mb-4">
-          {buddy.description || "A wonderful companion for your journey to quit smoking."}
+        <Text className={`text-sm text-center mb-4 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
+          {buddy.description || t('shop.description')}
         </Text>
       </View>
       {/* Card Content */}
-      <View className="gap-4 rounded-3xl p-8 bg-indigo-50/50 justify-center items-center">
+      <View className={`gap-4 rounded-3xl p-8 justify-center items-center ${isDark ? 'bg-slate-700/50' : 'bg-indigo-50/50'}`}>
       
         {/* Buddy Icon */}
         <View className="items-center my-8 py-8">

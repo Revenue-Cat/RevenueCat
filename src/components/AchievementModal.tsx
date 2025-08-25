@@ -2,6 +2,7 @@ import React from 'react';
 import SlideModal from './SlideModal';
 import { Achievement } from '../services/achievementService';
 import { useApp } from '../contexts/AppContext';
+import { useTranslation } from 'react-i18next';
 import AchievementModalContent from './AchievementModalContent';
 import AchievementModalActions from './AchievementModalActions';
 
@@ -21,6 +22,7 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
   progress,
   getProgressForAchievement
 }) => {
+  const { t } = useTranslation();
   const { startDate } = useApp();
 
   if (!achievement) return null;
@@ -31,7 +33,7 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
       onClose={onClose}
       title={""}
       showCloseButton={false}
-      confirmText="Share"
+      confirmText={t('achievements.share')}
     >
       <AchievementModalContent
         achievement={achievement}

@@ -119,3 +119,12 @@ export const BUDDIES_DATA: Buddy[] = [
 export const getBuddyById = (id: string): Buddy | undefined => {
   return BUDDIES_DATA.find(buddy => buddy.id === id);
 };
+
+// Helper function to get translated buddy data
+export const getTranslatedBuddyData = (t: (key: string) => string): Buddy[] => {
+  return BUDDIES_DATA.map(buddy => ({
+    ...buddy,
+    name: t(`buddies.${buddy.id}.name`),
+    description: t(`buddies.${buddy.id}.description`)
+  }));
+};

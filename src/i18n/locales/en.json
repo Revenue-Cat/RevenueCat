@@ -136,5 +136,136 @@
     "subtitle": "Your friendly guide to quitting smoking — one small step at a time.",
     "title": "Welcome to QuitQly!",
     "willYouQuit": "Will you... quit?"
+  },
+  "shop": {
+    "selected": "Selected",
+    "owned": "Owned",
+    "balance": "Balance {{coins}}",
+    "reward": "Reward {{coins}}",
+    "purchase": "Purchase",
+    "buyFor": "Buy for {{coins}} coins",
+    "select": "Select",
+    "close": "Close",
+    "share": "Share",
+    "update": "Update",
+    "description": "A wonderful companion for your journey to quit smoking.",
+    "sceneDescription": "A beautiful background to enhance your quit smoking journey."
+  },
+  "achievements": {
+    "comingSoon": {
+      "title": "Coming Soon",
+      "subtitle": "Exclusive achievements are under construction",
+      "description": "We're working hard to bring you amazing exclusive achievements. Stay tuned for updates!"
+    },
+    "timeLeft": "Time left",
+    "locked": "Locked. Update your plan to unlock this achievement.",
+    "share": "Share",
+    "close": "Close",
+    "update": "Update"
+  },
+  "countdownTimer": {
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  },
+  "buddies": {
+    "zebra-m": {
+      "name": "ZebraBro",
+      "description": "Run with me, and we'll leave smoke behind faster than it can catch us."
+    },
+    "dog-m": {
+      "name": "SpudDog",
+      "description": "Stick with me — we'll beat smoke faster than it thinks."
+    },
+    "fox-m": {
+      "name": "GingerBoss",
+      "description": "With two clever heads, smoke stands no chance — we'll quit twice as fast."
+    },
+    "alpaca-m": {
+      "name": "Lamburger",
+      "description": "Climb with me — and we'll reach the smoke-free top faster than we think."
+    },
+    "koala-m": {
+      "name": "Don Snooze",
+      "description": "Embrace life with me — and we'll shake off smoke faster than it can cling."
+    },
+    "dog-w": {
+      "name": "SpudQueen",
+      "description": "Together we shine brighter, and quitting smoke gets easier and faster."
+    },
+    "alpaca-w": {
+      "name": "Lamazing",
+      "description": "Side by side we'll breathe fresh air and chase smoke away in no time."
+    },
+    "fox-w": {
+      "name": "FoxyBossy",
+      "description": "Let's outsmart smoke together — the two of us will finish this game fast."
+    },
+    "koala-w": {
+      "name": "NapCutie",
+      "description": "Together we'll find peace — and leave smoke far behind much faster."
+    },
+    "zebra-w": {
+      "name": "Zebrabelle",
+      "description": "If we dream side by side, smoke will disappear twice as fast."
+    }
+  },
+  "scenes": {
+    "bg1": {
+      "name": "Default"
+    },
+    "bg2": {
+      "name": "Sunset"
+    },
+    "bg3": {
+      "name": "Ocean"
+    },
+    "bg4": {
+      "name": "Forest"
+    },
+    "bg5": {
+      "name": "Purple"
+    },
+    "bg6": {
+      "name": "Dark"
+    },
+    "bg7": {
+      "name": "Cherry Blossom"
+    }
+  },
+  "regularAchievements": {
+    "first-spark": {
+      "name": "First spark",
+      "description": "First 24 hours without smoke or vape — your start."
+    },
+    "hold-on": {
+      "name": "Hold On",
+      "description": "Three days smoke-free — proving your willpower."
+    },
+    "steel-week": {
+      "name": "Steel week",
+      "description": "One week without nicotine — your strength grows."
+    },
+    "bright-moon": {
+      "name": "Bright moon",
+      "description": "Two weeks smoke-free — feel the change."
+    },
+    "fresh-path": {
+      "name": "Fresh path",
+      "description": "A full month smoke-free — new habits forming."
+    },
+    "freedom": {
+      "name": "Freedom",
+      "description": "Three months without nicotine — enjoy your freedom."
+    },
+    "hero": {
+      "name": "Hero",
+      "description": "Half a year smoke-free — you are unstoppable."
+    },
+    "legend": {
+      "name": "Legend",
+      "description": "Almost a year without smoking — become a true legend."
+    }
   }
 }
