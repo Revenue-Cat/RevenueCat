@@ -1,4 +1,3 @@
-// src/screens/BuddySelection.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,6 +21,10 @@ import SunLight from "../assets/icons/sun.svg";
 import SunDark from "../assets/icons/sun-d.svg";
 import MoonLight from "../assets/icons/moon.svg";
 import MoonDark from "../assets/icons/moon-d.svg";
+// nav chevron (matches Profile/Setup headers)
+import PrevLight from "../assets/icons/prev.svg";
+import PrevDark from "../assets/icons/prev-d.svg";
+// gender row icons
 import ManLight from "../assets/icons/man.svg";
 import ManDark from "../assets/icons/man-d.svg";
 import WomanLight from "../assets/icons/woman.svg";
@@ -34,11 +37,18 @@ type Side = "bright" | "dark";
 
 interface Props {
   onNext: () => void;
+  /** If true, screen is opened from Profile for editing; show back, hide CTA & Side row. */
+  fromProfile?: boolean;
+  onBack?: () => void;
 }
 
 const UNLOCKED_COUNT = 3;
 
-const BuddySelection: React.FC<Props> = ({ onNext }) => {
+const BuddySelection: React.FC<Props> = ({
+  onNext,
+  fromProfile = false,
+  onBack,
+}) => {
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
   const { t } = useTranslation();
@@ -48,7 +58,7 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
     setGender: setGenderCtx,
     selectedBuddyId,
     setSelectedBuddyId,
-    buddyName: savedBuddyName, // use the name from context (if user already changed it)
+    buddyName: savedBuddyName,
     setBuddyName: setBuddyNameCtx,
   } = useApp();
 
@@ -61,6 +71,7 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
     Woman: isDark ? WomanDark : WomanLight,
     Incognito: isDark ? IncognitoDark : IncognitoLight,
   };
+  const PrevIcon = isDark ? PrevDark : PrevLight;
 
   const [gender, setGender] = useState<Gender>(savedGender);
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
@@ -96,7 +107,7 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
       },
       {
         id: "koala",
-        name: t("buddySelection.buddies.koala?.name", "Monsieur Sniff"),
+        name: t("buddySelection.buddies.koala?.name", "Frenchie Freshbreath"),
         description: t(
           "buddySelection.buddies.koala?.description",
           "Sniffs out trouble and keeps your breath fresher than a Paris morning."
@@ -123,18 +134,13 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
 
   const [activeIndex, setActiveIndex] = useState<number>(initialIndex);
 
-  // NAME RULE:
-  // 1) Start with the buddy's default name (object).
-  // 2) If the user changes the name, save to context and ALWAYS use that (even on buddy change).
+  // name logic
   const defaultInitialName = buddies[initialIndex]?.name || buddies[0].name;
   const [nameEdited, setNameEdited] = useState<boolean>(!!savedBuddyName);
   const [buddyName, setBuddyNameLocal] = useState<string>(
     savedBuddyName || defaultInitialName
   );
 
-  // Keep name synced on language/buddies change:
-  // - If user has a custom name in context -> keep using it.
-  // - Else -> update to the current buddy’s default.
   useEffect(() => {
     if (nameEdited && savedBuddyName) {
       setBuddyNameLocal(savedBuddyName);
@@ -145,14 +151,13 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
     }
   }, [buddies, activeIndex, nameEdited, savedBuddyName, setBuddyNameCtx]);
 
-  // Initialize selected buddy id (and default name in context if no custom yet)
   useEffect(() => {
     setSelectedBuddyId(buddies[initialIndex].id);
     if (!nameEdited) setBuddyNameCtx(defaultInitialName);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Random backgrounds for buddy cards (BG1..BG6)
+  // Random backgrounds for cards
   const BGs = useMemo(
     () => [
       require("../assets/backgrounds/BG1.png"),
@@ -166,7 +171,6 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
   );
   const buddyBGs = useMemo(
     () => buddies.map(() => BGs[Math.floor(Math.random() * BGs.length)]),
-    // re-roll when buddies length changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [buddies.length, BGs]
   );
@@ -198,23 +202,64 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
 
   return (
     <View
-      className={`flex-1 ${isDark ? "bg-dark-background" : "bg-light-background"}`}
+      className={`flex-1 ${
+        isDark ? "bg-dark-background" : "bg-light-background"
+      }`}
     >
+      {/* Top back button (only in Profile edit mode) */}
+      {fromProfile && onBack && (
+        <View className="flex-row items-center justify-between px-6 pt-4 pb-1">
+          <Pressable
+            className={`w-10 h-10 rounded-full justify-center items-center p-1 ${
+              isDark ? "bg-slate-700" : "bg-slate-50"
+            }`}
+            onPress={onBack}
+            hitSlop={10}
+            style={({ hovered }) => [
+              isDark
+                ? { backgroundColor: hovered ? "#475569" : "#334155" }
+                : { backgroundColor: hovered ? "#e0e7ff" : "#f8fafc" },
+              isDark ? { elevation: 2 } : null,
+            ]}
+          >
+            <PrevIcon
+              width={18}
+              height={18}
+              color={isDark ? "#FFFFFF" : "#1e1b4b"}
+            />
+          </Pressable>
+          <View style={{ width: 40, height: 40 }} />
+        </View>
+      )}
+
       {/* Header */}
-      <View className="items-center pt-16 px-6 mb-2">
+      <View
+        className={`${
+          fromProfile ? "items-center mt-2" : "items-center pt-16"
+        } px-6 mb-2`}
+      >
         <Text
-          className={`text-2xl font-bold mb-3 text-center ${isDark ? "text-slate-100" : "text-indigo-950"}`}
+          className={`text-2xl font-bold mb-3 text-center ${
+            isDark ? "text-slate-100" : "text-indigo-950"
+          }`}
         >
-          {t("buddySelection.title", "Pick your quit buddy")}
+          {fromProfile
+            ? t("buddySelection.profileTitle", "My quit buddy")
+            : t("buddySelection.title", "Pick your quit buddy")}
         </Text>
-        <Text
-          className={`text-center font-medium leading-6 px-5 ${isDark ? "text-slate-300" : "text-slate-500"}`}
-        >
-          {t(
-            "buddySelection.subtitle",
-            "Choose your support animal to guide you on your journey!"
-          )}
-        </Text>
+
+        {!fromProfile && (
+          <Text
+            className={`text-center font-medium leading-6 px-5 ${
+              isDark ? "text-slate-300" : "text-slate-500"
+            }`}
+          >
+            {t(
+              "buddySelection.subtitle",
+              "Choose your support animal to guide you on your journey!"
+            )}
+          </Text>
+        )}
       </View>
 
       {/* Carousel */}
@@ -226,11 +271,10 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
           isLocked={(i) => isLocked(i)}
           backgrounds={buddyBGs}
           onChange={(i) => {
+            // In Profile edit mode, do not allow selecting locked ones
+            if (fromProfile && isLocked(i)) return;
             setActiveIndex(i);
             setSelectedBuddyId(buddies[i].id);
-            // NAME DECISION ON BUDDY CHANGE:
-            // If user edited a custom name (saved in context) -> keep using it.
-            // Else -> swap to the new buddy's default and sync context.
             if (nameEdited && savedBuddyName) {
               setBuddyNameLocal(savedBuddyName);
             } else {
@@ -244,7 +288,9 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
 
       {/* Name & Description */}
       <Text
-        className={`${isDark ? "text-slate-100" : "text-indigo-950"} text-center mt-8`}
+        className={`${
+          isDark ? "text-slate-100" : "text-indigo-950"
+        } text-center mt-8`}
         style={{
           fontFamily: "Inter",
           fontWeight: "700",
@@ -275,8 +321,8 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
               ? "#CBD5E1"
               : "#334155"
             : active
-              ? "#1e1b4b"
-              : "#E5E7EB";
+            ? "#1e1b4b"
+            : "#E5E7EB";
           return (
             <View
               key={i}
@@ -291,14 +337,18 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
       <View className="mt-6 px-6 gap-3">
         {/* Name */}
         <Pressable
-          disabled={centerLocked}
+          disabled={isLocked(activeIndex)}
           onPress={() => setShowNameModal(true)}
-          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${isDark ? "bg-slate-700" : "bg-indigo-50"} ${centerLocked ? "opacity-60" : ""}`}
+          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+            isDark ? "bg-slate-700" : "bg-indigo-50"
+          } ${isLocked(activeIndex) ? "opacity-60" : ""}`}
         >
           <View className="flex-row items-center">
             <Icons.Character width={20} height={20} color={systemIconColor} />
             <Text
-              className={`ml-3 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
+              className={`ml-3 ${
+                isDark ? "text-slate-100" : "text-indigo-950"
+              }`}
               style={{ fontWeight: "600" }}
             >
               {buddyName}
@@ -314,66 +364,82 @@ const BuddySelection: React.FC<Props> = ({ onNext }) => {
         {/* Gender */}
         <Pressable
           onPress={() => setShowGenderModal(true)}
-          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${isDark ? "bg-slate-700" : "bg-indigo-50"}`}
+          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+            isDark ? "bg-slate-700" : "bg-indigo-50"
+          }`}
         >
           <View className="flex-row items-center">
             <Icons.Gender width={20} height={20} color={systemIconColor} />
             <Text
-              className={`ml-3 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
+              className={`ml-3 ${
+                isDark ? "text-slate-100" : "text-indigo-950"
+              }`}
               style={{ fontWeight: "600" }}
             >
               {gender === "man"
                 ? "Man"
                 : gender === "lady"
-                  ? "Woman"
-                  : "Isn't important"}
+                ? "Woman"
+                : "Isn't important"}
             </Text>
           </View>
           <Ionicons name="checkmark" size={18} color={systemIconColor} />
         </Pressable>
 
-        {/* Side */}
-        <Pressable
-          onPress={() => setShowSideModal(true)}
-          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${isDark ? "bg-slate-700" : "bg-indigo-50"}`}
-        >
-          <View className="flex-row items-center">
-            {side === "bright" ? (
-              <Icons.Sun width={20} height={20} color={systemIconColor} />
-            ) : (
-              <Icons.Moon width={20} height={20} color={systemIconColor} />
-            )}
-            <Text
-              className={`ml-3 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
-              style={{ fontWeight: "600" }}
-            >
-              {side === "bright" ? "Bright side" : "Dark side"}
-            </Text>
-          </View>
-          <Ionicons name="checkmark" size={18} color={systemIconColor} />
-        </Pressable>
-      </View>
-
-      {/* CTA */}
-      <View className="px-6 pb-8 mt-6">
-        <Pressable
-          className={`rounded-2xl px-6 py-4 items-center justify-center flex-row ${canProceed ? "bg-indigo-600" : "bg-gray-400"}`}
-          disabled={!canProceed}
-          onPress={onNext}
-        >
-          <Text className="font-semibold text-xl mr-2 text-white">
-            {t("buddySelection.next", "Let’s Go, Buddy!")}
-          </Text>
-          <Ionicons name="arrow-forward" size={24} color="#ffffff" />
-        </Pressable>
-        {!canProceed && (
-          <Text
-            className={`text-center mt-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}
+        {/* Side (only in onboarding mode) */}
+        {!fromProfile && (
+          <Pressable
+            onPress={() => setShowSideModal(true)}
+            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+              isDark ? "bg-slate-700" : "bg-indigo-50"
+            }`}
           >
-            This buddy is locked. Unlock it in the shop soon.
-          </Text>
+            <View className="flex-row items-center">
+              {side === "bright" ? (
+                <Icons.Sun width={20} height={20} color={systemIconColor} />
+              ) : (
+                <Icons.Moon width={20} height={20} color={systemIconColor} />
+              )}
+              <Text
+                className={`ml-3 ${
+                  isDark ? "text-slate-100" : "text-indigo-950"
+                }`}
+                style={{ fontWeight: "600" }}
+              >
+                {side === "bright" ? "Bright side" : "Dark side"}
+              </Text>
+            </View>
+            <Ionicons name="checkmark" size={18} color={systemIconColor} />
+          </Pressable>
         )}
       </View>
+
+      {/* CTA (only in onboarding mode) */}
+      {!fromProfile && (
+        <View className="px-6 pb-8 mt-6">
+          <Pressable
+            className={`rounded-2xl px-6 py-4 items-center justify-center flex-row ${
+              canProceed ? "bg-indigo-600" : "bg-gray-400"
+            }`}
+            disabled={!canProceed}
+            onPress={onNext}
+          >
+            <Text className="font-semibold text-xl mr-2 text-white">
+              {t("buddySelection.next", "Let’s Go, Buddy!")}
+            </Text>
+            <Ionicons name="arrow-forward" size={24} color="#ffffff" />
+          </Pressable>
+          {!canProceed && (
+            <Text
+              className={`text-center mt-2 ${
+                isDark ? "text-slate-400" : "text-slate-500"
+              }`}
+            >
+              This buddy is locked. Unlock it in the shop soon.
+            </Text>
+          )}
+        </View>
+      )}
 
       {/* Modals */}
       <BuddyNameModal

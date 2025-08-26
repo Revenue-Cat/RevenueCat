@@ -32,7 +32,9 @@ type Screen =
   | "home"
   | "profile"
   | "achievements"
-  | "shop";
+  | "shop"
+  | "edit-habits"
+  | "edit-buddy";
 
 const AppContent: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>("profile");
@@ -91,10 +93,7 @@ const AppContent: React.FC = () => {
         )}
 
         {currentScreen === "setup" && (
-          <Setup
-            onNext={() => navigateTo("buddy-selection")}
-            onBack={() => navigateTo("welcome")}
-          />
+          <Setup onNext={() => navigateTo("buddy-selection")} />
         )}
 
         {currentScreen === "buddy-selection" && (
@@ -129,6 +128,24 @@ const AppContent: React.FC = () => {
             onBack={() => navigateTo("home")}
             onNavigateToAchievements={() => navigateTo("achievements")}
             onNavigateToShop={() => navigateTo("shop")}
+            onNavigateToSetup={() => navigateTo("edit-habits")}
+            onNavigateToBuddy={() => navigateTo("edit-buddy")}
+          />
+        )}
+
+        {currentScreen === "edit-habits" && (
+          <Setup
+            fromProfile
+            onBack={() => navigateTo("profile")}
+            onNext={() => navigateTo("profile")}
+          />
+        )}
+
+        {currentScreen === "edit-buddy" && (
+          <BuddySelection
+            fromProfile
+            onBack={() => navigateTo("profile")}
+            onNext={() => {}} // unused in fromProfile
           />
         )}
 
