@@ -1,5 +1,5 @@
 import "./global.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, SafeAreaView, Modal } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AppProvider } from "./src/contexts/AppContext";
@@ -19,7 +19,6 @@ import CravingSOS from "./src/screens/CravingSOS";
 import BreathingExercise from "./src/screens/BreathingExercise";
 import ChatAssistance from "./src/screens/ChatAssistance";
 import CoinPurchaseModal from "./src/components/CoinPurchaseModal";
-import ShopModal from "./src/components/ShopModal";
 import Purchases, { LOG_LEVEL } from "react-native-purchases";
 import { Platform } from "react-native";
 
@@ -41,43 +40,44 @@ const AppContent: React.FC = () => {
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
+  const [isScenesSelected, setIsScenesSelected] = useState(false);
   const { theme } = useTheme();
 
-  const navigateTo = (screen: Screen) => {
+  const navigateTo = useCallback((screen: Screen) => {
     setCurrentScreen(screen);
-  };
+  }, []);
 
-  const handleShowCravingSOS = () => {
+  const handleShowCravingSOS = useCallback(() => {
     setShowCravingSOS(true);
-  };
+  }, []);
 
-  const handleShowBreathingExercise = () => {
-    setShowBreathingExercise(true);
-  };
-
-  const handleShowChatAssistance = () => {
-    setShowChatAssistance(true);
-  };
-
-  const handleCloseCravingSOS = () => {
+  const handleCloseCravingSOS = useCallback(() => {
     setShowCravingSOS(false);
-  };
+  }, []);
 
-  const handleCloseBreathingExercise = () => {
+  const handleShowBreathingExercise = useCallback(() => {
+    setShowBreathingExercise(true);
+  }, []);
+
+  const handleCloseBreathingExercise = useCallback(() => {
     setShowBreathingExercise(false);
-  };
+  }, []);
 
-  const handleCloseChatAssistance = () => {
+  const handleShowChatAssistance = useCallback(() => {
+    setShowChatAssistance(true);
+  }, []);
+
+  const handleCloseChatAssistance = useCallback(() => {
     setShowChatAssistance(false);
-  };
+  }, []);
 
   useEffect(() => {
-    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
-
-    if (Platform.OS === "ios") {
-      Purchases.configure({ apiKey: "appl_KopTWcANzpTAMEriDmzPeFhFiVu" });
-    } else if (Platform.OS === "android") {
-      Purchases.configure({ apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ" });
+    // Initialize RevenueCat
+    if (Platform.OS !== 'web') {
+      Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+      Purchases.configure({
+        apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ"
+      });
     }
   }, []);
 
@@ -156,7 +156,13 @@ const AppContent: React.FC = () => {
           />
         )}
 
-        {currentScreen === "shop" && <Shop onBack={() => navigateTo("home")} />}
+        {currentScreen === "shop" && (
+          <Shop 
+            onBack={() => navigateTo("home")} 
+            isScenesSelected={isScenesSelected}
+            setIsScenesSelected={setIsScenesSelected}
+          />
+        )}
 
         {/* Modals */}
         <Modal
@@ -190,10 +196,10 @@ const AppContent: React.FC = () => {
         </Modal>
 
         {/* Coin Purchase Modal */}
-        <CoinPurchaseModal />
+        {/* <CoinPurchaseModal /> */}
 
         {/* Shop Modal */}
-        <ShopModal />
+        {/* <ShopModal /> */}
       </SafeAreaView>
     </AppProvider>
   );

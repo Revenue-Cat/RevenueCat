@@ -60,6 +60,7 @@ const BuddySelection: React.FC<Props> = ({
     setSelectedBuddyId,
     buddyName: savedBuddyName,
     setBuddyName: setBuddyNameCtx,
+    ownedBuddies,
   } = useApp();
 
   const Icons = {
@@ -78,6 +79,10 @@ const BuddySelection: React.FC<Props> = ({
 
   const [side, setSide] = useState<Side>(isDark ? "dark" : "bright");
   useEffect(() => setSide(isDark ? "dark" : "bright"), [isDark]);
+
+  // Helper function to convert BuddyKey to gender-specific ID
+  const getGenderSpecificId = (buddyKey: string, gender: SexKey) =>
+    `${buddyKey}-${gender}`;
 
   const buddies: Buddy[] = useMemo(
     () => [
@@ -125,12 +130,27 @@ const BuddySelection: React.FC<Props> = ({
     [t]
   );
 
-  // Initial index = saved id if any
+  // Initial index = saved id if any, or first owned buddy
   const savedIndex = Math.max(
     0,
-    buddies.findIndex((b) => b.id === selectedBuddyId)
+    buddies.findIndex((b) => {
+      const genderSpecificId = getGenderSpecificId(b.id, sexKey);
+      return genderSpecificId === selectedBuddyId;
+    })
   );
-  const initialIndex = savedIndex === -1 ? 0 : savedIndex;
+
+  // Find first owned buddy if saved buddy is not owned
+  const findFirstOwnedIndex = () => {
+    for (let i = 0; i < buddies.length; i++) {
+      const genderSpecificId = getGenderSpecificId(buddies[i].id, sexKey);
+      if (ownedBuddies?.includes(genderSpecificId)) {
+        return i;
+      }
+    }
+    return 0; // fallback to first buddy
+  };
+
+  const initialIndex = savedIndex === -1 ? findFirstOwnedIndex() : savedIndex;
 
   const [activeIndex, setActiveIndex] = useState<number>(initialIndex);
 
@@ -152,10 +172,14 @@ const BuddySelection: React.FC<Props> = ({
   }, [buddies, activeIndex, nameEdited, savedBuddyName, setBuddyNameCtx]);
 
   useEffect(() => {
-    setSelectedBuddyId(buddies[initialIndex].id);
+    const genderSpecificId = getGenderSpecificId(
+      buddies[initialIndex].id,
+      sexKey
+    );
+    setSelectedBuddyId(genderSpecificId);
     if (!nameEdited) setBuddyNameCtx(defaultInitialName);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [ownedBuddies, sexKey]);
 
   // Random backgrounds for cards
   const BGs = useMemo(
@@ -175,7 +199,11 @@ const BuddySelection: React.FC<Props> = ({
     [buddies.length, BGs]
   );
 
-  const isLocked = (idx: number) => idx >= UNLOCKED_COUNT;
+  const isLocked = (idx: number) => {
+    const buddyKey = buddies[idx].id;
+    const genderSpecificId = getGenderSpecificId(buddyKey, sexKey);
+    return !ownedBuddies?.includes(genderSpecificId);
+  };
   const centerLocked = isLocked(activeIndex);
   const canProceed = !centerLocked;
 
@@ -274,7 +302,11 @@ const BuddySelection: React.FC<Props> = ({
             // In Profile edit mode, do not allow selecting locked ones
             if (fromProfile && isLocked(i)) return;
             setActiveIndex(i);
-            setSelectedBuddyId(buddies[i].id);
+            const genderSpecificId = getGenderSpecificId(buddies[i].id, sexKey);
+            setSelectedBuddyId(genderSpecificId);
+            // NAME DECISION ON BUDDY CHANGE:
+            // If user edited a custom name (saved in context) -> keep using it.
+            // Else -> swap to the new buddy's default and sync context.
             if (nameEdited && savedBuddyName) {
               setBuddyNameLocal(savedBuddyName);
             } else {

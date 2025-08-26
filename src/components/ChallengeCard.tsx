@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export type ChallengeStatus = 'active' | 'locked';
 
@@ -31,6 +32,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   checkIns,
   onCheckIn,
 }) => {
+  const { t } = useTranslation();
   const isLocked = status === 'locked';
   const showProgress = !isLocked && typeof progress === 'number';
 
@@ -44,7 +46,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
             <Ionicons name="star" size={14} color="#F97316" />
             <Text className="text-orange-500 font-semibold text-xs ml-1">+{points}</Text>
           </View>
-          <Text className="text-gray-500 text-xs mb-2">{duration} challenge</Text>
+          <Text className="text-gray-500 text-xs mb-2">{duration} {t('challenges.challenge')}</Text>
           
           {/* Title and Description */}
           <Text className="text-lg font-bold text-black mb-1">{title}</Text>
@@ -93,7 +95,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
             className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
           >
             <Ionicons name="checkmark" size={18} color="#ffffff" />
-            <Text className="text-white font-semibold text-base ml-2">Check In</Text>
+            <Text className="text-white font-semibold text-base ml-2">{t('challenges.checkIn')}</Text>
             {typeof checkIns === 'number' && (
               <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
                 <Text className="text-white text-xs font-bold">{checkIns}</Text>

@@ -42,7 +42,7 @@ interface SetupData {
 interface SetupProps {
   onNext: () => void;
   onBack?: () => void;
-  fromProfile?: boolean; // <— NEW
+  fromProfile?: boolean; // when opened from Profile, show habits header + hide Next
 }
 
 const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
@@ -113,7 +113,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
     ? "#CBD5E1"
     : "#1E1B4B";
 
-  // ---- Savings header (same math pattern as Profile) ----
+  // ---- Savings header (same math as Profile) ----
   const { savingsText } = useMemo(() => {
     const avgMap: Record<string, number> = {
       "1-5": 3,
@@ -240,7 +240,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
         className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 24 }}
       >
-        {/* Back (only if provided) + Title */}
+        {/* Back (only if provided) + Title (changes if fromProfile) */}
         {onBack && (
           <View className="flex-row items-center justify-between px-2 pt-2 pb-2">
             <Pressable
@@ -277,6 +277,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
 
         {/* Top copy / savings */}
         {fromProfile ? (
+          // When launched from Profile
           <View className="items-center mt-2 mb-6">
             <View className="flex-row items-baseline">
               <Text
@@ -304,6 +305,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
             </Text>
           </View>
         ) : (
+          // Onboarding version
           <>
             <View className="items-center mb-8">
               <Text
@@ -421,11 +423,11 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
           ))}
         </View>
 
-        {/* Privacy Text (keep) */}
+        {/* Privacy Text */}
         <View className="px-6 mb-4">
           <Text className="text-xs text-slate-500 text-center">
             {t(
-              "setup.privacy",
+              "setup.privacyText",
               "Don't worry, your data is secure. We keep it private and won't pass it on."
             )}
           </Text>
@@ -450,28 +452,25 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
         </View>
       )}
 
-      {/* Individual Modal Components */}
+      {/* Modals */}
       <SmokeTypeModal
         visible={currentStep === "smokeType"}
         onClose={() => setCurrentStep(null)}
         selectedValue={setupData.smokeType}
         onSelect={(value) => handleSelection("smokeType", value)}
       />
-
       <DailyAmountModal
         visible={currentStep === "dailyAmount"}
         onClose={() => setCurrentStep(null)}
         selectedValue={setupData.dailyAmount}
         onSelect={(value) => handleSelection("dailyAmount", value)}
       />
-
       <GoalModal
         visible={currentStep === "goal"}
         onClose={() => setCurrentStep(null)}
         selectedValue={setupData.goal}
         onSelect={(value) => handleSelection("goal", value)}
       />
-
       <PackPricePickerModal
         visible={currentStep === "packPrice"}
         onClose={() => setCurrentStep(null)}

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { achievementService, Achievement, UserProgress } from '../services/achievementService';
+import { Scene, SCENES_DATA } from '../data/scenesData';
 
-type ShopTab = 'characters' | 'backgrounds' | 'accessories';
+type ShopTab = 'buddies' | 'backgrounds';
 export type UserGender = 'man' | 'lady' | 'any';
 
 interface ShopItem {
@@ -15,9 +17,9 @@ interface ShopItem {
 interface AppState {
   // User data
   userCoins: number;
-  selectedCharacter: ShopItem;
-  selectedBackground: ShopItem;
-  ownedCharacters: string[];
+  selectedBuddy: ShopItem;
+  selectedBackground: Scene;
+  ownedBuddies: string[];
   ownedBackgrounds: string[];
   ownedAccessories: string[];
 
@@ -33,6 +35,12 @@ interface AppState {
   packPriceCurrency: string;
   goal: string;
 
+  // Achievement system
+  achievements: Achievement[];
+  userProgress: UserProgress;
+  daysSmokeFree: number;
+  startDate: Date | null;
+
   // UI state
   showShop: boolean;
   showCoinPurchase: boolean;
@@ -40,13 +48,20 @@ interface AppState {
 
   // Actions
   setUserCoins: (coins: number) => void;
-  setSelectedCharacter: (character: ShopItem) => void;
-  setSelectedBackground: (background: ShopItem) => void;
+  setSelectedBuddy: (buddy: ShopItem) => void;
+  setSelectedBackground: (background: Scene) => void;
   purchaseItem: (item: ShopItem, category: ShopTab) => boolean;
   setShowShop: (show: boolean) => void;
   setShowCoinPurchase: (show: boolean) => void;
   setSelectedShopTab: (tab: ShopTab) => void;
   openShopWithTab: (tab: ShopTab) => void;
+
+  // Achievement actions
+  setStartDate: (startDate: Date) => Promise<void>;
+  getProgressForAchievement: (achievementId: string) => { current: number; max: number; percentage: number };
+  resetProgress: () => Promise<void>;
+  setSampleData: () => Promise<void>;
+  setAugustStartDate: () => Promise<void>;
 
   // Selection setters
   setGender: (gender: UserGender) => void;
@@ -69,13 +84,7 @@ const defaultCharacter: ShopItem = {
   owned: true
 };
 
-const defaultBackground: ShopItem = {
-  id: "default",
-  emoji: "🌅",
-  name: "Default",
-  price: 0,
-  owned: true
-};
+const defaultBackground: Scene = SCENES_DATA[0]; // Use the first scene as default
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
@@ -89,16 +98,16 @@ export const useApp = () => {
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Shop/state
-  const [userCoins, setUserCoinsState] = useState(100);
-  const [selectedCharacter, setSelectedCharacterState] = useState<ShopItem>(defaultCharacter);
-  const [selectedBackground, setSelectedBackgroundState] = useState<ShopItem>(defaultBackground);
-  const [ownedCharacters, setOwnedCharacters] = useState<string[]>(['1']);
-  const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['default']);
+  const [userCoins, setUserCoinsState] = useState(200);
+  const [selectedBuddy, setSelectedBuddyState] = useState<ShopItem>(defaultCharacter);
+  const [selectedBackground, setSelectedBackgroundState] = useState<Scene>(defaultBackground);
+  const [ownedBuddies, setOwnedBuddies] = useState<string[]>(['zebra-m', 'dog-m']);
+  const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['bg1']);
   const [ownedAccessories, setOwnedAccessories] = useState<string[]>([]);
 
   // Buddy/User selections
   const [gender, setGenderState] = useState<UserGender>('man');
-  const [selectedBuddyId, setSelectedBuddyIdState] = useState<string>('alpaca');
+  const [selectedBuddyId, setSelectedBuddyIdState] = useState<string>('alpaca-m');
   const [buddyName, setBuddyNameState] = useState<string>('Alpaca Calmington');
 
   // Setup selections
@@ -108,23 +117,59 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [packPriceCurrency, setPackPriceCurrencyState] = useState<string>('$');
   const [goal, setGoalState] = useState<string>('');
 
+  // Achievement system state
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [userProgress, setUserProgress] = useState<UserProgress>({
+    startDate: null,
+    daysSmokeFree: 0,
+    totalMoneySaved: 0,
+    cigarettesAvoided: 0,
+    breathingExercisesCompleted: 0,
+    challengesCompleted: 0,
+    purchasesMade: 0,
+  });
+  const [daysSmokeFree, setDaysSmokeFree] = useState(0);
+
   // UI state
   const [showShop, setShowShop] = useState(false);
   const [showCoinPurchase, setShowCoinPurchase] = useState(false);
-  const [selectedShopTab, setSelectedShopTab] = useState<ShopTab>('characters');
+  const [selectedShopTab, setSelectedShopTab] = useState<ShopTab>('buddies');
 
   // Load from AsyncStorage on mount (TODO)
   useEffect(() => {
     // TODO: Implement AsyncStorage load if desired
   }, []);
 
+  // Sync with achievement service
+  useEffect(() => {
+    const unsubscribe = achievementService.subscribe(() => {
+      setAchievements(achievementService.getAllAchievements());
+      setUserProgress(achievementService.getUserProgress());
+      setDaysSmokeFree(achievementService.calculateDaysPassed());
+    });
+
+    // Initial load
+    setAchievements(achievementService.getAllAchievements());
+    setUserProgress(achievementService.getUserProgress());
+    setDaysSmokeFree(achievementService.calculateDaysPassed());
+
+    return unsubscribe;
+  }, []);
+
+  // Sync start date changes with achievement service
+  useEffect(() => {
+    if (userProgress.startDate) {
+      achievementService.setStartDate(userProgress.startDate);
+    }
+  }, [userProgress.startDate]);
+
   // Save to AsyncStorage when state changes (TODO)
   useEffect(() => {
     const stateToSave = {
       userCoins,
-      selectedCharacter,
+      selectedBuddy,
       selectedBackground,
-      ownedCharacters,
+      ownedBuddies,
       ownedBackgrounds,
       ownedAccessories,
       gender,
@@ -140,9 +185,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     console.log('State to save:', stateToSave);
   }, [
     userCoins,
-    selectedCharacter,
+    selectedBuddy,
     selectedBackground,
-    ownedCharacters,
+    ownedBuddies,
     ownedBackgrounds,
     ownedAccessories,
     gender,
@@ -157,22 +202,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Memoize all action functions to prevent recreation
   const setUserCoins = useCallback((coins: number) => setUserCoinsState(coins), []);
-  const setSelectedCharacter = useCallback((character: ShopItem) => setSelectedCharacterState(character), []);
-  const setSelectedBackground = useCallback((background: ShopItem) => setSelectedBackgroundState(background), []);
+  const setSelectedBuddy = useCallback((buddy: ShopItem) => setSelectedBuddyState(buddy), []);
+  const setSelectedBackground = useCallback((background: Scene) => setSelectedBackgroundState(background), []);
 
-  const purchaseItem = useCallback((item: ShopItem, category: ShopTab): boolean => {
-    if (userCoins < item.price) return false;
-    setUserCoinsState(prev => prev - item.price);
+  const purchaseItem = useCallback((item: ShopItem | Scene, category: ShopTab): boolean => {
+    // Use coin field for price (both buddies and scenes use coin)
+    const price = (item as any).coin || 0;
+    
+    if (userCoins < price) return false;
+    
+    setUserCoinsState(prev => prev - price);
 
     switch (category) {
-      case 'characters':
-        setOwnedCharacters(prev => [...prev, item.id]);
+      case 'buddies':
+        setOwnedBuddies(prev => [...prev, item.id]);
         break;
       case 'backgrounds':
         setOwnedBackgrounds(prev => [...prev, item.id]);
-        break;
-      case 'accessories':
-        setOwnedAccessories(prev => [...prev, item.id]);
         break;
     }
     return true;
@@ -195,12 +241,54 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setPackPriceCurrency = useCallback((value: string) => setPackPriceCurrencyState(value), []);
   const setGoal = useCallback((value: string) => setGoalState(value), []);
 
+  // Achievement functions
+  const setStartDate = useCallback(async (startDate: Date) => {
+    setUserProgress(prev => ({ ...prev, startDate }));
+    await achievementService.setStartDate(startDate);
+  }, []);
+
+  const getProgressForAchievement = useCallback((achievementId: string) => {
+    return achievementService.getProgressForAchievement(achievementId);
+  }, []);
+
+  const resetProgress = useCallback(async () => {
+    await achievementService.resetProgress();
+  }, []);
+
+  const setSampleData = useCallback(async () => {
+    // Set to 2 hours ago for testing - should show ~2 hours elapsed
+    const startDate = new Date();
+    startDate.setHours(startDate.getHours() - 2);
+    startDate.setMinutes(30);
+    startDate.setSeconds(0);
+    
+    console.log('setSampleData: Setting startDate to:', startDate.toISOString());
+    setUserProgress(prev => ({ ...prev, startDate }));
+    await achievementService.setStartDate(startDate);
+  }, []);
+
+  // Function to set August 21st start date for specific testing
+  const setAugustStartDate = useCallback(async () => {
+    const startDate = new Date(2025, 7, 21, 10, 30, 0); // August 21st, 2024 at 10:30 AM
+    console.log('setAugustStartDate: Setting startDate to:', startDate.toISOString());
+    setUserProgress(prev => ({ ...prev, startDate }));
+    await achievementService.setStartDate(startDate);
+  }, []);
+
+  // Set August start date as default when app initializes
+  useEffect(() => {
+    if (!userProgress.startDate) {
+      console.log('AppContext: Setting default August start date');
+      setAugustStartDate();
+    }
+  }, [userProgress.startDate, setAugustStartDate]);
+
   // Memoize the context value to prevent unnecessary re-renders
   const value: AppState = useMemo(() => ({
     userCoins,
-    selectedCharacter,
+    selectedBuddy,
     selectedBackground,
-    ownedCharacters,
+    ownedBuddies,
     ownedBackgrounds,
     ownedAccessories,
 
@@ -214,18 +302,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     packPriceCurrency,
     goal,
 
+    // Achievement system
+    achievements,
+    userProgress,
+    daysSmokeFree,
+    startDate: userProgress.startDate,
+
     showShop,
     showCoinPurchase,
     selectedShopTab,
 
     setUserCoins,
-    setSelectedCharacter,
+    setSelectedBuddy,
     setSelectedBackground,
     purchaseItem,
     setShowShop,
     setShowCoinPurchase,
     setSelectedShopTab,
     openShopWithTab,
+
+    // Achievement actions
+    setStartDate,
+    getProgressForAchievement,
+    resetProgress,
+    setSampleData,
+    setAugustStartDate,
 
     setGender,
     setSelectedBuddyId,
@@ -238,9 +339,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setGoal,
   }), [
     userCoins,
-    selectedCharacter,
+    selectedBuddy,
     selectedBackground,
-    ownedCharacters,
+    ownedBuddies,
     ownedBackgrounds,
     ownedAccessories,
     gender,
@@ -251,11 +352,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     packPrice,
     packPriceCurrency,
     goal,
+    achievements,
+    userProgress,
+    daysSmokeFree,
     showShop,
     showCoinPurchase,
     selectedShopTab,
     purchaseItem,
     openShopWithTab,
+    setStartDate,
+    getProgressForAchievement,
+    resetProgress,
+    setSampleData,
+    setAugustStartDate,
   ]);
 
   return (

@@ -16,7 +16,7 @@ interface SlideModalProps {
   title: string;
   children: React.ReactNode;
   showCloseButton?: boolean;
-  onConfirm?: () => void;
+  onConfirm?: () => void | null;
   confirmText?: string;
 }
 
@@ -103,9 +103,9 @@ const SlideModal: React.FC<SlideModalProps> = ({
       >
         <View className={`${isDark ? 'bg-dark-background' : 'bg-light-background'} rounded-t-3xl`}>
           <View className="px-5 pt-6 pb-10">
-            <Text className={`text-xl font-bold text-center px-8 mt-6 mb-6 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
+            {title && <Text className={`text-xl font-bold text-center px-8 mt-6 mb-6 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
               {title}
-            </Text>
+            </Text>}
             
             {children}
 

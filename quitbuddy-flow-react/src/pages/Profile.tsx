@@ -269,8 +269,8 @@ const Profile = () => {
         </div>
       )}
       
-      <CoinPurchaseDrawer />
-      <ShopDrawer />
+      {/* <CoinPurchaseDrawer /> */}
+      {/* <ShopDrawer /> */}
     </div>
   );
 };

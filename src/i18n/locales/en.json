@@ -1,140 +1,282 @@
 {
-  "buddySelection": {
-    "buddies": {
-      "alpaca": {
-        "description": "Soft-spoken strategist who keeps you cozy while cravings pass.",
-        "name": "Alpaca Calmington"
-      },
-      "dog": {
-        "description": "Loyal motivator who fetches wins and guards your streaks.",
-        "name": "Captain Pup"
-      },
-      "fox": {
-        "description": "Quick-witted planner who helps you outsmart triggers.",
-        "name": "Foxy Focus"
-      },
-      "koala": {
-        "description": "Sniffs out trouble and keeps your breath fresher than a Paris morning.",
-        "name": "Monsieur Sniff"
-      },
-      "zebra": {
-        "description": "Balanced guide reminding you: one step at a time, one stripe at a time.",
-        "name": "Zen Zebra"
-      }
-    },
-    "next": "Let's Go, Buddy!",
-    "sex": {
-      "label": "Gender",
-      "note": "Your buddy's image adapts to your selection.",
-      "options": {
-        "m": "Male",
-        "w": "Female"
-      }
-    },
-    "subtitle": "Choose your support animal to guide you on your journey!",
-    "title": "Pick your quit buddy"
+  "welcome": {
+    "title": "Welcome to Zero Poofs",
+    "subtitle": "Your journey to a smoke-free life starts here",
+    "description": "Join thousands of people who have successfully quit smoking with our proven approach.",
+    "actionButton": "Get Started",
+    "willYouQuit": "Will you... quit?",
+    "ctaButton": "Yes, let's do it together",
+    "selectLanguage": "Language"
   },
   "languages": {
     "english": "English",
-    "spanish": "Spanish",
-    "ukrainian": "Ukrainian"
-  },
-  "notificationPermission": {
-    "benefits": {
-      "goals": "Stay on track with your goals",
-      "milestones": "Celebrate your milestones",
-      "motivation": "Daily motivation reminders"
-    },
-    "enable": "Enable Notifications",
-    "preview": {
-      "title": "30 days smoke-free",
-      "message": "The memory lives on, but tobacco is in the past."
-    },
-    "skip": "Skip for now",
-    "subtitle": "We'll send you reminders to stay on track and celebrate your progress.",
-    "title": "Enable Notifications",
-    "mainTitle": "Stay on track, your way",
-    "mainSubtitle": "Let buddy nudge you with chill reminders — no pressure, just progress.",
-    "actionButton": "Let's do it!"
-  },
-  "challengeStart": {
-    "mainTitle": "Start Your First 24-Hour Challenge",
-    "mainSubtitle": "24 hours, one buddy, and a fresh start.",
-    "actionButton": "Go Smoke-Free"
+    "spanish": "Español",
+    "ukrainian": "Українська"
   },
   "setup": {
+    "title": "Let's get to know you",
+    "subtitle": "This helps us personalize your experience",
+    "actionButton": "Continue",
+    "privacyText": "Don't worry, your data is secure. We keep it private and won't pass it on.",
+    "nextButton": {
+      "text": "Next"
+    },
     "fields": {
+      "smokeType": {
+        "label": "What do you smoke?",
+        "modalTitle": "What do you usually smoke?",
+        "selected": "I am smoking {{value}}",
+        "options": {
+          "cigarettes": "Cigarettes",
+          "roll-your-own": "Rolling tobacco",
+          "tobacco-heater": "Heated tobacco",
+          "vaping": "Vaping"
+        }
+      },
       "dailyAmount": {
         "label": "What's your daily usage?",
         "modalTitle": "How many cigarettes a day is normal for you?",
+        "selected": "I smoke {{value}}",
         "options": {
           "1-5": "1-5",
+          "5-10": "6-10",
           "11-15": "11-15",
           "16-20": "16-20 (1 pack)",
           "21-30": "21-30",
-          "31-40": "31-40 (2 pack)",
-          "5-10": "6-10"
-        },
-        "selected": "I smoke {{value}}"
-      },
-      "goal": {
-        "label": "What is your primary goal?",
-        "modalTitle": "What's your goal?",
-        "options": {
-          "doesnt-matter": "Doesn't matter",
-          "gain-control": "Gain control",
-          "improve-health": "Improve health",
-          "quit-completely": "Quit completely",
-          "reduce-gradually": "Reduce gradually",
-          "save-money": "Save money"
-        },
-        "selected": "I want {{value}}"
+          "31-40": "31-40 (2 pack)"
+        }
       },
       "packPrice": {
         "label": "What's the cost of one unit?",
-        "modalTitle": "How many do you spend on smoking?",
+        "modalTitle": "How much do you spend on smoking?",
+        "selected": "One pack cost me {{value}}",
         "options": {
           "3": "$3",
           "4": "$4",
           "5": "$5",
           "6": "$6",
           "7": "$7"
-        },
-        "selected": "One pack cost me {{value}}"
+        }
       },
-      "smokeType": {
-        "label": "What do you smoke?",
-        "modalTitle": "What do you usually smoke?",
+      "goal": {
+        "label": "What is your primary goal?",
+        "modalTitle": "What's your goal?",
+        "selected": "I want {{value}}",
         "options": {
-          "cigarettes": "Sigarettess",
-          "roll-your-own": "Heated tobacco",
-          "tobacco-heater": "Rolling tabacco",
-          "vaping": "Vaping"
-        },
-        "selected": "I am smoking {{value}}"
+          "quit-completely": "Quit completely",
+          "reduce-gradually": "Reduce gradually",
+          "gain-control": "Gain control",
+          "improve-health": "Improve health",
+          "save-money": "Save money",
+          "doesnt-matter": "Doesn't matter"
+        }
       }
-    },
-    "header": {
-      "description": "Just a few taps and 20 seconds to get a quitting plan made for you",
-      "title": "Set your path to quitting"
-    },
-    "next": "Next",
-    "nextButton": {
-      "text": "Next"
-    },
-    "stats": {
-      "description": "Average US smoke-free savings. Add your habits to get your number."
-    },
-    "statsText": "of smokers say they want to quit — you're not alone.",
-    "subtitle": "Answer a few quick questions to personalize your quitting plan. It won't take more than 20 seconds.",
-    "title": "Set your path to quitting"
+    }
   },
-  "welcome": {
-    "ctaButton": "Yes, let's do it together",
-    "letsStart": "Let's start",
-    "selectLanguage": "Language",
-    "subtitle": "Your friendly guide to quitting smoking — one small step at a time.",
-    "title": "Welcome to QuitQly!",
-    "willYouQuit": "Will you... quit?"
+  "buddySelection": {
+    "title": "Choose your buddy",
+    "subtitle": "Pick a companion for your journey",
+    "actionButton": "Continue"
+  },
+  "notificationPermission": {
+    "title": "Stay motivated",
+    "subtitle": "Get gentle reminders and celebrate your progress",
+    "actionButton": "Continue"
+  },
+  "challengeStart": {
+    "mainTitle": "Ready to start?",
+    "mainSubtitle": "Your smoke-free journey begins now. Let's make it count!",
+    "actionButton": "Start My Journey"
+  },
+  "shop": {
+    "selected": "Selected",
+    "owned": "Owned",
+    "balance": "Balance {{coins}}",
+    "reward": "Reward {{coins}}",
+    "purchase": "Purchase",
+    "buyFor": "Buy for {{coins}} coins",
+    "select": "Select",
+    "close": "Close",
+    "share": "Share",
+    "update": "Update",
+    "description": "A wonderful companion for your journey to quit smoking.",
+    "sceneDescription": "A beautiful background to enhance your quit smoking journey."
+  },
+  "achievements": {
+    "comingSoon": {
+      "title": "Coming Soon",
+      "subtitle": "Exclusive achievements are under construction",
+      "description": "We're working hard to bring you amazing exclusive achievements. Stay tuned for updates!"
+    },
+    "timeLeft": "Time left",
+    "locked": "Locked. Update your plan to unlock this achievement.",
+    "share": "Share",
+    "close": "Close",
+    "update": "Update"
+  },
+  "countdownTimer": {
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  },
+  "buddies": {
+    "alpaca-m": {
+      "name": "Alpaca",
+      "description": "A gentle and calm companion for your journey."
+    },
+    "alpaca-w": {
+      "name": "Alpaca",
+      "description": "A gentle and calm companion for your journey."
+    },
+    "zebra-m": {
+      "name": "Zebra",
+      "description": "A strong and determined friend to keep you motivated."
+    },
+    "zebra-w": {
+      "name": "Zebra",
+      "description": "A strong and determined friend to keep you motivated."
+    },
+    "fluffy-m": {
+      "name": "Fluffy",
+      "description": "A soft and comforting buddy for difficult moments."
+    },
+    "fluffy-w": {
+      "name": "Fluffy",
+      "description": "A soft and comforting buddy for difficult moments."
+    },
+    "panda-m": {
+      "name": "Panda",
+      "description": "A peaceful and mindful companion for your wellness journey."
+    },
+    "panda-w": {
+      "name": "Panda",
+      "description": "A peaceful and mindful companion for your wellness journey."
+    },
+    "koala-m": {
+      "name": "Koala",
+      "description": "A relaxed and supportive friend for your quit journey."
+    },
+    "koala-w": {
+      "name": "Koala",
+      "description": "A relaxed and supportive friend for your quit journey."
+    }
+  },
+  "scenes": {
+    "bg1": {
+      "name": "Sunset"
+    },
+    "bg2": {
+      "name": "Ocean"
+    },
+    "bg3": {
+      "name": "Forest"
+    },
+    "bg4": {
+      "name": "Mountain"
+    },
+    "bg5": {
+      "name": "Desert"
+    },
+    "bg6": {
+      "name": "City"
+    },
+    "bg7": {
+      "name": "Space"
+    }
+  },
+  "regularAchievements": {
+    "first-spark": {
+      "name": "First Spark",
+      "description": "Complete your first day without smoking"
+    },
+    "hold-on": {
+      "name": "Hold On",
+      "description": "Survive the first week of your quit journey"
+    },
+    "steel-week": {
+      "name": "Steel Week",
+      "description": "Complete two weeks smoke-free"
+    },
+    "bright-moon": {
+      "name": "Bright Moon",
+      "description": "Reach one month of being smoke-free"
+    },
+    "fresh-path": {
+      "name": "Fresh Path",
+      "description": "Complete three months without smoking"
+    },
+    "freedom": {
+      "name": "Freedom",
+      "description": "Achieve six months of smoke-free living"
+    },
+    "hero": {
+      "name": "Hero",
+      "description": "Complete one year without smoking"
+    },
+    "legend": {
+      "name": "Legend",
+      "description": "Maintain two years of smoke-free life"
+    }
+  },
+  "toggles": {
+    "buddies": "Buddies",
+    "scenes": "Scenes",
+    "regular": "Regular",
+    "exclusive": "Exclusive"
+  },
+  "home": {
+    "title": "Zero Poofs",
+    "achievements": "Achievements",
+    "shop": "Shop",
+    "cravingSOS": "Craving SOS",
+    "stats": {
+      "cigsAvoided": "Cigs avoided",
+      "moneySaved": "Money saved",
+      "timeSaved": "Time saved",
+      "slips": "Slips"
+    },
+    "badgesCollected": "Badges collected"
+  },
+  "challenges": {
+    "title": "Challenges",
+    "challenge": "challenge",
+    "checkIn": "Check In",
+    "masterOfAir": {
+      "title": "Master of air",
+      "description": "Practice 5 deep breaths."
+    },
+    "hydrationBoost": {
+      "title": "Hydration boost",
+      "description": "Drink water each craving."
+    },
+    "stepSlayer": {
+      "title": "Step slayer",
+      "description": "Take 10,000 steps daily."
+    },
+    "snackBreak": {
+      "title": "Snack break",
+      "description": "Choose healthy snacks over junk food."
+    },
+    "calmPower": {
+      "title": "Calm power",
+      "description": "Complete 10 meditation sessions."
+    },
+    "fistFlow": {
+      "title": "Fist flow",
+      "description": "Hold a plank for 2 minutes."
+    },
+    "refresh": {
+      "title": "Refresh",
+      "description": "Swim 20 laps in one session."
+    },
+    "craveCrusher": {
+      "title": "Crave crusher",
+      "description": "Practice stress relief techniques."
+    },
+    "flowMinute": {
+      "title": "Flow minute",
+      "description": "Complete daily stretching routine."
+    }
   }
 }
