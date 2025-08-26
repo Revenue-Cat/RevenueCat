@@ -101,7 +101,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [userCoins, setUserCoinsState] = useState(200);
   const [selectedBuddy, setSelectedBuddyState] = useState<ShopItem>(defaultCharacter);
   const [selectedBackground, setSelectedBackgroundState] = useState<Scene>(defaultBackground);
-  const [ownedBuddies, setOwnedBuddies] = useState<string[]>(['zebra-m', 'dog-m']);
+  const [ownedBuddies, setOwnedBuddies] = useState<string[]>(['alpaca-m', 'alpaca-w', 'zebra-m', 'zebra-w', 'dog-m', 'dog-w']);
   const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['bg1']);
   const [ownedAccessories, setOwnedAccessories] = useState<string[]>([]);
 

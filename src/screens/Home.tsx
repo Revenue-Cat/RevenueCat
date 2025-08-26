@@ -83,22 +83,16 @@ const Home: React.FC<HomeProps> = ({
     return buddyAssets[baseBuddyKey][sexKey];
   }, [selectedBuddyId, sexKey]);
 
-  // Helper function to parse gradient string and return colors
   const parseGradient = useCallback(
     (gradientString: string): [string, string] => {
-      console.log("Parsing gradient:", gradientString);
-      // Extract colors from linear-gradient string - handle both formats
       const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
-      console.log("Color match:", colorMatch);
       if (colorMatch && colorMatch.length >= 2) {
-        return [colorMatch[0], colorMatch[1]]; // Return first two colors
+        return [colorMatch[0], colorMatch[1]];
       }
-      // Fallback: try to extract any hex colors
       const fallbackMatch = gradientString.match(/#[A-Fa-f0-9]{3,6}/g);
       if (fallbackMatch && fallbackMatch.length >= 2) {
         return [fallbackMatch[0], fallbackMatch[1]];
       }
-      console.log("Using fallback colors");
       return ["#1F1943", "#4E3EA9"]; // Default fallback
     },
     []
@@ -132,13 +126,7 @@ const Home: React.FC<HomeProps> = ({
     setIsScenesSelected(isScenes);
   }, []);
 
-  // Don't render until scroll position is loaded
-  if (!isInitialized) {
-    return <View className="flex-1 bg-[#1F1943]">{/* Loading state */}</View>;
-  }
-
   const gradientColors = parseGradient(selectedBackground.backgroundColor);
-  console.log("Gradient colors:", gradientColors);
 
   // Temporary fallback to test if LinearGradient is the issue
   return (
@@ -146,6 +134,15 @@ const Home: React.FC<HomeProps> = ({
       className="flex-1 absolute inset-0"
       style={{ backgroundColor: gradientColors[0] }}
     >
+      {/* Fixed Header - Outside of PanGestureHandler */}
+      <HomeHeader
+        currentView={currentView}
+        userCoins={userCoins}
+        onNavigateToProfile={handleNavigateToProfile}
+        onCoinPurchase={handleCoinPurchase}
+        onViewChange={changeView}
+      />
+
       {/* Full Screen PanGestureHandler for left/right navigation */}
       <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[1000]">
@@ -156,15 +153,6 @@ const Home: React.FC<HomeProps> = ({
           >
             <ParallaxBackground scrollY={scrollY} height={330} />
           </Animated.View>
-
-          {/* Fixed Header - On top of ParallaxBackground */}
-          <HomeHeader
-            currentView="home"
-            userCoins={userCoins}
-            onNavigateToProfile={handleNavigateToProfile}
-            onCoinPurchase={handleCoinPurchase}
-            onViewChange={changeView}
-          />
 
           {/* Fixed Buddy Icon - On top of ParallaxBackground */}
           <Animated.View

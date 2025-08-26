@@ -1,10 +1,13 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import CountdownTimer from "./CountdownTimer";
 import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from "../contexts/AppContext";
+import { getBuddyById } from "../data/buddiesData";
+import { BUDDIES_DATA } from "../data/buddiesData";
+import { SCENES_DATA } from "../data/scenesData";
 
 interface HomeHeaderProps {
   currentView: "home" | "achievements" | "shop";
@@ -22,14 +25,11 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   onViewChange,
 }) => {
   const { t } = useTranslation();
-  const { startDate, achievements, getProgressForAchievement } = useApp();
+  const { startDate, achievements, getProgressForAchievement, selectedBuddyId, ownedBuddies, ownedBackgrounds } = useApp();
+  
+  // Get the selected buddy data
+  const selectedBuddy = getBuddyById(selectedBuddyId);
 
-  // Debug logging
-  console.log("HomeHeader Debug:", {
-    currentView,
-    startDate: startDate?.toISOString(),
-    hasStartDate: !!startDate,
-  });
 
   // Calculate achievements with 100% progress
   const completedAchievementsCount = achievements.filter((achievement) => {
@@ -37,12 +37,6 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     return progress.percentage === 100;
   }).length;
 
-  console.log(
-    "HomeHeader: Completed achievements count:",
-    completedAchievementsCount,
-    "out of",
-    achievements.length
-  );
   const getViewTitle = () => {
     switch (currentView) {
       case "home":
@@ -56,25 +50,57 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     }
   };
 
+  // Show only purchasable items (not owned)
+  const purchasableBuddies = BUDDIES_DATA.filter(b => !ownedBuddies?.includes(b.id)).length;
+  const purchasableScenes = SCENES_DATA.filter(s => !ownedBackgrounds?.includes(s.id)).length;
+  const goodiesCount = purchasableBuddies + purchasableScenes;
+
   return (
     <View
       className="absolute top-10 left-0 right-0 p-6"
-      style={{ height: 140 }}
+      style={{ height: 140, zIndex: 2000 }}
+      pointerEvents="box-none"
     >
       {/* Top Row */}
       <View className="flex-row justify-between items-start">
-        {/* Profile Icon */}
-        <View className="w-[66px]">
+        {/* Buddy Icon */}
+        <Pressable
+          className="w-[66px]"
+          onPress={() => {
+            console.log("Buddy Icon container pressed - attempting to navigate to profile");
+            onNavigateToProfile();
+          }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={{ zIndex: 9999 }}
+        >
           <Pressable
-            className="w-8 h-8 rounded-full bg-black/50 justify-center items-center p-1"
+            className="w-8 h-8 rounded-full bg-black/50 justify-center items-center overflow-hidden"
             onPress={() => {
-              console.log(11111111);
               onNavigateToProfile();
             }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={{ zIndex: 9999, position: 'relative', transform: [{ translateY: -10 }] }}
           >
-            <Ionicons name="person-outline" size={18} color="#ffffff" />
+            {selectedBuddy ? (
+              <View className="w-full h-full overflow-hidden">
+                <Image 
+                  source={selectedBuddy.icon} 
+                  style={{
+                    width: '100%',
+                    height: '220%',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                  }}
+                  resizeMode="contain"
+                />
+              </View>
+            ) : (
+              <Ionicons name="person-outline" size={18} color="#ffffff" />
+            )}
           </Pressable>
-        </View>
+        </Pressable>
         {/* Carousel Header - Centered */}
         <View className="items-center justify-center flex-1">
           {/* Title */}
@@ -122,10 +148,10 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           {currentView === "shop" && (
             <View className="items-center mt-2">
               <View className="flex-row items-baseline">
-                <Text className="text-3xl font-bold text-indigo-950">13</Text>
+                <Text className="text-3xl font-bold text-indigo-950">{goodiesCount}</Text>
               </View>
               <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-1">
-                Goodies available
+                {t("home.goodiesAvailable", "Goodies available")}
               </Text>
             </View>
           )}

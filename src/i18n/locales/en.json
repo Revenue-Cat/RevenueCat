@@ -236,7 +236,8 @@
       "timeSaved": "Time saved",
       "slips": "Slips"
     },
-    "badgesCollected": "Badges collected"
+    "badgesCollected": "Badges collected",
+    "goodiesAvailable": "Goodies available"
   },
   "challenges": {
     "title": "Challenges",

@@ -64,7 +64,7 @@ export const useHomeScroll = () => {
     Animated.event(
       [{ nativeEvent: { contentOffset: { y: scrollY } } }],
       { 
-        useNativeDriver: false,
+        useNativeDriver: true,
         listener: scrollListener
       }
     ),

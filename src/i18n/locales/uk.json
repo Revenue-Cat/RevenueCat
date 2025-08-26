@@ -293,7 +293,8 @@
       "timeSaved": "Часу збережено",
       "slips": "Зриви"
     },
-    "badgesCollected": "Зібрані значки"
+    "badgesCollected": "Зібрані значки",
+    "goodiesAvailable": "Доступні товари"
   },
   "challenges": {
     "title": "Виклики",

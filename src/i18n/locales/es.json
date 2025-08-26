@@ -236,7 +236,8 @@
       "timeSaved": "Tiempo ahorrado",
       "slips": "Recaídas"
     },
-    "badgesCollected": "Insignias recolectadas"
+    "badgesCollected": "Insignias recolectadas",
+    "goodiesAvailable": "Artículos disponibles"
   },
   "challenges": {
     "title": "Desafíos",

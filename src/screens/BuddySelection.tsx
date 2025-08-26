@@ -131,13 +131,10 @@ const BuddySelection: React.FC<Props> = ({
   );
 
   // Initial index = saved id if any, or first owned buddy
-  const savedIndex = Math.max(
-    0,
-    buddies.findIndex((b) => {
-      const genderSpecificId = getGenderSpecificId(b.id, sexKey);
-      return genderSpecificId === selectedBuddyId;
-    })
-  );
+  const savedIndex = buddies.findIndex((b) => {
+    const genderSpecificId = getGenderSpecificId(b.id, sexKey);
+    return genderSpecificId === selectedBuddyId;
+  });
 
   // Find first owned buddy if saved buddy is not owned
   const findFirstOwnedIndex = () => {
@@ -150,7 +147,7 @@ const BuddySelection: React.FC<Props> = ({
     return 0; // fallback to first buddy
   };
 
-  const initialIndex = savedIndex === -1 ? findFirstOwnedIndex() : savedIndex;
+  const initialIndex = savedIndex >= 0 ? savedIndex : findFirstOwnedIndex();
 
   const [activeIndex, setActiveIndex] = useState<number>(initialIndex);
 
@@ -172,14 +169,35 @@ const BuddySelection: React.FC<Props> = ({
   }, [buddies, activeIndex, nameEdited, savedBuddyName, setBuddyNameCtx]);
 
   useEffect(() => {
-    const genderSpecificId = getGenderSpecificId(
-      buddies[initialIndex].id,
-      sexKey
-    );
-    setSelectedBuddyId(genderSpecificId);
+    // Only set selectedBuddyId if there's no current selection or if the current selection is not owned
+    const currentSelectedBuddy = buddies.find((b) => {
+      const genderSpecificId = getGenderSpecificId(b.id, sexKey);
+      return genderSpecificId === selectedBuddyId;
+    });
+    
+    if (!currentSelectedBuddy || !ownedBuddies?.includes(selectedBuddyId)) {
+      const genderSpecificId = getGenderSpecificId(
+        buddies[initialIndex].id,
+        sexKey
+      );
+      setSelectedBuddyId(genderSpecificId);
+    }
+    
     if (!nameEdited) setBuddyNameCtx(defaultInitialName);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ownedBuddies, sexKey]);
+
+  // Update activeIndex when selectedBuddyId changes (e.g., from Shop)
+  useEffect(() => {
+    const newIndex = buddies.findIndex((b) => {
+      const genderSpecificId = getGenderSpecificId(b.id, sexKey);
+      return genderSpecificId === selectedBuddyId;
+    });
+    
+    if (newIndex >= 0 && newIndex !== activeIndex) {
+      setActiveIndex(newIndex);
+    }
+  }, [selectedBuddyId, buddies, sexKey, activeIndex]);
 
   // Random backgrounds for cards
   const BGs = useMemo(

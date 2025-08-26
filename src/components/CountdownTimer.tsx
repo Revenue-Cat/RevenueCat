@@ -40,14 +40,6 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       const now = new Date().getTime();
       const target = new Date(targetDate).getTime();
       
-      console.log('CountdownTimer Debug:', {
-        now: new Date(now).toISOString(),
-        target: new Date(target).toISOString(),
-        countUp,
-        difference: countUp ? now - target : target - now,
-        differenceInDays: countUp ? (now - target) / (1000 * 60 * 60 * 24) : (target - now) / (1000 * 60 * 60 * 24)
-      });
-      
       let difference;
       if (countUp) {
         // Count up: elapsed time since targetDate
@@ -83,7 +75,6 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
         seconds: Math.max(0, seconds)
       };
 
-      console.log('CountdownTimer: Calculated time:', safeTime);
       setTimeRemaining(safeTime);
       
     };

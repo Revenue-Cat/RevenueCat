@@ -39,7 +39,6 @@ const HomeContent: React.FC<HomeContentProps> = ({
     return ['#1F1943', '#4E3EA9']; // Default fallback
   };
   
-  console.log("HomeContent render - currentView:", currentView, "isExclusiveSelected:", isExclusiveSelected);
   
   const gradientColors = parseGradient(selectedBackground.backgroundColor);
   
