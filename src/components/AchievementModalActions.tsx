@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, Pressable, Share } from 'react-native';
 import { Achievement } from '../services/achievementService';
 import { isRegularAchievement } from '../utils/achievementHelpers';
+import { useTheme } from '../contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 interface AchievementModalActionsProps {
   achievement: Achievement;
@@ -14,6 +16,10 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
   progress,
   onClose
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const { t } = useTranslation();
+  
   const handleShare = async () => {
     console.log('Share button pressed for achievement:', achievement.name);
     
@@ -40,10 +46,10 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
   return (
     <View className="my-6 flex-row justify-center gap-4">
       <Pressable 
-        className="w-15 h-15 rounded-2xl justify-center items-center bg-indigo-50"
+        className={`w-15 h-15 rounded-2xl justify-center items-center ${isDark ? 'bg-slate-700' : 'bg-indigo-50'}`}
         onPress={onClose}
       >
-        <Text className="text-2xl rounded-2xl px-4 py-2 font-bold text-indigo-900 bg-indigo-50">✕</Text>
+        <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-100 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
       </Pressable>
 
       {(isRegularAchievement(achievement.id) && (progress?.percentage || 0) !== 100) ? null : (
@@ -69,7 +75,7 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
           ]}
         >
           <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">
-            {achievement.unlocked && (progress?.percentage || 0) === 100 ? "Share" : (isRegularAchievement(achievement.id) ? "Close" : "Update")}
+            {achievement.unlocked && (progress?.percentage || 0) === 100 ? t('achievements.share') : (isRegularAchievement(achievement.id) ? t('achievements.close') : t('achievements.update'))}
           </Text>
         </Pressable>
       )}

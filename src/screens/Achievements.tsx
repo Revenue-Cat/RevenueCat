@@ -20,6 +20,7 @@ import ProgressRing from '../components/ProgressRing';
 import ComingSoon from '../components/ComingSoon';
 import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
 import { Achievement } from '../services/achievementService';
+import { achievementService } from '../services/achievementService';
 const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
 const AchievementBreatheIcon = require('../assets/achievements/achievement-breathe.png');
 const LockIcon = require('../assets/achievements/lock.png');
@@ -63,8 +64,6 @@ const isFirstThreeAchievement = (achievementId: string, allAchievements: any[], 
   
   return firstThreeNonCompleted.includes(achievementId);
 };
-
-
 
 interface AchievementsProps {
   onBack: () => void;
@@ -201,8 +200,12 @@ const EXCLUSIVE_ACHIEVEMENTS_DATA = [
 const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const {achievements, getProgressForAchievement, startDate, selectedBackground } = useApp();
   
+  // Get translated achievements
+  const translatedAchievements = useMemo(() => achievementService.getTranslatedAchievements(t), [t]);
+
   // Helper function to parse gradient string and return colors
   const parseGradient = (gradientString: string): [string, string] => {
     // Extract colors from linear-gradient string - handle both formats
@@ -251,9 +254,9 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
     if (isExclusiveSelected) {
       return EXCLUSIVE_ACHIEVEMENTS_DATA;
     } else {
-      return achievements;
+      return translatedAchievements;
     }
-  }, [isExclusiveSelected, parallaxAnim, achievements]);
+  }, [isExclusiveSelected, parallaxAnim, translatedAchievements]);
 
   // Memoize the achievement selection callback
   const handleAchievementPress = useCallback((achievement: Achievement, progress: any) => {
@@ -272,7 +275,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
   // Show Coming Soon for exclusive achievements
   if (isExclusiveSelected) {
     return (
-      <View className="flex-1" style={{ backgroundColor: gradientColors[0] }}>
+      <View className={`flex-1 ${isDark ? 'bg-dark-background' : ''}`} style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}>
         {/* Background Parallax Layers */}
         <Animated.View 
           style={{ 
@@ -292,7 +295,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
               outputRange: [0.3, 0.1, 0.3],
             })
           }}
-          className="bg-gradient-to-b from-purple-900/20 to-blue-900/20"
+          className={`bg-gradient-to-b ${isDark ? 'from-slate-800/20 to-slate-900/20' : 'from-purple-900/20 to-blue-900/20'}`}
         />
         
         <Animated.View 
@@ -313,7 +316,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
               outputRange: [0.6, 0.3, 0.6],
             })
           }}
-          className="bg-gradient-to-b from-indigo-800/30 to-purple-800/30"
+          className={`bg-gradient-to-b ${isDark ? 'from-slate-700/30 to-slate-800/30' : 'from-indigo-800/30 to-purple-800/30'}`}
         />
 
         <ScrollView 
@@ -338,7 +341,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
   }
   
   return (
-    <View className="flex-1" style={{ backgroundColor: gradientColors[0] }}>
+    <View className={`flex-1 ${isDark ? 'bg-dark-background' : ''}`} style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}>
       {/* Background Parallax Layers */}
       <Animated.View 
         style={{ 
@@ -358,7 +361,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
             outputRange: [0.3, 0.1, 0.3],
           })
         }}
-        className="bg-gradient-to-b from-purple-900/20 to-blue-900/20"
+        className={`bg-gradient-to-b ${isDark ? 'from-slate-800/20 to-slate-900/20' : 'from-purple-900/20 to-blue-900/20'}`}
       />
       
       <Animated.View 
@@ -379,7 +382,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
             outputRange: [0.6, 0.3, 0.6],
           })
         }}
-        className="bg-gradient-to-b from-indigo-800/30 to-purple-800/30"
+        className={`bg-gradient-to-b ${isDark ? 'from-slate-700/30 to-slate-800/30' : 'from-indigo-800/30 to-purple-800/30'}`}
       />
 
       <ScrollView 
@@ -480,7 +483,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                     )}
                   </View>
                 </Pressable>
-                <Text className={`text-xs mt-2 text-center ${achievement.unlocked ? 'text-white' : 'text-white/50'}`}>
+                <Text className={`text-xs mt-2 text-center ${achievement.unlocked ? (isDark ? 'text-slate-100' : 'text-white') : (isDark ? 'text-slate-400' : 'text-white/50')}`}>
                   {achievement.name}
                 </Text>
               </View>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
 import HomeStats from './HomeStats';
 import Challenges from '../screens/Challenges';
@@ -25,6 +26,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
   onShowCravingSOS,
   onNavigateToShop
 }) => {
+  const { t } = useTranslation();
   const { selectedBackground } = useApp();
   
   // Helper function to parse gradient string and return colors
@@ -52,7 +54,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
 
           {/* Craving SOS Button */}
           <Pressable className="bg-red-500 rounded-xl py-4 items-center" onPress={onShowCravingSOS}>
-            <Text className="text-white text-lg font-bold">Craving SOS</Text>
+            <Text className="text-white text-lg font-bold">{t('home.cravingSOS')}</Text>
           </Pressable>
         </>
       )}

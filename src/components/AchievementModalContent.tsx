@@ -6,6 +6,8 @@ import ProgressRing from './ProgressRing';
 import CountdownTimer from './CountdownTimer';
 import { Achievement } from '../services/achievementService';
 import { isRegularAchievement, isFirstThreeAchievement, calculateAchievementTargetDate } from '../utils/achievementHelpers';
+import { useTheme } from '../contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const LockIcon = require('../assets/achievements/lock.png');
 const TimeIcon = require('../assets/achievements/time.png');
@@ -24,7 +26,12 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
   getProgressForAchievement,
   startDate
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const { t } = useTranslation();
+  
   if (!achievement || !getProgressForAchievement) return null;
+  const borderColor = isDark ? '#475569' : '#d7d9df';
   // Helper function to render achievement icon and badges
   const renderAchievementIcon = () => {
     return (
@@ -36,7 +43,7 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
             size={110}
             strokeWidth={4}
             color={isFirstThreeAchievement(achievement.id, getProgressForAchievement) || (progress?.percentage || 0) === 100 ? '#22C55E' : 'transparent'}
-            borderColor={(progress?.percentage || 0) === 100 ? '#22C55E' : '#d7d9df'}
+            borderColor={(progress?.percentage || 0) === 100 ? '#22C55E' : borderColor}
           />
         )}
         
@@ -112,21 +119,21 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
       <View className="items-center my-6">
         <View className="flex-row items-center px-4 py-2 rounded-3xl border-2 border-amber-500">
           <Text className="text-amber-500 font-bold text-base mr-2 text-xl">
-            Reward {achievement.coins || 0}
+            {t('shop.reward', { coins: achievement.coins || 0 })}
           </Text>
           <CoinIcon width={18} height={18} />
         </View>
       </View>
 
       {/* Card Content */}
-      <View className="gap-4 rounded-3xl p-8 bg-indigo-50/50 justify-center items-center">
+      <View className={`gap-4 rounded-3xl p-8 justify-center items-center ${isDark ? 'bg-slate-700/50' : 'bg-indigo-50/50'}`}>
         {/* Achievement Title */}
-        <Text className="text-2xl font-bold text-indigo-950 text-center pt-7">
+        <Text className={`text-2xl font-bold text-center pt-7 ${isDark ? 'text-slate-50' : 'text-indigo-950'}`}>
           {achievement.name}
         </Text>
 
         {/* Achievement Description */}
-        <Text className="text-sm text-slate-500 text-center">
+        <Text className={`text-sm text-center ${isDark ? 'text-slate-100' : 'text-slate-500'}`}>
           {achievement.description}
         </Text>
 
@@ -139,8 +146,8 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
         {progress && isRegularAchievement(achievement.id) && (progress?.percentage || 0) > 0 && (progress?.percentage || 0) < 100 && (
           <View>
             <View className="flex-row items-center justify-center mb-3">
-              <Text className="text-indigo-950 font-semibold text-center ml-2">
-                Time left
+              <Text className={`font-semibold text-center ml-2 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
+                {t('achievements.timeLeft')}
               </Text>
             </View>
             
@@ -148,7 +155,7 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
             <View className="items-center">
                <CountdownTimer
                   targetDate={calculateAchievementTargetDate(startDate || null, progress.max)}
-                  textColor="text-indigo-950"
+                  textColor={isDark ? "text-slate-100" : "text-indigo-950"}
                   textSize="md"
                   showSeconds={false}
                   countUp={false}
@@ -161,9 +168,9 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
       {/* Locked message - Only for locked achievements */}
       {!achievement.unlocked && (
         <View className='flex-row justify-center items-center mt-4'>
-           <Ionicons name="information-circle" size={16} color="#64748B" />
-           <Text className='text-xs text-slate-500 text-center ml-2'>
-             Locked. Update your plan to unlock this achivemet.
+           <Ionicons name="information-circle" size={16} color={isDark ? "#485569" : "#64748B"} />
+           <Text className={`text-xs text-center ml-2 ${isDark ? 'text-slate-100' : 'text-slate-500'}`}>
+             {t('achievements.locked')}
            </Text>
          </View>
       )}

@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 interface AchievementsToggleProps {
   scrollY: Animated.Value;
@@ -13,6 +14,7 @@ const AchievementsToggle: React.FC<AchievementsToggleProps> = ({
   isExclusiveSelected, 
   setIsExclusiveSelected 
 }) => {
+  const { t } = useTranslation();
 
   // Use the same transform as the Buddy icon
   const transform = useMemo(() => [{
@@ -47,7 +49,7 @@ const AchievementsToggle: React.FC<AchievementsToggleProps> = ({
         backgroundColor: '#f1f5f9', 
         borderRadius: 16, 
         padding: 2, 
-        width: 220, 
+        width: '60%', 
         height: 44,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 10 },
@@ -82,7 +84,7 @@ const AchievementsToggle: React.FC<AchievementsToggleProps> = ({
             fontWeight: '500',
             color: !isExclusiveSelected ? '#1E293B' : '#64748B'
           }}>
-            Regular
+            {t('toggles.regular')}
           </Text>
         </TouchableOpacity>
         
@@ -113,7 +115,7 @@ const AchievementsToggle: React.FC<AchievementsToggleProps> = ({
             fontWeight: '500',
             color: isExclusiveSelected ? '#1E293B' : '#64748B'
           }}>
-            Exclusive
+            {t('toggles.exclusive')}
           </Text>
         </TouchableOpacity>
       </View>

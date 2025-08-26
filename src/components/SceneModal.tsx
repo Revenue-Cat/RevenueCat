@@ -3,6 +3,7 @@ import SlideModal from './SlideModal';
 import SceneModalContent from './SceneModalContent';
 import SceneModalActions from './SceneModalActions';
 import { useApp } from '../contexts/AppContext';
+import { useTranslation } from 'react-i18next';
 
 interface SceneModalProps {
   visible: boolean;
@@ -11,6 +12,7 @@ interface SceneModalProps {
 }
 
 const SceneModal: React.FC<SceneModalProps> = ({ visible, scene, onClose }) => {
+  const { t } = useTranslation();
   const { userCoins, purchaseItem } = useApp();
 
   const handlePurchase = () => {
@@ -35,7 +37,7 @@ const SceneModal: React.FC<SceneModalProps> = ({ visible, scene, onClose }) => {
         onClose={onClose}
         title={""}
         showCloseButton={false}
-        confirmText="Purchase"
+        confirmText={t('shop.purchase')}
       >
         <SceneModalContent scene={scene} userCoins={userCoins} />
         <SceneModalActions 

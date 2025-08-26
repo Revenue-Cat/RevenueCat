@@ -3,6 +3,8 @@ import { View, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from '../contexts/AppContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 interface SceneModalContentProps {
   scene: any;
@@ -13,6 +15,9 @@ const SceneModalContent: React.FC<SceneModalContentProps> = ({
   scene,
   userCoins,
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const { t } = useTranslation();
   const { ownedBackgrounds, selectedBackground } = useApp();
   const isOwned = ownedBackgrounds?.includes(scene.id) || false;
   const isSelected = selectedBackground.id === scene.id;
@@ -48,24 +53,24 @@ const SceneModalContent: React.FC<SceneModalContentProps> = ({
       <View className="items-center my-2">
         <View className="flex-row items-center px-4 py-2 rounded-3xl border-2 border-amber-500">
           <Text className="text-amber-500 font-bold text-base mr-2 text-xl">
-            {isOwned ? (isSelected ? 'Selected' : 'Owned') : `Balance ${scene.coin || 0}`}
+            {isOwned ? (isSelected ? t('shop.selected') : t('shop.owned')) : t('shop.balance', { coins: scene.coin || 0 })}
           </Text>
           {!isOwned && <CoinIcon width={18} height={18} />}
         </View>
       </View>
       <View className="items-center my-4">
         {/* Scene Title */}
-        <Text className="text-2xl font-bold text-indigo-950 text-center">
+        <Text className={`text-2xl font-bold text-center ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
           {scene.name}
         </Text>
 
         {/* Scene Description */}
-        <Text className="text-sm text-slate-500 text-center mb-4">
-          {scene.description || "A beautiful background to enhance your quit smoking journey."}
+        <Text className={`text-sm text-center mb-4 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
+          {scene.description || t('shop.sceneDescription')}
         </Text>
       </View>
       {/* Card Content */}
-      <View className="h-64 my-4 rounded-3xl bg-indigo-50/50 justify-center items-center overflow-hidden">
+      <View className={`h-64 my-4 rounded-3xl justify-center items-center overflow-hidden ${isDark ? 'bg-slate-700/50' : 'bg-indigo-50/50'}`}>
       
         {/* Scene Preview */}
           {renderScenePreview()}
