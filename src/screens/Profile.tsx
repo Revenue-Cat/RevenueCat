@@ -1,572 +1,500 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useApp } from '../contexts/AppContext';
-import { useTheme } from '../contexts/ThemeContext';
-import SlideModal from '../components/SlideModal';
-import RevenueCatUI, { PAYWALL_RESULT } from "react-native-purchases-ui";
-import Purchases from 'react-native-purchases';
+// src/screens/Profile.tsx
+import React, { useRef, useMemo, useState, useEffect } from "react";
+import { View, Text, Pressable, Animated } from "react-native";
+import { t } from "i18next";
 
-const { width } = Dimensions.get('window');
+import { useApp } from "../contexts/AppContext";
+import { useTheme } from "../contexts/ThemeContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
-async function presentPaywall(): Promise<boolean> {
-    // Present paywall for current offering:
-    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall();
+import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
+import ParallaxBackground from "../components/ParallaxBackground";
+import LanguageSlide from "../components/LanguageSlide";
+import SideModal from "../components/SideModal";
+import SupportSlide from "../components/SupportSlide";
 
-    switch (paywallResult) {
-        case PAYWALL_RESULT.NOT_PRESENTED:
-        case PAYWALL_RESULT.ERROR:
-        case PAYWALL_RESULT.CANCELLED:
-            return false;
-        case PAYWALL_RESULT.PURCHASED:
-        case PAYWALL_RESULT.RESTORED:
-            return true;
-        default:
-            return false;
-    }
-}
-
-async function presentPaywallIfNeeded() {
-    // Present paywall for current offering:
-    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywallIfNeeded({
-        requiredEntitlementIdentifier: "Unlock entire program"
-    });
-}
-
-async function logCustomer() {
-  try {
-      const customerInfo = await Purchases.getCustomerInfo();
-      console.log(customerInfo)
-      console.log(JSON.stringify(customerInfo.entitlements))
-  } catch (e) {
-    console.error("RC Customer retrieval error", e)
-  }
-}
+// custom icons
+import EditLight from "../assets/icons/edit.svg";
+import EditDark from "../assets/icons/edit-d.svg";
+import PrevLight from "../assets/icons/prev.svg";
+import PrevDark from "../assets/icons/prev-d.svg";
+import NotificationLight from "../assets/icons/notification.svg";
+import NotificationDark from "../assets/icons/notification-d.svg";
+import ThemeLight from "../assets/icons/theme.svg";
+import ThemeDark from "../assets/icons/theme-d.svg";
+import FeedbackLight from "../assets/icons/feedback.svg";
+import FeedbackDark from "../assets/icons/feedback-d.svg";
+import SupportLight from "../assets/icons/support.svg";
+import SupportDark from "../assets/icons/support-d.svg";
+import ArrowRightLight from "../assets/icons/arrow-right.svg";
+import ArrowRightDark from "../assets/icons/arrow-right-d.svg";
+import FlagEn from "../assets/icons/flag-en.svg";
+import FlagEs from "../assets/icons/flag-es.svg";
+import FlagUk from "../assets/icons/flag-uk.svg";
 
 interface ProfileProps {
   onBack: () => void;
   onNavigateToAchievements: () => void;
   onNavigateToShop: () => void;
+  onNavigateToSetup: () => void; // open Setup (fromProfile)
+  onNavigateToBuddy: () => void; // open BuddySelection (with back)
 }
 
-interface SmokingHabits {
-  smokeType: string;
-  dailyAmount: string;
-  packPrice: string;
-  goal: string;
-}
+type Side = "bright" | "dark";
 
-const Profile: React.FC<ProfileProps> = ({ onBack, onNavigateToAchievements, onNavigateToShop }) => {
-  const { userCoins, setShowCoinPurchase, openShopWithTab } = useApp();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
-  
-  const [smokingHabits, setSmokingHabits] = useState<SmokingHabits>({
-    smokeType: "cigarettes",
-    dailyAmount: "5-10",
-    packPrice: "5",
-    goal: "quit-completely"
-  });
-  
-  const [editingField, setEditingField] = useState<string | null>(null);
+const Profile: React.FC<ProfileProps> = ({
+  onBack,
+  onNavigateToBuddy,
+  onNavigateToSetup,
+}) => {
+  // theme
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
 
-  const setupFields = [
-    {
-      id: "smokeType",
-      label: "What do you usually smoke?",
-      icon: "remove-circle-outline" as keyof typeof Ionicons.glyphMap,
-      value: smokingHabits.smokeType,
-      options: [
-        { value: "cigarettes", label: "Cigarettes" },
-        { value: "tobacco-heater", label: "Tobacco heater" },
-        { value: "roll-your-own", label: "Roll-your-own" }
-      ]
-    },
-    {
-      id: "dailyAmount",
-      label: "How much do you use daily?",
-      icon: "reader-outline" as keyof typeof Ionicons.glyphMap,
-      value: smokingHabits.dailyAmount,
-      options: [
-        { value: "1-5", label: "1-5 cigarettes per day" },
-        { value: "5-10", label: "5-10 cigarettes per day" },
-        { value: "11-15", label: "11-15 cigarettes per day" },
-        { value: "16-20", label: "16-20 cigarettes per day (1 pack)" },
-        { value: "21-30", label: "21-30 cigarettes per day" },
-        { value: "31-40", label: "31-40 cigarettes per day (2 packs)" }
-      ]
-    },
-    {
-      id: "packPrice",
-      label: "How much do you pay for one unit?",
-      icon: "wallet-outline" as keyof typeof Ionicons.glyphMap,
-      value: smokingHabits.packPrice,
-      options: [
-        { value: "3", label: "$3" },
-        { value: "4", label: "$4" },
-        { value: "5", label: "$5" },
-        { value: "6", label: "$6" },
-        { value: "7", label: "$7" }
-      ]
-    },
-    {
-      id: "goal",
-      label: "What's your main goal?",
-      icon: "navigate-circle-outline" as keyof typeof Ionicons.glyphMap,
-      value: smokingHabits.goal,
-      options: [
-        { value: "quit-completely", label: "Quit completely" },
-        { value: "reduce-gradually", label: "Reduce gradually" },
-        { value: "save-money", label: "Save money" },
-        { value: "improve-health", label: "Improve health" },
-        { value: "gain-control", label: "Gain control" },
-        { value: "doesnt-matter", label: "Doesn't matter" }
-      ]
-    }
-  ];
+  // icons + colors per theme
+  const EditIcon = isDark ? EditDark : EditLight;
+  const PrevIcon = isDark ? PrevDark : PrevLight;
+  const Right = isDark ? ArrowRightDark : ArrowRightLight;
+  const iconColor = isDark ? "#FFFFFF" : "#1e1b4b";
+  const systemIconColor = isDark ? "#CBD5E1" : "#1e1b4b";
 
-  const handleFieldEdit = (fieldId: string) => {
-    setEditingField(fieldId);
+  const Icons = {
+    Notification: isDark ? NotificationDark : NotificationLight,
+    Theme: isDark ? ThemeDark : ThemeLight,
+    Feedback: isDark ? FeedbackDark : FeedbackLight,
+    Support: isDark ? SupportDark : SupportLight,
   };
 
-  const handleSelection = (field: keyof SmokingHabits, value: string) => {
-    setSmokingHabits(prev => ({ ...prev, [field]: value }));
-    setEditingField(null);
-  };
+  // language
+  const { language } = useLanguage();
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const languages = [
+    { code: "en", name: t("languages.english"), flag: FlagEn },
+    { code: "es", name: t("languages.spanish"), flag: FlagEs },
+    { code: "uk", name: t("languages.ukrainian"), flag: FlagUk },
+  ] as const;
+  const currentLanguage =
+    languages.find((l) => l.code === language) || languages[0];
 
-  const getDisplayText = (field: any) => {
-    const option = field.options.find((opt: any) => opt.value === field.value);
-    const label = option?.label || field.value;
-    
-    switch (field.id) {
-      case "smokeType":
-        return `I am smoking ${label.toLowerCase()}`;
-      case "dailyAmount":
-        return `I smoke ${label.toLowerCase()}`;
-      case "packPrice":
-        return `One pack cost me $${field.value}`;
-      case "goal":
-        return `I want ${label.toLowerCase()}`;
-      default:
-        return label;
-    }
-  };
+  // app state
+  const {
+    gender,
+    selectedBuddyId,
+    buddyName,
+    smokeType,
+    dailyAmount,
+    packPrice,
+    packPriceCurrency,
+    goal,
+  } = useApp();
 
+  // buddy sprite
+  const sexKey: SexKey = gender === "lady" ? "w" : "m";
+  const baseBuddyKey: BuddyKey = React.useMemo(() => {
+    const id = (selectedBuddyId || "alpaca") as string;
+    const base = id.split("-")[0] as BuddyKey; // strip "-m"/"-w" if present
+    return (buddyAssets as Record<string, unknown>)[base]
+      ? base
+      : ("alpaca" as BuddyKey);
+  }, [selectedBuddyId]);
+
+  const buddySource = React.useMemo(() => {
+    const pack = buddyAssets[baseBuddyKey] || buddyAssets.alpaca;
+    return pack[sexKey];
+  }, [baseBuddyKey, sexKey]);
+
+  // savings + habits display text
+  const goalText =
+    goal === "quit-completely"
+      ? "quit completely"
+      : goal === "reduce-gradually"
+      ? "reduce gradually"
+      : goal === "save-money"
+      ? "save money"
+      : goal === "improve-health"
+      ? "improve health"
+      : goal === "gain-control"
+      ? "gain control"
+      : "quit completely";
+
+  const habitsLine = `I smoke ${smokeType || "cigarettes"}, usually ${
+    dailyAmount || "5–10"
+  } a day. A pack costs me around ${packPriceCurrency || "$"}${
+    packPrice || "5"
+  }. I want to ${goalText}.`;
+
+  const avgMap: Record<string, number> = {
+    "1-5": 3,
+    "5-10": 7.5,
+    "11-15": 13,
+    "16-20": 18,
+    "21-30": 25,
+    "31-40": 35,
+  };
+  const avgCigs = avgMap[dailyAmount || "5-10"] ?? 7.5;
+  const price = Number(packPrice || 5) || 5;
+  const perDay = (avgCigs / 20) * price;
+  const perYear = Math.round(perDay * 365);
+  const savingsText = `${packPriceCurrency || "$"}${perYear}`;
+
+  const genderLabel =
+    gender === "lady" ? "Woman" : gender === "man" ? "Man" : "Non-binary";
+
+  // parallax
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // Theme (SideModal)
+  const [showSideModal, setShowSideModal] = useState(false);
+  const [side, setSide] = useState<Side>(isDark ? "dark" : "bright");
   useEffect(() => {
-    logCustomer()
-  }, [])
+    setSide(isDark ? "dark" : "bright");
+  }, [isDark]);
 
-  const currentField = setupFields.find(field => field.id === editingField);
+  const handlePickSide = (s: Side) => {
+    setSide(s);
+    setTheme(s === "dark" ? "dark" : "light");
+    setShowSideModal(false);
+  };
+
+  // Support slide
+  const [showSupportModal, setShowSupportModal] = useState(false);
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={onBack}>
-            <Ionicons name="arrow-back" size={24} color="#000000" />
-          </Pressable>
-          <Text style={styles.title}>Profile</Text>
-          <Pressable style={styles.coinsButton} onPress={() => setShowCoinPurchase(true)}>
-            <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-            <Text style={styles.coinsText}>{userCoins}</Text>
-          </Pressable>
-        </View>
-
-        {/* Achievement Preview */}
-        <Pressable style={styles.previewCard} onPress={onNavigateToAchievements}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Achievements</Text>
-            <Ionicons name="chevron-forward" size={20} color="#666666" />
-          </View>
-          <View style={styles.previewGrid}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <View key={i} style={styles.previewItem} />
-            ))}
-          </View>
-        </Pressable>
-
-        {/* Characters Preview */}
-        <Pressable style={styles.previewCard} onPress={() => openShopWithTab('characters')}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Characters</Text>
-            <Ionicons name="chevron-forward" size={20} color="#666666" />
-          </View>
-          <View style={styles.previewGrid}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <View key={i} style={styles.previewItem} />
-            ))}
-          </View>
-        </Pressable>
-
-        {/* Backgrounds Preview */}
-        <Pressable 
-          style={styles.previewCard} 
-          onPress={() => openShopWithTab('backgrounds')}
+    <View className={`flex-1 ${isDark ? "bg-slate-800" : "bg-white"}`}>
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-6 pt-4 pb-3">
+        <Pressable
+          className={`w-10 h-10 rounded-full justify-center items-center p-1 ${
+            isDark ? "bg-slate-500" : "bg-slate-100"
+          }`}
+          onPress={onBack}
+          hitSlop={10}
+          style={({ hovered }) => [
+            isDark
+              ? { backgroundColor: hovered ? "#475569" : "#334155" }
+              : { backgroundColor: hovered ? "#e0e7ff" : "#f8fafc" },
+            isDark ? { elevation: 2 } : null,
+          ]}
         >
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Backgrounds</Text>
-            <Ionicons name="chevron-forward" size={20} color="#666666" />
-          </View>
-          <View style={styles.previewGrid}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <View key={i} style={[styles.previewItem, styles.backgroundPreview]} />
-            ))}
-          </View>
+          <PrevIcon width={18} height={18} color={iconColor} />
         </Pressable>
+        <Text
+          className={`text-xl font-bold ${
+            isDark ? "text-white" : "text-indigo-950"
+          }`}
+        >
+          Profile
+        </Text>
+        <View style={{ width: 40, height: 40 }} />
+      </View>
 
-        {/* Subscription */}
-        <View style={styles.subscriptionCard}>
-          <Text style={styles.cardTitle}>Subscription</Text>
-          <View style={styles.subscriptionOptions}>
-            <View style={styles.subscriptionOption}>
-              <View>
-                <Text style={styles.subscriptionLabel}>12 month</Text>
-                <Text style={styles.subscriptionSubtext}>Save 80%</Text>
+      <Animated.ScrollView
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 24 }}
+      >
+        {/* Buddy card */}
+        <View
+          className={`mx-4 rounded-3xl ${
+            isDark ? "bg-slate-700" : "bg-indigo-50"
+          }`}
+          style={{ height: 231 }}
+        >
+          <View className="rounded-3xl overflow-hidden" style={{ height: 143 }}>
+            <ParallaxBackground scrollY={scrollY} height={143} anchor="middle">
+              <View
+                pointerEvents="box-none"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: -18,
+                  height: 143,
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Animated.Image
+                  source={buddySource}
+                  resizeMode="contain"
+                  style={{
+                    width: "100%",
+                    height: 143,
+                    zIndex: 21,
+                    transform: [{ scale: 1.3 }],
+                  }}
+                />
               </View>
-              <View style={styles.subscriptionPrice}>
-                <Text style={styles.priceText}>10.99 USD</Text>
-                <Text style={styles.originalPrice}>15.99 USD</Text>
-              </View>
-            </View>
-            <View style={styles.subscriptionOption}>
-              <Text style={styles.subscriptionLabel}>3 month</Text>
-              <Text style={styles.priceText}>5.99 USD</Text>
-            </View>
-            <View style={styles.subscriptionOption}>
-              <Text style={styles.subscriptionLabel}>1 month</Text>
-              <Text style={styles.priceText}>2.99 USD</Text>
-            </View>
-            <View style={styles.subscriptionOption}>
-              <Text style={styles.subscriptionLabel}>App for life</Text>
-              <Text style={styles.priceText}>20.99 USD</Text>
-            </View>
+
+              {/* Edit buddy -> BuddySelection */}
+              <Pressable
+                onPress={onNavigateToBuddy}
+                className={`w-10 h-10 rounded-full z-[41] justify-center items-center absolute right-3 top-3 p-1 ${
+                  isDark ? "bg-slate-500" : "bg-indigo-100"
+                }`}
+                hitSlop={10}
+                style={({ hovered }) => [
+                  isDark
+                    ? { backgroundColor: hovered ? "#475569" : "#334155" }
+                    : { backgroundColor: hovered ? "#e0e7ff" : "#f8fafc" },
+                  isDark ? { elevation: 2 } : null,
+                ]}
+              >
+                <EditIcon width={18} height={18} color={iconColor} />
+              </Pressable>
+            </ParallaxBackground>
           </View>
-          <Pressable style={styles.unlockButton} onPress={() => presentPaywall()}>
-            <Text style={styles.unlockButtonText}>Unlock the entire program</Text>
+
+          {/* Name + gender */}
+          <View className="mt-5 items-center">
+            <Text
+              className={`text-2xl font-bold ${
+                isDark ? "text-white" : "text-indigo-950"
+              }`}
+              numberOfLines={1}
+            >
+              {buddyName || "Buddy"}
+            </Text>
+            <Text
+              className={`text-base font-medium ${
+                isDark ? "text-slate-300" : "text-slate-500"
+              }`}
+            >
+              {genderLabel}
+            </Text>
+          </View>
+        </View>
+
+        {/* Savings + Habits card */}
+        <View
+          className={`mx-4 mt-4 rounded-3xl ${
+            isDark ? "bg-slate-700" : "bg-indigo-50"
+          } p-5`}
+        >
+          <View className="flex-row items-end justify-center">
+            <Text
+              className={`${isDark ? "text-white" : "text-indigo-950"}`}
+              style={{ fontWeight: "800", fontSize: 40, lineHeight: 44 }}
+            >
+              {savingsText}
+            </Text>
+            <Text
+              className={`ml-1 mb-1 ${
+                isDark ? "text-slate-300" : "text-indigo-950"
+              }`}
+              style={{ fontWeight: "700", fontSize: 20 }}
+            >
+              /year
+            </Text>
+          </View>
+          <Text
+            className={`${
+              isDark ? "text-slate-300" : "text-slate-500"
+            } mt-1 text-center`}
+            style={{ fontSize: 16, fontWeight: "600" }}
+          >
+            Estimated daily savings
+          </Text>
+
+          <View
+            className={`${isDark ? "bg-slate-600" : "bg-indigo-100"} my-4`}
+            style={{ height: 1 }}
+          />
+
+          <View className="flex-row items-center justify-between">
+            <Text
+              className={`${isDark ? "text-white" : "text-indigo-950"}`}
+              style={{ fontWeight: "700", fontSize: 16 }}
+            >
+              My smoking habits
+            </Text>
+
+            {/* Edit habits -> open Setup (fromProfile) */}
+            <Pressable
+              onPress={onNavigateToSetup}
+              className={`w-10 h-10 rounded-full justify-center items-center ${
+                isDark ? "bg-slate-700" : "bg-slate-50"
+              }`}
+              hitSlop={10}
+              style={isDark ? { elevation: 2 } : undefined}
+            >
+              <EditIcon width={18} height={18} color={iconColor} />
+            </Pressable>
+          </View>
+
+          <Text
+            className={`${isDark ? "text-slate-200" : "text-indigo-950"} mt-2`}
+            style={{ fontSize: 14, lineHeight: 20, fontWeight: "500" }}
+          >
+            {habitsLine}
+          </Text>
+        </View>
+
+        {/* divider */}
+        <View
+          className="self-center my-4"
+          style={{
+            width: 72,
+            height: 2,
+            backgroundColor: isDark ? "#475569" : "#E2E8F0",
+            borderRadius: 2,
+          }}
+        />
+
+        {/* Settings block 1 */}
+        <View className="mx-4 gap-3">
+          {/* Notifications */}
+          <Pressable
+            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+              isDark ? "bg-slate-700" : "bg-indigo-50"
+            }`}
+            onPress={() => {}}
+          >
+            <View className="flex-row items-center">
+              <Icons.Notification
+                width={20}
+                height={20}
+                color={systemIconColor}
+              />
+              <Text
+                className={`ml-3 ${
+                  isDark ? "text-slate-100" : "text-indigo-950"
+                }`}
+                style={{ fontWeight: "600" }}
+              >
+                Notification
+              </Text>
+            </View>
+            <Right width={18} height={18} color={systemIconColor} />
+          </Pressable>
+
+          {/* Theme */}
+          <Pressable
+            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+              isDark ? "bg-slate-700" : "bg-indigo-50"
+            }`}
+            onPress={() => setShowSideModal(true)}
+          >
+            <View className="flex-row items-center">
+              <Icons.Theme width={20} height={20} color={systemIconColor} />
+              <Text
+                className={`ml-3 ${
+                  isDark ? "text-slate-100" : "text-indigo-950"
+                }`}
+                style={{ fontWeight: "600" }}
+              >
+                Theme
+              </Text>
+            </View>
+            <Right width={18} height={18} color={systemIconColor} />
+          </Pressable>
+
+          {/* Language */}
+          <Pressable
+            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+              isDark ? "bg-slate-700" : "bg-indigo-50"
+            }`}
+            onPress={() => setShowLanguageModal(true)}
+          >
+            <View className="flex-row items-center">
+              <View className="w-6 h-6 rounded-full items-center justify-center overflow-hidden mr-2">
+                {currentLanguage.flag && (
+                  <currentLanguage.flag width={24} height={24} />
+                )}
+              </View>
+              <Text
+                className={`${isDark ? "text-slate-100" : "text-indigo-950"}`}
+                style={{ fontWeight: "600" }}
+              >
+                {currentLanguage.name}
+              </Text>
+            </View>
+            <Right width={18} height={18} color={systemIconColor} />
           </Pressable>
         </View>
 
-        {/* Settings */}
-        <View style={styles.settingsCard}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Smoking Habits</Text>
-            <Ionicons name="create-outline" size={20} color="#666666" />
-          </View>
-          <View style={styles.habitsList}>
-            {setupFields.map((field) => (
-              <Pressable
-                key={field.id}
-                style={styles.habitItem}
-                onPress={() => handleFieldEdit(field.id)}
-              >
-                <View style={styles.habitContent}>
-                  <Ionicons name={field.icon} size={24} color="#000000" />
-                  <Text style={styles.habitText}>{getDisplayText(field)}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color="#666666" />
-              </Pressable>
-            ))}
-          </View>
-          <View style={styles.notificationToggle}>
-            <Text style={styles.notificationLabel}>Notifications</Text>
-            <View style={styles.toggleSwitch}>
-              <View style={styles.toggleKnob} />
-            </View>
-          </View>
-        </View>
-      </ScrollView>
+        {/* divider */}
+        <View
+          className="self-center my-4"
+          style={{
+            width: 72,
+            height: 2,
+            backgroundColor: isDark ? "#475569" : "#E2E8F0",
+            borderRadius: 2,
+          }}
+        />
 
-      {editingField && currentField && (
-        <SlideModal visible={true} onClose={() => setEditingField(null)} title={currentField.label}>
-          <ScrollView className="max-h-96">
-            <View className="gap-4">
-              {currentField.options.map((option) => (
-                <Pressable
-                  key={option.value}
-                  className={`w-11/12 h-16 rounded-3xl flex-row justify-between items-center px-5 self-center ${
-                    smokingHabits[editingField as keyof SmokingHabits] === option.value 
-                      ? (isDark ? 'bg-slate-600' : 'bg-indigo-100') 
-                      : (isDark ? 'bg-slate-700' : 'bg-indigo-50')
-                  }`}
-                  onPress={() => handleSelection(editingField as keyof SmokingHabits, option.value)}
-                >
-                  <Text className={`text-base ${smokingHabits[editingField as keyof SmokingHabits] === option.value ? 'font-bold' : 'font-medium'} ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
-                    {option.label}
-                  </Text>
-                  {smokingHabits[editingField as keyof SmokingHabits] === option.value && (
-                    <Ionicons 
-                      name="checkmark" 
-                      size={24} 
-                      color="#4f46e5" 
-                    />
-                  )}
-                </Pressable>
-              ))}
+        {/* Settings block 2 */}
+        <View className="mx-4 gap-3">
+          {/* Feedback -> open SupportSlide */}
+          <Pressable
+            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+              isDark ? "bg-slate-700" : "bg-indigo-50"
+            }`}
+            onPress={() => setShowSupportModal(true)}
+          >
+            <View className="flex-row items-center">
+              <Icons.Feedback width={20} height={20} color={systemIconColor} />
+              <Text
+                className={`ml-3 ${
+                  isDark ? "text-slate-100" : "text-indigo-950"
+                }`}
+                style={{ fontWeight: "600" }}
+              >
+                Feedback
+              </Text>
             </View>
-          </ScrollView>
-        </SlideModal>
-      )}
+            <Right width={18} height={18} color={systemIconColor} />
+          </Pressable>
+
+          {/* Support -> open SupportSlide */}
+          <Pressable
+            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+              isDark ? "bg-slate-700" : "bg-indigo-50"
+            }`}
+            onPress={() => setShowSupportModal(true)}
+          >
+            <View className="flex-row items-center">
+              <Icons.Support width={20} height={20} color={systemIconColor} />
+              <Text
+                className={`ml-3 ${
+                  isDark ? "text-slate-100" : "text-indigo-950"
+                }`}
+                style={{ fontWeight: "600" }}
+              >
+                Support
+              </Text>
+            </View>
+            <Right width={18} height={18} color={systemIconColor} />
+          </Pressable>
+        </View>
+      </Animated.ScrollView>
+
+      {/* Language slide */}
+      <LanguageSlide
+        visible={showLanguageModal}
+        onClose={() => setShowLanguageModal(false)}
+      />
+
+      {/* Theme picker */}
+      <SideModal
+        visible={showSideModal}
+        isDark={isDark}
+        side={side}
+        onSelect={handlePickSide}
+        onClose={() => setShowSideModal(false)}
+      />
+
+      {/* Support slide */}
+      <SupportSlide
+        visible={showSupportModal}
+        onClose={() => setShowSupportModal(false)}
+      />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  coinsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 8,
-  },
-  coinsText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  previewCard: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  previewGrid: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  previewItem: {
-    flex: 1,
-    aspectRatio: 1,
-    backgroundColor: '#e5e5e5',
-    borderRadius: 12,
-  },
-  backgroundPreview: {
-    backgroundColor: '#e0f2fe',
-  },
-  subscriptionCard: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-  },
-  subscriptionOptions: {
-    gap: 12,
-    marginBottom: 16,
-  },
-  subscriptionOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-  },
-  subscriptionLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#000000',
-  },
-  subscriptionSubtext: {
-    fontSize: 12,
-    color: '#666666',
-  },
-  subscriptionPrice: {
-    alignItems: 'flex-end',
-  },
-  priceText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  originalPrice: {
-    fontSize: 12,
-    color: '#666666',
-    textDecorationLine: 'line-through',
-  },
-  unlockButton: {
-    backgroundColor: '#000000',
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  unlockButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  settingsCard: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-  },
-  habitsList: {
-    gap: 12,
-    marginBottom: 16,
-  },
-  habitItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-  },
-  habitContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  habitText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#000000',
-  },
-  notificationToggle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e5e5',
-  },
-  notificationLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#000000',
-  },
-  toggleSwitch: {
-    width: 50,
-    height: 30,
-    backgroundColor: '#e5e5e5',
-    borderRadius: 15,
-    padding: 2,
-  },
-  toggleKnob: {
-    width: 26,
-    height: 26,
-    backgroundColor: '#ffffff',
-    borderRadius: 13,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContainer: {
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    maxHeight: '70%',
-  },
-  modalContent: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 40,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000000',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  optionsContainer: {
-    maxHeight: 400,
-  },
-  option: {
-    width: '100%',
-    height: 56,
-    borderRadius: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 12,
-  },
-  optionUnselected: {
-    backgroundColor: '#f5f5f5',
-  },
-  optionSelected: {
-    backgroundColor: '#000000',
-  },
-  optionText: {
-    fontSize: 16,
-    fontWeight: '500',
-    flex: 1,
-  },
-  optionTextUnselected: {
-    color: '#000000',
-  },
-  optionTextSelected: {
-    color: 'white',
-    fontWeight: '600',
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: 24,
-  },
-  closeButtonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-});
-
-export default Profile; 
+export default Profile;

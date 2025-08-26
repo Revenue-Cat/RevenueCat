@@ -18,8 +18,9 @@ import Shop from "./src/screens/Shop";
 import CravingSOS from "./src/screens/CravingSOS";
 import BreathingExercise from "./src/screens/BreathingExercise";
 import ChatAssistance from "./src/screens/ChatAssistance";
-import Purchases, { LOG_LEVEL } from 'react-native-purchases';
-import { Platform } from 'react-native';
+import CoinPurchaseModal from "./src/components/CoinPurchaseModal";
+import Purchases, { LOG_LEVEL } from "react-native-purchases";
+import { Platform } from "react-native";
 
 type Screen =
   | "welcome"
@@ -30,10 +31,12 @@ type Screen =
   | "home"
   | "profile"
   | "achievements"
-  | "shop";
+  | "shop"
+  | "edit-habits"
+  | "edit-buddy";
 
 const AppContent: React.FC = () => {
-  const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
+  const [currentScreen, setCurrentScreen] = useState<Screen>("profile");
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
@@ -81,17 +84,16 @@ const AppContent: React.FC = () => {
   return (
     <AppProvider>
       <SafeAreaView
-        className={`flex-1 ${theme === "dark" ? "bg-dark-background" : "bg-light-background"}`}
+        className={`flex-1 ${
+          theme === "dark" ? "bg-dark-background" : "bg-light-background"
+        }`}
       >
         {currentScreen === "welcome" && (
           <Welcome onNext={() => navigateTo("setup")} />
         )}
 
         {currentScreen === "setup" && (
-          <Setup
-            onNext={() => navigateTo("buddy-selection")}
-            onBack={() => navigateTo("welcome")}
-          />
+          <Setup onNext={() => navigateTo("buddy-selection")} />
         )}
 
         {currentScreen === "buddy-selection" && (
@@ -101,7 +103,9 @@ const AppContent: React.FC = () => {
         )}
 
         {currentScreen === "notification-permission" && (
-          <NotificationPermission onNext={() => navigateTo("challenge-start")} />
+          <NotificationPermission
+            onNext={() => navigateTo("challenge-start")}
+          />
         )}
 
         {currentScreen === "challenge-start" && (
@@ -124,11 +128,32 @@ const AppContent: React.FC = () => {
             onBack={() => navigateTo("home")}
             onNavigateToAchievements={() => navigateTo("achievements")}
             onNavigateToShop={() => navigateTo("shop")}
+            onNavigateToSetup={() => navigateTo("edit-habits")}
+            onNavigateToBuddy={() => navigateTo("edit-buddy")}
+          />
+        )}
+
+        {currentScreen === "edit-habits" && (
+          <Setup
+            fromProfile
+            onBack={() => navigateTo("profile")}
+            onNext={() => navigateTo("profile")}
+          />
+        )}
+
+        {currentScreen === "edit-buddy" && (
+          <BuddySelection
+            fromProfile
+            onBack={() => navigateTo("profile")}
+            onNext={() => {}} // unused in fromProfile
           />
         )}
 
         {currentScreen === "achievements" && (
-          <Achievements onBack={() => navigateTo("home")} isExclusiveSelected={false} />
+          <Achievements
+            onBack={() => navigateTo("home")}
+            isExclusiveSelected={false}
+          />
         )}
 
         {currentScreen === "shop" && (
