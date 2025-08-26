@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import PaintIcon from '../assets/shop/scenes/paint.svg';
 import FluffyIcon from '../assets/shop/buddies/fluffy.svg';
 
@@ -14,6 +15,7 @@ const ShopToggle: React.FC<ShopToggleProps> = ({
   isScenesSelected, 
   setIsScenesSelected 
 }) => {
+  const { t } = useTranslation();
 
   // Use the same transform as the Buddy icon
   const transform = useMemo(() => [{
@@ -81,7 +83,7 @@ const ShopToggle: React.FC<ShopToggleProps> = ({
             fontWeight: '500',
             color: !isScenesSelected ? '#1E293B' : '#64748B'
           }}>
-            Buddies
+            {t('toggles.buddies')}
           </Text>
         </TouchableOpacity>
         
@@ -110,7 +112,7 @@ const ShopToggle: React.FC<ShopToggleProps> = ({
             fontWeight: '500',
             color: isScenesSelected ? '#1E293B' : '#64748B'
           }}>
-            Scenes
+            {t('toggles.scenes')}
           </Text>
         </TouchableOpacity>
       </View>

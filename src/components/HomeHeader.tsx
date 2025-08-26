@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import CountdownTimer from './Timer';
+import { useTranslation } from 'react-i18next';
+import CountdownTimer from './CountdownTimer';
 import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from '../contexts/AppContext';
 
@@ -20,6 +21,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   onCoinPurchase,
   onViewChange
 }) => {
+  const { t } = useTranslation();
   const { startDate, achievements, getProgressForAchievement } = useApp();
   
   // Debug logging
@@ -38,10 +40,10 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   console.log('HomeHeader: Completed achievements count:', completedAchievementsCount, 'out of', achievements.length);
   const getViewTitle = () => {
     switch (currentView) {
-      case 'home': return 'Zero Poofs';
-      case 'achievements': return 'Achievements';
-      case 'shop': return 'Shop';
-      default: return 'Zero Poofs';
+      case 'home': return t('home.title');
+      case 'achievements': return t('home.achievements');
+      case 'shop': return t('home.shop');
+      default: return t('home.title');
     }
   };
 
@@ -77,7 +79,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           ) : currentView === 'home' && (
             <View className="items-center">
               <Text className="text-3xl font-bold text-indigo-950">00</Text>
-              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">Days</Text>
+              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">{t('countdownTimer.days')}</Text>
             </View>
           )}
 
@@ -88,7 +90,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
                 <Text className="text-3xl font-bold text-indigo-950">{completedAchievementsCount}</Text>
                 <Text className="text-lg font-bold text-indigo-950/50">/{achievements.length}</Text>
               </View>
-              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-1">Badges collected</Text>
+              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-1">{t('home.badgesCollected')}</Text>
             </View>
           )}
 

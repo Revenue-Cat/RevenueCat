@@ -180,7 +180,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
   return (
     <View className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
 
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 40 }}>
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 10 }}>
         {/* Header */}
         <View className="items-center mb-8">
           <Text className={`text-2xl font-bold mb-3 text-center ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
@@ -241,7 +241,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack }) => {
         {/* Privacy Text */}
         <View className="px-6 mb-4">
           <Text className="text-xs text-slate-500 text-center">
-            Don't worry, your data is secure. We keep it private and won't pass it on.
+            {t('setup.privacyText')}
           </Text>
         </View>
       </ScrollView>

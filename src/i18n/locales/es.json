@@ -1,136 +1,92 @@
 {
-  "buddySelection": {
-    "buddies": {
-      "alpaca": {
-        "description": "Suave estratega que te mantiene cómodo mientras pasan los antojos.",
-        "name": "Alpaca Tranquila"
-      },
-      "dog": {
-        "description": "Motivador leal que trae victorias y protege tu racha.",
-        "name": "Capitán Perruno"
-      },
-      "fox": {
-        "description": "Planificador ingenioso que te ayuda a evitar desencadenantes.",
-        "name": "Zorro Astuto"
-      },
-      "koala": {
-        "description": "Detecta problemas y mantiene tu aliento más fresco que una mañana en París.",
-        "name": "Monsieur Sniff"
-      },
-      "zebra": {
-        "description": "Guía equilibrado que recuerda: un paso a la vez, una raya a la vez.",
-        "name": "Cebra Zen"
-      }
-    },
-    "next": "¡Vamos, compañero!",
-    "sex": {
-      "label": "Género",
-      "note": "La imagen de tu compañero se adapta a tu selección.",
-      "options": {
-        "m": "Masculino",
-        "w": "Femenino"
-      }
-    },
-    "subtitle": "Elige un personaje para acompañarte en tu viaje para dejar de fumar.",
-    "title": "Elige tu compañero"
+  "welcome": {
+    "title": "Bienvenido a Zero Poofs",
+    "subtitle": "Tu viaje hacia una vida sin humo comienza aquí",
+    "description": "Únete a miles de personas que han dejado de fumar exitosamente con nuestro enfoque probado.",
+    "actionButton": "Comenzar",
+    "willYouQuit": "¿Vas a... dejar de fumar?",
+    "ctaButton": "Sí, hagámoslo juntos",
+    "selectLanguage": "Idioma"
   },
   "languages": {
-    "english": "Inglés",
+    "english": "English",
     "spanish": "Español",
-    "ukrainian": "Ucraniano"
-  },
-  "notificationPermission": {
-    "benefits": {
-      "goals": "Mantenerte en el camino con tus objetivos",
-      "milestones": "Celebrar tus logros",
-      "motivation": "Recordatorios de motivación diaria"
-    },
-    "enable": "Activar Notificaciones",
-    "preview": {
-      "title": "30 días sin fumar",
-      "message": "El recuerdo permanece, pero el tabaco está en el pasado."
-    },
-    "skip": "Omitir por ahora",
-    "subtitle": "Te enviaremos recordatorios para mantenerte en el camino y celebrar tu progreso.",
-    "title": "Activar Notificaciones",
-    "mainTitle": "Mantente en el rumbo, a tu manera",
-    "mainSubtitle": "Deja que tu compañero te recuerde con suaves nudges — sin presión, solo progreso.",
-    "actionButton": "¡Hagámoslo!"
-  },
-  "challengeStart": {
-    "mainTitle": "Comienza tu Primer Desafío de 24 Horas",
-    "mainSubtitle": "24 horas, un compañero y un nuevo comienzo.",
-    "actionButton": "Ve Sin Fumar"
+    "ukrainian": "Українська"
   },
   "setup": {
+    "title": "Conozcámonos",
+    "subtitle": "Esto nos ayuda a personalizar tu experiencia",
+    "actionButton": "Continuar",
+    "privacyText": "No te preocupes, tus datos están seguros. Los mantenemos privados y no los compartiremos.",
+    "nextButton": {
+      "text": "Siguiente"
+    },
     "fields": {
+      "smokeType": {
+        "label": "¿Qué fumas?",
+        "modalTitle": "¿Qué sueles fumar?",
+        "selected": "Estoy fumando {{value}}",
+        "options": {
+          "cigarettes": "Cigarrillos",
+          "roll-your-own": "Tabaco de liar",
+          "tobacco-heater": "Tabaco calentado",
+          "vaping": "Vapeo"
+        }
+      },
       "dailyAmount": {
         "label": "¿Cuál es tu uso diario?",
+        "modalTitle": "¿Cuántos cigarrillos al día es normal para ti?",
+        "selected": "Fumo {{value}}",
         "options": {
-          "1-5": "1-5 cigarrillos por día",
-          "11-15": "11-15 cigarrillos por día",
-          "16-20": "16-20 cigarrillos por día (1 paquete)",
-          "21-30": "21-30 cigarrillos por día",
-          "31-40": "31-40 cigarrillos por día (2 paquetes)",
-          "5-10": "5-10 cigarrillos por día"
-        },
-        "selected": "Fumo {{value}}"
-      },
-      "goal": {
-        "label": "¿Cuál es tu objetivo principal?",
-        "options": {
-          "doesnt-matter": "No importa",
-          "gain-control": "Ganar control",
-          "improve-health": "Mejorar la salud",
-          "quit-completely": "Dejar completamente",
-          "reduce-gradually": "Reducir gradualmente",
-          "save-money": "Ahorrar dinero"
-        },
-        "selected": "Quiero {{value}}"
+          "1-5": "1-5",
+          "5-10": "6-10",
+          "11-15": "11-15",
+          "16-20": "16-20 (1 paquete)",
+          "21-30": "21-30",
+          "31-40": "31-40 (2 paquetes)"
+        }
       },
       "packPrice": {
         "label": "¿Cuál es el costo de una unidad?",
+        "modalTitle": "¿Cuánto gastas en fumar?",
+        "selected": "Un paquete me cuesta {{value}}",
         "options": {
           "3": "$3",
           "4": "$4",
           "5": "$5",
           "6": "$6",
           "7": "$7"
-        },
-        "selected": "Un paquete me cuesta {{value}}"
+        }
       },
-      "smokeType": {
-        "label": "¿Qué fumas?",
+      "goal": {
+        "label": "¿Cuál es tu objetivo principal?",
+        "modalTitle": "¿Cuál es tu objetivo?",
+        "selected": "Quiero {{value}}",
         "options": {
-          "cigarettes": "Cigarrillos",
-          "roll-your-own": "Cigarrillos de liar",
-          "tobacco-heater": "Calentador de tabaco"
-        },
-        "selected": "Estoy fumando {{value}}"
+          "quit-completely": "Dejar completamente",
+          "reduce-gradually": "Reducir gradualmente",
+          "gain-control": "Ganar control",
+          "improve-health": "Mejorar la salud",
+          "save-money": "Ahorrar dinero",
+          "doesnt-matter": "No importa"
+        }
       }
-    },
-    "header": {
-      "description": "Solo unos toques y 20 segundos para obtener un plan para dejar de fumar hecho para ti",
-      "title": "Establece tu camino para dejar de fumar"
-    },
-    "next": "Siguiente",
-    "nextButton": {
-      "text": "Siguiente"
-    },
-    "stats": {
-      "description": "Ahorros promedio de EE.UU. sin fumar. Agrega tus hábitos para obtener tu número."
-    },
-    "statsText": "de los fumadores dicen que quieren dejar de fumar — no estás solo.",
-    "subtitle": "Responde algunas preguntas rápidas para personalizar tu plan para dejar de fumar. No tomará más de 20 segundos.",
-    "title": "Establece tu camino para dejar de fumar"
+    }
   },
-  "welcome": {
-    "ctaButton": "Sí, hagámoslo juntos",
-    "letsStart": "Empezar",
-    "selectLanguage": "Idioma",
-    "subtitle": "Tu guía amigable para dejar de fumar — un pequeño paso a la vez.",
-    "title": "¡Bienvenido a QuitQly!",
-    "willYouQuit": "¿Dejarás... de fumar?"
+  "buddySelection": {
+    "title": "Elige tu compañero",
+    "subtitle": "Elige un compañero para tu viaje",
+    "actionButton": "Continuar"
+  },
+  "notificationPermission": {
+    "title": "Mantente motivado",
+    "subtitle": "Recibe recordatorios gentiles y celebra tu progreso",
+    "actionButton": "Continuar"
+  },
+  "challengeStart": {
+    "mainTitle": "¿Listo para empezar?",
+    "mainSubtitle": "Tu viaje sin humo comienza ahora. ¡Hagámoslo contar!",
+    "actionButton": "Comenzar Mi Viaje"
   },
   "shop": {
     "selected": "Seleccionado",
@@ -150,7 +106,7 @@
     "comingSoon": {
       "title": "Próximamente",
       "subtitle": "Los logros exclusivos están en construcción",
-      "description": "¡Estamos trabajando duro para traerte increíbles logros exclusivos. ¡Mantente atento a las actualizaciones!"
+      "description": "¡Estamos trabajando duro para traerte logros exclusivos increíbles. ¡Mantente atento a las actualizaciones!"
     },
     "timeLeft": "Tiempo restante",
     "locked": "Bloqueado. Actualiza tu plan para desbloquear este logro.",
@@ -165,102 +121,162 @@
     "seconds": "Segundos"
   },
   "buddies": {
-    "zebra-m": {
-      "name": "ZebraBro",
-      "description": "Corre conmigo, y dejaremos el humo atrás más rápido de lo que puede alcanzarnos."
-    },
-    "dog-m": {
-      "name": "SpudDog",
-      "description": "Quédate conmigo — venceremos al humo más rápido de lo que piensa."
-    },
-    "fox-m": {
-      "name": "GingerBoss",
-      "description": "Con dos cabezas inteligentes, el humo no tiene oportunidad — dejaremos de fumar el doble de rápido."
-    },
     "alpaca-m": {
-      "name": "Lamburger",
-      "description": "Escala conmigo — y llegaremos a la cima libre de humo más rápido de lo que pensamos."
-    },
-    "koala-m": {
-      "name": "Don Snooze",
-      "description": "Abraza la vida conmigo — y nos sacudiremos el humo más rápido de lo que puede aferrarse."
-    },
-    "dog-w": {
-      "name": "SpudQueen",
-      "description": "Juntos brillamos más, y dejar de fumar se vuelve más fácil y rápido."
+      "name": "Alpaca",
+      "description": "Un compañero gentil y tranquilo para tu viaje."
     },
     "alpaca-w": {
-      "name": "Lamazing",
-      "description": "Lado a lado respiraremos aire fresco y ahuyentaremos el humo en poco tiempo."
+      "name": "Alpaca",
+      "description": "Un compañero gentil y tranquilo para tu viaje."
     },
-    "fox-w": {
-      "name": "FoxyBossy",
-      "description": "Vamos a ser más inteligentes que el humo juntos — los dos terminaremos este juego rápido."
-    },
-    "koala-w": {
-      "name": "NapCutie",
-      "description": "Juntos encontraremos paz — y dejaremos el humo muy atrás mucho más rápido."
+    "zebra-m": {
+      "name": "Cebra",
+      "description": "Un amigo fuerte y decidido para mantenerte motivado."
     },
     "zebra-w": {
-      "name": "Zebrabelle",
-      "description": "Si soñamos lado a lado, el humo desaparecerá el doble de rápido."
+      "name": "Cebra",
+      "description": "Un amigo fuerte y decidido para mantenerte motivado."
+    },
+    "fluffy-m": {
+      "name": "Peludo",
+      "description": "Un compañero suave y reconfortante para momentos difíciles."
+    },
+    "fluffy-w": {
+      "name": "Peludo",
+      "description": "Un compañero suave y reconfortante para momentos difíciles."
+    },
+    "panda-m": {
+      "name": "Panda",
+      "description": "Un compañero pacífico y consciente para tu viaje de bienestar."
+    },
+    "panda-w": {
+      "name": "Panda",
+      "description": "Un compañero pacífico y consciente para tu viaje de bienestar."
+    },
+    "koala-m": {
+      "name": "Koala",
+      "description": "Un amigo relajado y solidario para tu viaje para dejar de fumar."
+    },
+    "koala-w": {
+      "name": "Koala",
+      "description": "Un amigo relajado y solidario para tu viaje para dejar de fumar."
     }
   },
   "scenes": {
     "bg1": {
-      "name": "Predeterminado"
-    },
-    "bg2": {
       "name": "Atardecer"
     },
-    "bg3": {
+    "bg2": {
       "name": "Océano"
     },
-    "bg4": {
+    "bg3": {
       "name": "Bosque"
     },
+    "bg4": {
+      "name": "Montaña"
+    },
     "bg5": {
-      "name": "Púrpura"
+      "name": "Desierto"
     },
     "bg6": {
-      "name": "Oscuro"
+      "name": "Ciudad"
     },
     "bg7": {
-      "name": "Cerezo en Flor"
+      "name": "Espacio"
     }
   },
   "regularAchievements": {
     "first-spark": {
-      "name": "Primera chispa",
-      "description": "Primeras 24 horas sin humo o vapeo — tu comienzo."
+      "name": "Primera Chispa",
+      "description": "Completa tu primer día sin fumar"
     },
     "hold-on": {
       "name": "Mantente Firme",
-      "description": "Tres días sin fumar — demostrando tu fuerza de voluntad."
+      "description": "Sobrevive la primera semana de tu viaje para dejar de fumar"
     },
     "steel-week": {
-      "name": "Semana de acero",
-      "description": "Una semana sin nicotina — tu fuerza crece."
+      "name": "Semana de Acero",
+      "description": "Completa dos semanas sin fumar"
     },
     "bright-moon": {
-      "name": "Luna brillante",
-      "description": "Dos semanas sin fumar — siente el cambio."
+      "name": "Luna Brillante",
+      "description": "Alcanza un mes sin fumar"
     },
     "fresh-path": {
-      "name": "Camino fresco",
-      "description": "Un mes completo sin fumar — nuevos hábitos se forman."
+      "name": "Camino Fresco",
+      "description": "Completa tres meses sin fumar"
     },
     "freedom": {
       "name": "Libertad",
-      "description": "Tres meses sin nicotina — disfruta tu libertad."
+      "description": "Logra seis meses de vida sin humo"
     },
     "hero": {
       "name": "Héroe",
-      "description": "Medio año sin fumar — eres imparable."
+      "description": "Completa un año sin fumar"
     },
     "legend": {
       "name": "Leyenda",
-      "description": "Casi un año sin fumar — conviértete en una verdadera leyenda."
+      "description": "Mantén dos años de vida sin humo"
+    }
+  },
+  "toggles": {
+    "buddies": "Compañeros",
+    "scenes": "Escenas",
+    "regular": "Regular",
+    "exclusive": "Exclusivo"
+  },
+  "home": {
+    "title": "Zero Poofs",
+    "achievements": "Logros",
+    "shop": "Tienda",
+    "cravingSOS": "SOS de Antojo",
+    "stats": {
+      "cigsAvoided": "Cigarrillos evitados",
+      "moneySaved": "Dinero ahorrado",
+      "timeSaved": "Tiempo ahorrado",
+      "slips": "Recaídas"
+    },
+    "badgesCollected": "Insignias recolectadas"
+  },
+  "challenges": {
+    "title": "Desafíos",
+    "challenge": "desafío",
+    "checkIn": "Registrarse",
+    "masterOfAir": {
+      "title": "Maestro del aire",
+      "description": "Practica 5 respiraciones profundas."
+    },
+    "hydrationBoost": {
+      "title": "Impulso de hidratación",
+      "description": "Bebe agua en cada antojo."
+    },
+    "stepSlayer": {
+      "title": "Asesino de pasos",
+      "description": "Camina 10,000 pasos diarios."
+    },
+    "snackBreak": {
+      "title": "Descanso de bocadillo",
+      "description": "Elige bocadillos saludables en lugar de comida chatarra."
+    },
+    "calmPower": {
+      "title": "Poder de calma",
+      "description": "Completa 10 sesiones de meditación."
+    },
+    "fistFlow": {
+      "title": "Flujo de puño",
+      "description": "Mantén una plancha por 2 minutos."
+    },
+    "refresh": {
+      "title": "Refrescar",
+      "description": "Nada 20 vueltas en una sesión."
+    },
+    "craveCrusher": {
+      "title": "Triturador de antojos",
+      "description": "Practica técnicas de alivio del estrés."
+    },
+    "flowMinute": {
+      "title": "Minuto de flujo",
+      "description": "Completa rutina diaria de estiramiento."
     }
   }
 }
