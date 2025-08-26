@@ -1,6 +1,6 @@
+// src/screens/Profile.tsx
 import React, { useRef, useMemo, useState, useEffect } from "react";
 import { View, Text, Pressable, Animated } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { t } from "i18next";
 
 import { useApp } from "../contexts/AppContext";
@@ -10,7 +10,6 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
 import ParallaxBackground from "../components/ParallaxBackground";
 import LanguageSlide from "../components/LanguageSlide";
-import SlideModal from "../components/SlideModal";
 import SideModal from "../components/SideModal";
 import SupportSlide from "../components/SupportSlide";
 
@@ -37,13 +36,17 @@ interface ProfileProps {
   onBack: () => void;
   onNavigateToAchievements: () => void;
   onNavigateToShop: () => void;
-  onNavigateToSetup?: () => void; // optional hook if you later open Setup from here
+  onNavigateToSetup: () => void; // open Setup (fromProfile)
+  onNavigateToBuddy: () => void; // open BuddySelection (with back)
 }
 
-type HabitField = "smokeType" | "dailyAmount" | "packPrice" | "goal";
 type Side = "bright" | "dark";
 
-const Profile: React.FC<ProfileProps> = ({ onBack }) => {
+const Profile: React.FC<ProfileProps> = ({
+  onBack,
+  onNavigateToBuddy,
+  onNavigateToSetup,
+}) => {
   // theme
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
@@ -78,28 +81,29 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
     gender,
     selectedBuddyId,
     buddyName,
-    openShopWithTab,
-
     smokeType,
     dailyAmount,
     packPrice,
     packPriceCurrency,
     goal,
-
-    setSmokeType,
-    setDailyAmount,
-    setPackPrice,
-    setGoal,
   } = useApp();
 
   // buddy sprite
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
-  const buddySource = useMemo(
-    () => buddyAssets[selectedBuddyId as BuddyKey][sexKey],
-    [selectedBuddyId, sexKey]
-  );
+  const baseBuddyKey: BuddyKey = React.useMemo(() => {
+    const id = (selectedBuddyId || "alpaca") as string;
+    const base = id.split("-")[0] as BuddyKey; // strip "-m"/"-w" if present
+    return (buddyAssets as Record<string, unknown>)[base]
+      ? base
+      : ("alpaca" as BuddyKey);
+  }, [selectedBuddyId]);
 
-  // savings + habits
+  const buddySource = React.useMemo(() => {
+    const pack = buddyAssets[baseBuddyKey] || buddyAssets.alpaca;
+    return pack[sexKey];
+  }, [baseBuddyKey, sexKey]);
+
+  // savings + habits display text
   const goalText =
     goal === "quit-completely"
       ? "quit completely"
@@ -138,80 +142,6 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
 
   // parallax
   const scrollY = useRef(new Animated.Value(0)).current;
-
-  // habits editing (kept as-is)
-  const [showHabitsModal, setShowHabitsModal] = useState(false);
-  const [editingField, setEditingField] = useState<HabitField | null>(null);
-
-  const fieldDefs = useMemo(
-    () => [
-      {
-        id: "smokeType" as const,
-        label: "What do you usually smoke?",
-        value: smokeType || "cigarettes",
-        options: [
-          { value: "cigarettes", label: "Cigarettes" },
-          { value: "tobacco-heater", label: "Tobacco heater" },
-          { value: "roll-your-own", label: "Roll-your-own" },
-        ],
-        onSelect: (v: string) => setSmokeType(v),
-      },
-      {
-        id: "dailyAmount" as const,
-        label: "How much do you use daily?",
-        value: dailyAmount || "5-10",
-        options: [
-          { value: "1-5", label: "1-5 cigarettes per day" },
-          { value: "5-10", label: "5-10 cigarettes per day" },
-          { value: "11-15", label: "11-15 cigarettes per day" },
-          { value: "16-20", label: "16-20 cigarettes per day (1 pack)" },
-          { value: "21-30", label: "21-30 cigarettes per day" },
-          { value: "31-40", label: "31-40 cigarettes per day (2 packs)" },
-        ],
-        onSelect: (v: string) => setDailyAmount(v),
-      },
-      {
-        id: "packPrice" as const,
-        label: "How much do you pay for one unit?",
-        value: packPrice || "5",
-        options: [
-          { value: "3", label: "$3" },
-          { value: "4", label: "$4" },
-          { value: "5", label: "$5" },
-          { value: "6", label: "$6" },
-          { value: "7", label: "$7" },
-        ],
-        onSelect: (v: string) => setPackPrice(v),
-      },
-      {
-        id: "goal" as const,
-        label: "What's your main goal?",
-        value: goal || "quit-completely",
-        options: [
-          { value: "quit-completely", label: "Quit completely" },
-          { value: "reduce-gradually", label: "Reduce gradually" },
-          { value: "save-money", label: "Save money" },
-          { value: "improve-health", label: "Improve health" },
-          { value: "gain-control", label: "Gain control" },
-          { value: "doesnt-matter", label: "Doesn't matter" },
-        ],
-        onSelect: (v: string) => setGoal(v),
-      },
-    ],
-    [
-      smokeType,
-      dailyAmount,
-      packPrice,
-      goal,
-      setSmokeType,
-      setDailyAmount,
-      setPackPrice,
-      setGoal,
-    ]
-  );
-
-  const fieldById = (id: HabitField | null) =>
-    fieldDefs.find((f) => f.id === id)!;
 
   // Theme (SideModal)
   const [showSideModal, setShowSideModal] = useState(false);
@@ -299,8 +229,9 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
                 />
               </View>
 
+              {/* Edit buddy -> BuddySelection */}
               <Pressable
-                onPress={() => openShopWithTab("characters")}
+                onPress={onNavigateToBuddy}
                 className={`w-10 h-10 rounded-full z-[41] justify-center items-center absolute right-3 top-3 p-1 ${
                   isDark ? "bg-slate-500" : "bg-indigo-100"
                 }`}
@@ -381,8 +312,9 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
               My smoking habits
             </Text>
 
+            {/* Edit habits -> open Setup (fromProfile) */}
             <Pressable
-              onPress={() => setShowHabitsModal(true)}
+              onPress={onNavigateToSetup}
               className={`w-10 h-10 rounded-full justify-center items-center ${
                 isDark ? "bg-slate-700" : "bg-slate-50"
               }`}
@@ -436,7 +368,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
                 Notification
               </Text>
             </View>
-            <Right width={18} height={12} color={systemIconColor} />
+            <Right width={18} height={18} color={systemIconColor} />
           </Pressable>
 
           {/* Theme */}
@@ -457,7 +389,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
                 Theme
               </Text>
             </View>
-            <Right width={18} height={12} color={systemIconColor} />
+            <Right width={18} height={18} color={systemIconColor} />
           </Pressable>
 
           {/* Language */}
@@ -480,7 +412,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
                 {currentLanguage.name}
               </Text>
             </View>
-            <Right width={18} height={12} color={systemIconColor} />
+            <Right width={18} height={18} color={systemIconColor} />
           </Pressable>
         </View>
 
@@ -497,12 +429,12 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
 
         {/* Settings block 2 */}
         <View className="mx-4 gap-3">
-          {/* Feedback */}
+          {/* Feedback -> open SupportSlide */}
           <Pressable
             className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
               isDark ? "bg-slate-700" : "bg-indigo-50"
             }`}
-            onPress={() => {}}
+            onPress={() => setShowSupportModal(true)}
           >
             <View className="flex-row items-center">
               <Icons.Feedback width={20} height={20} color={systemIconColor} />
@@ -515,10 +447,10 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
                 Feedback
               </Text>
             </View>
-            <Right width={18} height={12} color={systemIconColor} />
+            <Right width={18} height={18} color={systemIconColor} />
           </Pressable>
 
-          {/* Support -> opens SupportSlide */}
+          {/* Support -> open SupportSlide */}
           <Pressable
             className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
               isDark ? "bg-slate-700" : "bg-indigo-50"
@@ -536,7 +468,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
                 Support
               </Text>
             </View>
-            <Right width={18} height={12} color={systemIconColor} />
+            <Right width={18} height={18} color={systemIconColor} />
           </Pressable>
         </View>
       </Animated.ScrollView>
@@ -561,84 +493,6 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
         visible={showSupportModal}
         onClose={() => setShowSupportModal(false)}
       />
-
-      {/* Habits launcher */}
-      <SlideModal
-        visible={showHabitsModal}
-        onClose={() => setShowHabitsModal(false)}
-        title="Edit smoking habits"
-      >
-        <View className="gap-3">
-          {fieldDefs.map((f) => (
-            <Pressable
-              key={f.id}
-              onPress={() => setEditingField(f.id)}
-              className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
-                isDark ? "bg-slate-700" : "bg-indigo-50"
-              }`}
-            >
-              <Text
-                className={`${isDark ? "text-slate-100" : "text-indigo-950"}`}
-                style={{ fontWeight: "600" }}
-                numberOfLines={1}
-              >
-                {f.label}
-              </Text>
-              <Right width={18} height={12} color={systemIconColor} />
-            </Pressable>
-          ))}
-        </View>
-      </SlideModal>
-
-      {/* Single-field options modal */}
-      {editingField && (
-        <SlideModal
-          visible
-          onClose={() => setEditingField(null)}
-          title={fieldById(editingField).label}
-        >
-          <View className="gap-4">
-            {fieldById(editingField).options.map((opt) => {
-              const selected =
-                String(fieldById(editingField).value) === opt.value;
-              return (
-                <Pressable
-                  key={opt.value}
-                  className={`w-11/12 h-16 rounded-3xl flex-row justify-between items-center px-5 self-center ${
-                    selected
-                      ? isDark
-                        ? "bg-slate-600"
-                        : "bg-indigo-100"
-                      : isDark
-                      ? "bg-slate-700"
-                      : "bg-indigo-50"
-                  }`}
-                  onPress={() => {
-                    fieldById(editingField).onSelect(opt.value);
-                    setEditingField(null);
-                  }}
-                >
-                  <Text
-                    className={`text-base ${
-                      selected ? "font-bold" : "font-medium"
-                    } ${isDark ? "text-slate-100" : "text-indigo-950"}`}
-                  >
-                    {opt.label}
-                  </Text>
-                  {/* keep checkmark here */}
-                  {selected && (
-                    <Ionicons
-                      name="checkmark"
-                      size={20}
-                      color={isDark ? "#CBD5E1" : "#1e1b4b"}
-                    />
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-        </SlideModal>
-      )}
     </View>
   );
 };
