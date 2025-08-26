@@ -238,11 +238,11 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
     >
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 24 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 10 }}
       >
         {/* Back (only if provided) + Title (changes if fromProfile) */}
         {onBack && (
-          <View className="flex-row items-center justify-between px-2 pt-2 pb-2">
+          <View className="flex-row items-center justify-between">
             <Pressable
               className={`w-10 h-10 rounded-full justify-center items-center p-1 ${
                 isDark ? "bg-slate-700" : "bg-slate-50"
