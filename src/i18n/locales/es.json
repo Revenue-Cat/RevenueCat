@@ -7,6 +7,8 @@
       "title": "Próximamente"
     },
     "locked": "Bloqueado. Actualiza tu plan para desbloquear este logro.",
+    "waitForLevel": "Espera. Alcanza el nivel requerido para desbloquear este logro.",
+    "completedOn": "Completado el",
     "share": "Compartir",
     "timeLeft": "Tiempo restante",
     "update": "Actualizar"
@@ -189,6 +191,46 @@
     "steel-week": {
       "description": "Completa dos semanas sin fumar",
       "name": "Semana de Acero"
+    },
+    "master": {
+      "name": "Maestro",
+      "description": "Un año sin fumar — eres un verdadero maestro del autocontrol"
+    },
+    "champion": {
+      "name": "Campeón",
+      "description": "Dos años sin nicotina — un campeón de la salud"
+    },
+    "warrior": {
+      "name": "Guerrero",
+      "description": "Tres años sin fumar — un guerrero contra la adicción"
+    },
+    "sage": {
+      "name": "Sabio",
+      "description": "Cinco años sin fumar — la sabiduría viene con el tiempo"
+    },
+    "phoenix": {
+      "name": "Fénix",
+      "description": "Siete años sin fumar — renacido de las cenizas más fuerte"
+    },
+    "immortal": {
+      "name": "Inmortal",
+      "description": "Diez años sin nicotina — eres inmortal"
+    },
+    "guardian": {
+      "name": "Guardian",
+      "description": "Quince años sin fumar — guardián de tu salud"
+    },
+    "sovereign": {
+      "name": "Soberano",
+      "description": "Veinte años sin fumar — soberano de tu destino"
+    },
+    "eternal": {
+      "name": "Eterno",
+      "description": "Veinticinco años sin fumar — tu legado es eterno"
+    },
+    "divine": {
+      "name": "Divino",
+      "description": "Treinta años sin nicotina — has logrado lo divino"
     }
   },
   "scenes": {
@@ -275,25 +317,25 @@
       "text": "Siguiente"
     },
     "privacyText": "No te preocupes, tus datos están seguros. Los mantenemos privados y no los compartiremos.",
-    "stats": {
-      "description": "Ahorro promedio en EE. UU. al no fumar. Agrega tus hábitos para obtener tu número."
-    },
     "subtitle": "Esto nos ayuda a personalizar tu experiencia",
     "title": "Conozcámonos"
   },
   "shop": {
-    "balance": "Saldo {{coins}}",
-    "buyFor": "Comprar por {{coins}} monedas",
-    "close": "Cerrar",
-    "description": "Un maravilloso compañero para tu viaje para dejar de fumar.",
-    "owned": "Propiedad",
-    "purchase": "Comprar",
-    "reward": "Recompensa {{coins}}",
-    "sceneDescription": "Un hermoso fondo para mejorar tu viaje para dejar de fumar.",
-    "select": "Seleccionar",
     "selected": "Seleccionado",
+    "owned": "Propiedad",
+    "balance": "Saldo {{coins}}",
+    "reward": "Recompensa {{coins}}",
+    "purchase": "Comprar",
+    "buyFor": "Comprar por {{coins}} monedas",
+    "select": "Seleccionar",
+    "close": "Cerrar",
     "share": "Compartir",
-    "update": "Actualizar"
+    "update": "Actualizar",
+    "description": "Un maravilloso compañero para tu viaje para dejar de fumar.",
+    "sceneDescription": "Un hermoso fondo para mejorar tu viaje para dejar de fumar."
+  },
+  "stats": {
+    "description": "Ahorro promedio en EE. UU. al no fumar. Agrega tus hábitos para obtener tu número."
   },
   "toggles": {
     "buddies": "Compañeros",

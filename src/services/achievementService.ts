@@ -8,7 +8,7 @@ const AchievementFreshPathIcon = require('../assets/achievements/achievement-fre
 const AchievementFreedomIcon = require('../assets/achievements/achievement-freedom.png');
 const AchievementHeroIcon = require('../assets/achievements/achievement-hero.png');
 const AchievementLegendIcon = require('../assets/achievements/achievement-legend.png');
-// const AchievementLockIcon = require('../assets/achievements/achievement-lock.png');
+const AchievementRegularIcon = require('../assets/achievements/regular-achievement.png');
 
 export interface Achievement {
   id: string;
@@ -21,6 +21,7 @@ export interface Achievement {
   coins?: number;
   requiredDays: number;
   unlockedDate?: Date;
+  completedDate?: Date;
 }
 
 export interface UserProgress {
@@ -46,6 +47,7 @@ class AchievementService {
   };
 
   private subscribers: Set<() => void> = new Set();
+  private onAchievementCompleted?: (achievement: Achievement) => void;
 
   constructor() {
     this.initializeAchievements();
@@ -66,7 +68,7 @@ class AchievementService {
         emoji: "🔥",
         icon: AchievementSplashIcon,
         unlocked: false,
-        coins: 50,
+        coins: 100,
         requiredDays: 1,
       },
       {
@@ -139,6 +141,106 @@ class AchievementService {
         coins: 1000,
         requiredDays: 360,
       },
+      {
+        id: "master",
+        name: "Master",
+        description: "One year smoke-free — you are a true master of self-control.",
+        emoji: "🎯",
+        icon: AchievementRegularIcon,
+        unlocked: false,
+        coins: 1200,
+        requiredDays: 365,
+      },
+      {
+        id: "champion",
+        name: "Champion",
+        description: "Two years without nicotine — a champion of health.",
+        emoji: "🏆",
+        icon: AchievementRegularIcon,
+        unlocked: false,
+        coins: 1500,
+        requiredDays: 730,
+      },
+      {
+        id: "warrior",
+        name: "Warrior",
+        description: "Three years smoke-free — a warrior against addiction.",
+        emoji: "⚔️",
+        icon: AchievementRegularIcon,
+        unlocked: false,
+        coins: 2000,
+        requiredDays: 1095,
+      },
+      {
+        id: "sage",
+        name: "Sage",
+        description: "Five years without smoking — wisdom comes with time.",
+        emoji: "🧙",
+        icon: AchievementRegularIcon,
+        unlocked: false,
+        coins: 3000,
+        requiredDays: 1825,
+      },
+      {
+        id: "phoenix",
+        name: "Phoenix",
+        description: "Seven years smoke-free — risen from the ashes stronger.",
+        emoji: "🔥",
+        icon: AchievementRegularIcon,
+        unlocked: false,
+        coins: 4000,
+        requiredDays: 2555,
+      },
+      {
+        id: "immortal",
+        name: "Immortal",
+        description: "Ten years without nicotine — you are immortal.",
+        emoji: "💎",
+        icon: AchievementRegularIcon,
+        unlocked: false,
+        coins: 5000,
+        requiredDays: 3650,
+      },
+      {
+        id: "guardian",
+        name: "Guardian",
+        description: "Fifteen years smoke-free — guardian of your health.",
+        emoji: "🛡️",
+        icon: AchievementRegularIcon,
+        unlocked: false,
+        coins: 7500,
+        requiredDays: 5475,
+      },
+      {
+        id: "sovereign",
+        name: "Sovereign",
+        description: "Twenty years without smoking — sovereign of your destiny.",
+        emoji: "👑",
+        icon: AchievementRegularIcon,
+        unlocked: false,
+        coins: 10000,
+        requiredDays: 7300,
+      },
+      {
+        id: "eternal",
+        name: "Eternal",
+        description: "Twenty-five years smoke-free — your legacy is eternal.",
+        emoji: "⭐",
+        icon: AchievementRegularIcon,
+        unlocked: false,
+        coins: 15000,
+        requiredDays: 9125,
+      },
+      {
+        id: "divine",
+        name: "Divine",
+        description: "Thirty years without nicotine — you have achieved the divine.",
+        emoji: "✨",
+        icon: AchievementRegularIcon,
+        unlocked: false,
+        coins: 20000,
+        requiredDays: 10950,
+      },
     ];
 
     REGULAR_ACHIEVEMENTS_DATA.forEach(achievement => {
@@ -152,6 +254,11 @@ class AchievementService {
     return () => {
       this.subscribers.delete(callback);
     };
+  }
+
+  // Set callback for when achievements are completed
+  public setOnAchievementCompleted(callback: (achievement: Achievement) => void): void {
+    this.onAchievementCompleted = callback;
   }
 
   // Notify subscribers of changes
@@ -198,15 +305,34 @@ class AchievementService {
     achievementIds.forEach((achievementId) => {
       const achievement = this.achievements.get(achievementId);
       if (!achievement) return;
-            const shouldBeUnlocked = daysPassed >= achievement.requiredDays;
+      const shouldBeUnlocked = daysPassed >= achievement.requiredDays;
 
       console.log('shouldBeUnlocked', shouldBeUnlocked, daysPassed, achievement.requiredDays)
 
       if (shouldBeUnlocked && !achievement.unlocked) {
         // Unlock achievements that are done (progress = 100%)
         achievement.unlocked = true;
-        achievement.unlockedDate = new Date();
+        // Calculate the actual completion date based on start date + required days
+        const completionDate = new Date(this.userProgress.startDate!);
+        completionDate.setDate(completionDate.getDate() + achievement.requiredDays);
+        achievement.completedDate = completionDate;
         hasChanges = true;
+        
+        // Trigger achievement completed callback to add coins
+        if (this.onAchievementCompleted) {
+          this.onAchievementCompleted(achievement);
+        }
+      } else if (shouldBeUnlocked && achievement.unlocked && !achievement.completedDate) {
+        // Set completion date for achievements that were unlocked by default but are now completed
+        const completionDate = new Date(this.userProgress.startDate!);
+        completionDate.setDate(completionDate.getDate() + achievement.requiredDays);
+        achievement.completedDate = completionDate;
+        hasChanges = true;
+        
+        // Trigger achievement completed callback to add coins
+        if (this.onAchievementCompleted) {
+          this.onAchievementCompleted(achievement);
+        }
       }
     });
 
@@ -303,6 +429,7 @@ class AchievementService {
           if (stored) {
             achievement.unlocked = stored.unlocked || false;
             achievement.unlockedDate = stored.unlockedDate ? new Date(stored.unlockedDate) : undefined;
+            achievement.completedDate = stored.completedDate ? new Date(stored.completedDate) : undefined;
           }
         });
       }
@@ -327,6 +454,7 @@ class AchievementService {
         achievementStates[achievement.id] = {
           unlocked: achievement.unlocked,
           unlockedDate: achievement.unlockedDate?.toISOString(),
+          completedDate: achievement.completedDate?.toISOString(),
         };
       });
       await AsyncStorage.setItem('achievements', JSON.stringify(achievementStates));
@@ -350,6 +478,7 @@ class AchievementService {
     this.achievements.forEach(achievement => {
       achievement.unlocked = false;
       achievement.unlockedDate = undefined;
+      achievement.completedDate = undefined;
     });
 
     await this.saveUserProgress();

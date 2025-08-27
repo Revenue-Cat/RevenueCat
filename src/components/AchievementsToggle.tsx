@@ -2,6 +2,10 @@ import React, { useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import BellIcon from "../assets/achievements/bell.svg";
+import CrownIcon from "../assets/achievements/crown.svg";
+// const BellIcon = require('../assets/achievements/bell.png');
+// const CrownIcon = require('../assets/achievements/crown.png');
 
 interface AchievementsToggleProps {
   scrollY: Animated.Value;
@@ -74,11 +78,7 @@ const AchievementsToggle: React.FC<AchievementsToggleProps> = ({
           onPress={handleRegularPress}
           activeOpacity={0.7}
         >
-          <Ionicons 
-            name="ribbon" 
-            size={16} 
-            color={!isExclusiveSelected ? '#1E293B' : '#64748B'} 
-          />
+          <BellIcon width={24} height={24} color={!isExclusiveSelected ? '#1E293B' : '#64748B'} />
           <Text style={{ 
             marginLeft: 8,
             fontWeight: '500',
@@ -105,11 +105,7 @@ const AchievementsToggle: React.FC<AchievementsToggleProps> = ({
           onPress={handleExclusivePress}
           activeOpacity={0.7}
         >
-          <Ionicons 
-            name="star" 
-            size={16} 
-            color={isExclusiveSelected ? '#1E293B' : '#64748B'} 
-          />
+          <CrownIcon width={24} height={24} color={isExclusiveSelected ? '#1E293B' : '#64748B'} />
           <Text style={{ 
             marginLeft: 8,
             fontWeight: '500',

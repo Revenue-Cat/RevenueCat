@@ -36,7 +36,7 @@ type Screen =
   | "edit-buddy";
 
 const AppContent: React.FC = () => {
-  const [currentScreen, setCurrentScreen] = useState<Screen>("profile");
+  const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);

@@ -98,7 +98,7 @@ export const useApp = () => {
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Shop/state
-  const [userCoins, setUserCoinsState] = useState(200);
+  const [userCoins, setUserCoinsState] = useState(0);
   const [selectedBuddy, setSelectedBuddyState] = useState<ShopItem>(defaultCharacter);
   const [selectedBackground, setSelectedBackgroundState] = useState<Scene>(defaultBackground);
   const [ownedBuddies, setOwnedBuddies] = useState<string[]>(['alpaca-m', 'alpaca-w', 'zebra-m', 'zebra-w', 'dog-m', 'dog-w']);
@@ -282,6 +282,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setAugustStartDate();
     }
   }, [userProgress.startDate, setAugustStartDate]);
+
+  // Set up achievement completion callback to add coins
+  useEffect(() => {
+    achievementService.setOnAchievementCompleted((achievement) => {
+      const coins = achievement.coins || 0;
+      if (coins > 0) {
+        setUserCoinsState(prev => prev + coins);
+        console.log(`Achievement completed: ${achievement.name}, added ${coins} coins`);
+      }
+    });
+  }, []);
+
+  // Calculate initial coins based on onboarding bonus and completed achievements
+  useEffect(() => {
+    const completedAchievements = achievements.filter(achievement => 
+      achievement.completedDate && achievement.coins && achievement.coins > 0
+    );
+    const totalRewardCoins = completedAchievements.reduce((total, achievement) => 
+      total + (achievement.coins || 0), 0
+    );
+    
+    // Set initial coins to 100 (onboarding bonus) + rewards from completed achievements
+    const initialCoins = 100 + totalRewardCoins;
+    setUserCoinsState(initialCoins);
+  }, [achievements]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const value: AppState = useMemo(() => ({

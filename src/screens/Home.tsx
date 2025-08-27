@@ -146,8 +146,7 @@ const Home: React.FC<HomeProps> = ({
 
       {/* Horizontal pan for view switching */}
       <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
-        <View className="absolute top-0 left-0 right-0 bottom-0 z-[1000]">
-          {/* Parallax background */}
+        <View className="absolute top-0 left-0 right-0 bottom-0 z-[10]">
           <Animated.View
             style={{ height: backgroundHeight }}
             pointerEvents="none"
@@ -208,7 +207,7 @@ const Home: React.FC<HomeProps> = ({
               left: 0,
               right: 0,
               height: scrollViewHeight,
-              zIndex: 1000,
+              zIndex: 100,
               transform:
                 currentView === "home"
                   ? scrollViewTransform

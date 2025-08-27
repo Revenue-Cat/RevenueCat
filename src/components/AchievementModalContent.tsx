@@ -6,6 +6,23 @@ import ProgressRing from './ProgressRing';
 import CountdownTimer from './CountdownTimer';
 import { Achievement } from '../services/achievementService';
 import { isRegularAchievement, isFirstThreeAchievement, calculateAchievementTargetDate } from '../utils/achievementHelpers';
+
+// Helper function to identify new achievements (the 10 new ones)
+const isNewAchievement = (achievementId: string): boolean => {
+  const newAchievementIds = [
+    'master',
+    'champion',
+    'warrior',
+    'sage',
+    'phoenix',
+    'immortal',
+    'guardian',
+    'sovereign',
+    'eternal',
+    'divine'
+  ];
+  return newAchievementIds.includes(achievementId);
+};
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
@@ -132,35 +149,57 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
           {achievement.name}
         </Text>
 
-        {/* Achievement Description */}
-        <Text className={`text-sm text-center ${isDark ? 'text-slate-100' : 'text-slate-500'}`}>
-          {achievement.description}
-        </Text>
+        {/* Achievement Description - Only for non-new achievements */}
+        {!isNewAchievement(achievement.id) && (
+          <Text className={`text-sm text-center ${isDark ? 'text-slate-100' : 'text-slate-500'}`}>
+            {achievement.description}
+          </Text>
+        )}
+
+       
 
         {/* Achievement Icon */}
         <View className="items-center pb-4">
           {renderAchievementIcon()}
         </View>
 
+         {/* Completed Date - Only for completed achievements */}
+        {(progress?.percentage || 0) === 100 && achievement.completedDate && (
+          <View className="items-center">
+            <Text className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              {t('achievements.completedOn')} {achievement.completedDate.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+              })}
+            </Text>
+          </View>
+        )}
+
         {/* Time Left Section - Only for Regular Achievements */}
         {progress && isRegularAchievement(achievement.id) && (progress?.percentage || 0) > 0 && (progress?.percentage || 0) < 100 && (
           <View>
-            <View className="flex-row items-center justify-center mb-3">
+            {isFirstThreeAchievement(achievement.id, getProgressForAchievement) && (<View className="flex-row items-center justify-center mb-3">
               <Text className={`font-semibold text-center ml-2 ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
                 {t('achievements.timeLeft')}
               </Text>
-            </View>
+            </View>)}
             
             {/* Countdown Timer */}
-            <View className="items-center">
-               <CountdownTimer
+            {isFirstThreeAchievement(achievement.id, getProgressForAchievement) && (
+              <View className="items-center">
+                <CountdownTimer
                   targetDate={calculateAchievementTargetDate(startDate || null, progress.max)}
                   textColor={isDark ? "text-slate-100" : "text-indigo-950"}
                   textSize="md"
                   showSeconds={false}
                   countUp={false}
                 />
-            </View>
+              </View>
+            )}
           </View>
         )}
       </View>
@@ -173,6 +212,16 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
              {t('achievements.locked')}
            </Text>
          </View>
+      )}
+
+      {/* Wait for level message - Only for non-first-three achievements in progress */}
+      {progress && isRegularAchievement(achievement.id) && (progress?.percentage || 0) > 0 && (progress?.percentage || 0) < 100 && !isFirstThreeAchievement(achievement.id, getProgressForAchievement) && (
+        <View className='flex-row justify-center items-center mt-4'>
+          <Ionicons name="information-circle" size={16} color={isDark ? "#485569" : "#64748B"} />
+          <Text className={`text-xs text-center ml-2 ${isDark ? 'text-slate-100' : 'text-slate-500'}`}>
+            {t('achievements.waitForLevel')}
+          </Text>
+        </View>
       )}
     </>
   );
