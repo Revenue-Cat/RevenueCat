@@ -145,7 +145,7 @@ const Home: React.FC<HomeProps> = ({
 
       {/* Full Screen PanGestureHandler for left/right navigation */}
       <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
-        <View className="absolute top-0 left-0 right-0 bottom-0 z-[1000]">
+        <View className="absolute top-0 left-0 right-0 bottom-0 z-[10]">
           {/* Shrinking ParallaxBackground - shrinks when scrolling achievements */}
           <Animated.View
             style={{ height: backgroundHeight }}
@@ -203,7 +203,7 @@ const Home: React.FC<HomeProps> = ({
               left: 0,
               right: 0,
               height: scrollViewHeight,
-              zIndex: 1000,
+              zIndex: 100,
               transform:
                 currentView === "home"
                   ? scrollViewTransform

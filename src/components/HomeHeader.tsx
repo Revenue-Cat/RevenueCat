@@ -58,28 +58,25 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   return (
     <View
       className="absolute top-10 left-0 right-0 p-6"
-      style={{ height: 140, zIndex: 2000 }}
+      style={{ height: 140, zIndex: 20 }}
       pointerEvents="box-none"
     >
       {/* Top Row */}
       <View className="flex-row justify-between items-start">
         {/* Buddy Icon */}
         <Pressable
-          className="w-[66px]"
+          className="w-[66px] mt-3 p-0.3"
           onPress={() => {
             console.log("Buddy Icon container pressed - attempting to navigate to profile");
             onNavigateToProfile();
           }}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          style={{ zIndex: 9999 }}
         >
           <Pressable
             className="w-8 h-8 rounded-full bg-black/50 justify-center items-center overflow-hidden"
             onPress={() => {
               onNavigateToProfile();
             }}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={{ zIndex: 9999, position: 'relative', transform: [{ translateY: -10 }] }}
+            style={{ position: 'relative', transform: [{ translateY: -10 }] }}
           >
             {selectedBuddy ? (
               <View className="w-full h-full overflow-hidden">

@@ -29,7 +29,7 @@ const ComingSoon: React.FC = () => {
   const gradientColors = parseGradient(selectedBackground.backgroundColor);
   
   return (
-    <View className={`flex-1 justify-center items-center px-6 ${isDark ? 'bg-dark-background' : ''}`} style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}>
+    <View className={`flex-1 justify-center items-center ${isDark ? 'bg-dark-background' : ''}`} style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}>
       {/* Background decorative elements */}
       <View className="absolute top-20 left-10 opacity-20">
         <Ionicons name="star" size={40} color={isDark ? "#A78BFA" : "#8B5CF6"} />
@@ -44,7 +44,7 @@ const ComingSoon: React.FC = () => {
       {/* Main content */}
       <View className="items-center">
         {/* Icon */}
-        <View className={`w-32 h-32 rounded-full justify-center items-center mb-8 ${isDark ? 'bg-gradient-to-br from-slate-600 to-slate-700' : 'bg-gradient-to-br from-purple-500 to-indigo-600'}`}>
+        <View className={`w-32 h-32 rounded-full justify-center items-center  ${isDark ? 'bg-gradient-to-br from-slate-600 to-slate-700' : 'bg-gradient-to-br from-purple-500 to-indigo-600'}`}>
           <Ionicons name="construct" size={60} color="white" />
         </View>
         

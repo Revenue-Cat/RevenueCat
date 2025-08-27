@@ -208,7 +208,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
         />
 
         <ScrollView 
-          className="flex-1"
+          className="flex-1 gap-3"
           contentContainerStyle={{
             paddingTop: 10,
             paddingBottom: 150,
@@ -327,7 +327,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                             )}
                             {/* Time icon for progress > 0 but < 100% */}
                             {progressPercentage > 0 && progressPercentage < 100 && (
-                              <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
+                              <View className="absolute -top-0.5 -right-0.5 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
                                 <Image className='color-white p-0.5' source={TimeIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
                               </View>
                             )}
@@ -338,7 +338,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                             <Image source={AchievementLockedIcon} style={{ width: 75, height: 75 }} resizeMode="contain" />
                             {/* Time icon for progress > 0 but < 100% */}
                             {progressPercentage > 0 && progressPercentage < 100 && (
-                              <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
+                              <View className="absolute -top-0.5 -right-0.5 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
                                 <Image className='color-white p-0.5' source={TimeIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
                               </View>
                             )}
