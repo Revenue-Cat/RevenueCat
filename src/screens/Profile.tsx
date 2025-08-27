@@ -1,6 +1,7 @@
 // src/screens/Profile.tsx
 import React, { useRef, useMemo, useState, useEffect } from "react";
 import { View, Text, Pressable, Animated } from "react-native";
+import LottieView from "lottie-react-native";
 import { t } from "i18next";
 
 import { useApp } from "../contexts/AppContext";
@@ -88,41 +89,61 @@ const Profile: React.FC<ProfileProps> = ({
     goal,
   } = useApp();
 
-  // buddy sprite
+  // buddy sprite: tolerate ids like "alpaca-m"
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
-  const baseBuddyKey: BuddyKey = React.useMemo(() => {
+  const baseBuddyKey: BuddyKey = useMemo(() => {
     const id = (selectedBuddyId || "alpaca") as string;
-    const base = id.split("-")[0] as BuddyKey; // strip "-m"/"-w" if present
+    const base = id.split("-")[0] as BuddyKey;
     return (buddyAssets as Record<string, unknown>)[base]
       ? base
       : ("alpaca" as BuddyKey);
   }, [selectedBuddyId]);
 
-  const buddySource = React.useMemo(() => {
+  const buddySource = useMemo(() => {
     const pack = buddyAssets[baseBuddyKey] || buddyAssets.alpaca;
     return pack[sexKey];
   }, [baseBuddyKey, sexKey]);
 
-  // savings + habits display text
+  // labels (localized)
+  const genderLabel =
+    gender === "lady"
+      ? t("profile.gender.woman", "Woman")
+      : gender === "man"
+      ? t("profile.gender.man", "Man")
+      : t("profile.gender.nonBinary", "Non-binary");
+
+  // map to existing setup option labels for localization
   const goalText =
-    goal === "quit-completely"
-      ? "quit completely"
-      : goal === "reduce-gradually"
-      ? "reduce gradually"
-      : goal === "save-money"
-      ? "save money"
-      : goal === "improve-health"
-      ? "improve health"
-      : goal === "gain-control"
-      ? "gain control"
-      : "quit completely";
+    {
+      "quit-completely": t("setup.fields.goal.options.quit-completely"),
+      "reduce-gradually": t("setup.fields.goal.options.reduce-gradually"),
+      "save-money": t("setup.fields.goal.options.save-money"),
+      "improve-health": t("setup.fields.goal.options.improve-health"),
+      "gain-control": t("setup.fields.goal.options.gain-control"),
+      "doesnt-matter": t("setup.fields.goal.options.doesnt-matter"),
+    }[goal || "quit-completely"] ||
+    t("setup.fields.goal.options.quit-completely");
 
-  const habitsLine = `I smoke ${smokeType || "cigarettes"}, usually ${
-    dailyAmount || "5–10"
-  } a day. A pack costs me around ${packPriceCurrency || "$"}${
-    packPrice || "5"
-  }. I want to ${goalText}.`;
+  const smokeLabel =
+    {
+      cigarettes: t("setup.fields.smokeType.options.cigarettes"),
+      "roll-your-own": t("setup.fields.smokeType.options.roll-your-own"),
+      "tobacco-heater": t("setup.fields.smokeType.options.tobacco-heater"),
+      vaping: t("setup.fields.smokeType.options.vaping"),
+    }[smokeType || "cigarettes"] ||
+    t("setup.fields.smokeType.options.cigarettes");
 
+  const dailyLabel =
+    {
+      "1-5": t("setup.fields.dailyAmount.options.1-5"),
+      "5-10": t("setup.fields.dailyAmount.options.5-10"),
+      "11-15": t("setup.fields.dailyAmount.options.11-15"),
+      "16-20": t("setup.fields.dailyAmount.options.16-20"),
+      "21-30": t("setup.fields.dailyAmount.options.21-30"),
+      "31-40": t("setup.fields.dailyAmount.options.31-40"),
+    }[dailyAmount || "5-10"] || t("setup.fields.dailyAmount.options.5-10");
+
+  // savings math
   const avgMap: Record<string, number> = {
     "1-5": 3,
     "5-10": 7.5,
@@ -137,8 +158,18 @@ const Profile: React.FC<ProfileProps> = ({
   const perYear = Math.round(perDay * 365);
   const savingsText = `${packPriceCurrency || "$"}${perYear}`;
 
-  const genderLabel =
-    gender === "lady" ? "Woman" : gender === "man" ? "Man" : "Non-binary";
+  // localized habits line
+  const habitsLine = t(
+    "profile.habits.line",
+    "I smoke {{smokeType}}, usually {{dailyAmount}} a day. A pack costs me around {{currency}}{{price}}. I want {{goal}}.",
+    {
+      smokeType: smokeLabel,
+      dailyAmount: dailyLabel,
+      currency: packPriceCurrency || "$",
+      price: packPrice || "5",
+      goal: goalText,
+    }
+  );
 
   // parallax
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -183,7 +214,7 @@ const Profile: React.FC<ProfileProps> = ({
             isDark ? "text-white" : "text-indigo-950"
           }`}
         >
-          Profile
+          {t("profile.title", "Profile")}
         </Text>
         <View style={{ width: 40, height: 40 }} />
       </View>
@@ -217,9 +248,11 @@ const Profile: React.FC<ProfileProps> = ({
                   justifyContent: "flex-end",
                 }}
               >
-                <Animated.Image
+                {/* Lottie buddy */}
+                <LottieView
                   source={buddySource}
-                  resizeMode="contain"
+                  autoPlay
+                  loop
                   style={{
                     width: "100%",
                     height: 143,
@@ -256,7 +289,7 @@ const Profile: React.FC<ProfileProps> = ({
               }`}
               numberOfLines={1}
             >
-              {buddyName || "Buddy"}
+              {buddyName || t("profile.buddy.fallbackName", "Buddy")}
             </Text>
             <Text
               className={`text-base font-medium ${
@@ -296,7 +329,7 @@ const Profile: React.FC<ProfileProps> = ({
             } mt-1 text-center`}
             style={{ fontSize: 16, fontWeight: "600" }}
           >
-            Estimated daily savings
+            {t("profile.habits.estimatedSavings", "Estimated daily savings")}
           </Text>
 
           <View
@@ -309,7 +342,7 @@ const Profile: React.FC<ProfileProps> = ({
               className={`${isDark ? "text-white" : "text-indigo-950"}`}
               style={{ fontWeight: "700", fontSize: 16 }}
             >
-              My smoking habits
+              {t("profile.habits.title", "My smoking habits")}
             </Text>
 
             {/* Edit habits -> open Setup (fromProfile) */}
@@ -365,7 +398,7 @@ const Profile: React.FC<ProfileProps> = ({
                 }`}
                 style={{ fontWeight: "600" }}
               >
-                Notification
+                {t("profile.sections.notification", "Notification")}
               </Text>
             </View>
             <Right width={18} height={18} color={systemIconColor} />
@@ -386,7 +419,7 @@ const Profile: React.FC<ProfileProps> = ({
                 }`}
                 style={{ fontWeight: "600" }}
               >
-                Theme
+                {t("profile.sections.theme", "Theme")}
               </Text>
             </View>
             <Right width={18} height={18} color={systemIconColor} />
@@ -444,7 +477,7 @@ const Profile: React.FC<ProfileProps> = ({
                 }`}
                 style={{ fontWeight: "600" }}
               >
-                Feedback
+                {t("profile.sections.feedback", "Feedback")}
               </Text>
             </View>
             <Right width={18} height={18} color={systemIconColor} />
@@ -465,7 +498,7 @@ const Profile: React.FC<ProfileProps> = ({
                 }`}
                 style={{ fontWeight: "600" }}
               >
-                Support
+                {t("profile.sections.support", "Support")}
               </Text>
             </View>
             <Right width={18} height={18} color={systemIconColor} />

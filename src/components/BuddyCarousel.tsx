@@ -12,6 +12,7 @@ import {
 import { FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
+import LottieView from "lottie-react-native";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
 import LockLight from "../assets/icons/lock.svg";
 
@@ -65,6 +66,9 @@ export default function BuddyCarousel({
   const snapSoundRef = useRef<Audio.Sound | null>(null);
   const [soundsReady, setSoundsReady] = useState({ swipe: false, snap: false });
 
+  // guard so swipe sound plays once per gesture
+  const swipePlayedRef = useRef(false);
+
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -106,8 +110,12 @@ export default function BuddyCarousel({
     return () => {
       mounted = false;
       (async () => {
-        try { await swipeSoundRef.current?.unloadAsync(); } catch {}
-        try { await snapSoundRef.current?.unloadAsync(); } catch {}
+        try {
+          await swipeSoundRef.current?.unloadAsync();
+        } catch {}
+        try {
+          await snapSoundRef.current?.unloadAsync();
+        } catch {}
       })();
     };
   }, []);
@@ -130,11 +138,17 @@ export default function BuddyCarousel({
     settleTimer.current = setTimeout(() => setIsSettling(false), 150);
   };
   useEffect(() => {
-    return () => { if (settleTimer.current) clearTimeout(settleTimer.current); };
+    return () => {
+      if (settleTimer.current) clearTimeout(settleTimer.current);
+    };
   }, []);
 
   const extended = useMemo(
-    () => Array.from({ length: data.length * LOOP_MULTIPLIER }, (_, i) => data[i % data.length]),
+    () =>
+      Array.from(
+        { length: data.length * LOOP_MULTIPLIER },
+        (_, i) => data[i % data.length]
+      ),
     [data]
   );
 
@@ -165,8 +179,20 @@ export default function BuddyCarousel({
     });
   }, [initialOffset, startIndex, scrollX]);
 
-  const handleBeginDrag = () => { hideBadgeNow(); playSwipe(); };
-  const handleMomentumBegin = () => { hideBadgeNow(); playSwipe(); };
+  // Play sound ONCE when user starts dragging
+  const handleBeginDrag = () => {
+    hideBadgeNow();
+    if (!swipePlayedRef.current) {
+      playSwipe();
+      swipePlayedRef.current = true;
+    }
+  };
+
+  // Do NOT play sound here to avoid double trigger
+  const handleMomentumBegin = () => {
+    hideBadgeNow();
+  };
+
   const handleMomentumEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const i = Math.round(e.nativeEvent.contentOffset.x / CELL_W);
     if (i !== centerExtIndex) setCenterExtIndex(i);
@@ -180,13 +206,16 @@ export default function BuddyCarousel({
         setCenterExtIndex(normalized);
         showBadgeSoon();
         playSnap();
+        swipePlayedRef.current = false; // reset for next gesture
       });
     } else {
       showBadgeSoon();
       playSnap();
+      swipePlayedRef.current = false; // reset for next gesture
     }
   };
 
+  // Programmatic scroll (tap) — play swipe here since no drag event fires
   const scrollTo = (i: number) => {
     hideBadgeNow();
     playSwipe();
@@ -197,7 +226,7 @@ export default function BuddyCarousel({
 
   const renderItem = ({ index }: { item: Buddy; index: number }) => {
     const baseIdx = ((index % data.length) + data.length) % data.length;
-    const src = buddyAssets[data[baseIdx].id][sex];
+    const animSrc = buddyAssets[data[baseIdx].id][sex]; // Lottie JSON per buddy/sex
     const locked = isLocked ? isLocked(baseIdx) : false;
     const bgSrc = backgrounds?.[baseIdx];
     const isCenter = index === centerExtIndex;
@@ -225,9 +254,19 @@ export default function BuddyCarousel({
     const showBadge = isCenter && !isSettling;
 
     return (
-      <View style={{ width: CELL_W, overflow: "visible" }} className="items-center">
+      <View
+        style={{ width: CELL_W, overflow: "visible" }}
+        className="items-center"
+      >
         <Pressable onPress={() => scrollTo(index)}>
-          <View className="relative" style={{ width: ITEM_W, height: ITEM_H, overflow: "visible" as any }}>
+          <View
+            className="relative"
+            style={{
+              width: ITEM_W,
+              height: ITEM_H,
+              overflow: "visible" as any,
+            }}
+          >
             <Animated.View
               className="rounded-3xl"
               style={{
@@ -243,23 +282,49 @@ export default function BuddyCarousel({
                 <Image
                   source={bgSrc}
                   resizeMode="cover"
-                  style={{ position: "absolute", width: "100%", height: "100%" }}
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                  }}
                 />
               )}
-              <Image
-                source={src}
-                resizeMode="contain"
-                className="absolute top-[10px] self-center rounded-3xl"
-                style={{ width: IMG_W, height: IMG_H_EXPANDED }}
+
+              {/* Buddy Lottie */}
+              <LottieView
+                source={animSrc}
+                autoPlay={isCenter}
+                loop={isCenter}
+                {...(!isCenter ? { progress: 0 } : {})}
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  alignSelf: "center",
+                  width: IMG_W,
+                  height: IMG_H_EXPANDED,
+                }}
+                enableMergePathsAndroidForKitKatAndAbove
               />
             </Animated.View>
 
             {showBadge && (
               <View
-                className={`rounded-full p-1 absolute left-1/2 -translate-x-1/2 shadow ${locked ? "bg-white" : "bg-green-500"}`}
-                style={{ width: 32, height: 32, bottom: -16, alignItems: "center", justifyContent: "center" }}
+                className={`rounded-full p-1 absolute left-1/2 -translate-x-1/2 shadow ${
+                  locked ? "bg-white" : "bg-green-500"
+                }`}
+                style={{
+                  width: 32,
+                  height: 32,
+                  bottom: -16,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                {locked ? <LockIcon width={18} height={18} /> : <Ionicons name="checkmark" size={24} color="#fff" />}
+                {locked ? (
+                  <LockIcon width={18} height={18} />
+                ) : (
+                  <Ionicons name="checkmark" size={24} color="#fff" />
+                )}
               </View>
             )}
           </View>
