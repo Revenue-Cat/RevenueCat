@@ -47,6 +47,7 @@ class AchievementService {
   };
 
   private subscribers: Set<() => void> = new Set();
+  private onAchievementCompleted?: (achievement: Achievement) => void;
 
   constructor() {
     this.initializeAchievements();
@@ -67,7 +68,7 @@ class AchievementService {
         emoji: "🔥",
         icon: AchievementSplashIcon,
         unlocked: false,
-        coins: 50,
+        coins: 100,
         requiredDays: 1,
       },
       {
@@ -155,6 +156,11 @@ class AchievementService {
     };
   }
 
+  // Set callback for when achievements are completed
+  public setOnAchievementCompleted(callback: (achievement: Achievement) => void): void {
+    this.onAchievementCompleted = callback;
+  }
+
   // Notify subscribers of changes
   private notifySubscribers() {
     this.subscribers.forEach(callback => callback());
@@ -211,12 +217,22 @@ class AchievementService {
         completionDate.setDate(completionDate.getDate() + achievement.requiredDays);
         achievement.completedDate = completionDate;
         hasChanges = true;
+        
+        // Trigger achievement completed callback to add coins
+        if (this.onAchievementCompleted) {
+          this.onAchievementCompleted(achievement);
+        }
       } else if (shouldBeUnlocked && achievement.unlocked && !achievement.completedDate) {
         // Set completion date for achievements that were unlocked by default but are now completed
         const completionDate = new Date(this.userProgress.startDate!);
         completionDate.setDate(completionDate.getDate() + achievement.requiredDays);
         achievement.completedDate = completionDate;
         hasChanges = true;
+        
+        // Trigger achievement completed callback to add coins
+        if (this.onAchievementCompleted) {
+          this.onAchievementCompleted(achievement);
+        }
       }
     });
 
