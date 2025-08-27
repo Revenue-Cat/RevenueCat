@@ -21,6 +21,7 @@ export interface Achievement {
   coins?: number;
   requiredDays: number;
   unlockedDate?: Date;
+  completedDate?: Date;
 }
 
 export interface UserProgress {
@@ -198,14 +199,23 @@ class AchievementService {
     achievementIds.forEach((achievementId) => {
       const achievement = this.achievements.get(achievementId);
       if (!achievement) return;
-            const shouldBeUnlocked = daysPassed >= achievement.requiredDays;
+      const shouldBeUnlocked = daysPassed >= achievement.requiredDays;
 
       console.log('shouldBeUnlocked', shouldBeUnlocked, daysPassed, achievement.requiredDays)
 
       if (shouldBeUnlocked && !achievement.unlocked) {
         // Unlock achievements that are done (progress = 100%)
         achievement.unlocked = true;
-        achievement.unlockedDate = new Date();
+        // Calculate the actual completion date based on start date + required days
+        const completionDate = new Date(this.userProgress.startDate!);
+        completionDate.setDate(completionDate.getDate() + achievement.requiredDays);
+        achievement.completedDate = completionDate;
+        hasChanges = true;
+      } else if (shouldBeUnlocked && achievement.unlocked && !achievement.completedDate) {
+        // Set completion date for achievements that were unlocked by default but are now completed
+        const completionDate = new Date(this.userProgress.startDate!);
+        completionDate.setDate(completionDate.getDate() + achievement.requiredDays);
+        achievement.completedDate = completionDate;
         hasChanges = true;
       }
     });
@@ -303,6 +313,7 @@ class AchievementService {
           if (stored) {
             achievement.unlocked = stored.unlocked || false;
             achievement.unlockedDate = stored.unlockedDate ? new Date(stored.unlockedDate) : undefined;
+            achievement.completedDate = stored.completedDate ? new Date(stored.completedDate) : undefined;
           }
         });
       }
@@ -327,6 +338,7 @@ class AchievementService {
         achievementStates[achievement.id] = {
           unlocked: achievement.unlocked,
           unlockedDate: achievement.unlockedDate?.toISOString(),
+          completedDate: achievement.completedDate?.toISOString(),
         };
       });
       await AsyncStorage.setItem('achievements', JSON.stringify(achievementStates));
@@ -350,6 +362,7 @@ class AchievementService {
     this.achievements.forEach(achievement => {
       achievement.unlocked = false;
       achievement.unlockedDate = undefined;
+      achievement.completedDate = undefined;
     });
 
     await this.saveUserProgress();

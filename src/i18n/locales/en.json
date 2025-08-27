@@ -110,6 +110,8 @@
     },
     "timeLeft": "Time left",
     "locked": "Locked. Update your plan to unlock this achievement.",
+    "waitForLevel": "Wait. Reach the required level to unlock this achievement.",
+    "completedOn": "Completed on",
     "share": "Share",
     "close": "Close",
     "update": "Update"

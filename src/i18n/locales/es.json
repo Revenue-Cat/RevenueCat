@@ -110,6 +110,8 @@
     },
     "timeLeft": "Tiempo restante",
     "locked": "Bloqueado. Actualiza tu plan para desbloquear este logro.",
+    "waitForLevel": "Espera. Alcanza el nivel requerido para desbloquear este logro.",
+    "completedOn": "Completado el",
     "share": "Compartir",
     "close": "Cerrar",
     "update": "Actualizar"

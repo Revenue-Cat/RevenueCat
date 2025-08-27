@@ -414,8 +414,8 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                   {/* Progress Ring */}
                   <ProgressRing
                     progress={isRegularAchievement(achievement.id) ? progressPercentage : 0}
-                    size={75}
-                    strokeWidth={3}
+                    size={68}
+                    strokeWidth={4}
                     color={isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100 ? '#22C55E' : 'transparent'}
                     // borderColor={!(isRegularAchievement(achievement.id) && (isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100)) ? '#374151' : 'transparent'}
                   />
@@ -429,9 +429,9 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                           // First 3 achievements OR 100% progress: show achievement icon and green progress
                           <>
                             {achievement.icon ? (
-                              <Image source={achievement.icon} className='w-[80px] h-[80px]' resizeMode="stretch" />
+                              <Image source={achievement.icon} style={{ width: 75, height: 75 }} resizeMode="contain" />
                             ) : (
-                              <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                              <Image source={AchievementLockedIcon} style={{ width: 75, height: 75 }} resizeMode="contain" />
                             )}
                             {/* Check icon for 100% progress */}
                             {progressPercentage === 100 && (
@@ -449,7 +449,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                         ) : (
                           // Other regular achievements: show lock icon and gray progress
                           <>
-                            <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                            <Image source={AchievementLockedIcon} style={{ width: 75, height: 75 }} resizeMode="contain" />
                             {/* Time icon for progress > 0 but < 100% */}
                             {progressPercentage > 0 && progressPercentage < 100 && (
                               <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
@@ -465,9 +465,9 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                         {achievement.unlocked ? (
                           <>
                             {achievement.icon ? (
-                              <Image source={achievement.icon} className='w-[80px] h-[80px]' resizeMode="stretch" />
+                              <Image source={achievement.icon} style={{ width: 75, height: 75 }} resizeMode="contain" />
                             ) : (
-                              <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                              <Image source={AchievementLockedIcon} style={{ width: 75, height: 75 }} resizeMode="contain" />
                             )}
                             {/* Notification badge for unlocked exclusive achievements */}
                             <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
@@ -476,7 +476,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                           </>
                         ) : (
                           <>
-                            <Image source={AchievementLockedIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                            <Image source={AchievementLockedIcon} style={{ width: 75, height: 75 }} resizeMode="contain" />
                           </>
                         )}
                       </>
