@@ -8,14 +8,24 @@ export const isRegularAchievement = (achievementId: string): boolean => {
     'fresh-path',
     'freedom',
     'hero',
-    'legend'
+    'legend',
+    'master',
+    'champion',
+    'warrior',
+    'sage',
+    'phoenix',
+    'immortal',
+    'guardian',
+    'sovereign',
+    'eternal',
+    'divine'
   ];
   return regularAchievementIds.includes(achievementId);
 };
 
 // Helper function to check if achievement is in first 3 (excluding 100% progress achievements)
 export const isFirstThreeAchievement = (achievementId: string, getProgressForAchievement: any): boolean => {
-  const regularAchievementIds = [
+  const originalRegularAchievementIds = [
     'first-spark',
     'hold-on', 
     'steel-week',
@@ -26,14 +36,14 @@ export const isFirstThreeAchievement = (achievementId: string, getProgressForAch
     'legend'
   ];
   
-  // Filter regular achievements that don't have 100% progress
-  const nonCompletedRegularAchievements = regularAchievementIds.filter(id => {
+  // Filter original regular achievements that don't have 100% progress
+  const nonCompletedOriginalAchievements = originalRegularAchievementIds.filter(id => {
     const progress = getProgressForAchievement(id);
     return progress.percentage < 100;
   });
   
-  // Take the first 3 non-completed regular achievements
-  const firstThreeNonCompleted = nonCompletedRegularAchievements.slice(0, 3);
+  // Take the first 3 non-completed original regular achievements
+  const firstThreeNonCompleted = nonCompletedOriginalAchievements.slice(0, 3);
   
   return firstThreeNonCompleted.includes(achievementId);
 };

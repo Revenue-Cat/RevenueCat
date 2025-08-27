@@ -6,6 +6,23 @@ import ProgressRing from './ProgressRing';
 import CountdownTimer from './CountdownTimer';
 import { Achievement } from '../services/achievementService';
 import { isRegularAchievement, isFirstThreeAchievement, calculateAchievementTargetDate } from '../utils/achievementHelpers';
+
+// Helper function to identify new achievements (the 10 new ones)
+const isNewAchievement = (achievementId: string): boolean => {
+  const newAchievementIds = [
+    'master',
+    'champion',
+    'warrior',
+    'sage',
+    'phoenix',
+    'immortal',
+    'guardian',
+    'sovereign',
+    'eternal',
+    'divine'
+  ];
+  return newAchievementIds.includes(achievementId);
+};
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
@@ -132,10 +149,12 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
           {achievement.name}
         </Text>
 
-        {/* Achievement Description */}
-        <Text className={`text-sm text-center ${isDark ? 'text-slate-100' : 'text-slate-500'}`}>
-          {achievement.description}
-        </Text>
+        {/* Achievement Description - Only for non-new achievements */}
+        {!isNewAchievement(achievement.id) && (
+          <Text className={`text-sm text-center ${isDark ? 'text-slate-100' : 'text-slate-500'}`}>
+            {achievement.description}
+          </Text>
+        )}
 
        
 

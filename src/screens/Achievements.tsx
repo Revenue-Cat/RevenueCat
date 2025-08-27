@@ -21,6 +21,7 @@ import ComingSoon from '../components/ComingSoon';
 import { buddyAssets, BuddyKey, SexKey } from '../assets/buddies';
 import { Achievement } from '../services/achievementService';
 import { achievementService } from '../services/achievementService';
+import { EXCLUSIVE_ACHIEVEMENTS_DATA } from '../data/exclusiveAchievementsData';
 const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
 const AchievementBreatheIcon = require('../assets/achievements/achievement-breathe.png');
 const LockIcon = require('../assets/achievements/lock.png');
@@ -35,14 +36,26 @@ const isRegularAchievement = (achievementId: string): boolean => {
     'fresh-path',
     'freedom',
     'hero',
-    'legend'
+    'legend',
+    'master',
+    'champion',
+    'warrior',
+    'sage',
+    'phoenix',
+    'immortal',
+    'guardian',
+    'sovereign',
+    'eternal',
+    'divine'
   ];
   return regularAchievementIds.includes(achievementId);
 };
 
+
+
 // Helper function to check if achievement is in first 3 (excluding 100% progress achievements)
 const isFirstThreeAchievement = (achievementId: string, allAchievements: any[], getProgressForAchievement: any): boolean => {
-  const regularAchievementIds = [
+  const originalRegularAchievementIds = [
     'first-spark',
     'hold-on', 
     'steel-week',
@@ -53,14 +66,14 @@ const isFirstThreeAchievement = (achievementId: string, allAchievements: any[], 
     'legend'
   ];
   
-  // Filter regular achievements that don't have 100% progress
-  const nonCompletedRegularAchievements = regularAchievementIds.filter(id => {
+  // Filter original regular achievements that don't have 100% progress
+  const nonCompletedOriginalAchievements = originalRegularAchievementIds.filter(id => {
     const progress = getProgressForAchievement(id);
     return progress.percentage < 100;
   });
   
-  // Take the first 3 non-completed regular achievements
-  const firstThreeNonCompleted = nonCompletedRegularAchievements.slice(0, 3);
+  // Take the first 3 non-completed original regular achievements
+  const firstThreeNonCompleted = nonCompletedOriginalAchievements.slice(0, 3);
   
   return firstThreeNonCompleted.includes(achievementId);
 };
@@ -70,132 +83,7 @@ interface AchievementsProps {
   isExclusiveSelected: boolean;
 }
 
-// Exclusive Achievements Data
-const EXCLUSIVE_ACHIEVEMENTS_DATA = [
-  {
-    id: "breathe",
-    name: "Breathe",
-    description: "Complete your first breathing exercise session",
-    emoji: "🦙",
-    icon: AchievementBreatheIcon,
-    unlocked: true,
-    notificationCount: 13,
-    coins: 100,
-    requiredDays: 1
-  },
-  {
-    id: "hydro-win",
-    name: "HydroWin",
-    description: "Drink 8 glasses of water for 7 days straight",
-    emoji: "💧",
-    icon: AchievementBreatheIcon,
-    unlocked: true,
-    notificationCount: 5,
-    coins: 150,
-    requiredDays: 7
-  },
-  {
-    id: "strider",
-    name: "Strider",
-    description: "Take 10,000 steps for 5 consecutive days",
-    emoji: "🚶",
-    icon: AchievementBreatheIcon,
-    unlocked: true,
-    notificationCount: 2,
-    coins: 200,
-    requiredDays: 5
-  },
-  {
-    id: "snackcess",
-    name: "Snackcess",
-    description: "Choose healthy snacks over junk food for a week",
-    emoji: "🥗",
-    icon: AchievementLockedIcon,
-    unlocked: false,
-    coins: 100,
-    requiredDays: 7
-  },
-  {
-    id: "zen",
-    name: "Zen",
-    description: "Complete 10 meditation sessions",
-    emoji: "🧘",
-    icon: AchievementLockedIcon,
-    unlocked: false,
-    coins: 150,
-    requiredDays: 10
-  },
-  {
-    id: "gripped",
-    name: "Gripped",
-    description: "Hold a plank for 2 minutes",
-    emoji: "💪",
-    icon: AchievementLockedIcon,
-    unlocked: false,
-    coins: 200,
-    requiredDays: 1
-  },
-  {
-    id: "splash",
-    name: "Splash",
-    description: "Swim 20 laps in one session",
-    emoji: "🏊",
-    icon: AchievementLockedIcon,
-    unlocked: false,
-    coins: 250,
-    requiredDays: 1
-  },
-  {
-    id: "released",
-    name: "Released",
-    description: "Practice stress relief techniques for 30 days",
-    emoji: "🕊️",
-    icon: AchievementLockedIcon,
-    unlocked: false,
-    coins: 300,
-    requiredDays: 30
-  },
-  {
-    id: "stretched",
-    name: "Stretched",
-    description: "Complete daily stretching routine for 2 weeks",
-    emoji: "🤸",
-    icon: AchievementLockedIcon,
-    unlocked: false,
-    coins: 150,
-    requiredDays: 14
-  },
-  {
-    id: "title-1",
-    name: "Title",
-    description: "Earn your first wellness champion title",
-    emoji: "👑",
-    icon: AchievementLockedIcon,
-    unlocked: false,
-    coins: 400,
-    requiredDays: 30
-  },
-  {
-    id: "title-2",
-    name: "Title",
-    description: "Earn your second wellness champion title",
-    emoji: "👑",
-    icon: AchievementLockedIcon,
-    unlocked: false,
-    coins: 400,
-    requiredDays: 60
-  },
-  {
-    id: "title-3",
-    name: "Title",
-    description: "Earn your third wellness champion title",
-    emoji: "👑",
-    icon: AchievementLockedIcon,
-    unlocked: false,
-    coins: 400,
-    requiredDays: 90
-  }
-];
+
 
 const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected }) => {
   const { t } = useTranslation();
@@ -389,8 +277,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
         className="flex-1"
         contentContainerStyle={{
           paddingTop: 10,
-          paddingBottom: 50,
-          minHeight: Dimensions.get('window').height * 0.8,
+          paddingBottom: 10,
         }}
         bounces={false}
         overScrollMode="never"
@@ -400,7 +287,7 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
         )}
         scrollEventThrottle={16}
       >
-        <View className="flex-row flex-wrap justify-center gap-0">
+        <View className="flex-row flex-wrap gap-0">
           {filteredAchievements.map((achievement, index) => {
             const progress = getProgressForAchievement(achievement.id);
             const progressPercentage = progress.percentage;
@@ -417,7 +304,6 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                     size={68}
                     strokeWidth={4}
                     color={isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100 ? '#22C55E' : 'transparent'}
-                    // borderColor={!(isRegularAchievement(achievement.id) && (isFirstThreeAchievement(achievement.id, filteredAchievements, getProgressForAchievement) || progressPercentage === 100)) ? '#374151' : 'transparent'}
                   />
                   
                   {/* Achievement Icon */}
@@ -463,16 +349,16 @@ const Achievements: React.FC<AchievementsProps> = ({ onBack, isExclusiveSelected
                       // Exclusive achievements logic (unchanged)
                       <>
                         {achievement.unlocked ? (
-                          <>
+                            <>
                             {achievement.icon ? (
                               <Image source={achievement.icon} style={{ width: 75, height: 75 }} resizeMode="contain" />
                             ) : (
                               <Image source={AchievementLockedIcon} style={{ width: 75, height: 75 }} resizeMode="contain" />
                             )}
                             {/* Notification badge for unlocked exclusive achievements */}
-                            <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
-                              <Text className="text-xs font-bold text-white">{achievement.notificationCount || 1}</Text>
-                            </View>
+                              <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
+                                <Image className='color-white p-0.5' source={LockIcon} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                              </View>
                           </>
                         ) : (
                           <>

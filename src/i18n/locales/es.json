@@ -219,6 +219,46 @@
     "legend": {
       "name": "Leyenda",
       "description": "Mantén dos años de vida sin humo"
+    },
+    "master": {
+      "name": "Maestro",
+      "description": "Un año sin fumar — eres un verdadero maestro del autocontrol"
+    },
+    "champion": {
+      "name": "Campeón",
+      "description": "Dos años sin nicotina — un campeón de la salud"
+    },
+    "warrior": {
+      "name": "Guerrero",
+      "description": "Tres años sin fumar — un guerrero contra la adicción"
+    },
+    "sage": {
+      "name": "Sabio",
+      "description": "Cinco años sin fumar — la sabiduría viene con el tiempo"
+    },
+    "phoenix": {
+      "name": "Fénix",
+      "description": "Siete años sin fumar — renacido de las cenizas más fuerte"
+    },
+    "immortal": {
+      "name": "Inmortal",
+      "description": "Diez años sin nicotina — eres inmortal"
+    },
+    "guardian": {
+      "name": "Guardian",
+      "description": "Quince años sin fumar — guardián de tu salud"
+    },
+    "sovereign": {
+      "name": "Soberano",
+      "description": "Veinte años sin fumar — soberano de tu destino"
+    },
+    "eternal": {
+      "name": "Eterno",
+      "description": "Veinticinco años sin fumar — tu legado es eterno"
+    },
+    "divine": {
+      "name": "Divino",
+      "description": "Treinta años sin nicotina — has logrado lo divino"
     }
   },
   "toggles": {
