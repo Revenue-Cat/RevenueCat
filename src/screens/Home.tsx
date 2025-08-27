@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { View, Animated } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
+import LottieView from "lottie-react-native";
 import { useApp } from "../contexts/AppContext";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
 import ParallaxBackground from "../components/ParallaxBackground";
@@ -64,23 +65,24 @@ const Home: React.FC<HomeProps> = ({
     if (currentView === "home") {
       return scrollY.interpolate({
         inputRange: [0, 100],
-        outputRange: ["60%", "70%"], // Fixed pixel values for home view
+        outputRange: ["60%", "70%"],
         extrapolate: "clamp",
       });
     } else {
       return scrollY.interpolate({
         inputRange: [0, 100],
-        outputRange: ["55%", "60%"], // Height increases// Fixed pixel values for other views
+        outputRange: ["55%", "60%"],
         extrapolate: "clamp",
       });
     }
   }, [scrollY, currentView]);
 
-  // Memoize the buddy image source to prevent recreation
-  const buddyImageSource = useMemo(() => {
-    // Extract base buddy key from gender-specific ID (e.g., "alpaca-m" -> "alpaca")
-    const baseBuddyKey = selectedBuddyId.split("-")[0] as BuddyKey;
-    return buddyAssets[baseBuddyKey][sexKey];
+  // Buddy Lottie animation source (tolerate ids like "alpaca-m")
+  const buddyAnimSource = useMemo(() => {
+    const id = (selectedBuddyId || "alpaca") as string;
+    const base: BuddyKey = id.split("-")[0] as BuddyKey;
+    const pack = (buddyAssets as any)?.[base] ?? (buddyAssets as any)?.alpaca;
+    return pack?.[sexKey] ?? pack?.m;
   }, [selectedBuddyId, sexKey]);
 
   const parseGradient = useCallback(
@@ -128,13 +130,12 @@ const Home: React.FC<HomeProps> = ({
 
   const gradientColors = parseGradient(selectedBackground.backgroundColor);
 
-  // Temporary fallback to test if LinearGradient is the issue
   return (
     <View
       className="flex-1 absolute inset-0"
       style={{ backgroundColor: gradientColors[0] }}
     >
-      {/* Fixed Header - Outside of PanGestureHandler */}
+      {/* Fixed Header */}
       <HomeHeader
         currentView={currentView}
         userCoins={userCoins}
@@ -143,10 +144,9 @@ const Home: React.FC<HomeProps> = ({
         onViewChange={changeView}
       />
 
-      {/* Full Screen PanGestureHandler for left/right navigation */}
+      {/* Horizontal pan for view switching */}
       <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[10]">
-          {/* Shrinking ParallaxBackground - shrinks when scrolling achievements */}
           <Animated.View
             style={{ height: backgroundHeight }}
             pointerEvents="none"
@@ -154,23 +154,29 @@ const Home: React.FC<HomeProps> = ({
             <ParallaxBackground scrollY={scrollY} height={330} />
           </Animated.View>
 
-          {/* Fixed Buddy Icon - On top of ParallaxBackground */}
+          {/* Buddy Lottie on top of background */}
           <Animated.View
             className="absolute top-0 left-0 right-0 z-[50] items-center justify-end"
             style={{ height: 360 }}
+            pointerEvents="none"
           >
-            <Animated.Image
-              source={buddyImageSource}
-              style={{
-                width: 100,
-                height: 220,
-                transform: buddyTransform,
-              }}
-              resizeMode="contain"
-            />
+            <Animated.View style={{ transform: buddyTransform }}>
+              {buddyAnimSource ? (
+                <LottieView
+                  key={`home-buddy-${currentView === "home" ? "play" : "stop"}`}
+                  source={buddyAnimSource}
+                  autoPlay={currentView === "home"}
+                  loop={currentView === "home"}
+                  {...(currentView === "home" ? {} : ({ progress: 0 } as any))}
+                  style={{ width: 160, height: 240 }}
+                  resizeMode="contain"
+                  enableMergePathsAndroidForKitKatAndAbove
+                />
+              ) : null}
+            </Animated.View>
           </Animated.View>
 
-          {/* Achievements Toggle - On top of Buddy Icon */}
+          {/* Achievements Toggle */}
           {currentView === "achievements" && (
             <AchievementsToggle
               scrollY={scrollY}
@@ -179,7 +185,7 @@ const Home: React.FC<HomeProps> = ({
             />
           )}
 
-          {/* Shop Toggle - On top of Buddy Icon */}
+          {/* Shop Toggle */}
           {currentView === "shop" && (
             <ShopToggle
               scrollY={scrollY}
@@ -194,9 +200,7 @@ const Home: React.FC<HomeProps> = ({
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              flexGrow: 1,
-            }}
+            contentContainerStyle={{ flexGrow: 1 }}
             style={{
               position: "absolute",
               top: currentView === "home" ? 320 : 360,
@@ -218,13 +222,10 @@ const Home: React.FC<HomeProps> = ({
                     ],
             }}
           >
-            {/* Achievement Cards - Dynamic height */}
+            {/* Achievement Cards */}
             {currentView === "home" && (
               <View
-                style={{
-                  marginTop: 0,
-                  backgroundColor: gradientColors[0],
-                }}
+                style={{ marginTop: 0, backgroundColor: gradientColors[0] }}
               >
                 <AchievementSection
                   isCollapsed={isAchievementsCollapsed}
@@ -233,7 +234,7 @@ const Home: React.FC<HomeProps> = ({
               </View>
             )}
 
-            {/* Content with Carousel */}
+            {/* Main content */}
             <HomeContent
               currentView={currentView}
               isAchievementsCollapsed={isAchievementsCollapsed}

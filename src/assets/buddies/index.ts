@@ -1,24 +1,24 @@
 // Keep static requires (RN bundler needs them)
 export const buddyAssets = {
   alpaca: {
-    m: require("./Alpaca-m.png"),
-    w: require("./Alpaca-w.png"),
+    m: require("./alpaca-m.json"),
+    w: require("./alpaca-w.json"),
   },
   dog: {
-    m: require("./Dog-m.png"),
-    w: require("./Dog-w.png"),
+    m: require("./dog-m.json"),
+    w: require("./dog-w.json"),
   },
   fox: {
-    m: require("./Fox-m.png"),
-    w: require("./Fox-w.png"),
+    m: require("./fox-m.json"),
+    w: require("./fox-w.json"),
   },
   koala: {
-    m: require("./Koala-m.png"),
-    w: require("./Koala-w.png"),
+    m: require("./koala-m.json"),
+    w: require("./koala-w.json"),
   },
   zebra: {
-    m: require("./Zebra-m.png"),
-    w: require("./Zebra-w.png"),
+    m: require("./zebra-m.json"),
+    w: require("./zebra-w.json"),
   },
 } as const;
 
