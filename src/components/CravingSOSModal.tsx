@@ -5,6 +5,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import { strategies as strategiesData } from '../data/strategiesData';
 import HeartIcon from '../assets/strategies/heart.svg';
 import { useTranslation } from 'react-i18next';
+import BreathIcon from '../assets/challenges/challenge1.svg';
+import SmokeIcon from '../assets/icons/smoke.svg';
 
 interface CravingSOSModalProps {
   visible: boolean;
@@ -127,7 +129,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
   }, [ITEM_WIDTH, isDark, scrollX, t]);
 
   return (
-    <SlideModal visible={visible} onClose={onClose} title={t('cravingSOS.modal.title')} showCloseButton>
+    <SlideModal visible={visible} onClose={onClose} title={t('cravingSOS.modal.title')} showCloseButton={false}>
       <Text
         className={`${isDark ? 'text-slate-300' : 'text-slate-500'} text-center`}
         style={{ fontSize: 14, lineHeight: 20 }}
@@ -183,11 +185,11 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
               <Animated.View
                 key={i}
                 style={{
-                  width: 8,
-                  height: 8,
+                  width: 6,
+                  height: 6,
                   borderRadius: 4,
                   backgroundColor: '#312e81',
-                  marginHorizontal: 2,
+                  marginHorizontal: 0.5,
                   transform: [{ scale }],
                   opacity,
                 }}
@@ -196,6 +198,55 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
           })}
         </View>
       </View>
+
+      {/* SlideModal Actions */}
+      <View className="flex-row mt-4 justify-center items-center relative rounded-3xl overflow-hidden -ml-5 -mr-5 -mb-10" style={{ 
+        height: 122, 
+        gap: 8
+      }}>
+          
+        {/* Background BreathIcon */}
+        <View className="absolute -bottom-10">
+          <BreathIcon 
+            width={width} 
+            height={400} 
+            color={isDark ? '#CBD5E1' : '#1e1b4b'} 
+            style={{
+              opacity: 0.8,
+            }}
+          />
+
+        </View>
+          
+          {/* Action Buttons */}
+          <View className="flex-row items-center gap-5 justify-center w-full">
+            {/* Close Button */}
+              <Pressable 
+                className={`w-15 h-15 rounded-2xl justify-center items-center іelf-center ${
+                  isDark ? 'bg-slate-700' : 'bg-indigo-50'
+                }`} 
+                onPress={onClose}
+              >
+                <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
+              </Pressable>
+            
+            {/* Take 5 Breaths Button */}
+            <Pressable 
+              className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2 w-1/2"
+              onPress={onStartBreathing}
+            >
+              <Text className="text-white font-bold text-lg">Take 5 breaths</Text>
+            </Pressable>
+            
+            {/* Smoke Button */}
+            <Pressable 
+               className={`w-15 h-15 rounded-2xl justify-center items-center align-middle p-2 pr-3 self-center bg-red-500`} 
+              onPress={onClose}
+            >
+              <SmokeIcon width={24} height={24} color={'#CBD5E1' } />
+            </Pressable>
+          </View>
+        </View>
     </SlideModal>
   );
 };
