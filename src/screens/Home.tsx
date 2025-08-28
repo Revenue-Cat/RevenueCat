@@ -120,24 +120,6 @@ const Home: React.FC<HomeProps> = ({
 
   // Craving SOS modal state
   const [showCravingModal, setShowCravingModal] = useState(false);
-  const { width } = Dimensions.get("window");
-  const ITEM_WIDTH = width * 0.8; // center card width (~80%)
-  const SIDE_GUTTER = (width - ITEM_WIDTH) / 2; // side visibility (~10% each)
-  const scrollX = useRef(new Animated.Value(0)).current;
-
-  const tips = useMemo(
-    () => [
-      { id: "breath", title: "Breathing exercise", desc: "Try 4-7-8 breathing for 1 minute." },
-      { id: "tips", title: "Quick tips", desc: "Sip water, chew gum, or take a short walk." },
-      { id: "urge", title: "Ride the urge", desc: "Most cravings peak within 3-5 minutes." },
-    ],
-    []
-  );
-
-  const handleShowCravingSOS = useCallback(() => {
-    setShowCravingModal(true);
-    if (onShowCravingSOS) onShowCravingSOS();
-  }, [onShowCravingSOS]);
 
   // Memoize the achievements toggle callback
   const handleSetIsExclusiveSelected = useCallback((isExclusive: boolean) => {
@@ -262,7 +244,7 @@ const Home: React.FC<HomeProps> = ({
               isExclusiveSelected={isExclusiveSelected}
               isScenesSelected={isScenesSelected}
               setIsScenesSelected={handleSetIsScenesSelected}
-              onShowCravingSOS={handleShowCravingSOS}
+              onShowCravingSOS={()=> setShowCravingModal(true)}
               onNavigateToShop={handleNavigateToShop}
             />
           </Animated.ScrollView>

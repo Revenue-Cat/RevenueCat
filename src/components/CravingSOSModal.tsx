@@ -53,7 +53,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
     ];
     const scale = scrollX.interpolate({
       inputRange,
-            outputRange: [0.94, 1, 0.94],
+            outputRange: [0.9, 1, 0.9],
             extrapolate: 'clamp',
           });
 

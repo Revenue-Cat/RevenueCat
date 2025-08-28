@@ -356,7 +356,7 @@ export default function BuddyCarousel({
       onMomentumScrollEnd={handleMomentumEnd}
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-        { useNativeDriver: false }
+        { useNativeDriver: true }
       )}
       scrollEventThrottle={16}
       style={{ marginBottom: 16, overflow: "visible" }}
