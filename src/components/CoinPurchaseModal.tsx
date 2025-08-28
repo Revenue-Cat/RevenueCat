@@ -29,9 +29,9 @@ const CoinPurchaseModal: React.FC = () => {
   } = useApp();
 
   const coinPackages: CoinPackage[] = [
-    { amount: 100, price: "2.99 USD" },
-    { amount: 500, price: "5.99 USD", popular: true, strikethrough: "7.99 USD" },
-    { amount: 1000, price: "10.99 USD", strikethrough: "14.99 USD" }
+    { amount: 100, price: "1.99 USD" },
+    { amount: 300, price: "3.99 USD", popular: true, strikethrough: "7.99 USD" },
+    { amount: 500, price: "4.99 USD", strikethrough: "14.99 USD" }
   ];
 
   const handleCoinPurchase = (amount: number) => {

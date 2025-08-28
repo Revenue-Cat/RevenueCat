@@ -49,7 +49,9 @@
           "ios": {
             "useFrameworks": "static",
             "buildProperties": {
-              "SWIFT_STRICT_CONCURRENCY": "targeted"
+              "SWIFT_STRICT_CONCURRENCY": "targeted",
+              "SUPPORTS_MACCATALYST": "NO",
+              "SUPPORTED_PLATFORMS": "iphoneos iphonesimulator"
             }
           }
         }
