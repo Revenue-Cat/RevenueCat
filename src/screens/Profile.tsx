@@ -33,11 +33,10 @@ import ArrowRightDark from "../assets/icons/arrow-right-d.svg";
 import FlagEn from "../assets/icons/flag-en.svg";
 import FlagEs from "../assets/icons/flag-es.svg";
 import FlagUk from "../assets/icons/flag-uk.svg";
-import SubscriptionPlans from "../components/SubscriptionPlans";
-import SubscriptionPicker from "../components/SubscriptionPlans";
 import PromoCards from "../components/PromoCards";
-import { Plan } from "../config/subscriptions";
+import { COIN_PACKS, CoinPack, Plan } from "../config/subscriptions";
 import ReviewModal from "../components/ReviewModal";
+import CoinPackCard from "../components/CoinPackCard";
 
 interface ProfileProps {
   onBack: () => void;
@@ -95,6 +94,8 @@ const Profile: React.FC<ProfileProps> = ({
     packPrice,
     packPriceCurrency,
     goal,
+    userCoins,
+    setUserCoins,
   } = useApp();
 
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
@@ -192,11 +193,11 @@ const Profile: React.FC<ProfileProps> = ({
   // Support slide
   const [showSupportModal, setShowSupportModal] = useState(false);
 
-  const handleUnlock = (planId: "annual" | "quarterly" | "monthly") => {
-    // TODO: Integrate your RevenueCat / paywall here.
-    // For now reuse Shop navigation.
-    onNavigateToShop();
+  const handleBuyPack = (pack: CoinPack) => {
+    setUserCoins(userCoins + pack.coins);
+    // hook: analytics / server call could go here
   };
+
   return (
     <View className={`flex-1 ${isDark ? "bg-slate-800" : "bg-white"}`}>
       {/* Header */}
@@ -537,14 +538,31 @@ const Profile: React.FC<ProfileProps> = ({
           }}
         />
 
-        {/* Subscriptions */}
-        <SubscriptionPicker
-          onSelect={() => {}}
-          onUnlock={(plan: Plan) => {
-            // wire to RevenueCat here if you want
-            // Example: navigate to purchase screen / trigger purchase flow
-          }}
-        />
+        {/* Coin packs */}
+        <View className="mx-4">
+          <Text
+            className={`text-center font-extrabold ${
+              isDark ? "text-white" : "text-indigo-950"
+            }`}
+            style={{ fontSize: 24 }}
+          >
+            {t("coinModal.title", "Get More Coins")}
+          </Text>
+          <Text
+            className={`mt-1 text-center ${
+              isDark ? "text-slate-300" : "text-slate-500"
+            }`}
+            style={{ fontSize: 14, fontWeight: "600" }}
+          >
+            {t("coinModal.subtitle", "Choose your pack and keep going!")}
+          </Text>
+
+          <View className="mt-4">
+            {COIN_PACKS.map((pack) => (
+              <CoinPackCard key={pack.id} pack={pack} onPress={handleBuyPack} />
+            ))}
+          </View>
+        </View>
       </Animated.ScrollView>
 
       {/* Language slide */}
@@ -580,3 +598,6 @@ const Profile: React.FC<ProfileProps> = ({
 };
 
 export default Profile;
+function setUserCoins(arg0: any) {
+  throw new Error("Function not implemented.");
+}

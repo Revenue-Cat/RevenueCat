@@ -73,14 +73,14 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     // Initialize RevenueCat
-    Purchases.setLogLevel(LOG_LEVEL.DEBUG);
-    if (Platform.OS === 'ios') {
-       Purchases.configure({apiKey: "appl_KopTWcANzpTAMEriDmzPeFhFiVu"});
-    } else if (Platform.OS === 'android') {
-       Purchases.configure({apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ"});
-    } else if (Platform.OS !== 'web') {
+    if (Platform.OS === "ios") {
+      Purchases.configure({ apiKey: "appl_KopTWcANzpTAMEriDmzPeFhFiVu" });
+    } else if (Platform.OS === "android") {
+      Purchases.configure({ apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ" });
+    } else if (Platform.OS !== "web") {
+      Purchases.setLogLevel(LOG_LEVEL.DEBUG);
       Purchases.configure({
-        apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ"
+        apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ",
       });
     }
   }, []);
@@ -161,8 +161,8 @@ const AppContent: React.FC = () => {
         )}
 
         {currentScreen === "shop" && (
-          <Shop 
-            onBack={() => navigateTo("home")} 
+          <Shop
+            onBack={() => navigateTo("home")}
             isScenesSelected={isScenesSelected}
             setIsScenesSelected={setIsScenesSelected}
           />

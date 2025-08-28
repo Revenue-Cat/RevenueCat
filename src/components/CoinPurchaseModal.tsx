@@ -1,201 +1,92 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useApp } from '../contexts/AppContext';
-import SlideModal from './SlideModal';
-
-const { width } = Dimensions.get('window');
-
-interface CoinPackage {
-  amount: number;
-  price: string;
-  popular?: boolean;
-  strikethrough?: string;
-}
+import React from "react";
+import { View, Text } from "react-native";
+import SlideModal from "./SlideModal";
+import { useApp } from "../contexts/AppContext";
+import { useTheme } from "../contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
+import CoinIcon from "../assets/icons/coins.svg";
+import CoinPackCard from "./CoinPackCard";
+import { COIN_PACKS, CoinPack } from "../config/subscriptions";
 
 const CoinPurchaseModal: React.FC = () => {
-  const { 
-    showCoinPurchase, 
-    setShowCoinPurchase, 
-    userCoins, 
-    setUserCoins, 
-    // selectedCharacter 
-  } = useApp();
+  const { showCoinPurchase, setShowCoinPurchase, userCoins, setUserCoins } = useApp();
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const isDark = theme === "dark";
 
-  const coinPackages: CoinPackage[] = [
-    { amount: 100, price: "1.99 USD" },
-    { amount: 300, price: "3.99 USD", popular: true, strikethrough: "7.99 USD" },
-    { amount: 500, price: "4.99 USD", strikethrough: "14.99 USD" }
-  ];
+  const indigo950 = "#1E1B4B";
+  const slate100 = "#F1F5F9";
+  const slate500 = "#64748B";
+  const amber500 = "#F59E0B";
+  const amberBorder = "#FBBF24";
 
-  const handleCoinPurchase = (amount: number) => {
-    setUserCoins(userCoins + amount);
+  const titleColor = isDark ? slate100 : indigo950;
+  const subColor = isDark ? slate500 : slate500;
+
+  // localized packs (labels/captions can be overridden via i18n)
+  const packs = COIN_PACKS.map((p) => ({
+    ...p,
+    label: t(`coinPacks.${p.id}.label`, p.label),
+    caption: p.caption ? t(`coinPacks.${p.id}.caption`, p.caption) : undefined,
+    bonusTag: p.bonusTag ? t(`coinPacks.${p.id}.bonus`, p.bonusTag) : undefined,
+  }));
+
+  const handleBuy = (pack: CoinPack) => {
+    setUserCoins(userCoins + pack.coins);
     setShowCoinPurchase(false);
   };
 
   return (
-    <SlideModal visible={showCoinPurchase} onClose={() => setShowCoinPurchase(false)} title="Get More Buddy Coins">
-      <View style={styles.header}>
-        <View style={styles.characterContainer}>
-          {/* <Text style={styles.characterEmoji}>{selectedCharacter.emoji}</Text> */}
-        </View>
-        <View style={styles.coinsDisplay}>
-          <Ionicons name="logo-bitcoin" size={16} color="#FFD700" />
-          <Text style={styles.coinsText}>{userCoins}</Text>
+    <SlideModal
+      visible={showCoinPurchase}
+      onClose={() => setShowCoinPurchase(false)}
+    >
+      {/* Balance centered */}
+      <View style={{ alignItems: "center", marginTop: 4, marginBottom: 8 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            borderRadius: 999,
+            paddingHorizontal: 14,
+            paddingVertical: 6,
+            borderWidth: 1.5,
+            borderColor: amberBorder,
+            backgroundColor: "rgba(251, 191, 36, 0.15)",
+          }}
+        >
+          <Text style={{ color: indigo950, fontWeight: "700", marginRight: 8 }}>
+            {t("coinModal.balance", "Balance")} {userCoins}
+          </Text>
+          <CoinIcon width={16} height={16} />
         </View>
       </View>
 
-      <View style={styles.packagesContainer}>
-        {coinPackages.map((pkg, index) => (
-          <Pressable
-            key={index}
-            style={[
-              styles.packageCard,
-              pkg.popular && styles.popularPackage
-            ]}
-            onPress={() => handleCoinPurchase(pkg.amount)}
-          >
-            {pkg.popular && (
-              <View style={styles.popularBadge}>
-                <Text style={styles.popularText}>Popular ✓</Text>
-              </View>
-            )}
-            <View style={styles.packageContent}>
-              <View style={styles.packageLeft}>
-                <Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-                <Text style={styles.packageAmount}>+{pkg.amount} Buddy coins</Text>
-              </View>
-              <View style={styles.packageRight}>
-                <Text style={styles.packagePrice}>{pkg.price}</Text>
-                {pkg.strikethrough && (
-                  <Text style={styles.strikethroughPrice}>{pkg.strikethrough}</Text>
-                )}
-              </View>
-            </View>
-          </Pressable>
+      {/* Heading + subheading */}
+      <View style={{ alignItems: "center", marginTop: 4, marginBottom: 16 }}>
+        <Text
+          style={{
+            color: titleColor,
+            fontWeight: "800",
+            fontSize: 20,
+            marginBottom: 6,
+          }}
+        >
+          {t("coinModal.title", "Get More Coins")}
+        </Text>
+        <Text style={{ color: subColor, fontSize: 14, fontWeight: "500" }}>
+          {t("coinModal.subtitle", "Choose your pack and keep going!")}
+        </Text>
+      </View>
+
+      {/* Packs */}
+      <View style={{ paddingHorizontal: 8 }}>
+        {packs.map((p) => (
+          <CoinPackCard key={p.id} pack={p} onPress={handleBuy} />
         ))}
       </View>
     </SlideModal>
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  container: {
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-    maxHeight: '90%',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  characterContainer: {
-    width: 48,
-    height: 48,
-    backgroundColor: 'rgba(255, 215, 0, 0.2)',
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  characterEmoji: {
-    fontSize: 24,
-  },
-  coinsDisplay: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  coinsText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  packagesContainer: {
-    gap: 12,
-    marginBottom: 24,
-  },
-  packageCard: {
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: '#f5f5f5',
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-  },
-  popularPackage: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    borderColor: '#000000',
-  },
-  popularBadge: {
-    backgroundColor: '#000000',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-    marginBottom: 8,
-  },
-  popularText: {
-    fontSize: 12,
-    color: '#ffffff',
-  },
-  packageContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  packageLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  packageAmount: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  packageRight: {
-    alignItems: 'flex-end',
-  },
-  packagePrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  strikethroughPrice: {
-    fontSize: 12,
-    color: '#666666',
-    textDecorationLine: 'line-through',
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-});
-
-export default CoinPurchaseModal; 
+export default CoinPurchaseModal;

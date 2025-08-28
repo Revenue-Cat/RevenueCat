@@ -42,22 +42,19 @@ const PromoCards: React.FC<Props> = ({
   return (
     <View className="px-4">
       {/* Refer a friend card */}
-      <View className="rounded-3xl overflow-hidden">
+      {/* <View className="rounded-3xl overflow-hidden">
         <LinearGradient
           colors={["#7C8CF8", "#6A55E4"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           className="mx-4 rounded-3xl mt-4 overflow-hidden"
         >
-          {/* Make this the positioning context */}
           <View className="px-5 py-5 relative pr-32 min-h-[128px]">
             <View className="flex-row items-center justify-between">
               <View style={{ flex: 1, paddingRight: 16 }}>
-                {/* first row: xs */}
                 <Text className="text-white/90 font-semibold text-xs">
                   {t("promos.refer.subtitle", "Quitting is easier together")}
                 </Text>
-                {/* second row: base */}
                 <Text className="text-white font-bold text-base mt-1">
                   {t("promos.refer.title", "Get 500 coins by referring")}
                 </Text>
@@ -66,7 +63,6 @@ const PromoCards: React.FC<Props> = ({
                   onPress={shareLink}
                   className="self-start bg-white/20 rounded-3xl px-4 py-2 mt-4"
                 >
-                  {/* button text: sm */}
                   <Text className="text-white font-bold text-sm">
                     {t("promos.refer.cta", "Refer a friend")}
                   </Text>
@@ -74,7 +70,6 @@ const PromoCards: React.FC<Props> = ({
               </View>
             </View>
 
-            {/* Artwork: sibling of the row, absolutely positioned to the card corner */}
             <View
               pointerEvents="none"
               style={{ position: "absolute", right: 12, bottom: -4 }}
@@ -83,7 +78,7 @@ const PromoCards: React.FC<Props> = ({
             </View>
           </View>
         </LinearGradient>
-      </View>
+      </View> */}
 
       {/* Review card */}
       <View className="mt-4 rounded-3xl overflow-hidden">

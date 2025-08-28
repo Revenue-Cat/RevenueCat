@@ -1,12 +1,14 @@
 // src/components/ReviewModal.tsx
 import React, { useState } from "react";
-import { View, Text, Pressable, Linking } from "react-native";
+import { View, Text, Pressable, Linking, Image } from "react-native";
 import SlideModal from "./SlideModal";
 import Star from "../assets/star.svg";
 import StarFilled from "../assets/star-f.svg";
 import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
+// If you moved these constants into coin_packs.ts, change the import accordingly.
 import { APP_STORE_REVIEW_URL } from "../config/subscriptions";
+import ReviewArt from "../assets/review-image.png";
 
 type Props = {
   visible: boolean;
@@ -14,6 +16,8 @@ type Props = {
   onSubmit?: (stars: number) => void;
   appReviewUrl?: string;
 };
+
+const ICON_SIZE = 40;
 
 const ReviewModal: React.FC<Props> = ({
   visible,
@@ -32,30 +36,61 @@ const ReviewModal: React.FC<Props> = ({
     } catch {}
   };
 
-  const submit = async () => {
-    onSubmit?.(rating);
+  const submit = async (value: number) => {
+    onSubmit?.(value);
     await openReview();
   };
 
+  const titleColor = isDark ? "text-white" : "text-indigo-950";
+
   return (
-    <SlideModal
-      visible={visible}
-      onClose={onClose}
-      title={t("review.title", "How satisfied are you with\nQutQly App?")}
-    >
+    // Omit title prop so we can place the image above our custom title
+    <SlideModal visible={visible} onClose={onClose}>
       <View className="items-center">
-        <View className="flex-row items-center justify-center gap-2 mt-4">
+        {/* Top illustration */}
+        <Image
+          source={ReviewArt}
+          resizeMode="contain"
+          style={{ width: 316, height: 126, marginTop: 4 }}
+        />
+
+        {/* Title */}
+        <Text
+          className={`mt-2 text-center font-extrabold ${titleColor}`}
+          style={{ fontSize: 22, lineHeight: 28 }}
+        >
+          {t("review.title", "How satisfied are you with\nQutQly App?")}
+        </Text>
+
+        {/* Stars */}
+        <View style={{ flexDirection: "row", marginTop: 18 }}>
           {Array.from({ length: 5 }).map((_, i) => {
-            const Icon = i < rating ? StarFilled : Star;
+            const Filled = i < rating;
+            const Icon = Filled ? StarFilled : Star;
             return (
               <Pressable
                 key={i}
                 onPress={() => {
-                  setRating(i + 1);
-                  submit();
+                  const next = i + 1;
+                  setRating(next);
+                  submit(next);
                 }}
+                style={{ marginHorizontal: 8 }}
               >
-                <Icon width={34} height={34} />
+                {/* clip any stray paths in the SVG */}
+                <View
+                  style={{
+                    width: ICON_SIZE,
+                    height: ICON_SIZE,
+                    overflow: "hidden",
+                  }}
+                >
+                  <Icon
+                    width={ICON_SIZE}
+                    height={ICON_SIZE}
+                    preserveAspectRatio="xMidYMid meet"
+                  />
+                </View>
               </Pressable>
             );
           })}

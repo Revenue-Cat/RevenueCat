@@ -14,14 +14,6 @@
     "waitForLevel": "Wait. Reach the required level to unlock this achievement."
   },
   "buddies": {
-    "llama-m": {
-      "description": "A gentle and calm companion for your journey.",
-      "name": "Llama"
-    },
-    "llama-w": {
-      "description": "A gentle and calm companion for your journey.",
-      "name": "Llama"
-    },
     "fox-m": {
       "description": "A soft and comforting buddy for difficult moments.",
       "name": "Fluffy"
@@ -37,6 +29,14 @@
     "koala-w": {
       "description": "A relaxed and supportive friend for your quit journey.",
       "name": "Koala"
+    },
+    "llama-m": {
+      "description": "A gentle and calm companion for your journey.",
+      "name": "Llama"
+    },
+    "llama-w": {
+      "description": "A gentle and calm companion for your journey.",
+      "name": "Llama"
     },
     "panda-m": {
       "description": "A peaceful and mindful companion for your wellness journey.",
@@ -107,11 +107,84 @@
     "mainSubtitle": "Your smoke-free journey begins now. Let's make it count!",
     "mainTitle": "Ready to start?"
   },
+  "coinModal": {
+    "balance": "Balance",
+    "subtitle": "Choose your pack and keep going!",
+    "title": "Get More Coins"
+  },
+  "coinPacks": {
+    "booster": {
+      "bonus": "+20% bonus included",
+      "caption": "Solid value, real progress.",
+      "label": "Booster"
+    },
+    "legend": {
+      "caption": "Quick start, no pressure",
+      "label": "Legend"
+    },
+    "pro": {
+      "caption": "Quick start, no pressure",
+      "label": "Pro"
+    },
+    "starter": {
+      "caption": "Go big, stay on track.",
+      "label": "Starter"
+    }
+  },
   "countdownTimer": {
     "days": "Days",
     "hours": "Hours",
     "minutes": "Minutes",
     "seconds": "Seconds"
+  },
+  "cravingSOS": {
+    "common": {
+      "days": "10 Days challenge"
+    },
+    "crumpleCravings": {
+      "challenge": "Crave crusher",
+      "description": "When you feel the urge to smoke, draw or write your craving on a piece of paper. Focus on the feeling, then crumple the paper. Breathe deeply and let the craving go. If it comes back, repeat the steps.",
+      "title": "Crumple cravings"
+    },
+    "gripRelease": {
+      "challenge": "Fist flow",
+      "description": "When you feel the urge to smoke, squeeze your fists 20 times. Focus on the sensations, breathe deeply, and let the urge pass. Repeat if needed.",
+      "title": "Grip and release"
+    },
+    "meditateListen": {
+      "challenge": "Calm power",
+      "description": "Replace a craving with a short meditation and music. Focus on your breathing, relax your body, and let the craving pass.",
+      "title": "Meditate and listen"
+    },
+    "modal": {
+      "subtitle": "Use breathing exercises or quick tips",
+      "title": "Want to smoke?"
+    },
+    "sipBreathe": {
+      "challenge": "Hydro hero",
+      "description": "Replace the craving with a glass of water. Slowly drink the water, focusing on the taste and sensations. Take a few deep breaths and relax. If the craving returns — repeat the steps.",
+      "title": "Sip and breathe"
+    },
+    "snackInstead": {
+      "challenge": "Snack break",
+      "description": "When you feel the urge to smoke, grab a healthy snack instead. Chew slowly, focus on the taste and texture, and take a sip of water. If the craving comes back, repeat the steps.",
+      "title": "Snack instead"
+    },
+    "splashRefresh": {
+      "challenge": "Refresh",
+      "description": "When you feel the urge to smoke, splash cold water on your face or wrists. Breathe deeply, focus on the sensations, and let your body refresh. If the craving returns, repeat the steps.",
+      "title": "Splash and refresh"
+    },
+    "stretchRelax": {
+      "challenge": "Flow minute",
+      "description": "When you feel tension or stiffness, gently stretch your neck, shoulders, and back for 2-3 minutes. Breathe deeply, focus on the sensations, and let your body relax. If tension returns, repeat the steps.",
+      "title": "Stretch and relax"
+    },
+    "walkReset": {
+      "challenge": "Step slayer",
+      "description": "When you feel the urge to smoke, walk 500 steps to clear your mind and reset your body. This helps distract you from cravings and feel in control.",
+      "title": "Walk to reset"
+    }
   },
   "home": {
     "achievements": "Achievements",
@@ -440,54 +513,5 @@
     "subtitle": "Your journey to a smoke-free life starts here",
     "title": "Welcome to Zero Poofs",
     "willYouQuit": "Will you... quit?"
-  },
-  "cravingSOS": {
-    "modal": {
-      "title": "Want to smoke?",
-      "subtitle": "Use breathing exercises or quick tips"
-    },
-    "common": {
-      "days": "10 Days challenge"
-    },
-    "sipBreathe": {
-      "title": "Sip and breathe",
-      "description": "Replace the craving with a glass of water. Slowly drink the water, focusing on the taste and sensations. Take a few deep breaths and relax. If the craving returns — repeat the steps.",
-      "challenge": "Hydro hero"
-    },
-    "walkReset": {
-      "title": "Walk to reset",
-      "description": "When you feel the urge to smoke, walk 500 steps to clear your mind and reset your body. This helps distract you from cravings and feel in control.",
-      "challenge": "Step slayer"
-    },
-    "snackInstead": {
-      "title": "Snack instead",
-      "description": "When you feel the urge to smoke, grab a healthy snack instead. Chew slowly, focus on the taste and texture, and take a sip of water. If the craving comes back, repeat the steps.",
-      "challenge": "Snack break"
-    },
-    "meditateListen": {
-      "title": "Meditate and listen",
-      "description": "Replace a craving with a short meditation and music. Focus on your breathing, relax your body, and let the craving pass.",
-      "challenge": "Calm power"
-    },
-    "splashRefresh": {
-      "title": "Splash and refresh",
-      "description": "When you feel the urge to smoke, splash cold water on your face or wrists. Breathe deeply, focus on the sensations, and let your body refresh. If the craving returns, repeat the steps.",
-      "challenge": "Refresh"
-    },
-    "gripRelease": {
-      "title": "Grip and release",
-      "description": "When you feel the urge to smoke, squeeze your fists 20 times. Focus on the sensations, breathe deeply, and let the urge pass. Repeat if needed.",
-      "challenge": "Fist flow"
-    },
-    "crumpleCravings": {
-      "title": "Crumple cravings",
-      "description": "When you feel the urge to smoke, draw or write your craving on a piece of paper. Focus on the feeling, then crumple the paper. Breathe deeply and let the craving go. If it comes back, repeat the steps.",
-      "challenge": "Crave crusher"
-    },
-    "stretchRelax": {
-      "title": "Stretch and relax",
-      "description": "When you feel tension or stiffness, gently stretch your neck, shoulders, and back for 2-3 minutes. Breathe deeply, focus on the sensations, and let your body relax. If tension returns, repeat the steps.",
-      "challenge": "Flow minute"
-    }
   }
 }
