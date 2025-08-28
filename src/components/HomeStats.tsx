@@ -6,7 +6,21 @@ import { calculateSavings, getAvoidedLabel } from '../utils/savingsCalculator';
 
 const HomeStats: React.FC = () => {
   const { t } = useTranslation();
-  const { smokeType, dailyAmount, packPrice, packPriceCurrency, daysSmokeFree } = useApp();
+  const { smokeType, dailyAmount, packPrice, packPriceCurrency, daysSmokeFree, startDate } = useApp();
+
+  // Calculate actual days since start date
+  const getActualDaysSmokeFree = () => {
+    if (!startDate) return daysSmokeFree || 0;
+    
+    const now = new Date();
+    const start = new Date(startDate);
+    const diffTime = Math.abs(now.getTime() - start.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    return Math.max(0, diffDays);
+  };
+
+  const actualDaysSmokeFree = getActualDaysSmokeFree();
 
   // Calculate savings based on user data
   const savings = calculateSavings(
@@ -14,7 +28,7 @@ const HomeStats: React.FC = () => {
     dailyAmount || '6-10',
     packPrice || '5',
     packPriceCurrency || '$',
-    daysSmokeFree || 30
+    actualDaysSmokeFree
   );
 
   // Calculate time saved (assuming 5 minutes per cigarette/stick)
@@ -48,7 +62,7 @@ const HomeStats: React.FC = () => {
           <Text className="text-xs font-medium text-white">{t('home.stats.timeSaved')}</Text>
         </View>
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-          <Text className="text-2xl font-bold text-white">{daysSmokeFree || 0}</Text>
+          <Text className="text-2xl font-bold text-white">{actualDaysSmokeFree}</Text>
           <Text className="text-xs font-medium text-white">{t('home.stats.smokeFreeDays')}</Text>
         </View>
       </View>

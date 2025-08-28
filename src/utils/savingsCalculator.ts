@@ -76,7 +76,7 @@ export const getAvoidedLabel = (smokeType: string): string => {
     'cigarettes': 'Cigs avoided',
     'roll-your-own': 'Rolls avoided',
     'tobacco-heater': 'Sticks avoided',
-    'vaping': 'Ml avoided'
+    'vaping': 'Ml(vaping) avoided'
   };
   
   return avoidedLabels[smokeType] || 'Items avoided';
