@@ -40,6 +40,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
+    "svgo": "^4.0.0",
     "typescript": "~5.8.3"
   },
   "main": "index.ts",
@@ -52,7 +53,8 @@
     "eas-dev-ios": "eas build --profile development --platform ios --local",
     "ios": "expo run:ios",
     "start": "expo start",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "svgo": "svgo -f src/assets/strategies -o src/assets/strategies --config=svgo.config.js"
   },
   "version": "1.0.1"
 }

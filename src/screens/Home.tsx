@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { View, Animated } from "react-native";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { View, Animated, Dimensions, Text, Pressable } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import LottieView from "lottie-react-native";
 import { useApp } from "../contexts/AppContext";
@@ -12,6 +12,8 @@ import AchievementsToggle from "../components/AchievementsToggle";
 import ShopToggle from "../components/ShopToggle";
 import { useHomeNavigation } from "../hooks/useHomeNavigation";
 import { useHomeScroll } from "../hooks/useHomeScroll";
+import CravingSOSModal from "../components/CravingSOSModal";
+import { useTheme } from "../contexts/ThemeContext";
 
 interface HomeProps {
   onShowCravingSOS: () => void;
@@ -30,6 +32,8 @@ const Home: React.FC<HomeProps> = ({
   onNavigateToAchievements,
   onNavigateToShop,
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const {
     userCoins,
     setShowCoinPurchase,
@@ -114,9 +118,8 @@ const Home: React.FC<HomeProps> = ({
     onNavigateToShop();
   }, [onNavigateToShop]);
 
-  const handleShowCravingSOS = useCallback(() => {
-    onShowCravingSOS();
-  }, [onShowCravingSOS]);
+  // Craving SOS modal state
+  const [showCravingModal, setShowCravingModal] = useState(false);
 
   // Memoize the achievements toggle callback
   const handleSetIsExclusiveSelected = useCallback((isExclusive: boolean) => {
@@ -241,12 +244,18 @@ const Home: React.FC<HomeProps> = ({
               isExclusiveSelected={isExclusiveSelected}
               isScenesSelected={isScenesSelected}
               setIsScenesSelected={handleSetIsScenesSelected}
-              onShowCravingSOS={handleShowCravingSOS}
+              onShowCravingSOS={()=> setShowCravingModal(true)}
               onNavigateToShop={handleNavigateToShop}
             />
           </Animated.ScrollView>
         </View>
       </PanGestureHandler>
+      {/* Craving SOS Slide Modal */}
+      <CravingSOSModal
+        visible={showCravingModal}
+        onClose={() => setShowCravingModal(false)}
+        onStartBreathing={onShowBreathingExercise}
+      />
     </View>
   );
 };
