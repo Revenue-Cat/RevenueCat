@@ -56,26 +56,15 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
             outputRange: [0.94, 1, 0.94],
             extrapolate: 'clamp',
           });
-          const heightScale = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.85, 1, 0.9], // 160/240 = 0.67 for side cards, 1 for active
-      extrapolate: 'clamp',
-    });
-    const translateY = scrollX.interpolate({
-      inputRange,
-            outputRange: [9, 0, 9],
-      extrapolate: 'clamp',
-    });
+
     const isInitiallyActive = !hasInteracted && index === activeIndex;
     return (
       <Animated.View
         style={{
           width: ITEM_WIDTH,
-                transform: [
-                  { scale },
-                  { scaleY: isInitiallyActive ? 1 : heightScale },
-                  { translateY: isInitiallyActive ? 0 : (translateY as unknown as number) },
-                ],
+          transform: [
+            { scale },
+          ],
         }}
       >
         <View
@@ -129,7 +118,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
   }, [ITEM_WIDTH, isDark, scrollX, t]);
 
   return (
-    <SlideModal visible={visible} onClose={onClose} title={t('cravingSOS.modal.title')} showCloseButton={false}>
+    <SlideModal visible={visible} onClose={onClose} title={t('cravingSOS.modal.title')} showCloseButton>
       <Text
         className={`${isDark ? 'text-slate-300' : 'text-slate-500'} text-center`}
         style={{ fontSize: 14, lineHeight: 20 }}
@@ -200,13 +189,13 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
       </View>
 
       {/* SlideModal Actions */}
-      <View className="flex-row mt-4 justify-center items-center relative rounded-3xl overflow-hidden -ml-5 -mr-5 -mb-10" style={{ 
+      {/* <View className="flex-row mt-4 justify-center items-center relative rounded-3xl overflow-hidden -ml-5 -mr-5 -mb-10" style={{ 
         height: 122, 
         gap: 8
-      }}>
+      }}> */}
           
         {/* Background BreathIcon */}
-        <View className="absolute -bottom-10">
+        {/* <View className="absolute -bottom-12">
           <BreathIcon 
             width={width} 
             height={400} 
@@ -214,39 +203,39 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
             style={{
               opacity: 0.8,
             }}
-          />
+          /> */}
 
-        </View>
+        {/* </View> */}
           
           {/* Action Buttons */}
-          <View className="flex-row items-center gap-5 justify-center w-full">
+          {/* <View className="flex-row items-center gap-5 justify-center w-full"> */}
             {/* Close Button */}
-              <Pressable 
+              {/* <Pressable 
                 className={`w-15 h-15 rounded-2xl justify-center items-center іelf-center ${
                   isDark ? 'bg-slate-700' : 'bg-indigo-50'
                 }`} 
                 onPress={onClose}
               >
                 <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
-              </Pressable>
+              </Pressable> */}
             
             {/* Take 5 Breaths Button */}
-            <Pressable 
+            {/* <Pressable 
               className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2 w-1/2"
               onPress={onStartBreathing}
             >
               <Text className="text-white font-bold text-lg">Take 5 breaths</Text>
-            </Pressable>
+            </Pressable> */}
             
             {/* Smoke Button */}
-            <Pressable 
+            {/* <Pressable 
                className={`w-15 h-15 rounded-2xl justify-center items-center align-middle p-2 pr-3 self-center bg-red-500`} 
               onPress={onClose}
             >
               <SmokeIcon width={24} height={24} color={'#CBD5E1' } />
-            </Pressable>
-          </View>
-        </View>
+            </Pressable> */}
+          {/* </View> */}
+        {/* </View> */}
     </SlideModal>
   );
 };
