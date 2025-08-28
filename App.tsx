@@ -15,7 +15,7 @@ import Home from "./src/screens/Home";
 import Profile from "./src/screens/Profile";
 import Achievements from "./src/screens/Achievements";
 import Shop from "./src/screens/Shop";
-import CravingSOS from "./src/screens/CravingSOS";
+import CravingSOSModal from "./src/components/CravingSOSModal";
 import BreathingExercise from "./src/screens/BreathingExercise";
 import ChatAssistance from "./src/screens/ChatAssistance";
 import CoinPurchaseModal from "./src/components/CoinPurchaseModal";
@@ -36,7 +36,7 @@ type Screen =
   | "edit-buddy";
 
 const AppContent: React.FC = () => {
-  const [currentScreen, setCurrentScreen] = useState<Screen>("profile");
+  const [currentScreen, setCurrentScreen] = useState<Screen>("home");
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
@@ -165,13 +165,11 @@ const AppContent: React.FC = () => {
         )}
 
         {/* Modals */}
-        <Modal
+        <CravingSOSModal
           visible={showCravingSOS}
-          animationType="slide"
-          presentationStyle="fullScreen"
-        >
-          <CravingSOS onClose={handleCloseCravingSOS} />
-        </Modal>
+          onClose={handleCloseCravingSOS}
+          onStartBreathing={handleShowBreathingExercise}
+        />
 
         <Modal
           visible={showBreathingExercise}

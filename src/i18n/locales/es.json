@@ -393,5 +393,54 @@
     "subtitle": "Tu viaje hacia una vida sin humo comienza aquí",
     "title": "Bienvenido a Zero Poofs",
     "willYouQuit": "¿Vas a... dejar de fumar?"
+  },
+   "cravingSOS": {
+    "modal": {
+      "title": "¿Quieres fumar?",
+      "subtitle": "Usa ejercicios de respiración o consejos rápidos"
+    },
+    "common": {
+      "days": "Desafío de 10 días"
+    },
+    "sipBreathe": {
+      "title": "Bebe y respira",
+      "description": "Reemplaza el antojo con un vaso de agua. Bebe lentamente, enfocándote en el sabor y las sensaciones. Toma unas respiraciones profundas y relájate. Si el antojo vuelve, repite los pasos.",
+      "challenge": "Héroe de la hidratación"
+    },
+    "walkReset": {
+      "title": "Caminar para reiniciar",
+      "description": "Cuando sientas el impulso de fumar, camina 500 pasos para despejar tu mente y reiniciar tu cuerpo. Esto ayuda a distraerte de los antojos y sentir control.",
+      "challenge": "Asesino de pasos"
+    },
+    "snackInstead": {
+      "title": "Picotea en su lugar",
+      "description": "Cuando sientas el impulso de fumar, toma un bocadillo saludable. Mastica lentamente, enfócate en el sabor y la textura, y toma un sorbo de agua. Si el antojo regresa, repite los pasos.",
+      "challenge": "Descanso de bocadillo"
+    },
+    "meditateListen": {
+      "title": "Medita y escucha",
+      "description": "Reemplaza un antojo con una breve meditación y música. Enfócate en tu respiración, relaja tu cuerpo y deja que pase el antojo.",
+      "challenge": "Poder de calma"
+    },
+    "splashRefresh": {
+      "title": "Salpicar y refrescar",
+      "description": "Cuando sientas el impulso de fumar, salpica agua fría en tu cara o muñecas. Respira profundamente, enfócate en las sensaciones y deja que tu cuerpo se refresque. Si el antojo vuelve, repite los pasos.",
+      "challenge": "Refrescar"
+    },
+    "gripRelease": {
+      "title": "Aprieta y suelta",
+      "description": "Cuando sientas el impulso de fumar, aprieta los puños 20 veces. Enfócate en las sensaciones, respira profundamente y deja que pase el impulso. Repite si es necesario.",
+      "challenge": "Flujo de puño"
+    },
+    "crumpleCravings": {
+      "title": "Arruga el antojo",
+      "description": "Cuando sientas el impulso de fumar, dibuja o escribe tu antojo en un papel. Concéntrate en el sentimiento, luego arruga el papel. Respira profundamente y deja ir el antojo. Si vuelve, repite los pasos.",
+      "challenge": "Triturador de antojos"
+    },
+    "stretchRelax": {
+      "title": "Estira y relájate",
+      "description": "Cuando sientas tensión o rigidez, estira suavemente el cuello, los hombros y la espalda durante 2-3 minutos. Respira profundamente, enfócate en las sensaciones y deja que tu cuerpo se relaje. Si la tensión regresa, repite los pasos.",
+      "challenge": "Minuto de flujo"
+    }
   }
 }
