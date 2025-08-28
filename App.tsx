@@ -73,7 +73,11 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     // Initialize RevenueCat
-    if (Platform.OS !== 'web') {
+    if (Platform.OS === 'ios') {
+       Purchases.configure({apiKey: "appl_KopTWcANzpTAMEriDmzPeFhFiVu"});
+    } else if (Platform.OS === 'android') {
+       Purchases.configure({apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ"});
+    } else if (Platform.OS !== 'web') {
       Purchases.setLogLevel(LOG_LEVEL.DEBUG);
       Purchases.configure({
         apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ"

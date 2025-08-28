@@ -12,6 +12,7 @@ import AchievementsToggle from "../components/AchievementsToggle";
 import ShopToggle from "../components/ShopToggle";
 import { useHomeNavigation } from "../hooks/useHomeNavigation";
 import { useHomeScroll } from "../hooks/useHomeScroll";
+import CoinPurchaseModal from "../components/CoinPurchaseModal";
 
 interface HomeProps {
   onShowCravingSOS: () => void;
@@ -32,6 +33,7 @@ const Home: React.FC<HomeProps> = ({
 }) => {
   const {
     userCoins,
+    showCoinPurchase,
     setShowCoinPurchase,
     selectedBuddyId,
     selectedBackground,
@@ -142,6 +144,8 @@ const Home: React.FC<HomeProps> = ({
         onCoinPurchase={handleCoinPurchase}
         onViewChange={changeView}
       />
+
+      <CoinPurchaseModal></CoinPurchaseModal>
 
       {/* Horizontal pan for view switching */}
       <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
