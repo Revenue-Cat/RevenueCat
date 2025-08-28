@@ -1,0 +1,22 @@
+{
+  "multipass": true,
+  "plugins": [
+    {
+      "name": "preset-default",
+      "params": {
+        "overrides": {
+          "removeViewBox": false,
+          "cleanupIDs": true,
+          "convertColors": true,
+          "collapseGroups": true
+        }
+      }
+    },
+    {
+      "name": "removeDimensions"
+    },
+    {
+      "name": "convertShapeToPath"
+    }
+  ]
+}

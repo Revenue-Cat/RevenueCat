@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { View, Animated } from "react-native";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { View, Animated, Dimensions, Text, Pressable } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import LottieView from "lottie-react-native";
 import { useApp } from "../contexts/AppContext";
@@ -12,6 +12,8 @@ import AchievementsToggle from "../components/AchievementsToggle";
 import ShopToggle from "../components/ShopToggle";
 import { useHomeNavigation } from "../hooks/useHomeNavigation";
 import { useHomeScroll } from "../hooks/useHomeScroll";
+import CravingSOSModal from "../components/CravingSOSModal";
+import { useTheme } from "../contexts/ThemeContext";
 
 interface HomeProps {
   onShowCravingSOS: () => void;
@@ -30,6 +32,8 @@ const Home: React.FC<HomeProps> = ({
   onNavigateToAchievements,
   onNavigateToShop,
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const {
     userCoins,
     setShowCoinPurchase,
@@ -114,8 +118,25 @@ const Home: React.FC<HomeProps> = ({
     onNavigateToShop();
   }, [onNavigateToShop]);
 
+  // Craving SOS modal state
+  const [showCravingModal, setShowCravingModal] = useState(false);
+  const { width } = Dimensions.get("window");
+  const ITEM_WIDTH = width * 0.8; // center card width (~80%)
+  const SIDE_GUTTER = (width - ITEM_WIDTH) / 2; // side visibility (~10% each)
+  const scrollX = useRef(new Animated.Value(0)).current;
+
+  const tips = useMemo(
+    () => [
+      { id: "breath", title: "Breathing exercise", desc: "Try 4-7-8 breathing for 1 minute." },
+      { id: "tips", title: "Quick tips", desc: "Sip water, chew gum, or take a short walk." },
+      { id: "urge", title: "Ride the urge", desc: "Most cravings peak within 3-5 minutes." },
+    ],
+    []
+  );
+
   const handleShowCravingSOS = useCallback(() => {
-    onShowCravingSOS();
+    setShowCravingModal(true);
+    if (onShowCravingSOS) onShowCravingSOS();
   }, [onShowCravingSOS]);
 
   // Memoize the achievements toggle callback
@@ -247,6 +268,12 @@ const Home: React.FC<HomeProps> = ({
           </Animated.ScrollView>
         </View>
       </PanGestureHandler>
+      {/* Craving SOS Slide Modal */}
+      <CravingSOSModal
+        visible={showCravingModal}
+        onClose={() => setShowCravingModal(false)}
+        onStartBreathing={onShowBreathingExercise}
+      />
     </View>
   );
 };
