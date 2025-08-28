@@ -6,12 +6,12 @@
       "subtitle": "Los logros exclusivos están en construcción",
       "title": "Próximamente"
     },
-    "locked": "Bloqueado. Actualiza tu plan para desbloquear este logro.",
-    "waitForLevel": "Espera. Alcanza el nivel requerido para desbloquear este logro.",
     "completedOn": "Completado el",
+    "locked": "Bloqueado. Actualiza tu plan para desbloquear este logro.",
     "share": "Compartir",
     "timeLeft": "Tiempo restante",
-    "update": "Actualizar"
+    "update": "Actualizar",
+    "waitForLevel": "Espera. Alcanza el nivel requerido para desbloquear este logro."
   },
   "buddies": {
     "alpaca-m": {
@@ -159,10 +159,38 @@
     },
     "title": "Perfil"
   },
+  "promos": {
+    "refer": {
+      "cta": "Invitar a un amigo",
+      "subtitle": "Dejarlo es más fácil juntos",
+      "title": "Gana 500 monedas por invitar"
+    },
+    "review": {
+      "cta": "Danos 5 estrellas",
+      "subtitle": "Ayúdanos con una rápida reseña de 5★",
+      "title": "¡Somos un equipo creativo pequeño!"
+    },
+    "share": {
+      "message": "Únete a mí en Zero Poofs — mi app favorita para dejar de fumar.",
+      "title": "Zero Poofs"
+    }
+  },
   "regularAchievements": {
     "bright-moon": {
       "description": "Alcanza un mes sin fumar",
       "name": "Luna Brillante"
+    },
+    "champion": {
+      "description": "Dos años sin nicotina — un campeón de la salud",
+      "name": "Campeón"
+    },
+    "divine": {
+      "description": "Treinta años sin nicotina — has logrado lo divino",
+      "name": "Divino"
+    },
+    "eternal": {
+      "description": "Veinticinco años sin fumar — tu legado es eterno",
+      "name": "Eterno"
     },
     "first-spark": {
       "description": "Completa tu primer día sin fumar",
@@ -176,6 +204,10 @@
       "description": "Completa tres meses sin fumar",
       "name": "Camino Fresco"
     },
+    "guardian": {
+      "description": "Quince años sin fumar — guardián de tu salud",
+      "name": "Guardian"
+    },
     "hero": {
       "description": "Completa un año sin fumar",
       "name": "Héroe"
@@ -184,54 +216,46 @@
       "description": "Sobrevive la primera semana de tu viaje para dejar de fumar",
       "name": "Mantente Firme"
     },
+    "immortal": {
+      "description": "Diez años sin nicotina — eres inmortal",
+      "name": "Inmortal"
+    },
     "legend": {
       "description": "Mantén dos años de vida sin humo",
       "name": "Leyenda"
+    },
+    "master": {
+      "description": "Un año sin fumar — eres un verdadero maestro del autocontrol",
+      "name": "Maestro"
+    },
+    "phoenix": {
+      "description": "Siete años sin fumar — renacido de las cenizas más fuerte",
+      "name": "Fénix"
+    },
+    "sage": {
+      "description": "Cinco años sin fumar — la sabiduría viene con el tiempo",
+      "name": "Sabio"
+    },
+    "sovereign": {
+      "description": "Veinte años sin fumar — soberano de tu destino",
+      "name": "Soberano"
     },
     "steel-week": {
       "description": "Completa dos semanas sin fumar",
       "name": "Semana de Acero"
     },
-    "master": {
-      "name": "Maestro",
-      "description": "Un año sin fumar — eres un verdadero maestro del autocontrol"
-    },
-    "champion": {
-      "name": "Campeón",
-      "description": "Dos años sin nicotina — un campeón de la salud"
-    },
     "warrior": {
-      "name": "Guerrero",
-      "description": "Tres años sin fumar — un guerrero contra la adicción"
-    },
-    "sage": {
-      "name": "Sabio",
-      "description": "Cinco años sin fumar — la sabiduría viene con el tiempo"
-    },
-    "phoenix": {
-      "name": "Fénix",
-      "description": "Siete años sin fumar — renacido de las cenizas más fuerte"
-    },
-    "immortal": {
-      "name": "Inmortal",
-      "description": "Diez años sin nicotina — eres inmortal"
-    },
-    "guardian": {
-      "name": "Guardian",
-      "description": "Quince años sin fumar — guardián de tu salud"
-    },
-    "sovereign": {
-      "name": "Soberano",
-      "description": "Veinte años sin fumar — soberano de tu destino"
-    },
-    "eternal": {
-      "name": "Eterno",
-      "description": "Veinticinco años sin fumar — tu legado es eterno"
-    },
-    "divine": {
-      "name": "Divino",
-      "description": "Treinta años sin nicotina — has logrado lo divino"
+      "description": "Tres años sin fumar — un guerrero contra la adicción",
+      "name": "Guerrero"
     }
+  },
+  "review": {
+    "title": "¿Qué tan satisfecho estás con\nla app QutQly?"
+  },
+  "reviewModal": {
+    "close": "Cerrar",
+    "submit": "Enviar",
+    "title": "¿Qué tan satisfecho estás con\nla app QutQly?"
   },
   "scenes": {
     "bg1": {
@@ -321,21 +345,39 @@
     "title": "Conozcámonos"
   },
   "shop": {
-    "selected": "Seleccionado",
-    "owned": "Propiedad",
     "balance": "Saldo {{coins}}",
-    "reward": "Recompensa {{coins}}",
-    "purchase": "Comprar",
     "buyFor": "Comprar por {{coins}} monedas",
-    "select": "Seleccionar",
     "close": "Cerrar",
-    "share": "Compartir",
-    "update": "Actualizar",
     "description": "Un maravilloso compañero para tu viaje para dejar de fumar.",
-    "sceneDescription": "Un hermoso fondo para mejorar tu viaje para dejar de fumar."
+    "owned": "Propiedad",
+    "purchase": "Comprar",
+    "reward": "Recompensa {{coins}}",
+    "sceneDescription": "Un hermoso fondo para mejorar tu viaje para dejar de fumar.",
+    "select": "Seleccionar",
+    "selected": "Seleccionado",
+    "share": "Compartir",
+    "update": "Actualizar"
   },
   "stats": {
     "description": "Ahorro promedio en EE. UU. al no fumar. Agrega tus hábitos para obtener tu número."
+  },
+  "subscriptions": {
+    "cta": "Desbloquear todo el programa",
+    "plans": {
+      "monthly": {
+        "billing": "Pago una vez al mes",
+        "title": "1 mes"
+      },
+      "quarterly": {
+        "billing": "Pago cada 3 meses",
+        "title": "3 meses"
+      },
+      "yearly": {
+        "billing": "Pago una vez al año",
+        "title": "12 meses"
+      }
+    },
+    "save": "Ahorra {{percent}}%"
   },
   "toggles": {
     "buddies": "Compañeros",

@@ -32,6 +32,11 @@ import ArrowRightDark from "../assets/icons/arrow-right-d.svg";
 import FlagEn from "../assets/icons/flag-en.svg";
 import FlagEs from "../assets/icons/flag-es.svg";
 import FlagUk from "../assets/icons/flag-uk.svg";
+import SubscriptionPlans from "../components/SubscriptionPlans";
+import SubscriptionPicker from "../components/SubscriptionPlans";
+import PromoCards from "../components/PromoCards";
+import { Plan } from "../config/subscriptions";
+import ReviewModal from "../components/ReviewModal";
 
 interface ProfileProps {
   onBack: () => void;
@@ -47,6 +52,7 @@ const Profile: React.FC<ProfileProps> = ({
   onBack,
   onNavigateToBuddy,
   onNavigateToSetup,
+  onNavigateToShop,
 }) => {
   // theme
   const { theme, setTheme } = useTheme();
@@ -69,6 +75,7 @@ const Profile: React.FC<ProfileProps> = ({
   // language
   const { language } = useLanguage();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [showReview, setShowReview] = useState(false);
   const languages = [
     { code: "en", name: t("languages.english"), flag: FlagEn },
     { code: "es", name: t("languages.spanish"), flag: FlagEs },
@@ -190,6 +197,11 @@ const Profile: React.FC<ProfileProps> = ({
   // Support slide
   const [showSupportModal, setShowSupportModal] = useState(false);
 
+  const handleUnlock = (planId: "annual" | "quarterly" | "monthly") => {
+    // TODO: Integrate your RevenueCat / paywall here.
+    // For now reuse Shop navigation.
+    onNavigateToShop();
+  };
   return (
     <View className={`flex-1 ${isDark ? "bg-slate-800" : "bg-white"}`}>
       {/* Header */}
@@ -467,7 +479,7 @@ const Profile: React.FC<ProfileProps> = ({
             className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
               isDark ? "bg-slate-700" : "bg-indigo-50"
             }`}
-            onPress={() => setShowSupportModal(true)}
+            onPress={() => setShowReview(true)}
           >
             <View className="flex-row items-center">
               <Icons.Feedback width={20} height={20} color={systemIconColor} />
@@ -504,12 +516,54 @@ const Profile: React.FC<ProfileProps> = ({
             <Right width={18} height={18} color={systemIconColor} />
           </Pressable>
         </View>
+        <View
+          className="self-center my-4"
+          style={{
+            width: 72,
+            height: 2,
+            backgroundColor: isDark ? "#475569" : "#E2E8F0",
+            borderRadius: 2,
+          }}
+        />
+        {/* Promo cards: Refer + Review */}
+        <PromoCards
+          onShared={() => {
+            // optional analytics/coins awarding hook
+          }}
+          onOpenReview={() => setShowReview(true)}
+        />
+        <View
+          className="self-center my-4"
+          style={{
+            width: 72,
+            height: 2,
+            backgroundColor: isDark ? "#475569" : "#E2E8F0",
+            borderRadius: 2,
+          }}
+        />
+
+        {/* Subscriptions */}
+        <SubscriptionPicker
+          onSelect={() => {}}
+          onUnlock={(plan: Plan) => {
+            // wire to RevenueCat here if you want
+            // Example: navigate to purchase screen / trigger purchase flow
+          }}
+        />
       </Animated.ScrollView>
 
       {/* Language slide */}
       <LanguageSlide
         visible={showLanguageModal}
         onClose={() => setShowLanguageModal(false)}
+      />
+
+      <ReviewModal
+        visible={showReview}
+        onClose={() => setShowReview(false)}
+        onSubmit={(stars) => {
+          // optional: track stars
+        }}
       />
 
       {/* Theme picker */}
