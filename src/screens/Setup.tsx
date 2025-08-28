@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../contexts/ThemeContext";
 import { useApp } from "../contexts/AppContext";
+import { calculateSavings } from "../utils/savingsCalculator";
 
 import PackPricePickerModal from "../components/PackPricePickerModal";
 import SmokeTypeModal from "../components/SmokeTypeModal";
@@ -19,12 +20,13 @@ import CalendarIcon from "../assets/icons/calendar.svg";
 import VapeIcon from "../assets/icons/vape.svg";
 import RollIcon from "../assets/icons/roll.svg";
 import HeatedIcon from "../assets/icons/heated.svg";
-import NoMeterIcon from "../assets/icons/no-mater.svg";
-import BrainIcon from "../assets/icons/brain.svg";
+
 import HearthIcon from "../assets/icons/heart.svg";
 import SaveMoneyIcon from "../assets/icons/save-money.svg";
 import ChartDownIcon from "../assets/icons/chart_down.svg";
 import QuitIcon from "../assets/icons/quit.svg";
+import BrainIcon from "../assets/icons/brain.svg";
+import NoMeterIcon from "../assets/icons/no-mater.svg";
 
 // Nav icons (match Profile header)
 import PrevLight from "../assets/icons/prev.svg";
@@ -79,6 +81,13 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
   const allFieldsCompleted = Object.values(setupData).every((v) => v !== "");
 
   const handleFieldClick = (field: string) => {
+    // Only allow smoke type selection if no smoke type is selected
+    if (field !== "smokeType" && !setupData.smokeType) {
+      // If trying to select other fields without smoke type, force smoke type selection
+      setCurrentStep("smokeType");
+      return;
+    }
+    
     if (field === "packPrice") {
       if (packPrice) setPickerValue(parseInt(packPrice));
       if (packPriceCurrency) setPickerCurrency(packPriceCurrency);
@@ -90,6 +99,11 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
     switch (field) {
       case "smokeType":
         setSmokeType(value);
+        // Clear other selections when smoke type changes
+        setDailyAmount("");
+        setPackPrice("");
+        setPackPriceCurrency("");
+        setGoal("");
         break;
       case "dailyAmount":
         setDailyAmount(value);
@@ -115,20 +129,13 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
 
   // ---- Savings header (same math as Profile) ----
   const { savingsText } = useMemo(() => {
-    const avgMap: Record<string, number> = {
-      "1-5": 3,
-      "5-10": 7.5,
-      "11-15": 13,
-      "16-20": 18,
-      "21-30": 25,
-      "31-40": 35,
-    };
-    const avgCigs = avgMap[dailyAmount || "5-10"] ?? 7.5;
-    const price = Number(packPrice || 5) || 5;
-    const perDay = (avgCigs / 20) * price;
-    const perYear = Math.round(perDay * 365);
-    return { savingsText: `${packPriceCurrency || "$"}${perYear}` };
-  }, [dailyAmount, packPrice, packPriceCurrency]);
+    if (!smokeType || !dailyAmount || !packPrice) {
+      return { savingsText: `${packPriceCurrency || "$"}0` };
+    }
+    
+    const savings = calculateSavings(smokeType, dailyAmount, packPrice, packPriceCurrency || "$", 365);
+    return { savingsText: `${packPriceCurrency || "$"}${Math.round(savings.moneySaved)}` };
+  }, [smokeType, dailyAmount, packPrice, packPriceCurrency]);
 
   const setupFields = [
     {
@@ -163,22 +170,15 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
     {
       id: "dailyAmount",
       label: t("setup.fields.dailyAmount.label"),
-      modalTitle: t("setup.fields.dailyAmount.modalTitle"),
+      modalTitle: t(`setup.fields.dailyAmount.modalTitle.${setupData.smokeType || 'cigarettes'}`),
       icon: <CalendarIcon width={20} height={20} color={iconColor} />,
       value: setupData.dailyAmount,
-      options: [
-        { value: "1-5", label: t("setup.fields.dailyAmount.options.1-5") },
-        { value: "5-10", label: t("setup.fields.dailyAmount.options.5-10") },
-        { value: "11-15", label: t("setup.fields.dailyAmount.options.11-15") },
-        { value: "16-20", label: t("setup.fields.dailyAmount.options.16-20") },
-        { value: "21-30", label: t("setup.fields.dailyAmount.options.21-30") },
-        { value: "31-40", label: t("setup.fields.dailyAmount.options.31-40") },
-      ],
+      options: [], // Options are now handled dynamically in the modal
     },
     {
       id: "packPrice",
-      label: t("setup.fields.packPrice.label"),
-      modalTitle: t("setup.fields.packPrice.modalTitle"),
+      label: t(`setup.fields.packPrice.label.${setupData.smokeType || 'cigarettes'}`),
+      modalTitle: t(`setup.fields.packPrice.modalTitle.${setupData.smokeType || 'cigarettes'}`),
       icon: <SpendIcon width={20} height={20} color={iconColor} />,
       value: setupData.packPrice,
       options: [
@@ -249,10 +249,10 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
               }`}
               onPress={onBack}
               hitSlop={10}
-              style={({ hovered }) => [
+              style={({ pressed }) => [
                 isDark
-                  ? { backgroundColor: hovered ? "#475569" : "#334155" }
-                  : { backgroundColor: hovered ? "#e0e7ff" : "#f8fafc" },
+                  ? { backgroundColor: pressed ? "#475569" : "#334155" }
+                  : { backgroundColor: pressed ? "#e0e7ff" : "#f8fafc" },
                 isDark ? { elevation: 2 } : null,
               ]}
             >
@@ -331,7 +331,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
                     isDark ? "text-slate-100" : "text-indigo-950"
                   }`}
                 >
-                  {savingsText}
+                  ~{savingsText}
                 </Text>
                 <Text
                   className={`text-xl font-bold ml-1 ${
@@ -354,25 +354,36 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
 
         {/* Setup Fields */}
         <View className="gap-4 mb-8">
-          {setupFields.map((field) => (
-            <Pressable
-              key={field.id}
-              className={`w-11/12 h-16 rounded-3xl flex-row justify-between items-center px-3 self-center ${
-                setupData[field.id]
-                  ? isDark
-                    ? "bg-slate-600"
-                    : "bg-indigo-100"
-                  : isDark
-                  ? "bg-slate-700"
-                  : "bg-indigo-50"
-              }`}
-              onPress={() => handleFieldClick(field.id)}
-            >
+          {setupFields.map((field) => {
+            const isDisabled = field.id !== "smokeType" && !setupData.smokeType;
+            const isSelected = setupData[field.id];
+            
+            return (
+              <Pressable
+                key={field.id}
+                className={`w-11/12 h-16 rounded-3xl flex-row justify-between items-center px-3 self-center ${
+                  isDisabled
+                    ? isDark
+                      ? "bg-slate-800 opacity-50"
+                      : "bg-slate-200 opacity-50"
+                    : isSelected
+                    ? isDark
+                      ? "bg-slate-600"
+                      : "bg-indigo-100"
+                    : isDark
+                    ? "bg-slate-700"
+                    : "bg-indigo-50"
+                }`}
+                onPress={() => handleFieldClick(field.id)}
+                disabled={isDisabled}
+              >
               <View className="flex-row items-center flex-1">
                 {field.icon}
                 <Text
                   className={`text-base text-md pl-2 font-medium flex-1 ${
-                    isDark ? "text-slate-100" : "text-indigo-950"
+                    isDisabled 
+                      ? (isDark ? "text-slate-400" : "text-slate-500")
+                      : (isDark ? "text-slate-100" : "text-indigo-950")
                   }`}
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -388,13 +399,18 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
                         })}
                       {field.id === "dailyAmount" &&
                         t("setup.fields.dailyAmount.selected", {
-                          value:
-                            field.options.find(
-                              (opt) => opt.value === setupData[field.id]
-                            )?.label || setupData[field.id],
+                          value: (() => {
+                            if (setupData.smokeType === 'vaping') {
+                              const vapingOptions = t(`setup.fields.dailyAmount.options.vaping`, { returnObjects: true }) as Record<string, string>;
+                              return vapingOptions[setupData[field.id]] || setupData[field.id];
+                            } else {
+                              const smokeTypeOptions = t(`setup.fields.dailyAmount.options.${setupData.smokeType || 'cigarettes'}`, { returnObjects: true }) as Record<string, string>;
+                              return smokeTypeOptions[setupData[field.id]] || setupData[field.id];
+                            }
+                          })(),
                         })}
                       {field.id === "packPrice" &&
-                        t("setup.fields.packPrice.selected", {
+                        t(`setup.fields.packPrice.selected.${setupData.smokeType || 'cigarettes'}`, {
                           value: `${setupData.packPriceCurrency}${
                             setupData[field.id]
                           }`,
@@ -417,10 +433,14 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
                   setupData[field.id] ? "checkmark" : "chevron-forward-outline"
                 }
                 size={20}
-                color={isDark ? "#CBD5E1" : "#64748b"}
+                color={isDisabled 
+                  ? (isDark ? "#64748b" : "#94a3b8")
+                  : (isDark ? "#CBD5E1" : "#64748b")
+                }
               />
             </Pressable>
-          ))}
+          );
+        })}
         </View>
 
         {/* Privacy Text */}
@@ -464,6 +484,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
         onClose={() => setCurrentStep(null)}
         selectedValue={setupData.dailyAmount}
         onSelect={(value) => handleSelection("dailyAmount", value)}
+        smokeType={setupData.smokeType}
       />
       <GoalModal
         visible={currentStep === "goal"}
@@ -474,7 +495,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
       <PackPricePickerModal
         visible={currentStep === "packPrice"}
         onClose={() => setCurrentStep(null)}
-        title={t("setup.fields.packPrice.modalTitle")}
+        title={t(`setup.fields.packPrice.modalTitle.${setupData.smokeType || 'cigarettes'}`)}
         pickerValue={pickerValue}
         pickerCurrency={pickerCurrency}
         onValueChange={setPickerValue}

@@ -7,6 +7,7 @@ import { t } from "i18next";
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
+import { calculateSavings } from "../utils/savingsCalculator";
 
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
 import ParallaxBackground from "../components/ParallaxBackground";
@@ -150,19 +151,14 @@ const Profile: React.FC<ProfileProps> = ({
     }[dailyAmount || "5-10"] || t("setup.fields.dailyAmount.options.5-10");
 
   // savings math
-  const avgMap: Record<string, number> = {
-    "1-5": 3,
-    "5-10": 7.5,
-    "11-15": 13,
-    "16-20": 18,
-    "21-30": 25,
-    "31-40": 35,
-  };
-  const avgCigs = avgMap[dailyAmount || "5-10"] ?? 7.5;
-  const price = Number(packPrice || 5) || 5;
-  const perDay = (avgCigs / 20) * price;
-  const perYear = Math.round(perDay * 365);
-  const savingsText = `${packPriceCurrency || "$"}${perYear}`;
+  const savings = calculateSavings(
+    smokeType || 'cigarettes',
+    dailyAmount || '6-10',
+    packPrice || '5',
+    packPriceCurrency || '$',
+    365
+  );
+  const savingsText = `${packPriceCurrency || "$"}${Math.round(savings.moneySaved)}`;
 
   // localized habits line
   const habitsLine = t(

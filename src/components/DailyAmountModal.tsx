@@ -10,6 +10,7 @@ interface DailyAmountModalProps {
   onClose: () => void;
   selectedValue: string;
   onSelect: (value: string) => void;
+  smokeType?: string;
 }
 
 const DailyAmountModal: React.FC<DailyAmountModalProps> = ({
@@ -17,19 +18,33 @@ const DailyAmountModal: React.FC<DailyAmountModalProps> = ({
   onClose,
   selectedValue,
   onSelect,
+  smokeType = 'cigarettes',
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const isDark = theme === 'dark';
 
-  const options = [
-    { value: "1-5", label: t('setup.fields.dailyAmount.options.1-5') },
-    { value: "5-10", label: t('setup.fields.dailyAmount.options.5-10') },
-    { value: "11-15", label: t('setup.fields.dailyAmount.options.11-15') },
-    { value: "16-20", label: t('setup.fields.dailyAmount.options.16-20') },
-    { value: "21-30", label: t('setup.fields.dailyAmount.options.21-30') },
-    { value: "31-40", label: t('setup.fields.dailyAmount.options.31-40') }
-  ];
+  // Get options based on smoke type
+  const getOptions = () => {
+    const smokeTypeOptions = t(`setup.fields.dailyAmount.options.${smokeType}`, { returnObjects: true }) as Record<string, string>;
+    
+    if (smokeType === 'vaping') {
+      return [
+        { value: "light", label: smokeTypeOptions.light },
+        { value: "moderate", label: smokeTypeOptions.moderate },
+        { value: "heavy", label: smokeTypeOptions.heavy }
+      ];
+    } else {
+      return [
+        { value: "1-5", label: smokeTypeOptions["1-5"] },
+        { value: "6-10", label: smokeTypeOptions["6-10"] },
+        { value: "11-20", label: smokeTypeOptions["11-20"] },
+        { value: "21+", label: smokeTypeOptions["21+"] }
+      ];
+    }
+  };
+
+  const options = getOptions();
 
   const handleSelect = (value: string) => {
     onSelect(value);
@@ -40,7 +55,7 @@ const DailyAmountModal: React.FC<DailyAmountModalProps> = ({
     <SlideModal
       visible={visible}
       onClose={onClose}
-      title={t('setup.fields.dailyAmount.modalTitle')}
+      title={t(`setup.fields.dailyAmount.modalTitle.${smokeType}`)}
     >
       <ScrollView>
         <View className="gap-4">
