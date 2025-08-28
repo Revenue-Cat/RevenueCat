@@ -44,6 +44,46 @@ type Props = {
   onEditName?: () => void;
 };
 
+/** Plays a Lottie after a small random delay when active; pauses/resets when inactive */
+const BuddyAnim: React.FC<{
+  source: any;
+  active: boolean;
+  width: number;
+  height: number;
+  delayMs: number;
+}> = ({ source, active, width, height, delayMs }) => {
+  const ref = useRef<LottieView>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (active) {
+      // start after a small random delay
+      timer.current && clearTimeout(timer.current);
+      timer.current = setTimeout(() => {
+        ref.current?.play();
+      }, delayMs);
+    } else {
+      // stop & reset when not active
+      timer.current && clearTimeout(timer.current);
+      ref.current?.reset();
+    }
+    return () => {
+      timer.current && clearTimeout(timer.current);
+    };
+  }, [active, delayMs]);
+
+  return (
+    <LottieView
+      ref={ref}
+      source={source}
+      autoPlay={false}
+      loop={true}
+      style={{ position: "absolute", top: 10, alignSelf: "center", width, height }}
+      enableMergePathsAndroidForKitKatAndAbove
+    />
+  );
+};
+
 export default function BuddyCarousel({
   data,
   sex,
@@ -54,19 +94,15 @@ export default function BuddyCarousel({
 }: Props) {
   const listRef = useRef<FlatList>(null);
 
-  // --- compute start index BEFORE creating Animated.Value
   const mid = Math.floor(LOOP_MULTIPLIER / 2);
   const startIndex = mid * data.length;
   const initialOffset = startIndex * CELL_W;
 
-  // Seed scrollX with the same offset the list will start at
   const scrollX = useRef(new Animated.Value(initialOffset)).current;
 
+  // swipe sound only (snap removed)
   const swipeSoundRef = useRef<Audio.Sound | null>(null);
-  const snapSoundRef = useRef<Audio.Sound | null>(null);
-  const [soundsReady, setSoundsReady] = useState({ swipe: false, snap: false });
-
-  // guard so swipe sound plays once per gesture
+  const [soundsReady, setSoundsReady] = useState({ swipe: false });
   const swipePlayedRef = useRef(false);
 
   useEffect(() => {
@@ -89,21 +125,13 @@ export default function BuddyCarousel({
           undefined,
           true
         );
-        const snap = await Audio.Sound.createAsync(
-          require("../assets/sounds/snap.mp3"),
-          { volume: 0.6, shouldPlay: false },
-          undefined,
-          true
-        );
 
         if (!mounted) {
           await swipe.sound.unloadAsync();
-          await snap.sound.unloadAsync();
           return;
         }
         swipeSoundRef.current = swipe.sound;
-        snapSoundRef.current = snap.sound;
-        setSoundsReady({ swipe: true, snap: true });
+        setSoundsReady({ swipe: true });
       } catch {}
     })();
 
@@ -113,18 +141,12 @@ export default function BuddyCarousel({
         try {
           await swipeSoundRef.current?.unloadAsync();
         } catch {}
-        try {
-          await snapSoundRef.current?.unloadAsync();
-        } catch {}
       })();
     };
   }, []);
 
   const playSwipe = () => {
     if (soundsReady.swipe) swipeSoundRef.current?.replayAsync().catch(() => {});
-  };
-  const playSnap = () => {
-    if (soundsReady.snap) snapSoundRef.current?.replayAsync().catch(() => {});
   };
 
   const [isSettling, setIsSettling] = useState(false);
@@ -171,7 +193,6 @@ export default function BuddyCarousel({
     });
   };
 
-  // Sync the animated value with the list's actual initial position
   useEffect(() => {
     scrollX.setValue(initialOffset);
     requestAnimationFrame(() => {
@@ -179,7 +200,6 @@ export default function BuddyCarousel({
     });
   }, [initialOffset, startIndex, scrollX]);
 
-  // Play sound ONCE when user starts dragging
   const handleBeginDrag = () => {
     hideBadgeNow();
     if (!swipePlayedRef.current) {
@@ -187,12 +207,9 @@ export default function BuddyCarousel({
       swipePlayedRef.current = true;
     }
   };
-
-  // Do NOT play sound here to avoid double trigger
   const handleMomentumBegin = () => {
     hideBadgeNow();
   };
-
   const handleMomentumEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const i = Math.round(e.nativeEvent.contentOffset.x / CELL_W);
     if (i !== centerExtIndex) setCenterExtIndex(i);
@@ -205,17 +222,14 @@ export default function BuddyCarousel({
         listRef.current?.scrollToIndex({ index: normalized, animated: false });
         setCenterExtIndex(normalized);
         showBadgeSoon();
-        playSnap();
-        swipePlayedRef.current = false; // reset for next gesture
+        swipePlayedRef.current = false;
       });
     } else {
       showBadgeSoon();
-      playSnap();
-      swipePlayedRef.current = false; // reset for next gesture
+      swipePlayedRef.current = false;
     }
   };
 
-  // Programmatic scroll (tap) — play swipe here since no drag event fires
   const scrollTo = (i: number) => {
     hideBadgeNow();
     playSwipe();
@@ -224,9 +238,15 @@ export default function BuddyCarousel({
 
   const LockIcon = LockLight;
 
+  // Stable random delays per buddy (200–1400ms)
+  const startDelays = useMemo(
+    () => Array.from({ length: data.length }, () => 200 + Math.floor(Math.random() * 1200)),
+    [data.length]
+  );
+
   const renderItem = ({ index }: { item: Buddy; index: number }) => {
     const baseIdx = ((index % data.length) + data.length) % data.length;
-    const animSrc = buddyAssets[data[baseIdx].id][sex]; // Lottie JSON per buddy/sex
+    const animSrc = buddyAssets[data[baseIdx].id][sex];
     const locked = isLocked ? isLocked(baseIdx) : false;
     const bgSrc = backgrounds?.[baseIdx];
     const isCenter = index === centerExtIndex;
@@ -254,19 +274,9 @@ export default function BuddyCarousel({
     const showBadge = isCenter && !isSettling;
 
     return (
-      <View
-        style={{ width: CELL_W, overflow: "visible" }}
-        className="items-center"
-      >
+      <View style={{ width: CELL_W, overflow: "visible" }} className="items-center">
         <Pressable onPress={() => scrollTo(index)}>
-          <View
-            className="relative"
-            style={{
-              width: ITEM_W,
-              height: ITEM_H,
-              overflow: "visible" as any,
-            }}
-          >
+          <View className="relative" style={{ width: ITEM_W, height: ITEM_H, overflow: "visible" as any }}>
             <Animated.View
               className="rounded-3xl"
               style={{
@@ -282,28 +292,17 @@ export default function BuddyCarousel({
                 <Image
                   source={bgSrc}
                   resizeMode="cover"
-                  style={{
-                    position: "absolute",
-                    width: "100%",
-                    height: "100%",
-                  }}
+                  style={{ position: "absolute", width: "100%", height: "100%" }}
                 />
               )}
 
-              {/* Buddy Lottie */}
-              <LottieView
+              {/* Buddy Lottie: starts after random delay when centered */}
+              <BuddyAnim
                 source={animSrc}
-                autoPlay={isCenter}
-                loop={isCenter}
-                {...(!isCenter ? { progress: 0 } : {})}
-                style={{
-                  position: "absolute",
-                  top: 10,
-                  alignSelf: "center",
-                  width: IMG_W,
-                  height: IMG_H_EXPANDED,
-                }}
-                enableMergePathsAndroidForKitKatAndAbove
+                active={isCenter}
+                width={IMG_W}
+                height={IMG_H_EXPANDED}
+                delayMs={startDelays[baseIdx]}
               />
             </Animated.View>
 
@@ -312,19 +311,9 @@ export default function BuddyCarousel({
                 className={`rounded-full p-1 absolute left-1/2 -translate-x-1/2 shadow ${
                   locked ? "bg-white" : "bg-green-500"
                 }`}
-                style={{
-                  width: 32,
-                  height: 32,
-                  bottom: -16,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                style={{ width: 32, height: 32, bottom: -16, alignItems: "center", justifyContent: "center" }}
               >
-                {locked ? (
-                  <LockIcon width={18} height={18} />
-                ) : (
-                  <Ionicons name="checkmark" size={24} color="#fff" />
-                )}
+                {locked ? <LockIcon width={18} height={18} /> : <Ionicons name="checkmark" size={24} color="#fff" />}
               </View>
             )}
           </View>
@@ -354,10 +343,7 @@ export default function BuddyCarousel({
       onScrollBeginDrag={handleBeginDrag}
       onMomentumScrollBegin={handleMomentumBegin}
       onMomentumScrollEnd={handleMomentumEnd}
-      onScroll={Animated.event(
-        [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-        { useNativeDriver: true }
-      )}
+      onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true })}
       scrollEventThrottle={16}
       style={{ marginBottom: 16, overflow: "visible" }}
       removeClippedSubviews={false}
