@@ -9,26 +9,22 @@ import CoinPackCard from "./CoinPackCard";
 import { COIN_PACKS, CoinPack } from "../config/subscriptions";
 
 const CoinPurchaseModal: React.FC = () => {
-  const { showCoinPurchase, setShowCoinPurchase, userCoins, setUserCoins } = useApp();
+  const { showCoinPurchase, setShowCoinPurchase, userCoins, setUserCoins } =
+    useApp();
   const { theme } = useTheme();
-  const { t } = useTranslation();
   const isDark = theme === "dark";
+  const { t } = useTranslation();
 
-  const indigo950 = "#1E1B4B";
-  const slate100 = "#F1F5F9";
-  const slate500 = "#64748B";
-  const amber500 = "#F59E0B";
-  const amberBorder = "#FBBF24";
-
-  const titleColor = isDark ? slate100 : indigo950;
-  const subColor = isDark ? slate500 : slate500;
-
-  // localized packs (labels/captions can be overridden via i18n)
+  // Localize labels/captions/bonus tags
   const packs = COIN_PACKS.map((p) => ({
     ...p,
     label: t(`coinPacks.${p.id}.label`, p.label),
-    caption: p.caption ? t(`coinPacks.${p.id}.caption`, p.caption) : undefined,
-    bonusTag: p.bonusTag ? t(`coinPacks.${p.id}.bonus`, p.bonusTag) : undefined,
+    caption: p.caption
+      ? t(`coinPacks.${p.id}.caption`, p.caption)
+      : undefined,
+    bonusTag: p.bonusTag
+      ? t(`coinPacks.${p.id}.bonus`, p.bonusTag)
+      : undefined,
   }));
 
   const handleBuy = (pack: CoinPack) => {
@@ -41,46 +37,36 @@ const CoinPurchaseModal: React.FC = () => {
       visible={showCoinPurchase}
       onClose={() => setShowCoinPurchase(false)}
     >
-      {/* Balance centered */}
-      <View style={{ alignItems: "center", marginTop: 4, marginBottom: 8 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            borderRadius: 999,
-            paddingHorizontal: 14,
-            paddingVertical: 6,
-            borderWidth: 1.5,
-            borderColor: amberBorder,
-            backgroundColor: "rgba(251, 191, 36, 0.15)",
-          }}
-        >
-          <Text style={{ color: indigo950, fontWeight: "700", marginRight: 8 }}>
+      {/* Balance pill (centered) */}
+      <View className="items-center mt-1 mb-2">
+        <View className="flex-row items-center rounded-full px-3.5 py-1.5 border border-amber-400">
+          <Text className="mr-2 font-bold text-amber-500">
             {t("coinModal.balance", "Balance")} {userCoins}
           </Text>
           <CoinIcon width={16} height={16} />
         </View>
       </View>
 
-      {/* Heading + subheading */}
-      <View style={{ alignItems: "center", marginTop: 4, marginBottom: 16 }}>
+      {/* Title + subtitle */}
+      <View className="items-center mt-1 mb-4">
         <Text
-          style={{
-            color: titleColor,
-            fontWeight: "800",
-            fontSize: 20,
-            marginBottom: 6,
-          }}
+          className={`font-extrabold text-[20px] ${
+            isDark ? "text-slate-100" : "text-indigo-950"
+          }`}
         >
           {t("coinModal.title", "Get More Coins")}
         </Text>
-        <Text style={{ color: subColor, fontSize: 14, fontWeight: "500" }}>
+        <Text
+          className={`mt-1 text-sm font-medium ${
+            isDark ? "text-slate-400" : "text-slate-500"
+          }`}
+        >
           {t("coinModal.subtitle", "Choose your pack and keep going!")}
         </Text>
       </View>
 
-      {/* Packs */}
-      <View style={{ paddingHorizontal: 8 }}>
+      {/* Pack cards */}
+      <View className="px-2">
         {packs.map((p) => (
           <CoinPackCard key={p.id} pack={p} onPress={handleBuy} />
         ))}
