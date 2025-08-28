@@ -96,18 +96,17 @@ const Profile: React.FC<ProfileProps> = ({
     goal,
   } = useApp();
 
-  // buddy sprite: tolerate ids like "alpaca-m"
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
   const baseBuddyKey: BuddyKey = useMemo(() => {
-    const id = (selectedBuddyId || "alpaca") as string;
+    const id = selectedBuddyId as string;
     const base = id.split("-")[0] as BuddyKey;
     return (buddyAssets as Record<string, unknown>)[base]
       ? base
-      : ("alpaca" as BuddyKey);
+      : ("llama" as BuddyKey);
   }, [selectedBuddyId]);
 
   const buddySource = useMemo(() => {
-    const pack = buddyAssets[baseBuddyKey] || buddyAssets.alpaca;
+    const pack = buddyAssets[baseBuddyKey];
     return pack[sexKey];
   }, [baseBuddyKey, sexKey]);
 

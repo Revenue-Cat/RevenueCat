@@ -1,3 +1,4 @@
+// src/screens/Shop.tsx
 import React, { useState, useCallback, useMemo } from "react";
 import {
   View,
@@ -5,8 +6,6 @@ import {
   Pressable,
   ScrollView,
   Dimensions,
-  Alert,
-  Animated,
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,8 +13,8 @@ import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { buddyAssets, SexKey } from "../assets/buddies";
-import { BUDDIES_DATA, getTranslatedBuddyData } from "../data/buddiesData";
-import { SCENES_DATA, getTranslatedSceneData } from "../data/scenesData";
+import { getTranslatedBuddyData } from "../data/buddiesData";
+import { getTranslatedSceneData } from "../data/scenesData";
 import BuddyModal from "../components/BuddyModal";
 import SceneModal from "../components/SceneModal";
 import CoinIcon from "../assets/icons/coins.svg";
@@ -50,6 +49,8 @@ const Shop: React.FC<ShopProps> = ({
     setSelectedBuddyId,
     gender,
   } = useApp();
+
+  // Only show buddies for the user's gender
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
 
   const [selectedBuddyForModal, setSelectedBuddyForModal] = useState<any>(null);
@@ -60,12 +61,11 @@ const Shop: React.FC<ShopProps> = ({
   // Helper function to parse gradient string and return colors
   const parseGradient = useCallback(
     (gradientString: string): [string, string] => {
-      // Extract colors from linear-gradient string
       const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
       if (colorMatch && colorMatch.length >= 2) {
-        return [colorMatch[0], colorMatch[1]]; // Return first two colors
+        return [colorMatch[0], colorMatch[1]];
       }
-      return ["#1F1943", "#4E3EA9"]; // Default fallback
+      return ["#1F1943", "#4E3EA9"]; // Default
     },
     []
   );
@@ -73,10 +73,8 @@ const Shop: React.FC<ShopProps> = ({
   // Function to handle buddy selection
   const handleBuddySelect = (buddy: any) => {
     if (ownedBuddies?.includes(buddy.id)) {
-      // If buddy is owned, select it directly
       setSelectedBuddyId(buddy.id);
     } else {
-      // If buddy is not owned, show the modal for purchase
       setSelectedBuddyForModal(buddy);
       setShowBuddyModal(true);
     }
@@ -85,41 +83,34 @@ const Shop: React.FC<ShopProps> = ({
   // Function to handle scene selection
   const handleSceneSelect = (scene: any) => {
     if (ownedBackgrounds.includes(scene.id)) {
-      // If scene is owned, select it directly
       setSelectedBackground(scene);
     } else {
-      // If scene is not owned, show the modal for purchase
       setSelectedSceneForModal(scene);
       setShowSceneModal(true);
     }
   };
 
-  // Get translated data
+  // i18n data
   const translatedBuddies = useMemo(() => getTranslatedBuddyData(t), [t]);
   const translatedScenes = useMemo(() => getTranslatedSceneData(t), [t]);
-
-  // Use translated scenes data
   const scenes = translatedScenes;
 
-  console.log("selectedBuddy", selectedBuddy);
+  // ⬇️ Filter buddies by gender suffix: '-m' or '-w'
+  const genderBuddies = useMemo(
+    () => translatedBuddies.filter((b) => b.id.endsWith(`-${sexKey}`)),
+    [translatedBuddies, sexKey]
+  );
 
   const renderBuddiesGrid = () => (
     <View className="w-full -mx-1 -my-1 flex-row flex-wrap">
-      {translatedBuddies.map((item) => {
+      {genderBuddies.map((item) => {
         const isOwned = ownedBuddies?.includes(item.id) || false;
         const isSelected = selectedBuddyId === item.id;
-
-        // Derive base key from id like "alpaca-m"
-        const baseKey = (String(item.id).split("-")[0] || "alpaca") as BuddyKey;
-        // Gender-specific Lottie source; fallback to male if needed
-        const lottieSrc =
-          (buddyAssets as any)?.[baseKey]?.[sexKey] ??
-          (buddyAssets as any)?.[baseKey]?.m;
 
         return (
           <Pressable
             key={item.id}
-            className={`w-1/4 px-1 py-1`}
+            className="w-1/4 px-1 py-1"
             onPress={() => handleBuddySelect(item)}
           >
             <View
@@ -134,25 +125,17 @@ const Shop: React.FC<ShopProps> = ({
               }`}
             >
               <View className="w-[80px] h-[80px] overflow-hidden relative">
-                {lottieSrc ? (
-                  <LottieView
-                    source={lottieSrc}
-                    autoPlay={isSelected} // animate the selected buddy
-                    loop={isSelected}
-                    // Show first frame for non-selected items
-                    {...(!isSelected ? ({ progress: 0 } as any) : {})}
-                    style={{ width: 80, height: 110 }}
-                    resizeMode="contain"
-                    enableMergePathsAndroidForKitKatAndAbove
-                  />
-                ) : (
-                  // Fallback to the old static icon if no Lottie found
-                  <Image
-                    source={item.icon}
-                    className="w-[80px] h-[110px]"
-                    resizeMode="contain"
-                  />
-                )}
+                {/* item.icon is a Lottie JSON (from buddyAssets), so render via LottieView */}
+                <LottieView
+                  source={item.icon}
+                  autoPlay={isSelected}
+                  loop={isSelected}
+                  {...(!isSelected ? ({ progress: 0 } as any) : {})}
+                  style={{ width: 80, height: 110 }}
+                  resizeMode="contain"
+                  enableMergePathsAndroidForKitKatAndAbove
+                />
+
                 {!isOwned && (
                   <View className="absolute bottom-1 left-4 z-10 rounded-3xl bg-black/70 px-2 py-0.5">
                     <View className="flex-row items-center justify-center">
@@ -164,6 +147,7 @@ const Shop: React.FC<ShopProps> = ({
                   </View>
                 )}
               </View>
+
               {isSelected && (
                 <View className="absolute top-1 right-1">
                   <Ionicons
@@ -191,7 +175,7 @@ const Shop: React.FC<ShopProps> = ({
         return (
           <Pressable
             key={item.id}
-            className={`w-1/4 px-1 py-1`}
+            className="w-1/4 px-1 py-1"
             onPress={() => handleSceneSelect(item)}
           >
             <View
@@ -216,6 +200,7 @@ const Shop: React.FC<ShopProps> = ({
                   </View>
                 )}
               </View>
+
               {isSelected && (
                 <View className="absolute top-1 right-1">
                   <Ionicons
@@ -240,15 +225,6 @@ const Shop: React.FC<ShopProps> = ({
       className={`flex-1 ${isDark ? "bg-dark-background" : ""}`}
       style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}
     >
-      {/* Header with coins */}
-      {/* <View className="flex-row justify-between items-center px-4 py-3 bg-white/10">
-        <Text className="text-white text-lg font-bold">Shop</Text>
-        <View className="flex-row items-center">
-          <Text className="text-white text-lg font-bold mr-2">{userCoins}</Text>
-          <CoinIcon width={24} height={24} />
-        </View>
-      </View> */}
-
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
@@ -257,7 +233,6 @@ const Shop: React.FC<ShopProps> = ({
           minHeight: Dimensions.get("window").height * 0.8,
         }}
       >
-        {/* Items */}
         <View className="flex-1">
           {!isScenesSelected ? renderBuddiesGrid() : renderScenesGrid()}
         </View>
@@ -271,6 +246,7 @@ const Shop: React.FC<ShopProps> = ({
           setSelectedBuddyForModal(null);
         }}
       />
+
       <SceneModal
         visible={showSceneModal}
         scene={selectedSceneForModal}

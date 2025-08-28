@@ -44,12 +44,12 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "alpaca-m",
+    id: "llama-m",
     emoji: "🦙",
     name: "Lamburger",
     description: "Climb with me — and we'll reach the smoke-free top faster than we think.",
     coin: 100,
-    icon: buddyAssets.alpaca.m,
+    icon: buddyAssets.llama.m,
     owned: false,
     type: 'character'
   },
@@ -74,12 +74,12 @@ export const BUDDIES_DATA: Buddy[] = [
     type: 'character'
   },
   {
-    id: "alpaca-w",
+    id: "llama-w",
     emoji: "🦙",
     name: "Lamazing",
     description: "Side by side we'll breathe fresh air and chase smoke away in no time.",
     coin: 100,
-    icon: buddyAssets.alpaca.w,
+    icon: buddyAssets.llama.w,
     owned: false,
     type: 'character'
   },

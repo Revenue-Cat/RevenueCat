@@ -14,19 +14,19 @@
     "waitForLevel": "Espera. Alcanza el nivel requerido para desbloquear este logro."
   },
   "buddies": {
-    "alpaca-m": {
+    "llama-m": {
       "description": "Un compañero gentil y tranquilo para tu viaje.",
-      "name": "Alpaca"
+      "name": "Llama"
     },
-    "alpaca-w": {
+    "llama-w": {
       "description": "Un compañero gentil y tranquilo para tu viaje.",
-      "name": "Alpaca"
+      "name": "Llama"
     },
-    "fluffy-m": {
+    "fox-m": {
       "description": "Un compañero suave y reconfortante para momentos difíciles.",
       "name": "Peludo"
     },
-    "fluffy-w": {
+    "fox-w": {
       "description": "Un compañero suave y reconfortante para momentos difíciles.",
       "name": "Peludo"
     },

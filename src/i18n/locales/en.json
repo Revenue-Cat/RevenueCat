@@ -14,19 +14,19 @@
     "waitForLevel": "Wait. Reach the required level to unlock this achievement."
   },
   "buddies": {
-    "alpaca-m": {
+    "llama-m": {
       "description": "A gentle and calm companion for your journey.",
-      "name": "Alpaca"
+      "name": "Llama"
     },
-    "alpaca-w": {
+    "llama-w": {
       "description": "A gentle and calm companion for your journey.",
-      "name": "Alpaca"
+      "name": "Llama"
     },
-    "fluffy-m": {
+    "fox-m": {
       "description": "A soft and comforting buddy for difficult moments.",
       "name": "Fluffy"
     },
-    "fluffy-w": {
+    "fox-w": {
       "description": "A soft and comforting buddy for difficult moments.",
       "name": "Fluffy"
     },

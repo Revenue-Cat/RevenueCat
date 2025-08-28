@@ -1,3 +1,4 @@
+// src/components/BuddyModalContent.tsx
 import React from "react";
 import { View, Text, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,52 +26,34 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
   const isOwned = ownedBuddies?.includes(buddy?.id) || false;
   const isSelected = selectedBuddyId === buddy?.id;
 
-  // derive current user's sex key from profile (fallback to 'm')
-  const sexFromProfile: SexKey = gender === "lady" ? "w" : "m";
+  // 1) Try to resolve lottie by buddy.id formatted as "<base>-<sex>" (e.g., "zebra-m")
+  // 2) Fallback to buddy.icon if it's a Lottie JSON (non-number)
+  // 3) Final fallback: treat buddy.icon as PNG (number)
+  const resolveLottieSource = (): any | null => {
+    const rawId: string = buddy?.id || "";
+    const parts = rawId.split("-");
+    const base = parts[0] as BuddyKey | undefined;
+    const sex = (parts[1] as SexKey | undefined) || (gender === "lady" ? "w" : "m");
 
-  /** Map legacy ids (e.g., "llama-boy", "bulldog-girl") to buddyAssets keys + sex. */
-  const normalizeIdToBaseAndSex = (
-    id: string | undefined
-  ): { base: BuddyKey | null; sex: SexKey } => {
-    if (!id) return { base: null, sex: sexFromProfile };
-
-    const parts = id.split("-"); // e.g. "alpaca-m", "llama-boy", "bulldog-girl"
-    let base = parts[0];
-    let sex: SexKey = sexFromProfile;
-
-    // Accept explicit suffixes
-    const suffix = parts[1] || "";
-    if (suffix === "m" || suffix === "w") sex = suffix as SexKey;
-    if (suffix === "boy") sex = "m";
-    if (suffix === "girl") sex = "w";
-
-    // Legacy base name mapping
-    if (base === "llama") base = "alpaca";
-    if (base === "bulldog") base = "dog";
-
-    if (["alpaca", "dog", "fox", "koala", "zebra"].includes(base)) {
-      return { base: base as BuddyKey, sex };
+    if (base && sex && buddyAssets[base] && buddyAssets[base][sex]) {
+      return buddyAssets[base][sex];
     }
-    return { base: null, sex };
+
+    // If icon is a Lottie JSON (require on JSON returns an object; PNG returns a number)
+    if (buddy?.icon && typeof buddy.icon !== "number") {
+      return buddy.icon;
+    }
+
+    return null;
   };
 
-  /** Pick Lottie source from buddyAssets (falls back to null if missing). */
-  const getLottieSource = () => {
-    const { base, sex } = normalizeIdToBaseAndSex(buddy?.id);
-    if (!base) return null;
-    const pack = (buddyAssets as any)?.[base];
-    const src = pack?.[sex];
-    return src || null;
-  };
+  const lottieSource = resolveLottieSource();
+  const isImageIcon = typeof buddy?.icon === "number"; // PNGs are numbers in RN
 
-  const lottieSource = getLottieSource();
-
-  // Helper: render buddy animation or fallback PNG
   const renderBuddyVisual = () => {
     if (lottieSource) {
       return (
         <View className="w-32 h-32 relative justify-center items-center">
-          {/* Animated buddy */}
           <LottieView
             source={lottieSource}
             autoPlay
@@ -80,7 +63,6 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
             enableMergePathsAndroidForKitKatAndAbove
           />
 
-          {/* Status Badges */}
           {isSelected && (
             <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
               <Ionicons name="checkmark" size={16} color="white" />
@@ -95,26 +77,26 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
       );
     }
 
-    // Fallback: legacy PNG icon
-    return (
-      <View className="w-32 h-32 relative justify-center items-center">
-        <Image
-          source={buddy?.icon}
-          className="w-36 h-36"
-          resizeMode="contain"
-        />
-        {isSelected && (
-          <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
-            <Ionicons name="checkmark" size={16} color="white" />
-          </View>
-        )}
-        {isOwned && !isSelected && (
-          <View className="absolute -top-1 -right-1 bg-blue-500 rounded-full w-8 h-8 justify-center items-center">
-            <Ionicons name="checkmark-circle" size={16} color="white" />
-          </View>
-        )}
-      </View>
-    );
+    if (isImageIcon) {
+      return (
+        <View className="w-32 h-32 relative justify-center items-center">
+          <Image source={buddy?.icon} className="w-36 h-36" resizeMode="contain" />
+          {isSelected && (
+            <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
+              <Ionicons name="checkmark" size={16} color="white" />
+            </View>
+          )}
+          {isOwned && !isSelected && (
+            <View className="absolute -top-1 -right-1 bg-blue-500 rounded-full w-8 h-8 justify-center items-center">
+              <Ionicons name="checkmark-circle" size={16} color="white" />
+            </View>
+          )}
+        </View>
+      );
+    }
+
+    // Nothing resolvable: render empty spacer
+    return <View className="w-32 h-32" />;
   };
 
   return (

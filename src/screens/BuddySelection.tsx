@@ -87,10 +87,10 @@ const BuddySelection: React.FC<Props> = ({
   const buddies: Buddy[] = useMemo(
     () => [
       {
-        id: "alpaca",
-        name: t("buddySelection.buddies.alpaca?.name", "Alpaca Calmington"),
+        id: "llama",
+        name: t("buddySelection.buddies.llama?.name", "Llama Calmington"),
         description: t(
-          "buddySelection.buddies.alpaca?.description",
+          "buddySelection.buddies.llama?.description",
           "Soft-spoken strategist who keeps you cozy while cravings pass."
         ),
       },

@@ -1,8 +1,8 @@
 // Keep static requires (RN bundler needs them)
 export const buddyAssets = {
-  alpaca: {
-    m: require("./alpaca-m.json"),
-    w: require("./alpaca-w.json"),
+  llama: {
+    m: require("./llama-m.json"),
+    w: require("./llama-w.json"),
   },
   dog: {
     m: require("./dog-m.json"),
@@ -22,5 +22,5 @@ export const buddyAssets = {
   },
 } as const;
 
-export type BuddyKey = keyof typeof buddyAssets; // 'alpaca' | 'dog' | ...
-export type SexKey = keyof (typeof buddyAssets)["alpaca"]; // 'm' | 'w'
+export type BuddyKey = keyof typeof buddyAssets;
+export type SexKey = keyof (typeof buddyAssets)["llama"]; // 'm' | 'w'

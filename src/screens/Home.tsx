@@ -77,11 +77,10 @@ const Home: React.FC<HomeProps> = ({
     }
   }, [scrollY, currentView]);
 
-  // Buddy Lottie animation source (tolerate ids like "alpaca-m")
   const buddyAnimSource = useMemo(() => {
-    const id = (selectedBuddyId || "alpaca") as string;
+    const id = selectedBuddyId as string;
     const base: BuddyKey = id.split("-")[0] as BuddyKey;
-    const pack = (buddyAssets as any)?.[base] ?? (buddyAssets as any)?.alpaca;
+    const pack = (buddyAssets as any)?.[base];
     return pack?.[sexKey] ?? pack?.m;
   }, [selectedBuddyId, sexKey]);
 

@@ -101,14 +101,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [userCoins, setUserCoinsState] = useState(0);
   const [selectedBuddy, setSelectedBuddyState] = useState<ShopItem>(defaultCharacter);
   const [selectedBackground, setSelectedBackgroundState] = useState<Scene>(defaultBackground);
-  const [ownedBuddies, setOwnedBuddies] = useState<string[]>(['alpaca-m', 'alpaca-w', 'zebra-m', 'zebra-w', 'dog-m', 'dog-w']);
+  const [ownedBuddies, setOwnedBuddies] = useState<string[]>(['llama-m', 'llama-w', 'zebra-m', 'zebra-w', 'dog-m', 'dog-w']);
   const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['bg1']);
   const [ownedAccessories, setOwnedAccessories] = useState<string[]>([]);
 
   // Buddy/User selections
   const [gender, setGenderState] = useState<UserGender>('man');
-  const [selectedBuddyId, setSelectedBuddyIdState] = useState<string>('alpaca-m');
-  const [buddyName, setBuddyNameState] = useState<string>('Alpaca Calmington');
+  const [selectedBuddyId, setSelectedBuddyIdState] = useState<string>('llama-m');
+  const [buddyName, setBuddyNameState] = useState<string>('Llama Calmington');
 
   // Setup selections
   const [smokeType, setSmokeTypeState] = useState<string>('');
