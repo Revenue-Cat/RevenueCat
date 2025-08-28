@@ -6,12 +6,12 @@
       "subtitle": "Exclusive achievements are under construction",
       "title": "Coming Soon"
     },
-    "locked": "Locked. Update your plan to unlock this achievement.",
-    "waitForLevel": "Wait. Reach the required level to unlock this achievement.",
     "completedOn": "Completed on",
+    "locked": "Locked. Update your plan to unlock this achievement.",
     "share": "Share",
     "timeLeft": "Time left",
-    "update": "Update"
+    "update": "Update",
+    "waitForLevel": "Wait. Reach the required level to unlock this achievement."
   },
   "buddies": {
     "alpaca-m": {
@@ -159,10 +159,38 @@
     },
     "title": "Profile"
   },
+  "promos": {
+    "refer": {
+      "cta": "Refer a friend",
+      "subtitle": "Quitting is easier together",
+      "title": "Get 500 coins by referring"
+    },
+    "review": {
+      "cta": "Give us a 5-star",
+      "subtitle": "Help us grow with a quick 5★ review",
+      "title": "We’re a small creative team!"
+    },
+    "share": {
+      "message": "Join me on Zero Poofs — my favorite quit-smoking buddy app!",
+      "title": "Zero Poofs"
+    }
+  },
   "regularAchievements": {
     "bright-moon": {
       "description": "Reach one month of being smoke-free",
       "name": "Bright Moon"
+    },
+    "champion": {
+      "description": "Two years without nicotine — a champion of health",
+      "name": "Champion"
+    },
+    "divine": {
+      "description": "Thirty years without nicotine — you have achieved the divine",
+      "name": "Divine"
+    },
+    "eternal": {
+      "description": "Twenty-five years smoke-free — your legacy is eternal",
+      "name": "Eternal"
     },
     "first-spark": {
       "description": "Complete your first day without smoking",
@@ -176,6 +204,10 @@
       "description": "Complete three months without smoking",
       "name": "Fresh Path"
     },
+    "guardian": {
+      "description": "Fifteen years smoke-free — guardian of your health",
+      "name": "Guardian"
+    },
     "hero": {
       "description": "Complete one year without smoking",
       "name": "Hero"
@@ -184,54 +216,46 @@
       "description": "Survive the first week of your quit journey",
       "name": "Hold On"
     },
+    "immortal": {
+      "description": "Ten years without nicotine — you are immortal",
+      "name": "Immortal"
+    },
     "legend": {
       "description": "Maintain two years of smoke-free life",
       "name": "Legend"
+    },
+    "master": {
+      "description": "One year smoke-free — you are a true master of self-control",
+      "name": "Master"
+    },
+    "phoenix": {
+      "description": "Seven years smoke-free — risen from the ashes stronger",
+      "name": "Phoenix"
+    },
+    "sage": {
+      "description": "Five years without smoking — wisdom comes with time",
+      "name": "Sage"
+    },
+    "sovereign": {
+      "description": "Twenty years without smoking — sovereign of your destiny",
+      "name": "Sovereign"
     },
     "steel-week": {
       "description": "Complete two weeks smoke-free",
       "name": "Steel Week"
     },
-    "master": {
-      "name": "Master",
-      "description": "One year smoke-free — you are a true master of self-control"
-    },
-    "champion": {
-      "name": "Champion",
-      "description": "Two years without nicotine — a champion of health"
-    },
     "warrior": {
-      "name": "Warrior",
-      "description": "Three years smoke-free — a warrior against addiction"
-    },
-    "sage": {
-      "name": "Sage",
-      "description": "Five years without smoking — wisdom comes with time"
-    },
-    "phoenix": {
-      "name": "Phoenix",
-      "description": "Seven years smoke-free — risen from the ashes stronger"
-    },
-    "immortal": {
-      "name": "Immortal",
-      "description": "Ten years without nicotine — you are immortal"
-    },
-    "guardian": {
-      "name": "Guardian",
-      "description": "Fifteen years smoke-free — guardian of your health"
-    },
-    "sovereign": {
-      "name": "Sovereign",
-      "description": "Twenty years without smoking — sovereign of your destiny"
-    },
-    "eternal": {
-      "name": "Eternal",
-      "description": "Twenty-five years smoke-free — your legacy is eternal"
-    },
-    "divine": {
-      "name": "Divine",
-      "description": "Thirty years without nicotine — you have achieved the divine"
+      "description": "Three years smoke-free — a warrior against addiction",
+      "name": "Warrior"
     }
+  },
+  "review": {
+    "title": "How satisfied are you with\nQutQly App?"
+  },
+  "reviewModal": {
+    "close": "Close",
+    "submit": "Submit",
+    "title": "How satisfied are you with\nQutQly App?"
   },
   "scenes": {
     "bg1": {
@@ -321,21 +345,39 @@
     "title": "Let's get to know you"
   },
   "shop": {
-    "selected": "Selected",
-    "owned": "Owned",
     "balance": "Balance {{coins}}",
-    "reward": "Reward {{coins}}",
-    "purchase": "Purchase",
     "buyFor": "Buy for {{coins}} coins",
-    "select": "Select",
     "close": "Close",
-    "share": "Share",
-    "update": "Update",
     "description": "A wonderful companion for your journey to quit smoking.",
-    "sceneDescription": "A beautiful background to enhance your quit smoking journey."
+    "owned": "Owned",
+    "purchase": "Purchase",
+    "reward": "Reward {{coins}}",
+    "sceneDescription": "A beautiful background to enhance your quit smoking journey.",
+    "select": "Select",
+    "selected": "Selected",
+    "share": "Share",
+    "update": "Update"
   },
   "stats": {
     "description": "Average US savings from not smoking. Add your habits to get your number."
+  },
+  "subscriptions": {
+    "cta": "Unlock the entire program",
+    "plans": {
+      "monthly": {
+        "billing": "Payment once a month",
+        "title": "1 Month"
+      },
+      "quarterly": {
+        "billing": "Payment once every 3 months",
+        "title": "3 Months"
+      },
+      "yearly": {
+        "billing": "Payment once a year",
+        "title": "12 Month"
+      }
+    },
+    "save": "Save {{percent}}%"
   },
   "toggles": {
     "buddies": "Buddies",

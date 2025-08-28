@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -7,18 +7,19 @@ import {
   Dimensions,
   Alert,
   Animated,
-  Image
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useApp } from '../contexts/AppContext';
-import { useTheme } from '../contexts/ThemeContext';
-import { useTranslation } from 'react-i18next';
-import { SexKey } from '../assets/buddies';
-import { BUDDIES_DATA, getTranslatedBuddyData } from '../data/buddiesData';
-import { SCENES_DATA, getTranslatedSceneData } from '../data/scenesData';
-import BuddyModal from '../components/BuddyModal';
-import SceneModal from '../components/SceneModal';
+  Image,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useApp } from "../contexts/AppContext";
+import { useTheme } from "../contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
+import { buddyAssets, SexKey } from "../assets/buddies";
+import { BUDDIES_DATA, getTranslatedBuddyData } from "../data/buddiesData";
+import { SCENES_DATA, getTranslatedSceneData } from "../data/scenesData";
+import BuddyModal from "../components/BuddyModal";
+import SceneModal from "../components/SceneModal";
 import CoinIcon from "../assets/icons/coins.svg";
+import LottieView from "lottie-react-native";
 
 interface ShopProps {
   onBack: () => void;
@@ -26,9 +27,13 @@ interface ShopProps {
   setIsScenesSelected: (isScenes: boolean) => void;
 }
 
-const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelected }) => {
+const Shop: React.FC<ShopProps> = ({
+  onBack,
+  isScenesSelected,
+  setIsScenesSelected,
+}) => {
   const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const isDark = theme === "dark";
   const { t } = useTranslation();
   const {
     userCoins,
@@ -53,14 +58,17 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
   const [showSceneModal, setShowSceneModal] = useState(false);
 
   // Helper function to parse gradient string and return colors
-  const parseGradient = useCallback((gradientString: string): [string, string] => {
-    // Extract colors from linear-gradient string
-    const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
-    if (colorMatch && colorMatch.length >= 2) {
-      return [colorMatch[0], colorMatch[1]]; // Return first two colors
-    }
-    return ['#1F1943', '#4E3EA9']; // Default fallback
-  }, []);
+  const parseGradient = useCallback(
+    (gradientString: string): [string, string] => {
+      // Extract colors from linear-gradient string
+      const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
+      if (colorMatch && colorMatch.length >= 2) {
+        return [colorMatch[0], colorMatch[1]]; // Return first two colors
+      }
+      return ["#1F1943", "#4E3EA9"]; // Default fallback
+    },
+    []
+  );
 
   // Function to handle buddy selection
   const handleBuddySelect = (buddy: any) => {
@@ -93,7 +101,7 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
   // Use translated scenes data
   const scenes = translatedScenes;
 
-  console.log('selectedBuddy', selectedBuddy);
+  console.log("selectedBuddy", selectedBuddy);
 
   const renderBuddiesGrid = () => (
     <View className="w-full -mx-1 -my-1 flex-row flex-wrap">
@@ -101,19 +109,56 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
         const isOwned = ownedBuddies?.includes(item.id) || false;
         const isSelected = selectedBuddyId === item.id;
 
+        // Derive base key from id like "alpaca-m"
+        const baseKey = (String(item.id).split("-")[0] || "alpaca") as BuddyKey;
+        // Gender-specific Lottie source; fallback to male if needed
+        const lottieSrc =
+          (buddyAssets as any)?.[baseKey]?.[sexKey] ??
+          (buddyAssets as any)?.[baseKey]?.m;
+
         return (
           <Pressable
             key={item.id}
             className={`w-1/4 px-1 py-1`}
             onPress={() => handleBuddySelect(item)}
           >
-            <View className={`items-center rounded-xl p-2 relative ${isDark ? 'bg-slate-700/50' : 'bg-white/10'} ${isOwned && !isSelected ? (isDark ? 'bg-slate-600/50' : 'bg-white/15') : ''}`}>
+            <View
+              className={`items-center rounded-xl p-2 relative ${
+                isDark ? "bg-slate-700/50" : "bg-white/10"
+              } ${
+                isOwned && !isSelected
+                  ? isDark
+                    ? "bg-slate-600/50"
+                    : "bg-white/15"
+                  : ""
+              }`}
+            >
               <View className="w-[80px] h-[80px] overflow-hidden relative">
-                <Image source={item.icon} className='w-[80px] h-[110px]' resizeMode="contain" />
+                {lottieSrc ? (
+                  <LottieView
+                    source={lottieSrc}
+                    autoPlay={isSelected} // animate the selected buddy
+                    loop={isSelected}
+                    // Show first frame for non-selected items
+                    {...(!isSelected ? ({ progress: 0 } as any) : {})}
+                    style={{ width: 80, height: 110 }}
+                    resizeMode="contain"
+                    enableMergePathsAndroidForKitKatAndAbove
+                  />
+                ) : (
+                  // Fallback to the old static icon if no Lottie found
+                  <Image
+                    source={item.icon}
+                    className="w-[80px] h-[110px]"
+                    resizeMode="contain"
+                  />
+                )}
                 {!isOwned && (
                   <View className="absolute bottom-1 left-4 z-10 rounded-3xl bg-black/70 px-2 py-0.5">
                     <View className="flex-row items-center justify-center">
-                      <Text className="text-xs font-bold text-amber-500 gap-2">{item.coin}</Text>
+                      <Text className="text-xs font-bold text-amber-500 gap-2">
+                        {item.coin}
+                      </Text>
                       <CoinIcon width={18} height={18} className="ml-1" />
                     </View>
                   </View>
@@ -121,7 +166,13 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
               </View>
               {isSelected && (
                 <View className="absolute top-1 right-1">
-                  <Ionicons className="bg-green-500 rounded-full p-0 bold" name="checkmark" size={18} color="white" fill="white" />
+                  <Ionicons
+                    className="bg-green-500 rounded-full p-0 bold"
+                    name="checkmark"
+                    size={18}
+                    color="white"
+                    fill="white"
+                  />
                 </View>
               )}
             </View>
@@ -143,13 +194,23 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
             className={`w-1/4 px-1 py-1`}
             onPress={() => handleSceneSelect(item)}
           >
-            <View className={`items-center rounded-xl relative ${isDark ? 'bg-slate-700/50' : 'bg-white/10'}`}>
+            <View
+              className={`items-center rounded-xl relative ${
+                isDark ? "bg-slate-700/50" : "bg-white/10"
+              }`}
+            >
               <View className="w-[80px] h-[80px] overflow-hidden relative">
-                <Image source={item.background} className="w-full h-full rounded-2xl" resizeMode="cover" />
+                <Image
+                  source={item.background}
+                  className="w-full h-full rounded-2xl"
+                  resizeMode="cover"
+                />
                 {!isOwned && (
                   <View className="absolute bottom-1 left-4 z-10 rounded-3xl bg-black/70 px-2 py-0.5">
                     <View className="flex-row items-center justify-center">
-                      <Text className="text-xs font-bold text-amber-500 gap-2">{item.coin}</Text>
+                      <Text className="text-xs font-bold text-amber-500 gap-2">
+                        {item.coin}
+                      </Text>
                       <CoinIcon width={18} height={18} className="ml-1" />
                     </View>
                   </View>
@@ -157,7 +218,12 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
               </View>
               {isSelected && (
                 <View className="absolute top-1 right-1">
-                  <Ionicons className="bg-green-500 rounded-full p-0.5 bold" name="checkmark" size={18} color="white" />
+                  <Ionicons
+                    className="bg-green-500 rounded-full p-0.5 bold"
+                    name="checkmark"
+                    size={18}
+                    color="white"
+                  />
                 </View>
               )}
             </View>
@@ -168,9 +234,12 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
   );
 
   const gradientColors = parseGradient(selectedBackground.backgroundColor);
-  
+
   return (
-    <View className={`flex-1 ${isDark ? 'bg-dark-background' : ''}`} style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}>
+    <View
+      className={`flex-1 ${isDark ? "bg-dark-background" : ""}`}
+      style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}
+    >
       {/* Header with coins */}
       {/* <View className="flex-row justify-between items-center px-4 py-3 bg-white/10">
         <Text className="text-white text-lg font-bold">Shop</Text>
@@ -180,12 +249,14 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
         </View>
       </View> */}
 
-      <ScrollView 
+      <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 4, paddingVertical: 20,  minHeight: Dimensions.get('window').height * 0.8,
- }}
+        contentContainerStyle={{
+          paddingHorizontal: 4,
+          paddingVertical: 20,
+          minHeight: Dimensions.get("window").height * 0.8,
+        }}
       >
-
         {/* Items */}
         <View className="flex-1">
           {!isScenesSelected ? renderBuddiesGrid() : renderScenesGrid()}
@@ -207,9 +278,9 @@ const Shop: React.FC<ShopProps> = ({ onBack, isScenesSelected, setIsScenesSelect
           setShowSceneModal(false);
           setSelectedSceneForModal(null);
         }}
-              />
+      />
     </View>
   );
 };
 
-export default Shop; 
+export default Shop;
