@@ -139,7 +139,13 @@
   },
   "cravingSOS": {
     "common": {
-      "days": "Desafío de 10 días"
+      "days": "¡Desafío próximamente!"
+    },
+    "iSmokedButton": "¡Fumé!",
+    "dontGiveUp": {
+      "title": "No te rindas",
+      "description": "Tuviste una recaída y fumaste un cigarrillo — y está bien. Respira profundamente, recuerda por qué empezaste y vuelve al camino. Cada antojo que resistes es progreso.",
+      "okButton": "Ok"
     },
     "crumpleCravings": {
       "challenge": "Triturador de antojos",

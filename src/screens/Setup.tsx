@@ -130,7 +130,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
   // ---- Savings header (same math as Profile) ----
   const { savingsText } = useMemo(() => {
     if (!smokeType || !dailyAmount || !packPrice) {
-      return { savingsText: `${packPriceCurrency || "$"}0` };
+      return { savingsText: `${packPriceCurrency || "$"}1200` };
     }
     
     const savings = calculateSavings(smokeType, dailyAmount, packPrice, packPriceCurrency || "$", 365);

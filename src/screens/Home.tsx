@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { View, Animated } from "react-native";
+import { View, Animated, Pressable, Text } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import LottieView from "lottie-react-native";
 import { useApp } from "../contexts/AppContext";
@@ -244,10 +244,21 @@ const Home: React.FC<HomeProps> = ({
               isExclusiveSelected={isExclusiveSelected}
               isScenesSelected={isScenesSelected}
               setIsScenesSelected={handleSetIsScenesSelected}
-              onShowCravingSOS={handleShowCravingSOS}
               onNavigateToShop={handleNavigateToShop}
             />
           </Animated.ScrollView>
+
+          {/* Fixed Craving SOS Button at Bottom */}
+          {currentView === "home" && (
+            <View className="absolute bottom-10 left-0 right-0 z-[200] px-6 pb-8">
+              <Pressable 
+                className="bg-red-500 rounded-xl py-4 items-center shadow-lg" 
+                onPress={handleShowCravingSOS}
+              >
+                <Text className="text-white text-lg font-bold">Craving SOS</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
       </PanGestureHandler>
     </View>

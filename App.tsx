@@ -44,7 +44,7 @@ const AppContent: React.FC = () => {
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
   const [isScenesSelected, setIsScenesSelected] = useState(false);
-  const [currentScreen, setCurrentScreen] = useState<Screen>(goal ? "home" : "welcome");
+  const [currentScreen, setCurrentScreen] = useState<Screen>( "welcome");
   const { theme } = useTheme();
 
   const navigateTo = useCallback((screen: Screen) => {
@@ -95,7 +95,7 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     console.log(currentScreen, goal)
     if(goal && currentScreen == "welcome")
-      setCurrentScreen("home")
+      setCurrentScreen("welcome")
   }, [goal])
 
   return (

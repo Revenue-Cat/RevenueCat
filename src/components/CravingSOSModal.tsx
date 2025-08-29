@@ -1,10 +1,12 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
-import { Animated, Dimensions, Pressable, Text, View } from 'react-native';
+import { Animated, Dimensions, Pressable, Text, View, Modal } from 'react-native';
 import SlideModal from './SlideModal';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { useApp } from '../contexts/AppContext';
 import { strategies } from '../data/strategiesData';
 import HeartIcon from '../assets/strategies/heart.svg';
+import LockLight from '../assets/icons/lock.svg';
 
 interface CravingSOSModalProps {
   visible: boolean;
@@ -15,6 +17,7 @@ interface CravingSOSModalProps {
 const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onStartBreathing }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { setStartDate } = useApp();
   const isDark = theme === 'dark';
   const { width } = Dimensions.get('window');
   const ITEM_WIDTH = width * 0.7; // center card width (~70%)
@@ -22,10 +25,26 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
 
   const scrollX = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showDontGiveUpModal, setShowDontGiveUpModal] = useState(false);
   const flatListRef = useRef<Animated.FlatList>(null);
 
   // Use original data instead of tripling it for better performance
   const data = useMemo(() => strategies, []);
+
+  const handleISmoked = () => {
+    setShowDontGiveUpModal(true);
+  };
+
+  const handleDontGiveUpOk = async () => {
+    setShowDontGiveUpModal(false);
+    onClose(); // Close the CravingSOS modal
+    
+    // Reset start date to current date and time
+    const newStartDate = new Date();
+    await setStartDate(newStartDate);
+    
+    console.log('Start date reset to:', newStartDate.toISOString());
+  };
 
   // Reset to first card when modal becomes visible
   useEffect(() => {
@@ -40,12 +59,12 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
   }, [visible, scrollX]);
 
   return (
-    <SlideModal visible={visible} onClose={onClose} title="Want to smoke?" showCloseButton>
+    <SlideModal visible={visible} onClose={onClose} title={t('cravingSOS.modal.title')} showCloseButton={false}>
       <Text
         className={`${isDark ? 'text-slate-300' : 'text-slate-500'} text-center`}
         style={{ fontSize: 14, lineHeight: 20 }}
       >
-        Use breathing exercises or quick tips
+        {t('cravingSOS.modal.subtitle')}
       </Text>
 
       <Animated.FlatList
@@ -121,7 +140,12 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
                 </Text>
 
                 {/* Challenge Box */}
-                <View className={`${item.bgColor} rounded-xl p-1 flex-row justify-between items-center`}>
+                <View className={`${item.bgColor} rounded-xl p-1 flex-row justify-between items-center relative`}>
+                  {/* Lock Icon - Top Right Corner */}
+                  <View className="absolute top-1 right-1 z-10 bg-black/50 rounded-full p-1">
+                    <LockLight width={12} height={12} color="white" />
+                  </View>
+                  
                   <View className="flex-1 p-3">
                     <Text
                       className={`${isDark ? 'text-slate-100' : 'text-indigo-950'}`}
@@ -178,6 +202,57 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
           })}
         </View>
       </View>
+
+      <View className="flex-row items-center gap-5 justify-center mt-4 w-full">
+        {/* Close Button */}
+        <Pressable 
+          className={`w-15 h-15 rounded-2xl justify-center items-center іelf-center ${
+            isDark ? 'bg-slate-700' : 'bg-indigo-50'
+          }`} 
+          onPress={onClose}
+        >
+          <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
+        </Pressable>
+
+      {/* I smoked! Button */}
+      <Pressable 
+        className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[70%]"
+        onPress={handleISmoked}
+      >
+        <Text className="text-white font-bold text-lg">{t('cravingSOS.iSmokedButton')}</Text>
+      </Pressable>
+      </View>     
+
+      {/* Don't Give Up Modal */}
+      <Modal
+        visible={showDontGiveUpModal}
+        transparent={true}
+        animationType="fade"
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className={`mx-6 p-6 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-xl`}>
+            {/* Title */}
+            <Text className={`text-xl font-bold text-center mb-4 ${isDark ? 'text-slate-100' : 'text-gray-900'}`}>
+              {t('cravingSOS.dontGiveUp.title')}
+            </Text>
+            
+            {/* Description */}
+            <Text className={`text-base text-center mb-6 leading-6 ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+              {t('cravingSOS.dontGiveUp.description')}
+            </Text>
+            
+            {/* Ok Button */}
+            <Pressable
+              className="bg-indigo-600 py-3 px-6 rounded-xl"
+              onPress={handleDontGiveUpOk}
+            >
+              <Text className="text-center font-semibold text-white text-lg">
+                {t('cravingSOS.dontGiveUp.okButton')}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SlideModal>
   );
 };

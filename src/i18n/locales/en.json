@@ -139,7 +139,13 @@
   },
   "cravingSOS": {
     "common": {
-      "days": "10 Days challenge"
+      "days": "Challenge coming soon!"
+    },
+    "iSmokedButton": "I smoked!",
+    "dontGiveUp": {
+      "title": "Don't give up",
+      "description": "You slipped and had a cigarette — and that's okay. Take a deep breath, remind yourself why you started, and get back on track. Every craving you resist is progress.",
+      "okButton": "Ok"
     },
     "crumpleCravings": {
       "challenge": "Crave crusher",

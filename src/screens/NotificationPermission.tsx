@@ -6,6 +6,7 @@ import {
   Dimensions,
   ScrollView,
   Alert,
+  Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +27,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
   const isDark = theme === 'dark';
   const [isRequestingPermission, setIsRequestingPermission] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
 
   // Get current time for timestamp
   const now = new Date();
@@ -50,34 +52,32 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
   };
 
   const handleRequestPermission = async () => {
+    setShowPermissionModal(true);
+  };
+
+  const handleAllowPermission = async () => {
+    setShowPermissionModal(false);
     setIsRequestingPermission(true);
+    
     try {
       const granted = await oneSignalService.requestNotificationPermission();
       setHasPermission(granted);
       
-      if (granted) {
-        Alert.alert(
-          t('notificationPermission.success.title', 'Permission Granted'),
-          t('notificationPermission.success.message', 'You will now receive helpful notifications to support your journey!'),
-          [{ text: 'OK', onPress: onNext }]
-        );
-      } else {
-        Alert.alert(
-          t('notificationPermission.denied.title', 'Permission Denied'),
-          t('notificationPermission.denied.message', 'You can enable notifications later in your device settings.'),
-          [{ text: 'Continue', onPress: onNext }]
-        );
-      }
+      // Continue to next screen regardless of permission result
+      onNext();
     } catch (error) {
       console.error('Error requesting permission:', error);
-      Alert.alert(
-        t('notificationPermission.error.title', 'Error'),
-        t('notificationPermission.error.message', 'There was an error requesting notification permission.'),
-        [{ text: 'Continue', onPress: onNext }]
-      );
+      // Continue to next screen even if there's an error
+      onNext();
     } finally {
       setIsRequestingPermission(false);
     }
+  };
+
+  const handleDenyPermission = () => {
+    setShowPermissionModal(false);
+    // User denied permission, continue without notifications
+    onNext();
   };
 
   return (
@@ -158,12 +158,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
           disabled={isRequestingPermission}
         >
           <Text className="font-semibold text-xl mr-2 text-white">
-            {isRequestingPermission 
-              ? t('notificationPermission.requesting', 'Requesting...')
-              : hasPermission 
-                ? t('notificationPermission.continue', 'Continue')
-                : t('notificationPermission.actionButton')
-            }
+            {t('notificationPermission.actionButton')}
           </Text>
           {!isRequestingPermission && (
             <Ionicons 
@@ -180,6 +175,52 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
           </Text>
         )}
       </View>
+
+      {/* Custom Permission Modal */}
+      <Modal
+        visible={showPermissionModal}
+        transparent={true}
+        animationType="fade"
+      >
+         <View className="flex-1 justify-center items-center bg-black/50">
+            <View className={`px-6 pt-6 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-xl`}>
+            {/* Title */}
+            <Text className={`text-xl font-bold text-center mb-3 ${isDark ? 'text-slate-100' : 'text-gray-900'}`}>
+              Quitqly Would Like To Send You Notifications
+            </Text>
+            
+            {/* Description */}
+            <Text className={`text-base text-center mb-6 leading-5 ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+              Notifications may include alerts, sounds, and icon badges.
+            </Text>
+            
+            {/* Buttons */}
+            <View className="border-t border-gray-200 -mx-6">
+              <View className="flex-row">
+                {/* Don't Allow Button */}
+                <Pressable
+                  className={`flex-1 p-5 border-r border-gray-200`}
+                  onPress={handleDenyPermission}
+                >
+                  <Text className={`text-center font-semibold text-indigo-600`}>
+                    Don't Allow
+                  </Text>
+                </Pressable>
+                
+                {/* Allow Button */}
+                <Pressable
+                  className="flex-1 p-5"
+                  onPress={handleAllowPermission}
+                >
+                  <Text className="text-center font-semibold text-indigo-600">
+                    Allow
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

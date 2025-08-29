@@ -13,7 +13,6 @@ interface HomeContentProps {
   isExclusiveSelected: boolean;
   isScenesSelected: boolean;
   setIsScenesSelected: (isScenes: boolean) => void;
-  onShowCravingSOS: () => void;
   onNavigateToShop: () => void;
 }
 
@@ -23,7 +22,6 @@ const HomeContent: React.FC<HomeContentProps> = ({
   isExclusiveSelected,
   isScenesSelected,
   setIsScenesSelected,
-  onShowCravingSOS,
   onNavigateToShop
 }) => {
   const { t } = useTranslation();
@@ -49,12 +47,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
         <>
           {/* Stats */}
           <HomeStats />
-          <Challenges />
-
-          {/* Craving SOS Button */}
-          <Pressable className="bg-red-500 rounded-xl py-4 items-center" onPress={onShowCravingSOS}>
-            <Text className="text-white text-lg font-bold">{t('home.cravingSOS')}</Text>
-          </Pressable>
+          {/* <Challenges /> */}
         </>
       )}
 
