@@ -207,7 +207,7 @@
     "ukrainian": "Українська"
   },
   "notificationPermission": {
-    "actionButton": "Continuar",
+    "actionButton": "Habilitar Notificaciones",
     "mainTitle": "Mantente en el camino, a tu manera",
     "mainSubtitle": "Deja que tu compañero te anime con recordatorios relajados — sin presión, solo progreso.",
     "preview": {
@@ -215,7 +215,22 @@
       "message": "El recuerdo permanece, pero el tabaco está en el pasado."
     },
     "subtitle": "Recibe recordatorios gentiles y celebra tu progreso",
-    "title": "Mantente motivado"
+    "title": "Mantente motivado",
+    "requesting": "Solicitando...",
+    "continue": "Continuar",
+    "permissionGranted": "✅ ¡Notificaciones habilitadas!",
+    "success": {
+      "title": "Permiso Concedido",
+      "message": "¡Ahora recibirás notificaciones útiles para apoyar tu viaje!"
+    },
+    "denied": {
+      "title": "Permiso Denegado",
+      "message": "Puedes habilitar las notificaciones más tarde en la configuración de tu dispositivo."
+    },
+    "error": {
+      "title": "Error",
+      "message": "Hubo un error al solicitar el permiso de notificación."
+    }
   },
   "profile": {
     "buddy": {

@@ -207,7 +207,7 @@
     "ukrainian": "Українська"
   },
   "notificationPermission": {
-    "actionButton": "Continue",
+    "actionButton": "Enable Notifications",
     "mainTitle": "Stay on track, your way",
     "mainSubtitle": "Let buddy nudge you with chill reminders — no pressure, just progress.",
     "preview": {
@@ -215,7 +215,22 @@
       "message": "The memory lives on, but tobacco is in the past."
     },
     "subtitle": "Get gentle reminders and celebrate your progress",
-    "title": "Stay motivated"
+    "title": "Stay motivated",
+    "requesting": "Requesting...",
+    "continue": "Continue",
+    "permissionGranted": "✅ Notifications enabled!",
+    "success": {
+      "title": "Permission Granted",
+      "message": "You will now receive helpful notifications to support your journey!"
+    },
+    "denied": {
+      "title": "Permission Denied",
+      "message": "You can enable notifications later in your device settings."
+    },
+    "error": {
+      "title": "Error",
+      "message": "There was an error requesting notification permission."
+    }
   },
   "profile": {
     "buddy": {

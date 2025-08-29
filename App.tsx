@@ -21,6 +21,7 @@ import ChatAssistance from "./src/screens/ChatAssistance";
 import CoinPurchaseModal from "./src/components/CoinPurchaseModal";
 import Purchases, { LOG_LEVEL } from "react-native-purchases";
 import { Platform } from "react-native";
+import oneSignalService from "./src/services/oneSignalService";
 
 type Screen =
   | "welcome"
@@ -86,6 +87,9 @@ const AppContent: React.FC = () => {
         apiKey: "goog_FzScAUIKXLprLfvKBhyYjdmLHvJ",
       });
     }
+
+    // Initialize OneSignal
+    oneSignalService.initialize();
   }, []);
 
   useEffect(() => {

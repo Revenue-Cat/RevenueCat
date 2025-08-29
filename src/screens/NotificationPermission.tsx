@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   Pressable,
   Dimensions,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import NotificationIcon from '../assets/notification/notification.svg';
+import oneSignalService from '../services/oneSignalService';
 
 const { width } = Dimensions.get('window');
 
@@ -22,6 +24,8 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
   const { theme } = useTheme();
   const { t } = useTranslation();
   const isDark = theme === 'dark';
+  const [isRequestingPermission, setIsRequestingPermission] = useState(false);
+  const [hasPermission, setHasPermission] = useState(false);
 
   // Get current time for timestamp
   const now = new Date();
@@ -30,6 +34,51 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
     minute: '2-digit',
     hour12: true 
   });
+
+  // Check permission status on component mount
+  useEffect(() => {
+    checkPermissionStatus();
+  }, []);
+
+  const checkPermissionStatus = async () => {
+    try {
+      const permissionStatus = await oneSignalService.getNotificationPermissionStatus();
+      setHasPermission(permissionStatus);
+    } catch (error) {
+      console.error('Error checking permission status:', error);
+    }
+  };
+
+  const handleRequestPermission = async () => {
+    setIsRequestingPermission(true);
+    try {
+      const granted = await oneSignalService.requestNotificationPermission();
+      setHasPermission(granted);
+      
+      if (granted) {
+        Alert.alert(
+          t('notificationPermission.success.title', 'Permission Granted'),
+          t('notificationPermission.success.message', 'You will now receive helpful notifications to support your journey!'),
+          [{ text: 'OK', onPress: onNext }]
+        );
+      } else {
+        Alert.alert(
+          t('notificationPermission.denied.title', 'Permission Denied'),
+          t('notificationPermission.denied.message', 'You can enable notifications later in your device settings.'),
+          [{ text: 'Continue', onPress: onNext }]
+        );
+      }
+    } catch (error) {
+      console.error('Error requesting permission:', error);
+      Alert.alert(
+        t('notificationPermission.error.title', 'Error'),
+        t('notificationPermission.error.message', 'There was an error requesting notification permission.'),
+        [{ text: 'Continue', onPress: onNext }]
+      );
+    } finally {
+      setIsRequestingPermission(false);
+    }
+  };
 
   return (
     <View className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
@@ -102,18 +151,34 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
        {/* Next Button - Fixed at bottom */}
       <View className="px-6 pb-8 items-center">
         <Pressable
-          className={'rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600'}
-          onPress={onNext}
+          className={`rounded-2xl px-6 py-4 items-center justify-center flex-row ${
+            hasPermission ? 'bg-green-600' : 'bg-indigo-600'
+          } ${isRequestingPermission ? 'opacity-50' : ''}`}
+          onPress={hasPermission ? onNext : handleRequestPermission}
+          disabled={isRequestingPermission}
         >
           <Text className="font-semibold text-xl mr-2 text-white">
-             {t('notificationPermission.actionButton')}
+            {isRequestingPermission 
+              ? t('notificationPermission.requesting', 'Requesting...')
+              : hasPermission 
+                ? t('notificationPermission.continue', 'Continue')
+                : t('notificationPermission.actionButton')
+            }
           </Text>
-          <Ionicons 
-            name="arrow-forward" 
-            size={24} 
-            color="#ffffff" 
-          />
+          {!isRequestingPermission && (
+            <Ionicons 
+              name={hasPermission ? "checkmark" : "arrow-forward"} 
+              size={24} 
+              color="#ffffff" 
+            />
+          )}
         </Pressable>
+        
+        {hasPermission && (
+          <Text className={`text-sm mt-3 text-center ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
+            {t('notificationPermission.permissionGranted', '✅ Notifications enabled!')}
+          </Text>
+        )}
       </View>
     </View>
   );
