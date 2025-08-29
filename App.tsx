@@ -2,7 +2,7 @@ import "./global.css";
 import React, { useState, useEffect, useCallback } from "react";
 import { View, SafeAreaView, Modal } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { AppProvider } from "./src/contexts/AppContext";
+import { AppProvider, useApp } from "./src/contexts/AppContext";
 import { ThemeProvider, useTheme } from "./src/contexts/ThemeContext";
 import { LanguageProvider } from "./src/contexts/LanguageContext";
 import "./src/i18n"; // Import i18n configuration
@@ -36,11 +36,14 @@ type Screen =
   | "edit-buddy";
 
 const AppContent: React.FC = () => {
-  const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
+  const {
+    goal
+  } = useApp();
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
   const [isScenesSelected, setIsScenesSelected] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState<Screen>(goal ? "home" : "welcome");
   const { theme } = useTheme();
 
   const navigateTo = useCallback((screen: Screen) => {
@@ -85,125 +88,129 @@ const AppContent: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    console.log(currentScreen, goal)
+    if(goal && currentScreen == "welcome")
+      setCurrentScreen("home")
+  }, [goal])
+
   return (
-    <AppProvider>
-      <SafeAreaView
-        className={`flex-1 ${
-          theme === "dark" ? "bg-dark-background" : "bg-light-background"
-        }`}
-      >
-        {currentScreen === "welcome" && (
-          <Welcome onNext={() => navigateTo("setup")} />
-        )}
+    <SafeAreaView
+      className={`flex-1 ${
+        theme === "dark" ? "bg-dark-background" : "bg-light-background"
+      }`}
+    >
+      {currentScreen === "welcome" && (
+        <Welcome onNext={() => navigateTo("setup")} />
+      )}
 
-        {currentScreen === "setup" && (
-          <Setup onNext={() => navigateTo("buddy-selection")} />
-        )}
+      {currentScreen === "setup" && (
+        <Setup onNext={() => navigateTo("buddy-selection")} />
+      )}
 
-        {currentScreen === "buddy-selection" && (
-          <BuddySelection
-            onNext={() => navigateTo("notification-permission")}
-          />
-        )}
-
-        {currentScreen === "notification-permission" && (
-          <NotificationPermission
-            onNext={() => navigateTo("challenge-start")}
-          />
-        )}
-
-        {currentScreen === "challenge-start" && (
-          <ChallengeStart onNext={() => navigateTo("home")} />
-        )}
-
-        {currentScreen === "home" && (
-          <Home
-            onShowCravingSOS={handleShowCravingSOS}
-            onShowBreathingExercise={handleShowBreathingExercise}
-            onShowChatAssistance={handleShowChatAssistance}
-            onNavigateToProfile={() => navigateTo("profile")}
-            onNavigateToAchievements={() => navigateTo("achievements")}
-            onNavigateToShop={() => navigateTo("shop")}
-          />
-        )}
-
-        {currentScreen === "profile" && (
-          <Profile
-            onBack={() => navigateTo("home")}
-            onNavigateToAchievements={() => navigateTo("achievements")}
-            onNavigateToShop={() => navigateTo("shop")}
-            onNavigateToSetup={() => navigateTo("edit-habits")}
-            onNavigateToBuddy={() => navigateTo("edit-buddy")}
-          />
-        )}
-
-        {currentScreen === "edit-habits" && (
-          <Setup
-            fromProfile
-            onBack={() => navigateTo("profile")}
-            onNext={() => navigateTo("profile")}
-          />
-        )}
-
-        {currentScreen === "edit-buddy" && (
-          <BuddySelection
-            fromProfile
-            onBack={() => navigateTo("profile")}
-            onNext={() => {}} // unused in fromProfile
-          />
-        )}
-
-        {currentScreen === "achievements" && (
-          <Achievements
-            onBack={() => navigateTo("home")}
-            isExclusiveSelected={false}
-          />
-        )}
-
-        {currentScreen === "shop" && (
-          <Shop
-            onBack={() => navigateTo("home")}
-            isScenesSelected={isScenesSelected}
-            setIsScenesSelected={setIsScenesSelected}
-          />
-        )}
-
-        {/* Modals */}
-        <CravingSOSModal
-          visible={showCravingSOS}
-          onClose={handleCloseCravingSOS}
-          onStartBreathing={handleShowBreathingExercise}
+      {currentScreen === "buddy-selection" && (
+        <BuddySelection
+          onNext={() => navigateTo("notification-permission")}
         />
+      )}
 
-        <Modal
-          visible={showBreathingExercise}
-          animationType="slide"
-          presentationStyle="fullScreen"
-        >
-          <BreathingExercise
-            onClose={handleCloseBreathingExercise}
-            onBack={handleCloseBreathingExercise}
-          />
-        </Modal>
+      {currentScreen === "notification-permission" && (
+        <NotificationPermission
+          onNext={() => navigateTo("challenge-start")}
+        />
+      )}
 
-        <Modal
-          visible={showChatAssistance}
-          animationType="slide"
-          presentationStyle="fullScreen"
-        >
-          <ChatAssistance
-            onClose={handleCloseChatAssistance}
-            onBack={handleCloseChatAssistance}
-          />
-        </Modal>
+      {currentScreen === "challenge-start" && (
+        <ChallengeStart onNext={() => navigateTo("home")} />
+      )}
 
-        {/* Coin Purchase Modal */}
-        {/* <CoinPurchaseModal /> */}
+      {currentScreen === "home" && (
+        <Home
+          onShowCravingSOS={handleShowCravingSOS}
+          onShowBreathingExercise={handleShowBreathingExercise}
+          onShowChatAssistance={handleShowChatAssistance}
+          onNavigateToProfile={() => navigateTo("profile")}
+          onNavigateToAchievements={() => navigateTo("achievements")}
+          onNavigateToShop={() => navigateTo("shop")}
+        />
+      )}
 
-        {/* Shop Modal */}
-        {/* <ShopModal /> */}
-      </SafeAreaView>
-    </AppProvider>
+      {currentScreen === "profile" && (
+        <Profile
+          onBack={() => navigateTo("home")}
+          onNavigateToAchievements={() => navigateTo("achievements")}
+          onNavigateToShop={() => navigateTo("shop")}
+          onNavigateToSetup={() => navigateTo("edit-habits")}
+          onNavigateToBuddy={() => navigateTo("edit-buddy")}
+        />
+      )}
+
+      {currentScreen === "edit-habits" && (
+        <Setup
+          fromProfile
+          onBack={() => navigateTo("profile")}
+          onNext={() => navigateTo("profile")}
+        />
+      )}
+
+      {currentScreen === "edit-buddy" && (
+        <BuddySelection
+          fromProfile
+          onBack={() => navigateTo("profile")}
+          onNext={() => {}} // unused in fromProfile
+        />
+      )}
+
+      {currentScreen === "achievements" && (
+        <Achievements
+          onBack={() => navigateTo("home")}
+          isExclusiveSelected={false}
+        />
+      )}
+
+      {currentScreen === "shop" && (
+        <Shop
+          onBack={() => navigateTo("home")}
+          isScenesSelected={isScenesSelected}
+          setIsScenesSelected={setIsScenesSelected}
+        />
+      )}
+
+      {/* Modals */}
+      <CravingSOSModal
+        visible={showCravingSOS}
+        onClose={handleCloseCravingSOS}
+        onStartBreathing={handleShowBreathingExercise}
+      />
+
+      <Modal
+        visible={showBreathingExercise}
+        animationType="slide"
+        presentationStyle="fullScreen"
+      >
+        <BreathingExercise
+          onClose={handleCloseBreathingExercise}
+          onBack={handleCloseBreathingExercise}
+        />
+      </Modal>
+
+      <Modal
+        visible={showChatAssistance}
+        animationType="slide"
+        presentationStyle="fullScreen"
+      >
+        <ChatAssistance
+          onClose={handleCloseChatAssistance}
+          onBack={handleCloseChatAssistance}
+        />
+      </Modal>
+
+      {/* Coin Purchase Modal */}
+      {/* <CoinPurchaseModal /> */}
+
+      {/* Shop Modal */}
+      {/* <ShopModal /> */}
+    </SafeAreaView>
   );
 };
 
@@ -212,7 +219,9 @@ const App: React.FC = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
         <LanguageProvider>
-          <AppContent />
+          <AppProvider>
+            <AppContent />
+          </AppProvider>
         </LanguageProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

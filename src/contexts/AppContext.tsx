@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { achievementService, Achievement, UserProgress } from '../services/achievementService';
 import { Scene, SCENES_DATA } from '../data/scenesData';
 
@@ -135,9 +136,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [showCoinPurchase, setShowCoinPurchase] = useState(false);
   const [selectedShopTab, setSelectedShopTab] = useState<ShopTab>('buddies');
 
-  // Load from AsyncStorage on mount (TODO)
+  // Load from AsyncStorage on mount
   useEffect(() => {
-    // TODO: Implement AsyncStorage load if desired
+    const loadState = async () => {
+      try {
+        const savedState = await AsyncStorage.getItem('@app_state');
+        if (savedState) {
+          const parsed = JSON.parse(savedState);
+          setUserCoinsState(parsed.userCoins || 0);
+          setSelectedBuddyState(parsed.selectedBuddy || defaultCharacter);
+          setSelectedBackgroundState(parsed.selectedBackground || defaultBackground);
+          setOwnedBuddies(parsed.ownedBuddies || ['llama-m', 'llama-w', 'zebra-m', 'zebra-w', 'dog-m', 'dog-w']);
+          setOwnedBackgrounds(parsed.ownedBackgrounds || ['bg1']);
+          setOwnedAccessories(parsed.ownedAccessories || []);
+          setGenderState(parsed.gender || 'man');
+          setSelectedBuddyIdState(parsed.selectedBuddyId || 'llama-m');
+          setBuddyNameState(parsed.buddyName || 'Llama Calmington');
+          setSmokeTypeState(parsed.smokeType || '');
+          setDailyAmountState(parsed.dailyAmount || '');
+          setPackPriceState(parsed.packPrice || '');
+          setPackPriceCurrencyState(parsed.packPriceCurrency || '$');
+          setGoalState(parsed.goal || '');
+        }
+      } catch (error) {
+        console.error('Failed to load state:', error);
+      }
+    };
+    loadState();
   }, []);
 
   // Sync with achievement service
@@ -163,7 +188,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [userProgress.startDate]);
 
-  // Save to AsyncStorage when state changes (TODO)
+  // Save to AsyncStorage when state changes
   useEffect(() => {
     const stateToSave = {
       userCoins,
@@ -181,8 +206,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       packPriceCurrency,
       goal,
     };
-    // TODO: AsyncStorage.setItem('@app_state', JSON.stringify(stateToSave));
-    console.log('State to save:', stateToSave);
+    AsyncStorage.setItem('@app_state', JSON.stringify(stateToSave))
+      .catch(error => console.error('Failed to save state:', error));
   }, [
     userCoins,
     selectedBuddy,
