@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -8,10 +8,10 @@ import { useApp } from "../contexts/AppContext";
 import { getBuddyById } from "../data/buddiesData";
 import { BUDDIES_DATA } from "../data/buddiesData";
 import { SCENES_DATA } from "../data/scenesData";
+import Purchases from "react-native-purchases";
 
 interface HomeHeaderProps {
   currentView: "home" | "achievements" | "shop";
-  userCoins: number;
   onNavigateToProfile: () => void;
   onCoinPurchase: () => void;
   onViewChange: (view: "home" | "achievements" | "shop") => void;
@@ -19,17 +19,22 @@ interface HomeHeaderProps {
 
 const HomeHeader: React.FC<HomeHeaderProps> = ({
   currentView,
-  userCoins,
   onNavigateToProfile,
   onCoinPurchase,
   onViewChange,
 }) => {
   const { t } = useTranslation();
-  const { startDate, achievements, getProgressForAchievement, selectedBuddyId, ownedBuddies, ownedBackgrounds } = useApp();
+  const { startDate, achievements, getProgressForAchievement, selectedBuddyId, ownedBuddies, ownedBackgrounds, fetchCoins } = useApp();
   
   // Get the selected buddy data
   const selectedBuddy = getBuddyById(selectedBuddyId);
 
+  // State for user coins from RevenueCat
+  const { userCoins, setUserCoins } = useApp();
+
+  useEffect(() => {
+    fetchCoins();
+  }, []);
 
   // Calculate achievements with 100% progress
   const completedAchievementsCount = achievements.filter((achievement) => {
@@ -54,6 +59,11 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   const purchasableBuddies = BUDDIES_DATA.filter(b => !ownedBuddies?.includes(b.id)).length;
   const purchasableScenes = SCENES_DATA.filter(s => !ownedBackgrounds?.includes(s.id)).length;
   const goodiesCount = purchasableBuddies + purchasableScenes;
+
+  const handleCoinPurchase = async () => {
+    onCoinPurchase();
+    fetchCoins();
+  };
 
   return (
     <View
@@ -156,7 +166,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
         {/* User Coins */}
         <Pressable
           className="flex-row items-center bg-black/50 w-[66px] h-8 rounded-3xl py-1 px-2.5 gap-2"
-          onPress={onCoinPurchase}
+          onPress={handleCoinPurchase}
         >
           <Text className="text-base font-semibold text-amber-500 leading-6">
             {userCoins}

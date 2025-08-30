@@ -51,7 +51,7 @@
     "clean": "expo prebuild --clean",
     "eas-dev-android": "eas build --profile development --platform android --local",
     "eas-dev-ios": "eas build --profile development --platform ios --local",
-    "ios": "expo run:ios",
+    "ios": "expo run:ios --device",
     "start": "expo start",
     "web": "expo start --web"
   },

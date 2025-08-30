@@ -16,12 +16,11 @@ interface BuddyModalContentProps {
 
 const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
   buddy,
-  userCoins,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { t } = useTranslation();
-  const { ownedBuddies, selectedBuddyId, gender } = useApp();
+  const { ownedBuddies, selectedBuddyId, gender, userCoins } = useApp();
 
   const isOwned = ownedBuddies?.includes(buddy?.id) || false;
   const isSelected = selectedBuddyId === buddy?.id;
@@ -109,7 +108,7 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
               ? isSelected
                 ? t("shop.selected", "Selected")
                 : t("shop.owned", "Owned")
-              : t("shop.balance", { coins: buddy?.coin || 0 })}
+              : t("shop.balance", { coins: userCoins || 0 })}
           </Text>
           {!isOwned && <CoinIcon width={18} height={18} />}
         </View>

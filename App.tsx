@@ -93,9 +93,8 @@ const AppContent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log(currentScreen, goal)
     if(goal && currentScreen == "welcome")
-      setCurrentScreen("welcome")
+      setCurrentScreen("home")
   }, [goal])
 
   return (

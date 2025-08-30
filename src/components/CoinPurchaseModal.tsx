@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import SlideModal from "./SlideModal";
 import { useApp } from "../contexts/AppContext";
@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import CoinIcon from "../assets/icons/coins.svg";
 import CoinPackCard from "./CoinPackCard";
 import { COIN_PACKS, CoinPack } from "../config/subscriptions";
+import Purchases from "react-native-purchases";
 
 const CoinPurchaseModal: React.FC = () => {
   const { showCoinPurchase, setShowCoinPurchase, userCoins, setUserCoins } =
@@ -27,9 +28,38 @@ const CoinPurchaseModal: React.FC = () => {
       : undefined,
   }));
 
-  const handleBuy = (pack: CoinPack) => {
-    setUserCoins(userCoins + pack.coins);
-    setShowCoinPurchase(false);
+  const handleBuy = async (pack: CoinPack) => {
+    try {
+      const offerings = await Purchases.getOfferings();
+      const currentOffering = offerings.current;
+      console.log("-----------", offerings)
+      if (!currentOffering) {
+        throw new Error("No current offering available");
+      }
+      console.log("-----------", currentOffering.availablePackages)
+      const rcPackage = currentOffering.availablePackages.find(
+        (p) => p.identifier === pack.id
+      );
+      if (!rcPackage) {
+        throw new Error(`No package found with identifier ${pack.id}`);
+      }
+      const { customerInfo } = await Purchases.purchasePackage(rcPackage);
+      // Purchase successful, update virtual currency balance
+      await Purchases.invalidateVirtualCurrenciesCache();
+      const virtualCurrencies = await Purchases.getVirtualCurrencies();
+      const coinsBalance = virtualCurrencies.all["QUITQLY"]?.balance ?? 0;
+      setUserCoins(coinsBalance);
+      setShowCoinPurchase(false);
+    } catch (error: any) {
+      alert("There is a problem retrieving the product from the AppStore, it will be available once the products are validated.")
+      console.log("-----------error", error)
+      if (error.userCancelled) {
+        // User cancelled the purchase, do nothing
+      } else {
+        console.error("Error during purchase:", error);
+        // Optionally, show an error message to the user
+      }
+    }
   };
 
   return (

@@ -528,7 +528,7 @@ const Profile: React.FC<ProfileProps> = ({
           }}
           onOpenReview={() => setShowReview(true)}
         />
-        <View
+        {/* <View
           className="self-center my-4"
           style={{
             width: 72,
@@ -536,10 +536,10 @@ const Profile: React.FC<ProfileProps> = ({
             backgroundColor: isDark ? "#475569" : "#E2E8F0",
             borderRadius: 2,
           }}
-        />
+        /> */}
 
         {/* Coin packs */}
-        <View className="mx-4">
+        {/* <View className="mx-4">
           <Text
             className={`text-center font-extrabold ${
               isDark ? "text-white" : "text-indigo-950"
@@ -562,7 +562,7 @@ const Profile: React.FC<ProfileProps> = ({
               <CoinPackCard key={pack.id} pack={pack} onPress={handleBuyPack} />
             ))}
           </View>
-        </View>
+        </View> */}
       </Animated.ScrollView>
 
       {/* Language slide */}

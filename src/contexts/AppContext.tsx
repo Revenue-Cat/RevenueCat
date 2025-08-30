@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { achievementService, Achievement, UserProgress } from '../services/achievementService';
 import { Scene, SCENES_DATA } from '../data/scenesData';
+import { parse } from 'react-native-svg';
+import Purchases from 'react-native-purchases';
 
 type ShopTab = 'buddies' | 'backgrounds';
 export type UserGender = 'man' | 'lady' | 'any';
@@ -48,10 +50,11 @@ interface AppState {
   selectedShopTab: ShopTab;
 
   // Actions
+  fetchCoins: () => void;
   setUserCoins: (coins: number) => void;
   setSelectedBuddy: (buddy: ShopItem) => void;
   setSelectedBackground: (background: Scene) => void;
-  purchaseItem: (item: ShopItem, category: ShopTab) => boolean;
+  purchaseItem: (item: ShopItem, category: ShopTab) => Promise<boolean>;
   setShowShop: (show: boolean) => void;
   setShowCoinPurchase: (show: boolean) => void;
   setSelectedShopTab: (tab: ShopTab) => void;
@@ -62,7 +65,6 @@ interface AppState {
   getProgressForAchievement: (achievementId: string) => { current: number; max: number; percentage: number };
   resetProgress: () => Promise<void>;
   setSampleData: () => Promise<void>;
-  setAugustStartDate: () => Promise<void>;
 
   // Selection setters
   setGender: (gender: UserGender) => void;
@@ -157,6 +159,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           setPackPriceState(parsed.packPrice || '');
           setPackPriceCurrencyState(parsed.packPriceCurrency || '$');
           setGoalState(parsed.goal || '');
+          setUserProgress(parsed.userProgress || {
+            startDate: new Date(),
+            daysSmokeFree: 0,
+            totalMoneySaved: 0,
+            cigarettesAvoided: 0,
+            breathingExercisesCompleted: 0,
+            challengesCompleted: 0,
+            purchasesMade: 0,
+          })
         }
       } catch (error) {
         console.error('Failed to load state:', error);
@@ -205,6 +216,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       packPrice,
       packPriceCurrency,
       goal,
+      userProgress
     };
     AsyncStorage.setItem('@app_state', JSON.stringify(stateToSave))
       .catch(error => console.error('Failed to save state:', error));
@@ -223,6 +235,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     packPrice,
     packPriceCurrency,
     goal,
+    userProgress
   ]);
 
   // Memoize all action functions to prevent recreation
@@ -230,11 +243,52 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setSelectedBuddy = useCallback((buddy: ShopItem) => setSelectedBuddyState(buddy), []);
   const setSelectedBackground = useCallback((background: Scene) => setSelectedBackgroundState(background), []);
 
-  const purchaseItem = useCallback((item: ShopItem | Scene, category: ShopTab): boolean => {
+  const fetchCoins = async () => {
+    try {
+      await Purchases.invalidateVirtualCurrenciesCache();
+      const virtualCurrencies = await Purchases.getVirtualCurrencies();
+      const coinsBalance = virtualCurrencies.all['QUITQLY']?.balance ?? 0;
+      setUserCoins(coinsBalance);
+    } catch (error) {
+      console.error('Error fetching virtual currencies:', error);
+    }
+  };
+
+  const purchaseItem = useCallback(async(item: ShopItem | Scene, category: ShopTab): Promise<boolean> => {
     // Use coin field for price (both buddies and scenes use coin)
     const price = (item as any).coin || 0;
     
-    if (userCoins < price) return false;
+    if (userCoins < price) {
+      alert("Not enough of coins")
+      return false;
+    }
+
+    const customerInfo = await Purchases.getCustomerInfo();
+    console.log("----- customer", customerInfo)
+    const appUserId = customerInfo.originalAppUserId;
+
+    const API_KEY = 'sk_wvGZopHNPiRznxZZiJKvIxKaOXbRE'; // Replace with your RevenueCat secret key (DO NOT COMMIT TO GIT)
+    const PROJECT_ID = '2ea2fbba'; // Replace with your RevenueCat project ID
+
+    const response = await fetch(
+      `https://api.revenuecat.com/v2/projects/${PROJECT_ID}/customers/${appUserId}/virtual_currencies/transactions`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`,
+        },
+        body: JSON.stringify({
+          adjustments: {
+            QUITQLY: -price,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to debit coins: ${response.statusText}`);
+    }
     
     setUserCoinsState(prev => prev - price);
 
@@ -246,6 +300,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setOwnedBackgrounds(prev => [...prev, item.id]);
         break;
     }
+
+    fetchCoins();
     return true;
   }, [userCoins]);
 
@@ -293,20 +349,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   // Function to set August 21st start date for specific testing
-  const setAugustStartDate = useCallback(async () => {
-    const startDate = new Date(2025, 7, 21, 10, 30, 0); // August 21st, 2024 at 10:30 AM
-    console.log('setAugustStartDate: Setting startDate to:', startDate.toISOString());
+  const setTodayStartDate = useCallback(async () => {
+    const startDate = new Date(); // August 21st, 2024 at 10:30 AM
+    console.log('setTodayStartDate: Setting startDate to:', startDate.toISOString());
     setUserProgress(prev => ({ ...prev, startDate }));
     await achievementService.setStartDate(startDate);
   }, []);
 
-  // Set August start date as default when app initializes
-  useEffect(() => {
-    if (!userProgress.startDate) {
-      console.log('AppContext: Setting default August start date');
-      setAugustStartDate();
-    }
-  }, [userProgress.startDate, setAugustStartDate]);
 
   // Set up achievement completion callback to add coins
   useEffect(() => {
@@ -362,6 +411,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showCoinPurchase,
     selectedShopTab,
 
+    fetchCoins,
     setUserCoins,
     setSelectedBuddy,
     setSelectedBackground,
@@ -376,7 +426,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     getProgressForAchievement,
     resetProgress,
     setSampleData,
-    setAugustStartDate,
 
     setGender,
     setSelectedBuddyId,
@@ -414,7 +463,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     getProgressForAchievement,
     resetProgress,
     setSampleData,
-    setAugustStartDate,
   ]);
 
   return (

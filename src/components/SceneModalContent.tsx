@@ -13,12 +13,11 @@ interface SceneModalContentProps {
 
 const SceneModalContent: React.FC<SceneModalContentProps> = ({
   scene,
-  userCoins,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { t } = useTranslation();
-  const { ownedBackgrounds, selectedBackground } = useApp();
+  const { ownedBackgrounds, selectedBackground, userCoins } = useApp();
   const isOwned = ownedBackgrounds?.includes(scene.id) || false;
   const isSelected = selectedBackground.id === scene.id;
 
@@ -53,7 +52,7 @@ const SceneModalContent: React.FC<SceneModalContentProps> = ({
       <View className="items-center my-2">
         <View className="flex-row items-center px-4 py-2 rounded-3xl border-2 border-amber-500">
           <Text className="text-amber-500 font-bold text-base mr-2 text-xl">
-            {isOwned ? (isSelected ? t('shop.selected') : t('shop.owned')) : t('shop.balance', { coins: scene.coin || 0 })}
+            {isOwned ? (isSelected ? t('shop.selected') : t('shop.owned')) : t('shop.balance', { coins: userCoins || 0 })}
           </Text>
           {!isOwned && <CoinIcon width={18} height={18} />}
         </View>

@@ -41,7 +41,7 @@ export const SUBSCRIPTION_PLANS: Plan[] = [
 ];
 
 // ----------------- Coin Packs -----------------
-export type CoinPackId = "starter" | "booster" | "pro" | "legend";
+export type CoinPackId = "starter" | "popular" | "best";
 
 export type CoinPack = {
   id: CoinPackId;
@@ -60,40 +60,32 @@ export const COIN_PACKS: CoinPack[] = [
     id: "starter",
     label: "Starter",
     coins: 100,
-    price: 0.99,
+    price: 1.99,
     oldPrice: 2.0,
     currency: "USD",
-    caption: "Go big, stay on track.",
+    caption: "Quick start, no pressure",
   },
   {
-    id: "booster",
+    id: "popular",
     label: "Booster",
-    coins: 600,
-    price: 4.99,
-    oldPrice: 6.0,
+    coins: 300,
+    price: 3.99,
+    oldPrice: 5.0,
     currency: "USD",
     bonusTag: "+20% bonus included",
     featured: true, // only this one shows indigo border
     caption: "Solid value, real progress.",
   },
   {
-    id: "pro",
+    id: "best",
     label: "Pro",
-    coins: 1300,
-    price: 9.99,
-    oldPrice: 13.0,
+    coins: 500,
+    price: 4.99,
+    oldPrice: 9.0,
     currency: "USD",
-    caption: "Quick start, no pressure",
-  },
-  {
-    id: "legend",
-    label: "Legend",
-    coins: 2800,
-    price: 19.99,
-    oldPrice: 27.0,
-    currency: "USD",
-    caption: "Quick start, no pressure",
-  },
+    bonusTag: "+45% bonus included",
+    caption: "Go big, stay on track.",
+  }
 ];
 
 // App Store links (replace with your real IDs/links)

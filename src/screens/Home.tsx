@@ -139,7 +139,6 @@ const Home: React.FC<HomeProps> = ({
       {/* Fixed Header */}
       <HomeHeader
         currentView={currentView}
-        userCoins={userCoins}
         onNavigateToProfile={handleNavigateToProfile}
         onCoinPurchase={handleCoinPurchase}
         onViewChange={changeView}
