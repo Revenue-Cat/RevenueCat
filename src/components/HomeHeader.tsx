@@ -68,14 +68,14 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   return (
     <View
       className="absolute top-8 left-0 right-0 p-6"
-      style={{ height: 120, zIndex: 20 }}
+      style={{ height: 120, zIndex: 10 }}
       pointerEvents="box-none"
     >
       {/* Top Row */}
       <View className="flex-row justify-between items-start">
         {/* Buddy Icon */}
         <Pressable
-          className="w-[60px] mt-2 p-0.3"
+          className="w-[60px] mt-2.5 p-0.3"
           onPress={() => {
             console.log("Buddy Icon container pressed - attempting to navigate to profile");
             onNavigateToProfile();

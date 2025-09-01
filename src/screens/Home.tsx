@@ -136,19 +136,18 @@ const Home: React.FC<HomeProps> = ({
       className="flex-1 absolute inset-0"
       style={{ backgroundColor: gradientColors[0] }}
     >
-      {/* Fixed Header */}
-      <HomeHeader
-        currentView={currentView}
-        onNavigateToProfile={handleNavigateToProfile}
-        onCoinPurchase={handleCoinPurchase}
-        onViewChange={changeView}
-      />
-
       <CoinPurchaseModal></CoinPurchaseModal>
 
       {/* Horizontal pan for view switching */}
       <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[10]">
+          {/* Fixed Header */}
+          <HomeHeader
+            currentView={currentView}
+            onNavigateToProfile={handleNavigateToProfile}
+            onCoinPurchase={handleCoinPurchase}
+            onViewChange={changeView}
+          />
           <Animated.View
             style={{ height: backgroundHeight }}
             pointerEvents="none"
@@ -158,8 +157,8 @@ const Home: React.FC<HomeProps> = ({
 
           {/* Buddy Lottie on top of background */}
           <Animated.View
-            className="absolute top-0 left-0 right-0 z-[50] items-center justify-end"
-            style={{ height: 360 }}
+            className="absolute top-0 left-0 right-0 items-center justify-end"
+            style={{ height: 360, zIndex: 30 }}
             pointerEvents="none"
           >
             <Animated.View style={{ transform: buddyTransform }}>
