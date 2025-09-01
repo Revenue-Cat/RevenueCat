@@ -153,11 +153,11 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           )}
 
           {currentView === "shop" && (
-            <View className="items-center mt-2">
+            <View className="items-center">
               <View className="flex-row items-baseline">
                 <Text className="text-3xl font-bold text-indigo-950">{goodiesCount}</Text>
               </View>
-              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-1">
+              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">
                 {t("home.goodiesAvailable", "Goodies available")}
               </Text>
             </View>

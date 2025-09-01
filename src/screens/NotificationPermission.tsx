@@ -183,7 +183,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({ onNext 
         animationType="fade"
       >
          <View className="flex-1 justify-center items-center bg-black/50">
-            <View className={`px-6 pt-6 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-xl`}>
+            <View className={`mx-6 px-6 pt-6 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-xl`}>
             {/* Title */}
             <Text className={`text-xl font-bold text-center mb-3 ${isDark ? 'text-slate-100' : 'text-gray-900'}`}>
               Quitqly Would Like To Send You Notifications

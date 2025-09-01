@@ -253,6 +253,7 @@ const Home: React.FC<HomeProps> = ({
               <Pressable 
                 className="bg-red-500 rounded-xl py-4 items-center shadow-lg" 
                 onPress={handleShowCravingSOS}
+                style={{ elevation: 10 }}
               >
                 <Text className="text-white text-lg font-bold">Craving SOS</Text>
               </Pressable>
