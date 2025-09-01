@@ -7,6 +7,7 @@ import ProgressRing from './ProgressRing';
 const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
 const LockIcon = require('../assets/achievements/lock.png');
 const TimeIcon = require('../assets/achievements/time.png');
+import CoinIcon from "../assets/icons/coins.svg";
 
 interface AchievementCardProps {
   title: string;
@@ -37,9 +38,9 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
   return (
     <View className={`bg-white rounded-2xl p-4 mb-3 flex-row items-center shadow-lg ${containerClassName}`}>
       <View className="flex-1 mr-4">
-        <View className="flex-row items-center bg-orange-100 px-3 py-1.5 rounded-full self-start mb-1 gap-1">
-          <Ionicons name="star" size={12} color="#FF6B35" />
-          <Text className="text-xs font-bold text-orange-500">+{reward}</Text>
+        <View className="flex-row items-center border border-orange-500 px-3 py-1.5 rounded-full self-start mb-1 gap-1">
+          <Text className="text-base font-bold text-orange-500">+{reward}</Text>
+          <CoinIcon width={12} height={12} color="#FF6B35" />
         </View>
         <Text className="text-xs text-gray-500 mb-2">{timeLeft}</Text>
         <Text className="text-base font-bold text-black mb-1">{title}</Text>

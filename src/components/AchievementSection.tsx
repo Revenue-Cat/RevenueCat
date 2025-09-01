@@ -99,16 +99,16 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
     if (firstThreeAchievements.length === 0) return null;
     
     return (
-      <View className="mb-1 relative overflow-visible" style={{ height: 150 }}>
+      <View className="mb-4 relative overflow-visible" style={{ height: 160 }}>
         {/* Card Stack - Show actual achievement cards */}
-        <View className="absolute top-0 left-0 right-0" style={{ zIndex: 1 }}>
+        <View className="absolute top-0 left-0 right-0 bottom-0" style={{ zIndex: 1 }}>
           {/* Card 2 - Second achievement (showing a little) */}
           {firstThreeAchievements.length > 1 && (
-            <View className="absolute bg-white top-16 rounded-xl left-4 right-4 h-20 opacity-70 border" style={{ zIndex: 1 }} />
+            <View className="absolute bg-white bottom-1 rounded-xl left-4 right-4 h-20 opacity-70 border"/>
           )}
           {/* Card 3 - Third achievement (showing a little less) */}
           {firstThreeAchievements.length > 2 && (
-            <View className="absolute bg-white top-24 rounded-xl left-8 right-8 h-14 opacity-50" style={{ zIndex: 1 }} />
+            <View className="absolute bg-white  -bottom-1 rounded-xl left-8 right-8 h-14 opacity-50"  />
           )}
         </View>
 

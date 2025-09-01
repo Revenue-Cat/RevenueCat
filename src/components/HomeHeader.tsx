@@ -67,26 +67,26 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
 
   return (
     <View
-      className="absolute top-10 left-0 right-0 p-6"
-      style={{ height: 140, zIndex: 20 }}
+      className="absolute top-8 left-0 right-0 p-6"
+      style={{ height: 120, zIndex: 20 }}
       pointerEvents="box-none"
     >
       {/* Top Row */}
       <View className="flex-row justify-between items-start">
         {/* Buddy Icon */}
         <Pressable
-          className="w-[66px] mt-3 p-0.3"
+          className="w-[60px] mt-2 p-0.3"
           onPress={() => {
             console.log("Buddy Icon container pressed - attempting to navigate to profile");
             onNavigateToProfile();
           }}
         >
           <Pressable
-            className="w-8 h-8 rounded-full bg-black/50 justify-center items-center overflow-hidden"
+            className="w-7 h-7 rounded-full bg-black/50 justify-center items-center overflow-hidden"
             onPress={() => {
               onNavigateToProfile();
             }}
-            style={{ position: 'relative', transform: [{ translateY: -10 }] }}
+            style={{ position: 'relative', transform: [{ translateY: -8 }] }}
           >
             {selectedBuddy ? (
               <View className="w-full h-full overflow-hidden">
@@ -104,68 +104,72 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
                 />
               </View>
             ) : (
-              <Ionicons name="person-outline" size={18} color="#ffffff" />
+              <Ionicons name="person-outline" size={16} color="#ffffff" />
             )}
           </Pressable>
         </Pressable>
-        {/* Carousel Header - Centered */}
+
+        {/* Carousel Header - Centered with Consistent Layout */}
         <View className="items-center justify-center flex-1">
-          {/* Title */}
-          <Text className="text-lg font-bold text-indigo-950 leading-7 text-center">
+          {/* Title - Consistent positioning */}
+          <Text className="text-lg font-bold text-indigo-950 leading-7 text-center mt-2">
             {getViewTitle()}
           </Text>
 
-          {/* Timer Units - Only show for Home view */}
-          {currentView === "home" && startDate ? (
-            <CountdownTimer
-              targetDate={startDate}
-              textColor="text-indigo-950"
-              textSize="lg"
-              showSeconds={false}
-              countUp={true}
-            />
-          ) : (
-            currentView === "home" && (
+          {/* Content Container - Fixed height for consistent positioning */}
+          <View className="h-12 items-center justify-center">
+            {/* Home View - CountdownTimer */}
+            {currentView === "home" && startDate ? (
+              <CountdownTimer
+                targetDate={startDate}
+                textColor="text-indigo-950"
+                textSize="lg"
+                showSeconds={false}
+                countUp={true}
+              />
+            ) : currentView === "home" && (
               <View className="items-center">
                 <Text className="text-3xl font-bold text-indigo-950">00</Text>
                 <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">
                   {t("countdownTimer.days")}
                 </Text>
               </View>
-            )
-          )}
+            )}
 
-          {/* Preview content for other views */}
-          {currentView === "achievements" && (
-            <View className="items-center">
-              <View className="flex-row items-baseline">
-                <Text className="text-3xl font-bold text-indigo-950">
-                  {completedAchievementsCount}
-                </Text>
-                <Text className="text-lg font-bold text-indigo-950/50">
-                  /{achievements.length}
+            {/* Achievements View - Completed Count */}
+            {currentView === "achievements" && (
+              <View className="items-center">
+                <View className="flex-row items-baseline">
+                  <Text className="text-3xl font-bold text-indigo-950">
+                    {completedAchievementsCount}
+                  </Text>
+                  <Text className="text-lg font-bold text-indigo-950/50">
+                    /{achievements.length}
+                  </Text>
+                </View>
+                <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-0.5">
+                  {t("home.badgesCollected")}
                 </Text>
               </View>
-              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-1">
-                {t("home.badgesCollected")}
-              </Text>
-            </View>
-          )}
+            )}
 
-          {currentView === "shop" && (
-            <View className="items-center">
-              <View className="flex-row items-baseline">
-                <Text className="text-3xl font-bold text-indigo-950">{goodiesCount}</Text>
+            {/* Shop View - Goodies Count */}
+            {currentView === "shop" && (
+              <View className="items-center">
+                <View className="flex-row items-baseline">
+                  <Text className="text-3xl font-bold text-indigo-950">{goodiesCount}</Text>
+                </View>
+                <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">
+                  {t("home.goodiesAvailable", "Goodies available")}
+                </Text>
               </View>
-              <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">
-                {t("home.goodiesAvailable", "Goodies available")}
-              </Text>
-            </View>
-          )}
+            )}
+          </View>
         </View>
+
         {/* User Coins */}
         <Pressable
-          className="flex-row items-center bg-black/50 w-[66px] h-8 rounded-3xl py-1 px-2.5 gap-2"
+          className="flex-row items-center bg-black/50 w-[60px] h-7 rounded-3xl py-1 px-2 gap-1.5"
           onPress={handleCoinPurchase}
         >
           <Text className="text-base font-semibold text-amber-500 leading-6">
@@ -177,21 +181,21 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
 
       {/* Bottom Row - Navigation Dots */}
       <View className="flex-row justify-center mt-1">
-        <View className="flex-row bg-black/30 w-10 h-3 rounded-full px-1 py-0.5 gap-1">
+        <View className="flex-row bg-black/30 w-8 h-2.5 rounded-full px-1 py-0.5 gap-1">
           <Pressable
-            className={`w-2 h-2 rounded-full ${
+            className={`w-1.5 h-1.5 rounded-full ${
               currentView === "achievements" ? "bg-white" : "bg-black/30"
             }`}
             onPress={() => onViewChange("achievements")}
           />
           <Pressable
-            className={`w-2 h-2 rounded-full ${
+            className={`w-1.5 h-1.5 rounded-full ${
               currentView === "home" ? "bg-white" : "bg-black/30"
             }`}
             onPress={() => onViewChange("home")}
           />
           <Pressable
-            className={`w-2 h-2 rounded-full ${
+            className={`w-1.5 h-1.5 rounded-full ${
               currentView === "shop" ? "bg-white" : "bg-black/30"
             }`}
             onPress={() => onViewChange("shop")}
