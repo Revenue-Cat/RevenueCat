@@ -31,6 +31,7 @@ import WomanLight from "../assets/icons/woman.svg";
 import WomanDark from "../assets/icons/woman-d.svg";
 import IncognitoLight from "../assets/icons/incognito.svg";
 import IncognitoDark from "../assets/icons/incognito-d.svg";
+import CTAButton from "../components/CTAButton";
 
 type Gender = "man" | "lady" | "any";
 type Side = "bright" | "dark";
@@ -174,7 +175,7 @@ const BuddySelection: React.FC<Props> = ({
       const genderSpecificId = getGenderSpecificId(b.id, sexKey);
       return genderSpecificId === selectedBuddyId;
     });
-    
+
     if (!currentSelectedBuddy || !ownedBuddies?.includes(selectedBuddyId)) {
       const genderSpecificId = getGenderSpecificId(
         buddies[initialIndex].id,
@@ -182,7 +183,7 @@ const BuddySelection: React.FC<Props> = ({
       );
       setSelectedBuddyId(genderSpecificId);
     }
-    
+
     if (!nameEdited) setBuddyNameCtx(defaultInitialName);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ownedBuddies, sexKey]);
@@ -193,7 +194,7 @@ const BuddySelection: React.FC<Props> = ({
       const genderSpecificId = getGenderSpecificId(b.id, sexKey);
       return genderSpecificId === selectedBuddyId;
     });
-    
+
     if (newIndex >= 0 && newIndex !== activeIndex) {
       setActiveIndex(newIndex);
     }
@@ -467,18 +468,11 @@ const BuddySelection: React.FC<Props> = ({
       {/* CTA (only in onboarding mode) */}
       {!fromProfile && (
         <View className="px-6 pb-8 mt-6">
-          <Pressable
-            className={`rounded-2xl px-6 py-4 items-center justify-center flex-row ${
-              canProceed ? "bg-indigo-600" : "bg-gray-400"
-            }`}
-            disabled={!canProceed}
+          <CTAButton
+            label={t("buddySelection.next", "Let’s Go, Buddy!")}
             onPress={onNext}
-          >
-            <Text className="font-semibold text-xl mr-2 text-white">
-              {t("buddySelection.next", "Let’s Go, Buddy!")}
-            </Text>
-            <Ionicons name="arrow-forward" size={24} color="#ffffff" />
-          </Pressable>
+            disabled={!canProceed}
+          />
           {!canProceed && (
             <Text
               className={`text-center mt-2 ${

@@ -31,6 +31,7 @@ import NoMeterIcon from "../assets/icons/no-mater.svg";
 // Nav icons (match Profile header)
 import PrevLight from "../assets/icons/prev.svg";
 import PrevDark from "../assets/icons/prev-d.svg";
+import CTAButton from "../components/CTAButton";
 
 interface SetupData {
   smokeType: string;
@@ -87,7 +88,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
       setCurrentStep("smokeType");
       return;
     }
-    
+
     if (field === "packPrice") {
       if (packPrice) setPickerValue(parseInt(packPrice));
       if (packPriceCurrency) setPickerCurrency(packPriceCurrency);
@@ -132,9 +133,19 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
     if (!smokeType || !dailyAmount || !packPrice) {
       return { savingsText: `${packPriceCurrency || "$"}1200` };
     }
-    
-    const savings = calculateSavings(smokeType, dailyAmount, packPrice, packPriceCurrency || "$", 365);
-    return { savingsText: `${packPriceCurrency || "$"}${Math.round(savings.moneySaved)}` };
+
+    const savings = calculateSavings(
+      smokeType,
+      dailyAmount,
+      packPrice,
+      packPriceCurrency || "$",
+      365
+    );
+    return {
+      savingsText: `${packPriceCurrency || "$"}${Math.round(
+        savings.moneySaved
+      )}`,
+    };
   }, [smokeType, dailyAmount, packPrice, packPriceCurrency]);
 
   const setupFields = [
@@ -170,15 +181,25 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
     {
       id: "dailyAmount",
       label: t("setup.fields.dailyAmount.label"),
-      modalTitle: t(`setup.fields.dailyAmount.modalTitle.${setupData.smokeType || 'cigarettes'}`),
+      modalTitle: t(
+        `setup.fields.dailyAmount.modalTitle.${
+          setupData.smokeType || "cigarettes"
+        }`
+      ),
       icon: <CalendarIcon width={20} height={20} color={iconColor} />,
       value: setupData.dailyAmount,
       options: [], // Options are now handled dynamically in the modal
     },
     {
       id: "packPrice",
-      label: t(`setup.fields.packPrice.label.${setupData.smokeType || 'cigarettes'}`),
-      modalTitle: t(`setup.fields.packPrice.modalTitle.${setupData.smokeType || 'cigarettes'}`),
+      label: t(
+        `setup.fields.packPrice.label.${setupData.smokeType || "cigarettes"}`
+      ),
+      modalTitle: t(
+        `setup.fields.packPrice.modalTitle.${
+          setupData.smokeType || "cigarettes"
+        }`
+      ),
       icon: <SpendIcon width={20} height={20} color={iconColor} />,
       value: setupData.packPrice,
       options: [
@@ -357,7 +378,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
           {setupFields.map((field) => {
             const isDisabled = field.id !== "smokeType" && !setupData.smokeType;
             const isSelected = setupData[field.id];
-            
+
             return (
               <Pressable
                 key={field.id}
@@ -377,70 +398,100 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
                 onPress={() => handleFieldClick(field.id)}
                 disabled={isDisabled}
               >
-              <View className="flex-row items-center flex-1">
-                {field.icon}
-                <Text
-                  className={`text-base text-md pl-2 font-medium flex-1 ${
-                    isDisabled 
-                      ? (isDark ? "text-slate-400" : "text-slate-500")
-                      : (isDark ? "text-slate-100" : "text-indigo-950")
-                  }`}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {setupData[field.id] ? (
-                    <Text>
-                      {field.id === "smokeType" &&
-                        t("setup.fields.smokeType.selected", {
-                          value:
-                            field.options.find(
-                              (opt) => opt.value === setupData[field.id]
-                            )?.label || setupData[field.id],
-                        })}
-                      {field.id === "dailyAmount" &&
-                        t("setup.fields.dailyAmount.selected", {
-                          value: (() => {
-                            if (setupData.smokeType === 'vaping') {
-                              const vapingOptions = t(`setup.fields.dailyAmount.options.vaping`, { returnObjects: true }) as Record<string, string>;
-                              return vapingOptions[setupData[field.id]] || setupData[field.id];
-                            } else {
-                              const smokeTypeOptions = t(`setup.fields.dailyAmount.options.${setupData.smokeType || 'cigarettes'}`, { returnObjects: true }) as Record<string, string>;
-                              return smokeTypeOptions[setupData[field.id]] || setupData[field.id];
+                <View className="flex-row items-center flex-1">
+                  {field.icon}
+                  <Text
+                    className={`text-base text-md pl-2 font-medium flex-1 ${
+                      isDisabled
+                        ? isDark
+                          ? "text-slate-400"
+                          : "text-slate-500"
+                        : isDark
+                        ? "text-slate-100"
+                        : "text-indigo-950"
+                    }`}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {setupData[field.id] ? (
+                      <Text>
+                        {field.id === "smokeType" &&
+                          t("setup.fields.smokeType.selected", {
+                            value:
+                              field.options.find(
+                                (opt) => opt.value === setupData[field.id]
+                              )?.label || setupData[field.id],
+                          })}
+                        {field.id === "dailyAmount" &&
+                          t("setup.fields.dailyAmount.selected", {
+                            value: (() => {
+                              if (setupData.smokeType === "vaping") {
+                                const vapingOptions = t(
+                                  `setup.fields.dailyAmount.options.vaping`,
+                                  { returnObjects: true }
+                                ) as Record<string, string>;
+                                return (
+                                  vapingOptions[setupData[field.id]] ||
+                                  setupData[field.id]
+                                );
+                              } else {
+                                const smokeTypeOptions = t(
+                                  `setup.fields.dailyAmount.options.${
+                                    setupData.smokeType || "cigarettes"
+                                  }`,
+                                  { returnObjects: true }
+                                ) as Record<string, string>;
+                                return (
+                                  smokeTypeOptions[setupData[field.id]] ||
+                                  setupData[field.id]
+                                );
+                              }
+                            })(),
+                          })}
+                        {field.id === "packPrice" &&
+                          t(
+                            `setup.fields.packPrice.selected.${
+                              setupData.smokeType || "cigarettes"
+                            }`,
+                            {
+                              value: `${setupData.packPriceCurrency}${
+                                setupData[field.id]
+                              }`,
                             }
-                          })(),
-                        })}
-                      {field.id === "packPrice" &&
-                        t(`setup.fields.packPrice.selected.${setupData.smokeType || 'cigarettes'}`, {
-                          value: `${setupData.packPriceCurrency}${
-                            setupData[field.id]
-                          }`,
-                        })}
-                      {field.id === "goal" &&
-                        t("setup.fields.goal.selected", {
-                          value:
-                            field.options.find(
-                              (opt) => opt.value === setupData[field.id]
-                            )?.label || setupData[field.id],
-                        })}
-                    </Text>
-                  ) : (
-                    field.label
-                  )}
-                </Text>
-              </View>
-              <Ionicons
-                name={
-                  setupData[field.id] ? "checkmark" : "chevron-forward-outline"
-                }
-                size={20}
-                color={isDisabled 
-                  ? (isDark ? "#64748b" : "#94a3b8")
-                  : (isDark ? "#CBD5E1" : "#64748b")
-                }
-              />
-            </Pressable>
-          );
-        })}
+                          )}
+                        {field.id === "goal" &&
+                          t("setup.fields.goal.selected", {
+                            value:
+                              field.options.find(
+                                (opt) => opt.value === setupData[field.id]
+                              )?.label || setupData[field.id],
+                          })}
+                      </Text>
+                    ) : (
+                      field.label
+                    )}
+                  </Text>
+                </View>
+                <Ionicons
+                  name={
+                    setupData[field.id]
+                      ? "checkmark"
+                      : "chevron-forward-outline"
+                  }
+                  size={20}
+                  color={
+                    isDisabled
+                      ? isDark
+                        ? "#64748b"
+                        : "#94a3b8"
+                      : isDark
+                      ? "#CBD5E1"
+                      : "#64748b"
+                  }
+                />
+              </Pressable>
+            );
+          })}
         </View>
 
         {/* Privacy Text */}
@@ -456,19 +507,12 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
 
       {/* CTA only when not launched from Profile */}
       {!fromProfile && (
-        <View className="px-6 pb-8 items-center">
-          <Pressable
-            className={`rounded-2xl px-6 py-4 items-center justify-center flex-row ${
-              allFieldsCompleted ? "bg-indigo-600" : "bg-indigo-600 opacity-50"
-            }`}
+        <View className="px-6 pb-8">
+          <CTAButton
+            label={t("setup.nextButton.text")}
             onPress={onNext}
             disabled={!allFieldsCompleted}
-          >
-            <Text className="font-semibold text-xl mr-2 text-white">
-              {t("setup.nextButton.text")}
-            </Text>
-            <Ionicons name="arrow-forward" size={24} color="#ffffff" />
-          </Pressable>
+          />
         </View>
       )}
 
@@ -495,7 +539,11 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
       <PackPricePickerModal
         visible={currentStep === "packPrice"}
         onClose={() => setCurrentStep(null)}
-        title={t(`setup.fields.packPrice.modalTitle.${setupData.smokeType || 'cigarettes'}`)}
+        title={t(
+          `setup.fields.packPrice.modalTitle.${
+            setupData.smokeType || "cigarettes"
+          }`
+        )}
         pickerValue={pickerValue}
         pickerCurrency={pickerCurrency}
         onValueChange={setPickerValue}

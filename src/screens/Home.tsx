@@ -13,6 +13,8 @@ import ShopToggle from "../components/ShopToggle";
 import { useHomeNavigation } from "../hooks/useHomeNavigation";
 import { useHomeScroll } from "../hooks/useHomeScroll";
 import CoinPurchaseModal from "../components/CoinPurchaseModal";
+import CTAButton from "../components/CTAButton";
+import { t } from "i18next";
 
 interface HomeProps {
   onShowCravingSOS: () => void;
@@ -246,17 +248,14 @@ const Home: React.FC<HomeProps> = ({
             />
           </Animated.ScrollView>
 
-          {/* Fixed Craving SOS Button at Bottom */}
           {currentView === "home" && (
-            <View className="absolute bottom-10 left-0 right-0 z-[200] px-6 pb-8">
-              <Pressable 
-                className="bg-red-500 rounded-xl py-4 items-center shadow-lg" 
-                onPress={handleShowCravingSOS}
-                style={{ elevation: 10 }}
-              >
-                <Text className="text-white text-lg font-bold">Craving SOS</Text>
-              </Pressable>
-            </View>
+            <CTAButton
+              label={t("home.cravingSOS", "Craving SOS")}
+              onPress={handleShowCravingSOS}
+              tone="danger"
+              rightIconName={null}
+              containerClassName="absolute bottom-10 left-0 right-0 z-[200] px-6 pb-8"
+            />
           )}
         </View>
       </PanGestureHandler>

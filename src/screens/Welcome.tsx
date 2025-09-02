@@ -8,6 +8,7 @@ import FlagEn from "../assets/icons/flag-en.svg";
 import FlagEs from "../assets/icons/flag-es.svg";
 import FlagUk from "../assets/icons/flag-uk.svg";
 import LanguageSlide from "../components/LanguageSlide";
+import CTAButton from "../components/CTAButton";
 
 interface WelcomeProps {
   onNext: () => void;
@@ -84,17 +85,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
       </ScrollView>
 
       {/* CTA Button - Fixed at bottom */}
-      <View className="px-6 pb-8">
-        <Pressable
-          className="rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
-          onPress={onNext}
-        >
-          <Text className="font-semibold text-xl mr-2 text-white">
-            {t("welcome.ctaButton")}
-          </Text>
-          <Ionicons name="arrow-forward" size={24} color="#ffffff" />
-        </Pressable>
-      </View>
+      <CTAButton label={t("welcome.ctaButton")} onPress={onNext} />
 
       {/* Language Selection Modal */}
       <LanguageSlide

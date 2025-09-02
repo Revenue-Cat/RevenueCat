@@ -9,6 +9,7 @@ import { getBuddyById } from "../data/buddiesData";
 import { BUDDIES_DATA } from "../data/buddiesData";
 import { SCENES_DATA } from "../data/scenesData";
 import Purchases from "react-native-purchases";
+import LottieView from "lottie-react-native";
 
 interface HomeHeaderProps {
   currentView: "home" | "achievements" | "shop";
@@ -24,8 +25,16 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   onViewChange,
 }) => {
   const { t } = useTranslation();
-  const { startDate, achievements, getProgressForAchievement, selectedBuddyId, ownedBuddies, ownedBackgrounds, fetchCoins } = useApp();
-  
+  const {
+    startDate,
+    achievements,
+    getProgressForAchievement,
+    selectedBuddyId,
+    ownedBuddies,
+    ownedBackgrounds,
+    fetchCoins,
+  } = useApp();
+
   // Get the selected buddy data
   const selectedBuddy = getBuddyById(selectedBuddyId);
 
@@ -56,8 +65,12 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   };
 
   // Show only purchasable items (not owned)
-  const purchasableBuddies = BUDDIES_DATA.filter(b => !ownedBuddies?.includes(b.id)).length;
-  const purchasableScenes = SCENES_DATA.filter(s => !ownedBackgrounds?.includes(s.id)).length;
+  const purchasableBuddies = BUDDIES_DATA.filter(
+    (b) => !ownedBuddies?.includes(b.id)
+  ).length;
+  const purchasableScenes = SCENES_DATA.filter(
+    (s) => !ownedBackgrounds?.includes(s.id)
+  ).length;
   const goodiesCount = purchasableBuddies + purchasableScenes;
 
   const handleCoinPurchase = async () => {
@@ -77,7 +90,9 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
         <Pressable
           className="w-[60px] mt-2.5 p-0.3"
           onPress={() => {
-            console.log("Buddy Icon container pressed - attempting to navigate to profile");
+            console.log(
+              "Buddy Icon container pressed - attempting to navigate to profile"
+            );
             onNavigateToProfile();
           }}
         >
@@ -86,23 +101,24 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
             onPress={() => {
               onNavigateToProfile();
             }}
-            style={{ position: 'relative', transform: [{ translateY: -8 }] }}
+            style={{ position: "relative", transform: [{ translateY: -8 }] }}
           >
             {selectedBuddy ? (
-              <View className="w-full h-full overflow-hidden">
-                <Image 
-                  source={selectedBuddy.icon} 
-                  style={{
-                    width: '100%',
-                    height: '220%',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                  }}
-                  resizeMode="contain"
-                />
-              </View>
+              <LottieView
+                source={selectedBuddy.icon}
+                // keep static to save battery in header; remove "progress" and set loop=true for animation
+                // show first frame
+                // @ts-ignore - Lottie types allow this prop at runtime
+                autoPlay={false}
+                loop={false}
+                progress={0.4}
+                style={{
+                  width: 56,
+                  height: 56,
+                  transform: [{ translateY: 10 }, { scale: 0.8 }],
+                }}
+                resizeMode="contain"
+              />
             ) : (
               <Ionicons name="person-outline" size={16} color="#ffffff" />
             )}
@@ -127,13 +143,15 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
                 showSeconds={false}
                 countUp={true}
               />
-            ) : currentView === "home" && (
-              <View className="items-center">
-                <Text className="text-3xl font-bold text-indigo-950">00</Text>
-                <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">
-                  {t("countdownTimer.days")}
-                </Text>
-              </View>
+            ) : (
+              currentView === "home" && (
+                <View className="items-center">
+                  <Text className="text-3xl font-bold text-indigo-950">00</Text>
+                  <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">
+                    {t("countdownTimer.days")}
+                  </Text>
+                </View>
+              )
             )}
 
             {/* Achievements View - Completed Count */}
@@ -157,7 +175,9 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
             {currentView === "shop" && (
               <View className="items-center">
                 <View className="flex-row items-baseline">
-                  <Text className="text-3xl font-bold text-indigo-950">{goodiesCount}</Text>
+                  <Text className="text-3xl font-bold text-indigo-950">
+                    {goodiesCount}
+                  </Text>
                 </View>
                 <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">
                   {t("home.goodiesAvailable", "Goodies available")}
