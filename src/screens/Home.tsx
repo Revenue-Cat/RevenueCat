@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { View, Animated, Pressable, Text } from "react-native";
+import { View, Animated, Pressable, Text, Dimensions } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import LottieView from "lottie-react-native";
 import { useApp } from "../contexts/AppContext";
@@ -52,7 +52,8 @@ const Home: React.FC<HomeProps> = ({
   const [isScenesSelected, setIsScenesSelected] = useState(false);
 
   // Use custom hooks for navigation and scroll handling
-  const { currentView, handleHeaderGesture, changeView } = useHomeNavigation();
+  const { currentView, handleHeaderGesture, changeView, onHeaderGestureEvent, contentTranslateX } = useHomeNavigation();
+  const { width } = Dimensions.get("window");
   const {
     isAchievementsCollapsed,
     scrollY,
@@ -65,21 +66,21 @@ const Home: React.FC<HomeProps> = ({
   } = useHomeScroll();
 
   // Calculate dynamic ScrollView height based on scroll position
-  const scrollViewHeight = useMemo(() => {
-    if (currentView === "home") {
-      return scrollY.interpolate({
-        inputRange: [0, 100],
-        outputRange: ["60%", "70%"],
-        extrapolate: "clamp",
-      });
-    } else {
-      return scrollY.interpolate({
-        inputRange: [0, 100],
-        outputRange: ["55%", "60%"],
-        extrapolate: "clamp",
-      });
-    }
-  }, [scrollY, currentView]);
+  // const scrollViewHeight = useMemo(() => {
+  //   if (currentView === "home") {
+  //     return scrollY.interpolate({
+  //       inputRange: [0, 100],
+  //       outputRange: ["60%", "70%"],
+  //       extrapolate: "clamp",
+  //     });
+  //   } else {
+  //     return scrollY.interpolate({
+  //       inputRange: [0, 100],
+  //       outputRange: ["55%", "60%"],
+  //       extrapolate: "clamp",
+  //     });
+  //   }
+  // }, [scrollY, currentView]);
 
   const buddyAnimSource = useMemo(() => {
     const id = selectedBuddyId as string;
@@ -141,7 +142,7 @@ const Home: React.FC<HomeProps> = ({
       <CoinPurchaseModal></CoinPurchaseModal>
 
       {/* Horizontal pan for view switching */}
-      <PanGestureHandler onHandlerStateChange={handleHeaderGesture}>
+      <PanGestureHandler onGestureEvent={onHeaderGestureEvent} onHandlerStateChange={handleHeaderGesture}>
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[10]">
           {/* Fixed Header */}
           <HomeHeader
@@ -179,76 +180,134 @@ const Home: React.FC<HomeProps> = ({
             </Animated.View>
           </Animated.View>
 
-          {/* Achievements Toggle */}
-          {currentView === "achievements" && (
-            <AchievementsToggle
-              scrollY={scrollY}
-              isExclusiveSelected={isExclusiveSelected}
-              setIsExclusiveSelected={handleSetIsExclusiveSelected}
-            />
-          )}
-
-          {/* Shop Toggle */}
-          {currentView === "shop" && (
-            <ShopToggle
-              scrollY={scrollY}
-              isScenesSelected={isScenesSelected}
-              setIsScenesSelected={handleSetIsScenesSelected}
-            />
-          )}
-
-          {/* Scrollable Content */}
-          <Animated.ScrollView
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ flexGrow: 1 }}
+          {/* Toggles Container - 3 horizontal pages */}
+          <Animated.View
             style={{
               position: "absolute",
-              top: currentView === "home" ? 320 : 360,
+              top: 0,
               left: 0,
               right: 0,
-              height: scrollViewHeight,
-              zIndex: 100,
-              transform:
-                currentView === "home"
-                  ? scrollViewTransform
-                  : [
-                      {
-                        translateY: scrollY.interpolate({
-                          inputRange: [-70, 0, 100],
-                          outputRange: [40, 0, -60],
-                          extrapolate: "clamp",
-                        }),
-                      },
-                    ],
+              zIndex: 50,
+              width: width * 3,
+              flexDirection: "row",
+              transform: [{ translateX: contentTranslateX }],
             }}
           >
-            {/* Achievement Cards */}
-            {currentView === "home" && (
-              <View
-                style={{ marginTop: 0, backgroundColor: gradientColors[0] }}
-              >
+            {/* Achievements Toggle - positioned at page 0 */}
+            <View style={{ width }}>
+              <AchievementsToggle
+                scrollY={scrollY}
+                isExclusiveSelected={isExclusiveSelected}
+                setIsExclusiveSelected={handleSetIsExclusiveSelected}
+              />
+            </View>
+
+            {/* Home Toggle - no toggle needed for home */}
+            <View style={{ width }} />
+
+            {/* Shop Toggle - positioned at page 2 */}
+            <View style={{ width }}>
+              <ShopToggle
+                scrollY={scrollY}
+                isScenesSelected={isScenesSelected}
+                setIsScenesSelected={handleSetIsScenesSelected}
+              />
+            </View>
+          </Animated.View>
+
+          {/* Scrollable Content - 3 horizontal pages, each vertically scrollable */}
+          <Animated.View
+            style={{
+              position: "absolute",
+              top: 360,
+              left: 0,
+              right: 0,
+              height: "55%",
+              zIndex: 100,
+              width: width * 3,
+              flexDirection: "row",
+              transform: [
+                { translateX: contentTranslateX },
+                ...scrollViewTransform,
+              ],
+            }}
+          >
+            {/* Achievements Page */}
+            <Animated.ScrollView
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ flexGrow: 1 }}
+              scrollEnabled={currentView === "achievements"}
+              style={{ width }}
+            >
+              <HomeContent
+                currentView={"achievements" as any}
+                isAchievementsCollapsed={isAchievementsCollapsed}
+                isExclusiveSelected={isExclusiveSelected}
+                isScenesSelected={isScenesSelected}
+                setIsScenesSelected={handleSetIsScenesSelected}
+                onNavigateToShop={handleNavigateToShop}
+              />
+            </Animated.ScrollView>
+
+            {/* Home Page */}
+            <Animated.ScrollView
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ flexGrow: 1 }}
+              scrollEnabled={currentView === "home"}
+              style={{ width, marginTop: -40, }}
+            >
+              <View style={{  backgroundColor: gradientColors[0] }}>
                 <AchievementSection
                   isCollapsed={isAchievementsCollapsed}
                   onToggle={toggleAchievements}
                 />
               </View>
-            )}
 
-            {/* Main content */}
-            <HomeContent
-              currentView={currentView}
-              isAchievementsCollapsed={isAchievementsCollapsed}
-              isExclusiveSelected={isExclusiveSelected}
-              isScenesSelected={isScenesSelected}
-              setIsScenesSelected={handleSetIsScenesSelected}
-              onNavigateToShop={handleNavigateToShop}
-            />
-          </Animated.ScrollView>
+              <HomeContent
+                currentView={"home" as any}
+                isAchievementsCollapsed={isAchievementsCollapsed}
+                isExclusiveSelected={isExclusiveSelected}
+                isScenesSelected={isScenesSelected}
+                setIsScenesSelected={handleSetIsScenesSelected}
+                onNavigateToShop={handleNavigateToShop}
+              />
+              <CTAButton
+                label={t("home.cravingSOS", "Craving SOS")}
+                onPress={handleShowCravingSOS}
+                tone="danger"
+                rightIconName={null}
+                containerClassName="absolute bottom-0 left-0 right-0 z-[200]"
+              />
+            </Animated.ScrollView>
 
-          {currentView === "home" && (
+            {/* Shop Page */}
+            <Animated.ScrollView
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ flexGrow: 1 }}
+              scrollEnabled={currentView === "shop"}
+              style={{ width }}
+            >
+              <HomeContent
+                currentView={"shop" as any}
+                isAchievementsCollapsed={isAchievementsCollapsed}
+                isExclusiveSelected={isExclusiveSelected}
+                isScenesSelected={isScenesSelected}
+                setIsScenesSelected={handleSetIsScenesSelected}
+                onNavigateToShop={handleNavigateToShop}
+              />
+            </Animated.ScrollView>
+          </Animated.View>
+
+          {/* {currentView === "home" && (
             <CTAButton
               label={t("home.cravingSOS", "Craving SOS")}
               onPress={handleShowCravingSOS}
@@ -256,7 +315,7 @@ const Home: React.FC<HomeProps> = ({
               rightIconName={null}
               containerClassName="absolute bottom-10 left-0 right-0 z-[200] px-6 pb-8"
             />
-          )}
+          )} */}
         </View>
       </PanGestureHandler>
     </View>

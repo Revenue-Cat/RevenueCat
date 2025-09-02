@@ -90,7 +90,7 @@ export const useHomeScroll = () => {
   const scrollViewTransform = useMemo(() => [{
     translateY: scrollY.interpolate({
       inputRange: [0, 100],
-      outputRange: [0, -100],
+      outputRange: [0, -60],
       extrapolate: 'clamp'
     })
   }], [scrollY]);
