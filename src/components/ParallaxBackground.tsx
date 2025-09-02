@@ -46,7 +46,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
         translateY: Animated.add(
           scrollY.interpolate({
             inputRange: [0, 80],
-            outputRange: [0, -40],
+            outputRange: [0, -70],
             extrapolate: "clamp",
           }),
           floatAnim1.interpolate({
@@ -64,8 +64,8 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {
         translateY: Animated.add(
           scrollY.interpolate({
-            inputRange: [0, 50],
-            outputRange: [0, -15],
+            inputRange: [0, 80],
+            outputRange: [0, -50],
             extrapolate: "clamp",
           }),
           floatAnim2.interpolate({
@@ -76,7 +76,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       },
       {
         rotate: scrollY.interpolate({
-          inputRange: [0, 50],
+          inputRange: [0, 80],
           outputRange: ["0deg", "2deg"],
           extrapolate: "clamp",
         }),
@@ -90,8 +90,8 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {
         translateY: Animated.add(
           scrollY.interpolate({
-            inputRange: [0, 50],
-            outputRange: [0, -10],
+            inputRange: [0, 80],
+            outputRange: [0, -30],
             extrapolate: "clamp",
           }),
           floatAnim3.interpolate({
@@ -102,7 +102,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       },
       {
         rotate: scrollY.interpolate({
-          inputRange: [0, 50],
+          inputRange: [0, 80],
           outputRange: ["0deg", "-1deg"],
           extrapolate: "clamp",
         }),
@@ -116,8 +116,8 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {
         translateY: Animated.add(
           scrollY.interpolate({
-            inputRange: [0, 50],
-            outputRange: [0, -2],
+            inputRange: [0, 80],
+            outputRange: [0, -10],
             extrapolate: "clamp",
           }),
           floatAnim4.interpolate({
@@ -128,7 +128,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       },
       {
         rotate: scrollY.interpolate({
-          inputRange: [0, 50],
+          inputRange: [0, 80],
           outputRange: ["0deg", "1deg"],
           extrapolate: "clamp",
         }),
@@ -154,7 +154,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
           source={parallaxSlices.slice4}
           style={{
             width: "100%",
-            height: 370,
+            height: 390,
             transform: layer4Transform,
           }}
           resizeMode="cover"

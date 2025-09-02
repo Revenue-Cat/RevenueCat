@@ -105,7 +105,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedBuddy, setSelectedBuddyState] = useState<ShopItem>(defaultCharacter);
   const [selectedBackground, setSelectedBackgroundState] = useState<Scene>(defaultBackground);
   const [ownedBuddies, setOwnedBuddies] = useState<string[]>(['llama-m', 'llama-w', 'zebra-m', 'zebra-w', 'dog-m', 'dog-w']);
-  const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['bg1']);
+  const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['bg1', 'bg3']);
+  
   const [ownedAccessories, setOwnedAccessories] = useState<string[]>([]);
 
   // Buddy/User selections
@@ -145,11 +146,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const savedState = await AsyncStorage.getItem('@app_state');
         if (savedState) {
           const parsed = JSON.parse(savedState);
-          setUserCoinsState(parsed.userCoins || 0);
+           setUserCoinsState(parsed.userCoins || 0);
           setSelectedBuddyState(parsed.selectedBuddy || defaultCharacter);
           setSelectedBackgroundState(parsed.selectedBackground || defaultBackground);
           setOwnedBuddies(parsed.ownedBuddies || ['llama-m', 'llama-w', 'zebra-m', 'zebra-w', 'dog-m', 'dog-w']);
-          setOwnedBackgrounds(parsed.ownedBackgrounds || ['bg1']);
+          setOwnedBackgrounds(parsed.ownedBackgrounds || ['bg1', 'bg3']);
           setOwnedAccessories(parsed.ownedAccessories || []);
           setGenderState(parsed.gender || 'man');
           setSelectedBuddyIdState(parsed.selectedBuddyId || 'llama-m');

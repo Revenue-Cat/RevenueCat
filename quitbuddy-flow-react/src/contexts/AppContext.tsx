@@ -65,7 +65,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedCharacter, setSelectedCharacterState] = useState<ShopItem>(defaultCharacter);
   const [selectedBackground, setSelectedBackgroundState] = useState<ShopItem>(defaultBackground);
   const [ownedCharacters, setOwnedCharacters] = useState<string[]>(['1']);
-  const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['default']);
+  const [ownedBackgrounds, setOwnedBackgrounds] = useState<string[]>(['default', 'bg3']);
   const [ownedAccessories, setOwnedAccessories] = useState<string[]>([]);
   
   // UI state

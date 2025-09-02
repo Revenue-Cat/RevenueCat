@@ -33,8 +33,8 @@ export const SCENES_DATA: Scene[] = [
   { 
     id: "bg2", 
     name: "Sunset", 
-    price: 100, 
-    coin: 100,
+    price: 250, 
+    coin: 250,
     owned: true,
     background: require("../assets/backgrounds/BG2.png"),
     parallaxSlices: {
@@ -48,8 +48,8 @@ export const SCENES_DATA: Scene[] = [
   { 
     id: "bg3", 
     name: "Ocean", 
-    price: 100, 
-    coin: 100,
+    price: 250, 
+    coin: 250,
     owned: true,
     background: require("../assets/backgrounds/BG3.png"),
     parallaxSlices: {
@@ -63,8 +63,8 @@ export const SCENES_DATA: Scene[] = [
   { 
     id: "bg4", 
     name: "Forest", 
-    price: 150, 
-    coin: 150,
+    price: 250, 
+    coin: 250,
     owned: true,
     background: require("../assets/backgrounds/BG4.png"),
     parallaxSlices: {
@@ -78,8 +78,8 @@ export const SCENES_DATA: Scene[] = [
   { 
     id: "bg5", 
     name: "Purple", 
-    price: 200, 
-    coin: 200,
+    price: 250, 
+    coin: 250,
     owned: true,
     background: require("../assets/backgrounds/BG5.png"),
     parallaxSlices: {
@@ -108,8 +108,8 @@ export const SCENES_DATA: Scene[] = [
   { 
     id: "bg7", 
     name: "Cherry Blossom", 
-    price: 175, 
-    coin: 175,
+    price: 250, 
+    coin: 250,
     owned: true,
     background: require("../assets/backgrounds/BG7.png"),
     parallaxSlices: {

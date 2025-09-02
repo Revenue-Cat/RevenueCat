@@ -63,12 +63,12 @@ class AchievementService {
     const REGULAR_ACHIEVEMENTS_DATA: Achievement[] = [
       {
         id: "first-spark",
-        name: "First spark",
+        name: "Day One Spark (1 день)",
         description: "First 24 hours without smoke or vape — your start.",
         emoji: "🔥",
         icon: AchievementSplashIcon,
         unlocked: false,
-        coins: 100,
+        coins: 20,
         requiredDays: 1,
       },
       {
@@ -78,7 +78,7 @@ class AchievementService {
         emoji: "💪",
         icon: AchievementHoldOnIcon,
         unlocked: false,
-        coins: 100,
+        coins: 30,
         requiredDays: 3,
       },
       {
@@ -88,7 +88,7 @@ class AchievementService {
         emoji: "⚔️",
         icon: AchievementSteelWeekIcon,
         unlocked: false,
-        coins: 150,
+        coins: 50,
         requiredDays: 7,
       },
       {
@@ -98,7 +98,7 @@ class AchievementService {
         emoji: "🌙",
         icon: AchievementBrightMoonIcon,
         unlocked: false,
-        coins: 200,
+        coins: 70,
         requiredDays: 14,
       },
       {
@@ -108,7 +108,7 @@ class AchievementService {
         emoji: "🌱",
         icon: AchievementFreshPathIcon,
         unlocked: false,
-        coins: 300,
+        coins: 100,
         requiredDays: 30,
       },
       {
@@ -118,7 +118,7 @@ class AchievementService {
         emoji: "🕊️",
         icon: AchievementFreedomIcon,
         unlocked: false,
-        coins: 500,
+        coins: 200,
         requiredDays: 90,
       },
       {
@@ -128,7 +128,7 @@ class AchievementService {
         emoji: "🦸",
         icon: AchievementHeroIcon,
         unlocked: false,
-        coins: 750,
+        coins: 300,
         requiredDays: 180,
       },
       {
@@ -138,8 +138,8 @@ class AchievementService {
         emoji: "👑",
         icon: AchievementLegendIcon,
         unlocked: false,
-        coins: 1000,
-        requiredDays: 360,
+        coins: 500,
+        requiredDays: 365,
       },
       {
         id: "master",
