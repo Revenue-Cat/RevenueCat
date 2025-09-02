@@ -65,6 +65,7 @@ interface AppState {
   getProgressForAchievement: (achievementId: string) => { current: number; max: number; percentage: number };
   resetProgress: () => Promise<void>;
   setSampleData: () => Promise<void>;
+  completeOnboarding: () => Promise<void>;
 
   // Selection setters
   setGender: (gender: UserGender) => void;
@@ -161,7 +162,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           setPackPriceCurrencyState(parsed.packPriceCurrency || '$');
           setGoalState(parsed.goal || '');
           setUserProgress(parsed.userProgress || {
-            startDate: new Date(),
+            startDate: null,
             daysSmokeFree: 0,
             totalMoneySaved: 0,
             cigarettesAvoided: 0,
@@ -357,6 +358,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     await achievementService.setStartDate(startDate);
   }, []);
 
+  // Function to set startDate when onboarding is completed
+  const completeOnboarding = useCallback(async () => {
+    const startDate = new Date();
+    console.log('completeOnboarding: Setting startDate to:', startDate.toISOString());
+    setUserProgress(prev => ({ ...prev, startDate }));
+    await achievementService.setStartDate(startDate);
+  }, []);
+
 
   // Set up achievement completion callback to add coins
   useEffect(() => {
@@ -427,6 +436,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     getProgressForAchievement,
     resetProgress,
     setSampleData,
+    completeOnboarding,
 
     setGender,
     setSelectedBuddyId,

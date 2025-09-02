@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
+import { useApp } from '../contexts/AppContext';
 import ChallengeIcon from '../assets/challenges/challenge.svg';
 
 interface ChallengeStartProps {
@@ -16,6 +17,7 @@ interface ChallengeStartProps {
 const ChallengeStart: React.FC<ChallengeStartProps> = ({ onNext }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { completeOnboarding } = useApp();
   const isDark = theme === 'dark';
   console.log("test", t('challengeStart.mainSubtitle'))
   return (
@@ -41,7 +43,10 @@ const ChallengeStart: React.FC<ChallengeStartProps> = ({ onNext }) => {
       <View className="px-6 pb-8">
         <Pressable
           className="bg-indigo-600 rounded-2xl py-4 px-6 items-center"
-          onPress={onNext}
+          onPress={async () => {
+            await completeOnboarding();
+            onNext();
+          }}
         >
           <Text className="font-semibold text-xl text-white">
             {t('challengeStart.actionButton')}
