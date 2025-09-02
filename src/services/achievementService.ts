@@ -63,7 +63,7 @@ class AchievementService {
     const REGULAR_ACHIEVEMENTS_DATA: Achievement[] = [
       {
         id: "first-spark",
-        name: "Day One Spark (1 день)",
+        name: "Day One Spark",
         description: "First 24 hours without smoke or vape — your start.",
         emoji: "🔥",
         icon: AchievementSplashIcon,
