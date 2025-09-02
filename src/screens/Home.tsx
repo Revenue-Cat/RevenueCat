@@ -260,14 +260,12 @@ const Home: React.FC<HomeProps> = ({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ flexGrow: 1 }}
               scrollEnabled={currentView === "home"}
-              style={{ width, marginTop: -40, }}
+              style={{ width, marginTop: -60, }}
             >
-              <View style={{  backgroundColor: gradientColors[0] }}>
-                <AchievementSection
-                  isCollapsed={isAchievementsCollapsed}
-                  onToggle={toggleAchievements}
-                />
-              </View>
+              <AchievementSection
+                isCollapsed={isAchievementsCollapsed}
+                onToggle={toggleAchievements}
+              />
 
               <HomeContent
                 currentView={"home" as any}
