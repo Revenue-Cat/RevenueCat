@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
-import { useTheme } from '../contexts/ThemeContext';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect } from "react";
+import { View, Text } from "react-native";
+import { useTheme } from "../contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 interface CountdownTimerProps {
   targetDate: Date;
   onComplete?: () => void;
   showSeconds?: boolean;
   textColor?: string;
-  textSize?: 'sm' | 'md' | 'lg' | 'xl';
+  textSize?: "sm" | "md" | "lg" | "xl";
   countUp?: boolean; // If true, count up from targetDate (elapsed time)
 }
 
@@ -17,36 +17,38 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   onComplete,
   showSeconds = false,
   textColor,
-  textSize = 'lg',
-  countUp = false
+  textSize = "lg",
+  countUp = false,
 }) => {
   const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const isDark = theme === "dark";
   const { t } = useTranslation();
-  
+
   // Default text color based on theme if not provided
-  const defaultTextColor = isDark ? 'text-slate-100' : 'text-indigo-950';
+  const defaultTextColor = isDark ? "text-slate-100" : "text-indigo-950";
   const finalTextColor = textColor || defaultTextColor;
-  
+
   const [timeRemaining, setTimeRemaining] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
 
   useEffect(() => {
     const calculateTimeRemaining = () => {
       const now = new Date().getTime();
       const target = new Date(targetDate).getTime();
-      
+
       let difference;
       if (countUp) {
         // Count up: elapsed time since targetDate
         difference = now - target;
         // For countUp, if target is in the future, show 0
         if (difference < 0) {
-          console.log('CountdownTimer: Target is in the future for countUp, setting to 0');
+          console.log(
+            "CountdownTimer: Target is in the future for countUp, setting to 0"
+          );
           setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
           return;
         }
@@ -55,7 +57,9 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
         difference = target - now;
         // For countDown, if target is in the past, show 0
         if (difference <= 0) {
-          console.log('CountdownTimer: Target is in the past for countDown, setting to 0');
+          console.log(
+            "CountdownTimer: Target is in the past for countDown, setting to 0"
+          );
           setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
           onComplete?.();
           return;
@@ -63,7 +67,9 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       }
 
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const hours = Math.floor(
+        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
@@ -72,11 +78,10 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
         days: Math.max(0, days),
         hours: Math.max(0, hours),
         minutes: Math.max(0, minutes),
-        seconds: Math.max(0, seconds)
+        seconds: Math.max(0, seconds),
       };
 
       setTimeRemaining(safeTime);
-      
     };
 
     // Calculate immediately
@@ -90,21 +95,31 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
 
   const getTextSizeClass = () => {
     switch (textSize) {
-      case 'sm': return 'text-lg';
-      case 'md': return 'text-2xl';
-      case 'lg': return 'text-3xl';
-      case 'xl': return 'text-4xl';
-      default: return 'text-3xl';
+      case "sm":
+        return "text-lg";
+      case "md":
+        return "text-2xl";
+      case "lg":
+        return "text-3xl";
+      case "xl":
+        return "text-4xl";
+      default:
+        return "text-3xl";
     }
   };
 
   const getLabelSizeClass = () => {
     switch (textSize) {
-      case 'sm': return 'text-xs';
-      case 'md': return 'text-xs';
-      case 'lg': return 'text-xs';
-      case 'xl': return 'text-sm';
-      default: return 'text-xs';
+      case "sm":
+        return "text-s";
+      case "md":
+        return "text-s";
+      case "lg":
+        return "text-s";
+      case "xl":
+        return "text-sm";
+      default:
+        return "text-s";
     }
   };
 
@@ -112,42 +127,58 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
     <View className="flex-row gap-1">
       {/* Days */}
       <View className="items-center">
-        <Text className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}>
-          {timeRemaining.days.toString().padStart(2, '0')}
+        <Text
+          className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}
+        >
+          {timeRemaining.days.toString().padStart(2, "0")}
         </Text>
-        <Text className={`${getLabelSizeClass()} font-medium ${finalTextColor} opacity-50 leading-4 text-center`}>
-          {t('countdownTimer.days')}
+        <Text
+          className={`${getLabelSizeClass()} font-medium ${finalTextColor} opacity-50 leading-4 text-center`}
+        >
+          {t("countdownTimer.days")}
         </Text>
       </View>
-      
+
       {/* Hours */}
       <View className="items-center">
-        <Text className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}>
-          {timeRemaining.hours.toString().padStart(2, '0')}
+        <Text
+          className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}
+        >
+          {timeRemaining.hours.toString().padStart(2, "0")}
         </Text>
-        <Text className={`${getLabelSizeClass()} font-medium ${finalTextColor} opacity-50 leading-4 text-center`}>
-          {t('countdownTimer.hours')}
+        <Text
+          className={`${getLabelSizeClass()} font-medium ${finalTextColor} opacity-50 leading-4 text-center`}
+        >
+          {t("countdownTimer.hours")}
         </Text>
       </View>
-      
+
       {/* Minutes */}
       <View className="items-center">
-        <Text className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}>
-          {timeRemaining.minutes.toString().padStart(2, '0')}
+        <Text
+          className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}
+        >
+          {timeRemaining.minutes.toString().padStart(2, "0")}
         </Text>
-        <Text className={`${getLabelSizeClass()} font-medium ${finalTextColor} opacity-50 leading-4 text-center`}>
-          {t('countdownTimer.minutes')}
+        <Text
+          className={`${getLabelSizeClass()} font-medium ${finalTextColor} opacity-50 leading-4 text-center`}
+        >
+          {t("countdownTimer.minutes")}
         </Text>
       </View>
 
       {/* Seconds (optional) */}
       {showSeconds && (
         <View className="items-center">
-          <Text className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}>
-            {timeRemaining.seconds.toString().padStart(2, '0')}
+          <Text
+            className={`${getTextSizeClass()} font-semibold ${finalTextColor} leading-9 text-center`}
+          >
+            {timeRemaining.seconds.toString().padStart(2, "0")}
           </Text>
-          <Text className={`${getLabelSizeClass()} font-medium ${finalTextColor}/50 leading-4 text-center`}>
-            {t('countdownTimer.seconds')}
+          <Text
+            className={`${getLabelSizeClass()} font-medium ${finalTextColor}/50 leading-4 text-center`}
+          >
+            {t("countdownTimer.seconds")}
           </Text>
         </View>
       )}

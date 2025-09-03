@@ -139,7 +139,7 @@ const Shop: React.FC<ShopProps> = ({
                 {!isOwned && (
                   <View className="absolute bottom-1 left-4 z-10 rounded-3xl bg-black/70 px-2 py-0.5">
                     <View className="flex-row items-center justify-center">
-                      <Text className="text-xs font-bold text-amber-500 gap-2">
+                      <Text className="text-s font-bold text-amber-500 gap-2">
                         {item.coin}
                       </Text>
                       <CoinIcon width={18} height={18} className="ml-1" />
@@ -192,7 +192,7 @@ const Shop: React.FC<ShopProps> = ({
                 {!isOwned && (
                   <View className="absolute bottom-1 left-4 z-10 rounded-3xl bg-black/70 px-2 py-0.5">
                     <View className="flex-row items-center justify-center">
-                      <Text className="text-xs font-bold text-amber-500 gap-2">
+                      <Text className="text-s font-bold text-amber-500 gap-2">
                         {item.coin}
                       </Text>
                       <CoinIcon width={18} height={18} className="ml-1" />

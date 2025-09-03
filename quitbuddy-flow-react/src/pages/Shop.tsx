@@ -35,28 +35,47 @@ const Shop = () => {
     { id: "4", emoji: "🐧", name: "Cool Penguin", price: 100, owned: false },
     { id: "5", emoji: "🐨", name: "Sleepy Koala", price: 100, owned: false },
     { id: "6", emoji: "🐼", name: "Panda Bear", price: 200, owned: false },
-    { id: "7", emoji: "🦉", name: "Wise Owl", price: 100, owned: false, isNew: true },
-    { id: "8", emoji: "🦆", name: "Duck Friend", price: 150, owned: false, isNew: true }
+    {
+      id: "7",
+      emoji: "🦉",
+      name: "Wise Owl",
+      price: 100,
+      owned: false,
+      isNew: true,
+    },
+    {
+      id: "8",
+      emoji: "🦆",
+      name: "Duck Friend",
+      price: 150,
+      owned: false,
+      isNew: true,
+    },
   ];
 
   const backgrounds: ShopItem[] = [
     { id: "1", emoji: "🌅", name: "Sunrise", price: 50, owned: false },
     { id: "2", emoji: "🌊", name: "Ocean", price: 100, owned: false },
     { id: "3", emoji: "🏔️", name: "Mountains", price: 150, owned: false },
-    { id: "4", emoji: "🌲", name: "Forest", price: 200, owned: false }
+    { id: "4", emoji: "🌲", name: "Forest", price: 200, owned: false },
   ];
 
   const accessories: ShopItem[] = [
     { id: "1", emoji: "🎩", name: "Top Hat", price: 50, owned: false },
     { id: "2", emoji: "👓", name: "Glasses", price: 75, owned: false },
     { id: "3", emoji: "🎪", name: "Party Hat", price: 100, owned: false },
-    { id: "4", emoji: "⚡", name: "Lightning", price: 300, owned: false }
+    { id: "4", emoji: "⚡", name: "Lightning", price: 300, owned: false },
   ];
 
   const coinPackages: CoinPackage[] = [
     { amount: 100, price: "2.99 USD" },
-    { amount: 500, price: "5.99 USD", popular: true, strikethrough: "7.99 USD" },
-    { amount: 1000, price: "10.99 USD", strikethrough: "14.99 USD" }
+    {
+      amount: 500,
+      price: "5.99 USD",
+      popular: true,
+      strikethrough: "7.99 USD",
+    },
+    { amount: 1000, price: "10.99 USD", strikethrough: "14.99 USD" },
   ];
 
   const handleItemClick = (item: ShopItem) => {
@@ -76,21 +95,25 @@ const Shop = () => {
   const renderItemGrid = (items: ShopItem[]) => (
     <div className="grid grid-cols-2 gap-3">
       {items.map((item) => (
-        <Card 
-          key={item.id} 
+        <Card
+          key={item.id}
           className={`p-4 text-center cursor-pointer transition-colors relative ${
-            item.owned ? "bg-buddy-accent border-buddy-primary" : "hover:bg-surface-light"
+            item.owned
+              ? "bg-buddy-accent border-buddy-primary"
+              : "hover:bg-surface-light"
           }`}
           onClick={() => handleItemClick(item)}
         >
           {item.isNew && (
-            <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
+            <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-s px-2 py-1 rounded">
               New
             </div>
           )}
           <div className="text-4xl mb-2">{item.emoji}</div>
-          <div className="text-sm font-medium text-foreground mb-1">{item.name}</div>
-          <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+          <div className="text-sm font-medium text-foreground mb-1">
+            {item.name}
+          </div>
+          <div className="text-s text-muted-foreground flex items-center justify-center gap-1">
             {item.owned ? (
               "Owned"
             ) : item.price === 0 ? (
@@ -112,7 +135,11 @@ const Shop = () => {
       <div className="px-6 py-8 max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/profile")}
+          >
             <ArrowLeft className="w-6 h-6" />
           </Button>
           <h1 className="text-xl font-semibold">Shop</h1>
@@ -134,15 +161,15 @@ const Shop = () => {
             <TabsTrigger value="backgrounds">Backgrounds</TabsTrigger>
             <TabsTrigger value="accessories">Accessories</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="characters" className="mt-4">
             {renderItemGrid(characters)}
           </TabsContent>
-          
+
           <TabsContent value="backgrounds" className="mt-4">
             {renderItemGrid(backgrounds)}
           </TabsContent>
-          
+
           <TabsContent value="accessories" className="mt-4">
             {renderItemGrid(accessories)}
           </TabsContent>
@@ -158,19 +185,22 @@ const Shop = () => {
                 <Coins className="w-5 h-5" />
                 <span className="font-bold">{userCoins}</span>
               </div>
-              
-              <h3 className="text-lg font-semibold mb-2">Buy an octopus that is not simple</h3>
-              
+
+              <h3 className="text-lg font-semibold mb-2">
+                Buy an octopus that is not simple
+              </h3>
+
               <div className="text-6xl mb-4">{selectedItem.emoji}</div>
-              
+
               <div className="mb-4">
                 <h4 className="font-semibold">{selectedItem.name}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Stays calm when cravings creep in — too chill to care, too lazy to light up. 😎🦫
+                  Stays calm when cravings creep in — too chill to care, too
+                  lazy to light up. 😎🦫
                 </p>
               </div>
-              
-              <Button 
+
+              <Button
                 onClick={() => handlePurchase(selectedItem)}
                 className="w-full mb-4 bg-foreground text-background hover:bg-foreground/90"
               >
@@ -178,7 +208,7 @@ const Shop = () => {
                   Buy for <Coins className="w-4 h-4" /> {selectedItem.price}
                 </span>
               </Button>
-              
+
               <Button
                 variant="ghost"
                 size="icon"
@@ -210,23 +240,30 @@ const Shop = () => {
 
             <div className="space-y-3 mb-6">
               {coinPackages.map((pkg, index) => (
-                <div key={index} className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                  pkg.popular ? "bg-primary/10 border-primary" : "bg-muted hover:bg-muted/80"
-                }`}>
+                <div
+                  key={index}
+                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                    pkg.popular
+                      ? "bg-primary/10 border-primary"
+                      : "bg-muted hover:bg-muted/80"
+                  }`}
+                >
                   {pkg.popular && (
-                    <div className="text-xs bg-foreground text-background px-2 py-1 rounded mb-2 w-fit">
+                    <div className="text-s bg-foreground text-background px-2 py-1 rounded mb-2 w-fit">
                       Popular ✓
                     </div>
                   )}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Coins className="w-5 h-5" />
-                      <span className="font-semibold">+{pkg.amount} Buddy coins</span>
+                      <span className="font-semibold">
+                        +{pkg.amount} Buddy coins
+                      </span>
                     </div>
                     <div className="text-right">
                       <div className="font-bold">{pkg.price}</div>
                       {pkg.strikethrough && (
-                        <div className="text-xs text-muted-foreground line-through">
+                        <div className="text-s text-muted-foreground line-through">
                           {pkg.strikethrough}
                         </div>
                       )}
@@ -236,14 +273,16 @@ const Shop = () => {
               ))}
             </div>
 
-            <h3 className="text-center font-semibold mb-4">Buy an octopus that is not simple</h3>
-            
+            <h3 className="text-center font-semibold mb-4">
+              Buy an octopus that is not simple
+            </h3>
+
             <Button className="w-full mb-4 bg-foreground text-background hover:bg-foreground/90">
               <span className="flex items-center gap-2">
                 Buy for <Coins className="w-4 h-4" /> 150
               </span>
             </Button>
-            
+
             <Button
               variant="ghost"
               size="icon"

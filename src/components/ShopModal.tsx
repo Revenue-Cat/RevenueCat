@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   itemStatus: {
-    fontSize: 12,
+    fontSize: 14,
     color: "#666666",
     textAlign: "center",
   },

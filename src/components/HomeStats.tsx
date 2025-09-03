@@ -49,21 +49,21 @@ const HomeStats: React.FC = () => {
       <View className="flex-row gap-1 mb-1">
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
           <Text className="text-2xl font-bold text-white">{savings.itemsAvoided}</Text>
-          <Text className="text-xs font-medium text-white">{getAvoidedLabel(smokeType || 'cigarettes')}</Text>
+          <Text className="text-s font-medium text-white">{getAvoidedLabel(smokeType || 'cigarettes')}</Text>
         </View>
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
           <Text className="text-2xl font-bold text-white">{packPriceCurrency || '$'}{Math.round(savings.moneySaved)}</Text>
-          <Text className="text-xs font-medium text-white">{t('home.stats.moneySaved')}</Text>
+          <Text className="text-s font-medium text-white">{t('home.stats.moneySaved')}</Text>
         </View>
       </View>
       <View className="flex-row gap-1 mb-6">
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
           <Text className="text-2xl font-bold text-white">{formatTime()}</Text>
-          <Text className="text-xs font-medium text-white">{t('home.stats.timeSaved')}</Text>
+          <Text className="text-s font-medium text-white">{t('home.stats.timeSaved')}</Text>
         </View>
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
           <Text className="text-2xl font-bold text-white">{actualDaysSmokeFree}</Text>
-          <Text className="text-xs font-medium text-white">{t('home.stats.smokeFreeDays')}</Text>
+          <Text className="text-s font-medium text-white">{t('home.stats.smokeFreeDays')}</Text>
         </View>
       </View>
     </>

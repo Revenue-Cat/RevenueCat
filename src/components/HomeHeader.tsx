@@ -147,7 +147,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
               currentView === "home" && (
                 <View className="items-center">
                   <Text className="text-3xl font-bold text-indigo-950">00</Text>
-                  <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">
+                  <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center">
                     {t("countdownTimer.days")}
                   </Text>
                 </View>
@@ -165,7 +165,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
                     /{achievements.length}
                   </Text>
                 </View>
-                <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center mt-0.5">
+                <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center mt-0.5">
                   {t("home.badgesCollected")}
                 </Text>
               </View>
@@ -179,7 +179,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
                     {goodiesCount}
                   </Text>
                 </View>
-                <Text className="text-xs font-medium text-indigo-950/50 leading-4 text-center">
+                <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center">
                   {t("home.goodiesAvailable", "Goodies available")}
                 </Text>
               </View>

@@ -15,16 +15,20 @@ interface ShopItem {
 interface PurchaseDrawerProps {
   selectedItem: ShopItem | null;
   onClose: () => void;
-  itemType: 'characters' | 'backgrounds';
+  itemType: "characters" | "backgrounds";
 }
 
-const PurchaseDrawer = ({ selectedItem, onClose, itemType }: PurchaseDrawerProps) => {
-  const { 
-    userCoins, 
-    purchaseItem, 
-    setSelectedCharacter, 
+const PurchaseDrawer = ({
+  selectedItem,
+  onClose,
+  itemType,
+}: PurchaseDrawerProps) => {
+  const {
+    userCoins,
+    purchaseItem,
+    setSelectedCharacter,
     setSelectedBackground,
-    setShowCoinPurchase 
+    setShowCoinPurchase,
   } = useApp();
 
   const handlePurchase = (item: ShopItem) => {
@@ -32,9 +36,9 @@ const PurchaseDrawer = ({ selectedItem, onClose, itemType }: PurchaseDrawerProps
     if (success) {
       onClose();
       // Auto-select the purchased item
-      if (itemType === 'characters') {
+      if (itemType === "characters") {
         setSelectedCharacter(item);
-      } else if (itemType === 'backgrounds') {
+      } else if (itemType === "backgrounds") {
         setSelectedBackground(item);
       }
     } else {
@@ -44,7 +48,7 @@ const PurchaseDrawer = ({ selectedItem, onClose, itemType }: PurchaseDrawerProps
   };
 
   const getDescription = (item: ShopItem) => {
-    if (itemType === 'characters') {
+    if (itemType === "characters") {
       return "Stay motivated on your quit journey with this awesome companion! 🎯";
     } else {
       return "Transform your app with this beautiful background theme! ✨";
@@ -61,23 +65,27 @@ const PurchaseDrawer = ({ selectedItem, onClose, itemType }: PurchaseDrawerProps
                 <Coins className="w-5 h-5" />
                 <span className="font-bold">{userCoins}</span>
               </div>
-              
-              <h3 className="text-lg font-semibold mb-2">Buy {selectedItem.name}</h3>
-              
-              {itemType === 'characters' ? (
+
+              <h3 className="text-lg font-semibold mb-2">
+                Buy {selectedItem.name}
+              </h3>
+
+              {itemType === "characters" ? (
                 <div className="text-6xl mb-4">{selectedItem.emoji}</div>
               ) : (
-                <div className={`w-24 h-16 rounded-lg mx-auto mb-4 ${selectedItem.gradient}`}></div>
+                <div
+                  className={`w-24 h-16 rounded-lg mx-auto mb-4 ${selectedItem.gradient}`}
+                ></div>
               )}
-              
+
               <div className="mb-4">
                 <h4 className="font-semibold">{selectedItem.name}</h4>
                 <p className="text-sm text-muted-foreground">
                   {getDescription(selectedItem)}
                 </p>
               </div>
-              
-              <Button 
+
+              <Button
                 onClick={() => handlePurchase(selectedItem)}
                 className="w-full mb-4 bg-foreground text-background hover:bg-foreground/90"
                 disabled={userCoins < selectedItem.price}
@@ -86,13 +94,13 @@ const PurchaseDrawer = ({ selectedItem, onClose, itemType }: PurchaseDrawerProps
                   Buy for <Coins className="w-4 h-4" /> {selectedItem.price}
                 </span>
               </Button>
-              
+
               {userCoins < selectedItem.price && (
-                <p className="text-xs text-destructive mb-4">
+                <p className="text-s text-destructive mb-4">
                   Not enough coins! Need {selectedItem.price - userCoins} more.
                 </p>
               )}
-              
+
               <Button
                 variant="ghost"
                 size="icon"

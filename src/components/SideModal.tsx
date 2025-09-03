@@ -7,6 +7,7 @@ import SunLight from "../assets/icons/sun.svg";
 import SunDark from "../assets/icons/sun-d.svg";
 import MoonLight from "../assets/icons/moon.svg";
 import MoonDark from "../assets/icons/moon-d.svg";
+import { t } from "i18next";
 
 type Side = "bright" | "dark";
 
@@ -32,11 +33,23 @@ const SideModal: React.FC<Props> = ({
   };
 
   return (
-    <SlideModal visible={visible} onClose={onClose} title="Bright or dark side?">
+    <SlideModal
+      visible={visible}
+      onClose={onClose}
+      title={t("sideModal.title", "Bright or dark side?")}
+    >
       {(
         [
-          { key: "bright", label: "Bright side", Icon: Icons.Sun },
-          { key: "dark", label: "Dark side", Icon: Icons.Moon },
+          {
+            key: "bright",
+            label: t("sideModal.options.bright", "Bright side"),
+            Icon: Icons.Sun,
+          },
+          {
+            key: "dark",
+            label: t("sideModal.options.dark", "Dark side"),
+            Icon: Icons.Moon,
+          },
         ] as const
       ).map(({ key, label, Icon }) => {
         const selected = side === key;
@@ -50,35 +63,37 @@ const SideModal: React.FC<Props> = ({
                   ? "bg-slate-600"
                   : "bg-indigo-100"
                 : isDark
-                  ? "bg-slate-700"
-                  : "bg-indigo-50"
+                ? "bg-slate-700"
+                : "bg-indigo-50"
             }`}
           >
             <View className="flex-row items-center">
               <Icon width={20} height={20} color={systemIconColor} />
               <Text
-                className={`ml-3 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
+                className={`ml-3 ${
+                  isDark ? "text-slate-100" : "text-indigo-950"
+                }`}
                 style={{ fontWeight: "600" }}
               >
                 {label}
               </Text>
             </View>
             {selected && (
-              <Ionicons
-                name="checkmark"
-                size={18}
-                color={systemIconColor}
-              />
+              <Ionicons name="checkmark" size={18} color={systemIconColor} />
             )}
           </Pressable>
         );
       })}
 
       <Text
-        className={`text-center mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}
-        style={{ fontSize: 12 }}
+        className={`text-center text-s mt-1 ${
+          isDark ? "text-slate-400" : "text-slate-500"
+        }`}
       >
-        This selection will set your app’s theme to light or dark.
+        {t(
+          "sideModal.hint",
+          "This selection will set your app’s theme to light or dark."
+        )}
       </Text>
     </SlideModal>
   );

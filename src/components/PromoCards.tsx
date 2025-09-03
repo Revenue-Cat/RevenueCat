@@ -52,7 +52,7 @@ const PromoCards: React.FC<Props> = ({
           <View className="px-5 py-5 relative pr-32 min-h-[128px]">
             <View className="flex-row items-center justify-between">
               <View style={{ flex: 1, paddingRight: 16 }}>
-                <Text className="text-white/90 font-semibold text-xs">
+                <Text className="text-white/90 font-semibold text-s">
                   {t("promos.refer.subtitle", "Quitting is easier together")}
                 </Text>
                 <Text className="text-white font-bold text-base mt-1">
@@ -90,7 +90,7 @@ const PromoCards: React.FC<Props> = ({
           <View className="px-5 py-5 relative pr-32 min-h-[128px]">
             <View className="flex-row items-center justify-between">
               <View style={{ paddingRight: 16 }}>
-                <Text className="text-white/90 font-semibold text-xs">
+                <Text className="text-white/90 font-semibold text-s">
                   {t(
                     "promos.review.subtitle",
                     "Help us grow with a quick 5★ review"

@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   timestamp: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#666666',
     marginTop: 4,
     textAlign: 'right',

@@ -496,7 +496,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
 
         {/* Privacy Text */}
         <View className="px-6 mb-4">
-          <Text className="text-xs text-slate-500 text-center">
+          <Text className="text-s text-slate-500 text-center">
             {t(
               "setup.privacyText",
               "Don't worry, your data is secure. We keep it private and won't pass it on."

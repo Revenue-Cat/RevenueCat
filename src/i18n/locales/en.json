@@ -141,22 +141,22 @@
     "common": {
       "days": "Challenge coming soon!"
     },
-    "iSmokedButton": "I smoked!",
-    "dontGiveUp": {
-      "title": "Don't give up",
-      "description": "You slipped and had a cigarette — and that's okay. Take a deep breath, remind yourself why you started, and get back on track. Every craving you resist is progress.",
-      "okButton": "Ok"
-    },
     "crumpleCravings": {
       "challenge": "Crave crusher",
       "description": "When you feel the urge to smoke, draw or write your craving on a piece of paper. Focus on the feeling, then crumple the paper. Breathe deeply and let the craving go. If it comes back, repeat the steps.",
       "title": "Crumple cravings"
+    },
+    "dontGiveUp": {
+      "description": "You slipped and had a cigarette — and that's okay. Take a deep breath, remind yourself why you started, and get back on track. Every craving you resist is progress.",
+      "okButton": "Ok",
+      "title": "Don't give up"
     },
     "gripRelease": {
       "challenge": "Fist flow",
       "description": "When you feel the urge to smoke, squeeze your fists 20 times. Focus on the sensations, breathe deeply, and let the urge pass. Repeat if needed.",
       "title": "Grip and release"
     },
+    "iSmokedButton": "I smoked!",
     "meditateListen": {
       "challenge": "Calm power",
       "description": "Replace a craving with a short meditation and music. Focus on your breathing, relax your body, and let the craving pass.",
@@ -202,8 +202,8 @@
       "cigsAvoided": "Cigs avoided",
       "moneySaved": "Money saved",
       "slips": "Slips",
-      "timeSaved": "Time saved",
-      "smokeFreeDays": "Smoke-free days"
+      "smokeFreeDays": "Smoke-free days",
+      "timeSaved": "Time saved"
     },
     "title": "Zero Poofs"
   },
@@ -214,29 +214,29 @@
   },
   "notificationPermission": {
     "actionButton": "Enable Notifications",
-    "mainTitle": "Stay on track, your way",
-    "mainSubtitle": "Let buddy nudge you with chill reminders — no pressure, just progress.",
-    "preview": {
-      "title": "30 days smoke-free.",
-      "message": "The memory lives on, but tobacco is in the past."
-    },
-    "subtitle": "Get gentle reminders and celebrate your progress",
-    "title": "Stay motivated",
-    "requesting": "Requesting...",
     "continue": "Continue",
-    "permissionGranted": "✅ Notifications enabled!",
-    "success": {
-      "title": "Permission Granted",
-      "message": "You will now receive helpful notifications to support your journey!"
-    },
     "denied": {
-      "title": "Permission Denied",
-      "message": "You can enable notifications later in your device settings."
+      "message": "You can enable notifications later in your device settings.",
+      "title": "Permission Denied"
     },
     "error": {
-      "title": "Error",
-      "message": "There was an error requesting notification permission."
-    }
+      "message": "There was an error requesting notification permission.",
+      "title": "Error"
+    },
+    "mainSubtitle": "Let buddy nudge you with chill reminders — no pressure, just progress.",
+    "mainTitle": "Stay on track, your way",
+    "permissionGranted": "✅ Notifications enabled!",
+    "preview": {
+      "message": "The memory lives on, but tobacco is in the past.",
+      "title": "30 days smoke-free."
+    },
+    "requesting": "Requesting...",
+    "subtitle": "Get gentle reminders and celebrate your progress",
+    "success": {
+      "message": "You will now receive helpful notifications to support your journey!",
+      "title": "Permission Granted"
+    },
+    "title": "Stay motivated"
   },
   "profile": {
     "buddy": {
@@ -395,26 +395,26 @@
         "options": {
           "cigarettes": {
             "1-5": "1-5 cigarettes",
-            "6-10": "6-10 cigarettes",
             "11-20": "11-20 cigarettes",
-            "21+": "21+ cigarettes"
+            "21+": "21+ cigarettes",
+            "6-10": "6-10 cigarettes"
           },
           "roll-your-own": {
             "1-5": "1-5 rolled cigarettes",
-            "6-10": "6-10 rolled cigarettes",
             "11-20": "11-20 rolled cigarettes",
-            "21+": "21+ rolled cigarettes"
+            "21+": "21+ rolled cigarettes",
+            "6-10": "6-10 rolled cigarettes"
           },
           "tobacco-heater": {
             "1-5": "1-5 sticks",
-            "6-10": "6-10 sticks",
             "11-20": "11-20 sticks",
-            "21+": "21+ sticks"
+            "21+": "21+ sticks",
+            "6-10": "6-10 sticks"
           },
           "vaping": {
+            "heavy": "Heavy (3+ ml or 150+ puffs)",
             "light": "Light (up to 1 ml or ~50 puffs)",
-            "moderate": "Moderate (1-3 ml or 50-150 puffs)",
-            "heavy": "Heavy (3+ ml or 150+ puffs)"
+            "moderate": "Moderate (1-3 ml or 50-150 puffs)"
           }
         },
         "selected": "I use {{value}}"
@@ -423,12 +423,12 @@
         "label": "What is your primary goal?",
         "modalTitle": "What's your goal?",
         "options": {
+          "doesnt-matter": "Doesn't matter",
+          "gain-control": "Gain control",
+          "improve-health": "Improve health",
           "quit-completely": "Quit completely",
           "reduce-gradually": "Reduce gradually",
-          "save-money": "Save money",
-          "improve-health": "Improve health",
-          "gain-control": "Gain control",
-          "doesnt-matter": "Doesn't matter"
+          "save-money": "Save money"
         },
         "selected": "I want {{value}}"
       },
@@ -498,6 +498,14 @@
     "selected": "Selected",
     "share": "Share",
     "update": "Update"
+  },
+  "sideModal": {
+    "hint": "This selection will set your app’s theme to light or dark.",
+    "options": {
+      "bright": "Bright side",
+      "dark": "Dark side"
+    },
+    "title": "Bright or dark side?"
   },
   "stats": {
     "description": "Average US savings from not smoking. Add your habits to get your number."

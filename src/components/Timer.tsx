@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
-import { useApp } from '../contexts/AppContext';
+import React, { useState, useEffect } from "react";
+import { View, Text } from "react-native";
+import { useApp } from "../contexts/AppContext";
 
 const Timer: React.FC = () => {
   const { startDate } = useApp();
-  console.log('startDate', startDate)
+  console.log("startDate", startDate);
   const [timeElapsed, setTimeElapsed] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
 
   useEffect(() => {
@@ -29,7 +29,9 @@ const Timer: React.FC = () => {
       }
 
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const hours = Math.floor(
+        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
@@ -50,25 +52,31 @@ const Timer: React.FC = () => {
       {/* Days */}
       <View className="items-center">
         <Text className="text-3xl font-semibold text-indigo-950 text-center">
-          {timeElapsed.days.toString().padStart(2, '0')}
+          {timeElapsed.days.toString().padStart(2, "0")}
         </Text>
-        <Text className="text-xs font-medium text-indigo-950/50 text-center">Days</Text>
+        <Text className="text-s font-medium text-indigo-950/50 text-center">
+          Days
+        </Text>
       </View>
-      
+
       {/* Hours */}
       <View className="items-center">
         <Text className="text-3xl font-semibold text-indigo-950 text-center">
-          {timeElapsed.hours.toString().padStart(2, '0')}
+          {timeElapsed.hours.toString().padStart(2, "0")}
         </Text>
-        <Text className="text-xs font-medium text-indigo-950/50 text-center">Hours</Text>
+        <Text className="text-s font-medium text-indigo-950/50 text-center">
+          Hours
+        </Text>
       </View>
-      
+
       {/* Minutes */}
       <View className="items-center">
         <Text className="text-3xl font-semibold text-indigo-950 text-center">
-          {timeElapsed.minutes.toString().padStart(2, '0')}
+          {timeElapsed.minutes.toString().padStart(2, "0")}
         </Text>
-        <Text className="text-xs font-medium text-indigo-950/50 text-center">Minutes</Text>
+        <Text className="text-s font-medium text-indigo-950/50 text-center">
+          Minutes
+        </Text>
       </View>
     </View>
   );

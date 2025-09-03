@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timeLimit: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#666666',
     marginBottom: 12,
   },

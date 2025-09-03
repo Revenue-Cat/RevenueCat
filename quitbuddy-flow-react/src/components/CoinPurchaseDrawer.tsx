@@ -11,12 +11,23 @@ interface CoinPackage {
 }
 
 const CoinPurchaseDrawer = () => {
-  const { showCoinPurchase, setShowCoinPurchase, userCoins, setUserCoins, selectedCharacter } = useApp();
+  const {
+    showCoinPurchase,
+    setShowCoinPurchase,
+    userCoins,
+    setUserCoins,
+    selectedCharacter,
+  } = useApp();
 
   const coinPackages: CoinPackage[] = [
     { amount: 100, price: "2.99 USD" },
-    { amount: 500, price: "5.99 USD", popular: true, strikethrough: "7.99 USD" },
-    { amount: 1000, price: "10.99 USD", strikethrough: "14.99 USD" }
+    {
+      amount: 500,
+      price: "5.99 USD",
+      popular: true,
+      strikethrough: "7.99 USD",
+    },
+    { amount: 1000, price: "10.99 USD", strikethrough: "14.99 USD" },
   ];
 
   const handleCoinPurchase = (amount: number) => {
@@ -40,31 +51,37 @@ const CoinPurchaseDrawer = () => {
             </div>
           </div>
 
-          <h3 className="text-center font-semibold mb-6">Get More Buddy Coins</h3>
+          <h3 className="text-center font-semibold mb-6">
+            Get More Buddy Coins
+          </h3>
 
           <div className="space-y-3 mb-6">
             {coinPackages.map((pkg, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                  pkg.popular ? "bg-primary/10 border-primary" : "bg-muted hover:bg-muted/80"
+                  pkg.popular
+                    ? "bg-primary/10 border-primary"
+                    : "bg-muted hover:bg-muted/80"
                 }`}
                 onClick={() => handleCoinPurchase(pkg.amount)}
               >
                 {pkg.popular && (
-                  <div className="text-xs bg-foreground text-background px-2 py-1 rounded mb-2 w-fit">
+                  <div className="text-s bg-foreground text-background px-2 py-1 rounded mb-2 w-fit">
                     Popular ✓
                   </div>
                 )}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Coins className="w-5 h-5" />
-                    <span className="font-semibold">+{pkg.amount} Buddy coins</span>
+                    <span className="font-semibold">
+                      +{pkg.amount} Buddy coins
+                    </span>
                   </div>
                   <div className="text-right">
                     <div className="font-bold">{pkg.price}</div>
                     {pkg.strikethrough && (
-                      <div className="text-xs text-muted-foreground line-through">
+                      <div className="text-s text-muted-foreground line-through">
                         {pkg.strikethrough}
                       </div>
                     )}
@@ -73,7 +90,7 @@ const CoinPurchaseDrawer = () => {
               </div>
             ))}
           </div>
-          
+
           <Button
             variant="ghost"
             size="icon"

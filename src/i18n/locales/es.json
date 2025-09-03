@@ -141,22 +141,22 @@
     "common": {
       "days": "¡Desafío próximamente!"
     },
-    "iSmokedButton": "¡Fumé!",
-    "dontGiveUp": {
-      "title": "No te rindas",
-      "description": "Tuviste una recaída y fumaste un cigarrillo — y está bien. Respira profundamente, recuerda por qué empezaste y vuelve al camino. Cada antojo que resistes es progreso.",
-      "okButton": "Ok"
-    },
     "crumpleCravings": {
       "challenge": "Triturador de antojos",
       "description": "Cuando sientas el impulso de fumar, dibuja o escribe tu antojo en un papel. Concéntrate en el sentimiento, luego arruga el papel. Respira profundamente y deja ir el antojo. Si vuelve, repite los pasos.",
       "title": "Arruga el antojo"
+    },
+    "dontGiveUp": {
+      "description": "Tuviste una recaída y fumaste un cigarrillo — y está bien. Respira profundamente, recuerda por qué empezaste y vuelve al camino. Cada antojo que resistes es progreso.",
+      "okButton": "Ok",
+      "title": "No te rindas"
     },
     "gripRelease": {
       "challenge": "Flujo de puño",
       "description": "Cuando sientas el impulso de fumar, aprieta los puños 20 veces. Enfócate en las sensaciones, respira profundamente y deja que pase el impulso. Repite si es necesario.",
       "title": "Aprieta y suelta"
     },
+    "iSmokedButton": "¡Fumé!",
     "meditateListen": {
       "challenge": "Poder de calma",
       "description": "Reemplaza un antojo con una breve meditación y música. Enfócate en tu respiración, relaja tu cuerpo y deja que pase el antojo.",
@@ -202,8 +202,8 @@
       "cigsAvoided": "Cigarrillos evitados",
       "moneySaved": "Dinero ahorrado",
       "slips": "Recaídas",
-      "timeSaved": "Tiempo ahorrado",
-      "smokeFreeDays": "Días sin fumar"
+      "smokeFreeDays": "Días sin fumar",
+      "timeSaved": "Tiempo ahorrado"
     },
     "title": "Zero Poofs"
   },
@@ -214,29 +214,29 @@
   },
   "notificationPermission": {
     "actionButton": "Habilitar Notificaciones",
-    "mainTitle": "Mantente en el camino, a tu manera",
-    "mainSubtitle": "Deja que tu compañero te anime con recordatorios relajados — sin presión, solo progreso.",
-    "preview": {
-      "title": "30 días sin fumar.",
-      "message": "El recuerdo permanece, pero el tabaco está en el pasado."
-    },
-    "subtitle": "Recibe recordatorios gentiles y celebra tu progreso",
-    "title": "Mantente motivado",
-    "requesting": "Solicitando...",
     "continue": "Continuar",
-    "permissionGranted": "✅ ¡Notificaciones habilitadas!",
-    "success": {
-      "title": "Permiso Concedido",
-      "message": "¡Ahora recibirás notificaciones útiles para apoyar tu viaje!"
-    },
     "denied": {
-      "title": "Permiso Denegado",
-      "message": "Puedes habilitar las notificaciones más tarde en la configuración de tu dispositivo."
+      "message": "Puedes habilitar las notificaciones más tarde en la configuración de tu dispositivo.",
+      "title": "Permiso Denegado"
     },
     "error": {
-      "title": "Error",
-      "message": "Hubo un error al solicitar el permiso de notificación."
-    }
+      "message": "Hubo un error al solicitar el permiso de notificación.",
+      "title": "Error"
+    },
+    "mainSubtitle": "Deja que tu compañero te anime con recordatorios relajados — sin presión, solo progreso.",
+    "mainTitle": "Mantente en el camino, a tu manera",
+    "permissionGranted": "✅ ¡Notificaciones habilitadas!",
+    "preview": {
+      "message": "El recuerdo permanece, pero el tabaco está en el pasado.",
+      "title": "30 días sin fumar."
+    },
+    "requesting": "Solicitando...",
+    "subtitle": "Recibe recordatorios gentiles y celebra tu progreso",
+    "success": {
+      "message": "¡Ahora recibirás notificaciones útiles para apoyar tu viaje!",
+      "title": "Permiso Concedido"
+    },
+    "title": "Mantente motivado"
   },
   "profile": {
     "buddy": {
@@ -395,26 +395,26 @@
         "options": {
           "cigarettes": {
             "1-5": "1-5 cigarrillos",
-            "6-10": "6-10 cigarrillos",
             "11-20": "11-20 cigarrillos",
-            "21+": "21+ cigarrillos"
+            "21+": "21+ cigarrillos",
+            "6-10": "6-10 cigarrillos"
           },
           "roll-your-own": {
             "1-5": "1-5 cigarrillos liados",
-            "6-10": "6-10 cigarrillos liados",
             "11-20": "11-20 cigarrillos liados",
-            "21+": "21+ cigarrillos liados"
+            "21+": "21+ cigarrillos liados",
+            "6-10": "6-10 cigarrillos liados"
           },
           "tobacco-heater": {
             "1-5": "1-5 varillas",
-            "6-10": "6-10 varillas",
             "11-20": "11-20 varillas",
-            "21+": "21+ varillas"
+            "21+": "21+ varillas",
+            "6-10": "6-10 varillas"
           },
           "vaping": {
+            "heavy": "Intenso (3+ ml o 150+ caladas)",
             "light": "Ligero (hasta 1 ml o ~50 caladas)",
-            "moderate": "Moderado (1-3 ml o 50-150 caladas)",
-            "heavy": "Intenso (3+ ml o 150+ caladas)"
+            "moderate": "Moderado (1-3 ml o 50-150 caladas)"
           }
         },
         "selected": "Uso {{value}}"
@@ -423,12 +423,12 @@
         "label": "¿Cuál es tu objetivo principal?",
         "modalTitle": "¿Cuál es tu objetivo?",
         "options": {
+          "doesnt-matter": "No importa",
+          "gain-control": "Ganar control",
+          "improve-health": "Mejorar la salud",
           "quit-completely": "Dejar completamente",
           "reduce-gradually": "Reducir gradualmente",
-          "save-money": "Ahorrar dinero",
-          "improve-health": "Mejorar la salud",
-          "gain-control": "Ganar control",
-          "doesnt-matter": "No importa"
+          "save-money": "Ahorrar dinero"
         },
         "selected": "Quiero {{value}}"
       },
@@ -498,6 +498,14 @@
     "selected": "Seleccionado",
     "share": "Compartir",
     "update": "Actualizar"
+  },
+  "sideModal": {
+    "hint": "Esta selección configurará el tema de tu app en claro u oscuro.",
+    "options": {
+      "bright": "Modo claro",
+      "dark": "Modo oscuro"
+    },
+    "title": "¿Modo claro u oscuro?"
   },
   "stats": {
     "description": "Ahorro promedio en EE. UU. al no fumar. Agrega tus hábitos para obtener tu número."
