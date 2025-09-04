@@ -92,20 +92,19 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     fetchCoins();
   };
 
+
   return (
     <Animated.View
-      className="absolute top-8 left-0 right-0 p-6"
+      className="absolute top-10 left-0 right-0"
       style={{ 
-        height: 130, 
         zIndex: 10,
-        transform
       }}
       pointerEvents="box-none"
     >
       {/* Carousel Header - Centered with Consistent Layout */}
       <View className="items-center justify-center flex-1">
         {/* Title - Consistent positioning */}
-        <Text className="text-lg font-bold text-indigo-950 leading-7 text-center mt-2">
+        <Text className="text-lg font-bold text-indigo-950 leading-7 text-center">
           {getViewTitle()}
         </Text>
 

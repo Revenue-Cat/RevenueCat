@@ -195,16 +195,16 @@ const Home: React.FC<HomeProps> = ({
           </View>
 
           <Animated.View
-            style={{ height: backgroundHeight }}
+            style={{ height: Dimensions.get('window').height * 0.4 }}
             pointerEvents="none"
           >
-            <ParallaxBackground scrollY={scrollY} height={330} />
+            <ParallaxBackground scrollY={scrollY} height={Dimensions.get('window').height * 0.4} />
           </Animated.View>
 
           {/* Buddy Lottie on top of background */}
           <Animated.View
             className="absolute top-0 left-0 right-0 items-center justify-end"
-            style={{ height: 360, zIndex: 30 }}
+            style={{ height: Dimensions.get('window').height * 0.5, zIndex: 30 }}
             pointerEvents="none"
           >
             <Animated.View style={{ transform: buddyTransform }}>
@@ -230,7 +230,7 @@ const Home: React.FC<HomeProps> = ({
               top: 0,
               left: 0,
               right: 0,
-              zIndex: 50,
+              zIndex: 10,
               width: width * 3,
               flexDirection: "row",
               transform: [{ translateX: contentTranslateX }],
@@ -245,11 +245,7 @@ const Home: React.FC<HomeProps> = ({
                 onViewChange={changeView}
                 scrollY={scrollY}
               />
-              <AchievementsToggle
-                scrollY={scrollY}
-                isExclusiveSelected={isExclusiveSelected}
-                setIsExclusiveSelected={handleSetIsExclusiveSelected}
-              />
+             
             </View>
 
             {/* Home Page - Header only */}
@@ -272,6 +268,37 @@ const Home: React.FC<HomeProps> = ({
                 onViewChange={changeView}
                 scrollY={scrollY}
               />
+             
+            </View>
+          </Animated.View>
+           {/* Toggles Container - 3 horizontal pages */}
+          <Animated.View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 50,
+              width: width * 3,
+              flexDirection: "row",
+              transform: [{ translateX: contentTranslateX }],
+            }}
+          >
+            {/* Achievements Page - Header + Toggle */}
+            <View style={{ width }}>
+              <AchievementsToggle
+                scrollY={scrollY}
+                isExclusiveSelected={isExclusiveSelected}
+                setIsExclusiveSelected={handleSetIsExclusiveSelected}
+              />
+            </View>
+
+            {/* Home Page - Header only */}
+            <View style={{ width }} />
+              
+            {/* Shop Page - Header + Toggle */}
+            <View style={{ width }}>
+          
               <ShopToggle
                 scrollY={scrollY}
                 isScenesSelected={isScenesSelected}
