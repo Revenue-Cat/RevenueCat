@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, Image } from "react-native";
+import React, { useState, useEffect, useMemo } from "react";
+import { View, Text, Pressable, Image, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import CountdownTimer from "./CountdownTimer";
@@ -16,6 +16,7 @@ interface HomeHeaderProps {
   onNavigateToProfile: () => void;
   onCoinPurchase: () => void;
   onViewChange: (view: "home" | "achievements" | "shop") => void;
+  scrollY?: Animated.Value;
 }
 
 const HomeHeader: React.FC<HomeHeaderProps> = ({
@@ -23,6 +24,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   onNavigateToProfile,
   onCoinPurchase,
   onViewChange,
+  scrollY,
 }) => {
   const { t } = useTranslation();
   const {
@@ -44,6 +46,18 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   useEffect(() => {
     fetchCoins();
   }, []);
+
+  // Use the same transform as the ShopToggle for scroll animation
+  const transform = useMemo(() => {
+    if (!scrollY) return [];
+    return [{
+      translateY: scrollY.interpolate({
+        inputRange: [0, 80],
+        outputRange: [0, -70],
+        extrapolate: 'clamp'
+      })
+    }];
+  }, [scrollY]);
 
   // Calculate achievements with 100% progress
   const completedAchievementsCount = achievements.filter((achievement) => {
@@ -79,124 +93,75 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   };
 
   return (
-    <View
+    <Animated.View
       className="absolute top-8 left-0 right-0 p-6"
-      style={{ height: 120, zIndex: 10 }}
+      style={{ 
+        height: 130, 
+        zIndex: 10,
+        transform
+      }}
       pointerEvents="box-none"
     >
-      {/* Top Row */}
-      <View className="flex-row justify-between items-start">
-        {/* Buddy Icon */}
-        <Pressable
-          className="w-[60px] mt-2.5 p-0.3"
-          onPress={() => {
-            console.log(
-              "Buddy Icon container pressed - attempting to navigate to profile"
-            );
-            onNavigateToProfile();
-          }}
-        >
-          <Pressable
-            className="w-7 h-7 rounded-full bg-black/50 justify-center items-center overflow-hidden"
-            onPress={() => {
-              onNavigateToProfile();
-            }}
-            style={{ position: "relative", transform: [{ translateY: -8 }] }}
-          >
-            {selectedBuddy ? (
-              <LottieView
-                source={selectedBuddy.icon}
-                // keep static to save battery in header; remove "progress" and set loop=true for animation
-                // show first frame
-                // @ts-ignore - Lottie types allow this prop at runtime
-                autoPlay={false}
-                loop={false}
-                progress={0.4}
-                style={{
-                  width: 56,
-                  height: 56,
-                  transform: [{ translateY: 10 }, { scale: 0.8 }],
-                }}
-                resizeMode="contain"
-              />
-            ) : (
-              <Ionicons name="person-outline" size={16} color="#ffffff" />
-            )}
-          </Pressable>
-        </Pressable>
+      {/* Carousel Header - Centered with Consistent Layout */}
+      <View className="items-center justify-center flex-1">
+        {/* Title - Consistent positioning */}
+        <Text className="text-lg font-bold text-indigo-950 leading-7 text-center mt-2">
+          {getViewTitle()}
+        </Text>
 
-        {/* Carousel Header - Centered with Consistent Layout */}
-        <View className="items-center justify-center flex-1">
-          {/* Title - Consistent positioning */}
-          <Text className="text-lg font-bold text-indigo-950 leading-7 text-center mt-2">
-            {getViewTitle()}
-          </Text>
-
-          {/* Content Container - Fixed height for consistent positioning */}
-          <View className="h-12 items-center justify-center">
-            {/* Home View - CountdownTimer */}
-            {currentView === "home" && startDate ? (
-              <CountdownTimer
-                targetDate={startDate}
-                textColor="text-indigo-950"
-                textSize="lg"
-                showSeconds={false}
-                countUp={true}
-              />
-            ) : (
-              currentView === "home" && (
-                <View className="items-center">
-                  <Text className="text-3xl font-bold text-indigo-950">00</Text>
-                  <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center">
-                    {t("countdownTimer.days")}
-                  </Text>
-                </View>
-              )
-            )}
-
-            {/* Achievements View - Completed Count */}
-            {currentView === "achievements" && (
+        {/* Content Container - Fixed height for consistent positioning */}
+        <View className="h-12 items-center justify-center">
+          {/* Home View - CountdownTimer */}
+          {currentView === "home" && startDate ? (
+            <CountdownTimer
+              targetDate={startDate}
+              textColor="text-indigo-950"
+              textSize="lg"
+              showSeconds={false}
+              countUp={true}
+            />
+          ) : (
+            currentView === "home" && (
               <View className="items-center">
-                <View className="flex-row items-baseline">
-                  <Text className="text-3xl font-bold text-indigo-950">
-                    {completedAchievementsCount}
-                  </Text>
-                  <Text className="text-lg font-bold text-indigo-950/50">
-                    /{achievements.length}
-                  </Text>
-                </View>
-                <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center mt-0.5">
-                  {t("home.badgesCollected")}
-                </Text>
-              </View>
-            )}
-
-            {/* Shop View - Goodies Count */}
-            {currentView === "shop" && (
-              <View className="items-center">
-                <View className="flex-row items-baseline">
-                  <Text className="text-3xl font-bold text-indigo-950">
-                    {goodiesCount}
-                  </Text>
-                </View>
+                <Text className="text-3xl font-bold text-indigo-950">00</Text>
                 <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center">
-                  {t("home.goodiesAvailable", "Goodies available")}
+                  {t("countdownTimer.days")}
                 </Text>
               </View>
-            )}
-          </View>
-        </View>
+            )
+          )}
 
-        {/* User Coins */}
-        <Pressable
-          className="flex-row items-center bg-black/50 w-[60px] h-7 rounded-3xl py-1 px-2 gap-1.5"
-          onPress={handleCoinPurchase}
-        >
-          <Text className="text-base font-semibold text-amber-500 leading-6">
-            {userCoins}
-          </Text>
-          <CoinIcon width={16} height={16} />
-        </Pressable>
+          {/* Achievements View - Completed Count */}
+          {currentView === "achievements" && (
+            <View className="items-center">
+              <View className="flex-row items-baseline">
+                <Text className="text-3xl font-bold text-indigo-950">
+                  {completedAchievementsCount}
+                </Text>
+                <Text className="text-lg font-bold text-indigo-950/50">
+                  /{achievements.length}
+                </Text>
+              </View>
+              <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center mt-0.5">
+                {t("home.badgesCollected")}
+              </Text>
+            </View>
+          )}
+
+          {/* Shop View - Goodies Count */}
+          {currentView === "shop" && (
+            <View className="items-center">
+              <View className="flex-row items-baseline">
+                <Text className="text-3xl font-bold text-indigo-950">
+                  {goodiesCount}
+                </Text>
+              </View>
+              <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center">
+                {t("home.goodiesAvailable", "Goodies available")}
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
 
       {/* Bottom Row - Navigation Dots */}
@@ -222,7 +187,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           />
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 };
 

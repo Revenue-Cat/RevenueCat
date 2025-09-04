@@ -55,20 +55,17 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
 }) => {
   const { achievements, getProgressForAchievement } = useApp();
   
-  // Animation values for cascading effect
-  const fadeAnim = useRef(new Animated.Value(1)).current;
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const cardAnims = useRef([
-    new Animated.Value(1), // Start visible for expanded state
-    new Animated.Value(1), // Start visible for expanded state
-    new Animated.Value(1)  // Start visible for expanded state
+  // Unified animation values for smooth cascading effect
+  const cardAnimations = useRef([
+    new Animated.Value(1), // Card 1 - always visible
+    new Animated.Value(0), // Card 2 - starts hidden
+    new Animated.Value(0)  // Card 3 - starts hidden
   ]).current;
-  
-  // Animation values for collapsed state cards
-  const collapsedCardAnims = useRef([
-    new Animated.Value(0),
-    new Animated.Value(0),
-    new Animated.Value(0)
+
+  // Separate animations for collapsed state preview cards
+  const collapsedPreviewAnims = useRef([
+    new Animated.Value(0), // Card 2 preview - starts hidden
+    new Animated.Value(0)  // Card 3 preview - starts hidden
   ]).current;
 
   // Get the first 3 non-completed regular achievements
@@ -85,56 +82,81 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
     return nonCompletedRegularAchievements.slice(0, 3);
   }, [achievements, getProgressForAchievement]);
 
-  // Initial animation setup - ensure cards are visible on first render
+  // Initialize animations properly on mount
   useEffect(() => {
-    if (!isCollapsed) {
-      // Ensure expanded cards are visible initially
-      cardAnims.forEach(anim => anim.setValue(1));
-    } else {
-      // Ensure collapsed cards are visible initially if starting collapsed
-      collapsedCardAnims.forEach(anim => anim.setValue(1));
+    if (isCollapsed && firstThreeAchievements.length > 0) {
+      // Set collapsed preview to visible on initial render if collapsed
+      collapsedPreviewAnims[0].setValue(1);
+      collapsedPreviewAnims[1].setValue(1);
     }
-  }, []);
+  }, [isCollapsed, firstThreeAchievements.length]);
 
-  // Simple cascade animation effect
+  // Cascade animation effect - separate logic for expanded and collapsed states
   useEffect(() => {
+    // Stop any ongoing animations first
+    cardAnimations.forEach(anim => anim.stopAnimation());
+    collapsedPreviewAnims.forEach(anim => anim.stopAnimation());
+
     if (isCollapsed) {
-      // Reset collapsed card animations first, then animate
-      collapsedCardAnims.forEach(anim => anim.setValue(0));
-      
-      // Simple cascade for collapsed state - only animate cards 2 and 3
-      Animated.stagger(150, [
-        Animated.timing(collapsedCardAnims[1], {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(collapsedCardAnims[2], {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      // When collapsing, animate cards out with the same logic as expanding
+      // First hide collapsed preview instantly
+      collapsedPreviewAnims[0].setValue(0);
+      collapsedPreviewAnims[1].setValue(0);
+
+      // Then animate expanded cards out with reverse stagger
+      setTimeout(() => {
+        Animated.stagger(1, [
+          Animated.timing(cardAnimations[2], {
+            toValue: 0,
+            duration: 10,
+            useNativeDriver: true,
+          }),
+          Animated.timing(cardAnimations[1], {
+            toValue: 0,
+            duration: 10,
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          // After expanded cards are hidden, show collapsed preview
+          setTimeout(() => {
+            Animated.stagger(1, [
+              Animated.timing(collapsedPreviewAnims[0], {
+                toValue: 1,
+                duration: 100,
+                useNativeDriver: true,
+              }),
+              Animated.timing(collapsedPreviewAnims[1], {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true,
+              }),
+            ]).start();
+          }, 20);
+        });
+      }, 16);
     } else {
-      // Reset expanded card animations first, then animate
-      cardAnims.forEach(anim => anim.setValue(0));
-      
-      // Simple cascade for expanded state - only animate cards 2 and 3
-      Animated.stagger(10, [
-        Animated.timing(cardAnims[1], {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(cardAnims[2], {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]).start();
-      
-      // Reset collapsed card animations
-      collapsedCardAnims.forEach(anim => anim.setValue(0));
+      // When expanding, hide collapsed preview and animate expanded cards in
+      collapsedPreviewAnims[0].setValue(0);
+      collapsedPreviewAnims[1].setValue(0);
+
+      // Animate expanded cards in with smooth stagger
+      cardAnimations[1].setValue(0);
+      cardAnimations[2].setValue(0);
+
+      setTimeout(() => {
+        Animated.stagger(150, [
+          Animated.timing(cardAnimations[1], {
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+          Animated.timing(cardAnimations[2], {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      }, 16);
     }
   }, [isCollapsed]);
 
@@ -166,16 +188,16 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
           );
         }
         
-        // Other cards - with cascade animation
+        // Other cards - with smooth cascade animation
         return (
           <Animated.View
             key={achievement.id}
             style={{
-              opacity: cardAnims[index],
+              opacity: cardAnimations[index],
               transform: [{
-                translateY: cardAnims[index].interpolate({
+                translateY: cardAnimations[index].interpolate({
                   inputRange: [0, 1],
-                  outputRange: [-40, 0] // Changed from bottom to top (40, 0) to top to bottom (-40, 0)
+                  outputRange: [-30, 0]
                 })
               }]
             }}
@@ -195,7 +217,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
         );
       })}
     </Animated.View>
-  ), [firstThreeAchievements, getProgressForAchievement, fadeAnim, slideAnim, cardAnims]);
+  ), [firstThreeAchievements, getProgressForAchievement, cardAnimations]);
 
   // Memoize the collapsed achievement view with animations
   const collapsedAchievementView = useMemo(() => {
@@ -207,15 +229,15 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
         <View className="absolute top-0 left-0 right-0 bottom-0" style={{ zIndex: 1 }}>
           {/* Card 2 - Second achievement (showing a little) */}
           {firstThreeAchievements.length > 1 && (
-            <Animated.View 
+            <Animated.View
               className="absolute bg-white bottom-1 rounded-xl left-4 right-4 h-20 border"
               style={{
-                opacity: collapsedCardAnims[1].interpolate({
+                opacity: collapsedPreviewAnims[0].interpolate({
                   inputRange: [0, 1],
                   outputRange: [0, 0.7] // Fade in to 70% opacity
                 }),
                 transform: [{
-                  translateY: collapsedCardAnims[1].interpolate({
+                  translateY: collapsedPreviewAnims[0].interpolate({
                     inputRange: [0, 1],
                     outputRange: [-30, 0] // Changed to top to bottom direction
                   })
@@ -225,15 +247,15 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
           )}
           {/* Card 3 - Third achievement (showing a little less) */}
           {firstThreeAchievements.length > 2 && (
-            <Animated.View 
+            <Animated.View
               className="absolute bg-white -bottom-1 rounded-xl left-8 right-8 h-14"
               style={{
-                opacity: collapsedCardAnims[2].interpolate({
+                opacity: collapsedPreviewAnims[1].interpolate({
                   inputRange: [0, 1],
                   outputRange: [0, 0.5] // Fade in to 50% opacity
                 }),
                 transform: [{
-                  translateY: collapsedCardAnims[2].interpolate({
+                  translateY: collapsedPreviewAnims[1].interpolate({
                     inputRange: [0, 1],
                     outputRange: [-30, 0] // Changed to top to bottom direction
                   })
@@ -267,7 +289,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
         </View>
       </View>
     );
-  }, [firstThreeAchievements, getProgressForAchievement, collapsedCardAnims]);
+  }, [firstThreeAchievements, getProgressForAchievement, collapsedPreviewAnims]);
 
   return (
     <View className="relative px-5">

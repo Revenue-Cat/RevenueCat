@@ -2,6 +2,8 @@ import React, { useCallback, useMemo, useState } from "react";
 import { View, Animated, Pressable, Text, Dimensions } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import LottieView from "lottie-react-native";
+import { Ionicons } from "@expo/vector-icons";
+import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from "../contexts/AppContext";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
 import ParallaxBackground from "../components/ParallaxBackground";
@@ -144,13 +146,54 @@ const Home: React.FC<HomeProps> = ({
       {/* Horizontal pan for view switching */}
       <PanGestureHandler onGestureEvent={onHeaderGestureEvent} onHandlerStateChange={handleHeaderGesture}>
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[10]">
-          {/* Fixed Header */}
-          <HomeHeader
-            currentView={currentView}
-            onNavigateToProfile={handleNavigateToProfile}
-            onCoinPurchase={handleCoinPurchase}
-            onViewChange={changeView}
-          />
+          {/* Fixed Buddy Icon and User Coins - outside of swipe animation */}
+          <View className="absolute top-8 left-0 right-0 p-6 z-[60]" pointerEvents="box-none">
+            <View className="flex-row justify-between items-start">
+              {/* Buddy Icon - Fixed */}
+              <Pressable
+                className="w-[60px] mt-2.5 p-0.3"
+                onPress={handleNavigateToProfile}
+              >
+                <Pressable
+                  className="w-7 h-7 rounded-full bg-black/50 justify-center items-center overflow-hidden"
+                  onPress={handleNavigateToProfile}
+                  style={{ position: "relative", transform: [{ translateY: -8 }] }}
+                >
+                  {buddyAnimSource ? (
+                    <LottieView
+                      source={buddyAnimSource}
+                      autoPlay={false}
+                      loop={false}
+                      progress={0.4}
+                      style={{
+                        width: 56,
+                        height: 56,
+                        transform: [{ translateY: 10 }, { scale: 0.8 }],
+                      }}
+                      resizeMode="contain"
+                    />
+                  ) : (
+                    <Ionicons name="person-outline" size={16} color="#ffffff" />
+                  )}
+                </Pressable>
+              </Pressable>
+
+              {/* Spacer for center content */}
+              <View className="flex-1" />
+
+              {/* User Coins - Fixed */}
+              <Pressable
+                className="flex-row items-center bg-black/50 w-[60px] h-7 rounded-3xl py-1 px-2 gap-1.5"
+                onPress={handleCoinPurchase}
+              >
+                <Text className="text-base font-semibold text-amber-500 leading-6">
+                  {userCoins}
+                </Text>
+                <CoinIcon width={16} height={16} />
+              </Pressable>
+            </View>
+          </View>
+
           <Animated.View
             style={{ height: backgroundHeight }}
             pointerEvents="none"
@@ -193,8 +236,15 @@ const Home: React.FC<HomeProps> = ({
               transform: [{ translateX: contentTranslateX }],
             }}
           >
-            {/* Achievements Toggle - positioned at page 0 */}
+            {/* Achievements Page - Header + Toggle */}
             <View style={{ width }}>
+              <HomeHeader
+                currentView="achievements"
+                onNavigateToProfile={handleNavigateToProfile}
+                onCoinPurchase={handleCoinPurchase}
+                onViewChange={changeView}
+                scrollY={scrollY}
+              />
               <AchievementsToggle
                 scrollY={scrollY}
                 isExclusiveSelected={isExclusiveSelected}
@@ -202,11 +252,26 @@ const Home: React.FC<HomeProps> = ({
               />
             </View>
 
-            {/* Home Toggle - no toggle needed for home */}
-            <View style={{ width }} />
-
-            {/* Shop Toggle - positioned at page 2 */}
+            {/* Home Page - Header only */}
             <View style={{ width }}>
+              <HomeHeader
+                currentView="home"
+                onNavigateToProfile={handleNavigateToProfile}
+                onCoinPurchase={handleCoinPurchase}
+                onViewChange={changeView}
+                scrollY={scrollY}
+              />
+            </View>
+
+            {/* Shop Page - Header + Toggle */}
+            <View style={{ width }}>
+              <HomeHeader
+                currentView="shop"
+                onNavigateToProfile={handleNavigateToProfile}
+                onCoinPurchase={handleCoinPurchase}
+                onViewChange={changeView}
+                scrollY={scrollY}
+              />
               <ShopToggle
                 scrollY={scrollY}
                 isScenesSelected={isScenesSelected}
