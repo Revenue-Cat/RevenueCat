@@ -137,14 +137,6 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
     [scrollY, floatAnim4]
   );
 
-  // Calculate layer heights based on the provided height
-  const getLayerHeight = (layerIndex: number) => {
-    // Percentage-based proportions relative to base height
-    // Original heights: 390, 350, 325, 320 → Converted to percentages
-    const percentages = [118, 106, 98, 94]; // Percentage of base height
-    return Math.round(height * (percentages[layerIndex] / 100));
-  };
-
   const edge = (layerH: number) => {
     if (anchor === "top") return { top: 0 } as const;
     if (anchor === "bottom") return { bottom: 0 } as const;
@@ -156,13 +148,13 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {/* Background Layer 4 - Furthest back (fastest) */}
       <Animated.View
         className="absolute left-0 right-0"
-        style={{ zIndex: 40, ...edge(getLayerHeight(0)) }}
+        style={{ zIndex: 40, ...edge(400) }}
       >
         <Animated.Image
           source={parallaxSlices.slice4}
           style={{
             width: "100%",
-            height: getLayerHeight(0),
+            height: 390,
             transform: layer4Transform,
           }}
           resizeMode="cover"
@@ -172,13 +164,13 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {/* Background Layer 3 - Third layer */}
       <Animated.View
         className="absolute left-0 right-0"
-        style={{ zIndex: 30, ...edge(getLayerHeight(1)) }}
+        style={{ zIndex: 30, ...edge(350) }}
       >
         <Animated.Image
           source={parallaxSlices.slice3}
           style={{
             width: "100%",
-            height: getLayerHeight(1),
+            height: 350,
             transform: layer3Transform,
           }}
           resizeMode="cover"
@@ -188,13 +180,13 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {/* Background Layer 2 - Second layer */}
       <Animated.View
         className="absolute left-0 right-0"
-        style={{ zIndex: 20, ...edge(getLayerHeight(2)) }}
+        style={{ zIndex: 20, ...edge(325) }}
       >
         <Animated.Image
           source={parallaxSlices.slice2}
           style={{
             width: "100%",
-            height: getLayerHeight(2),
+            height: 325,
             transform: layer2Transform,
           }}
           resizeMode="cover"
@@ -204,13 +196,13 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       {/* Background Layer 1 - Front layer (slowest) */}
       <Animated.View
         className="absolute left-0 right-0"
-        style={{ zIndex: 10, ...edge(getLayerHeight(3)) }}
+        style={{ zIndex: 10, ...edge(320) }}
       >
         <Animated.Image
           source={parallaxSlices.slice1}
           style={{
             width: "100%",
-            height: getLayerHeight(3),
+            height: 320,
             transform: layer1Transform,
           }}
           resizeMode="cover"
