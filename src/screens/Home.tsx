@@ -147,7 +147,7 @@ const Home: React.FC<HomeProps> = ({
       <PanGestureHandler onGestureEvent={onHeaderGestureEvent} onHandlerStateChange={handleHeaderGesture}>
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[10]">
           {/* Fixed Buddy Icon and User Coins - outside of swipe animation */}
-          <View className="absolute top-8 left-0 right-0 p-6 z-[60]" pointerEvents="box-none">
+          <View className="absolute top-10 left-0 right-0 p-6 z-[60]" pointerEvents="box-none">
             <View className="flex-row justify-between items-start">
               {/* Buddy Icon - Fixed */}
               <Pressable
@@ -230,7 +230,7 @@ const Home: React.FC<HomeProps> = ({
               top: 0,
               left: 0,
               right: 0,
-              zIndex: 50,
+              zIndex: 20,
               width: width * 3,
               flexDirection: "row",
               transform: [{ translateX: contentTranslateX }],
@@ -245,11 +245,7 @@ const Home: React.FC<HomeProps> = ({
                 onViewChange={changeView}
                 scrollY={scrollY}
               />
-              <AchievementsToggle
-                scrollY={scrollY}
-                isExclusiveSelected={isExclusiveSelected}
-                setIsExclusiveSelected={handleSetIsExclusiveSelected}
-              />
+             
             </View>
 
             {/* Home Page - Header only */}
@@ -272,6 +268,37 @@ const Home: React.FC<HomeProps> = ({
                 onViewChange={changeView}
                 scrollY={scrollY}
               />
+             
+            </View>
+          </Animated.View>
+           {/* Toggles Container - 3 horizontal pages */}
+          <Animated.View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 50,
+              width: width * 3,
+              flexDirection: "row",
+              transform: [{ translateX: contentTranslateX }],
+            }}
+          >
+            {/* Achievements Page - Header + Toggle */}
+            <View style={{ width }}>
+              <AchievementsToggle
+                scrollY={scrollY}
+                isExclusiveSelected={isExclusiveSelected}
+                setIsExclusiveSelected={handleSetIsExclusiveSelected}
+              />
+            </View>
+
+            {/* Home Page - Header only */}
+            <View style={{ width }} />
+              
+            {/* Shop Page - Header + Toggle */}
+            <View style={{ width }}>
+          
               <ShopToggle
                 scrollY={scrollY}
                 isScenesSelected={isScenesSelected}

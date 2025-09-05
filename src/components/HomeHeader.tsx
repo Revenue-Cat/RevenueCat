@@ -94,18 +94,16 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
 
   return (
     <Animated.View
-      className="absolute top-8 left-0 right-0 p-6"
+      className="absolute top-10 left-0 right-0 p-4"
       style={{ 
-        height: 130, 
         zIndex: 10,
-        transform
       }}
       pointerEvents="box-none"
     >
       {/* Carousel Header - Centered with Consistent Layout */}
-      <View className="items-center justify-center flex-1">
+      <View className="items-center justify-center flex-1 mt-2">
         {/* Title - Consistent positioning */}
-        <Text className="text-lg font-bold text-indigo-950 leading-7 text-center mt-2">
+        <Text className="text-lg font-bold text-indigo-950 leading-7 text-center">
           {getViewTitle()}
         </Text>
 
@@ -165,7 +163,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
       </View>
 
       {/* Bottom Row - Navigation Dots */}
-      <View className="flex-row justify-center mt-1">
+      <View className="flex-row justify-center mt-2">
         <View className="flex-row bg-black/30 w-8 h-2.5 rounded-full px-1 py-0.5 gap-1">
           <Pressable
             className={`w-1.5 h-1.5 rounded-full ${
