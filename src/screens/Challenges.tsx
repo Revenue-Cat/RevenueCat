@@ -3,95 +3,41 @@ import { View, Text, ScrollView, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import ChallengeCard, { ChallengeCardProps } from '../components/ChallengeCard';
-import Challenge1Icon from '../assets/challenges/challenge1.svg';
+import ChallengeModal from '../components/ChallengeModal';
+import { CHALLENGES_DATA, convertToChallengeCardProps } from '../data/challengesData';
 
 const Challenges: React.FC = () => {
   const { t } = useTranslation();
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedChallenge, setSelectedChallenge] = useState<ChallengeCardProps | null>(null);
   
-  // Move challenges array inside component to use translations
-  const sampleChallenges: ChallengeCardProps[] = useMemo(() => [
-    {
-      title: t('challenges.masterOfAir.title'),
-      description: t('challenges.masterOfAir.description'),
-      points: 100,
-      duration: '10 Days',
-      icon: <Challenge1Icon width={100} height={100} />,
-      status: 'active',
-      progress: 40,
-      streak: 4,
-      checkIns: 5,
-    },
-    {
-      title: t('challenges.hydrationBoost.title'),
-      description: t('challenges.hydrationBoost.description'),
-      points: 100,
-      duration: '10 Days',
-      icon: <Challenge1Icon width={100} height={100} />,
-      status: 'locked',
-    },
-    {
-      title: t('challenges.stepSlayer.title'),
-      description: t('challenges.stepSlayer.description'),
-      points: 100,
-      duration: '10 Days',
-      icon: <Challenge1Icon width={100} height={100} />,
-      status: 'locked',
-    },
-    {
-      title: t('challenges.snackBreak.title'),
-      description: t('challenges.snackBreak.description'),
-      points: 100,
-      duration: '10 Days',
-      icon: <Challenge1Icon width={100} height={100} />,
-      status: 'locked',
-    },
-    {
-      title: t('challenges.calmPower.title'),
-      description: t('challenges.calmPower.description'),
-      points: 100,
-      duration: '10 Days',
-      icon: <Challenge1Icon width={100} height={100} />,
-      status: 'locked',
-    },
-    {
-      title: t('challenges.fistFlow.title'),
-      description: t('challenges.fistFlow.description'),
-      points: 100,
-      duration: '10 Days',
-      icon: <Challenge1Icon width={100} height={100} />,
-      status: 'locked',
-    },
-    {
-      title: t('challenges.refresh.title'),
-      description: t('challenges.refresh.description'),
-      points: 100,
-      duration: '10 Days',
-      icon: <Challenge1Icon width={100} height={100} />,
-      status: 'locked',
-    },
-    {
-      title: t('challenges.craveCrusher.title'),
-      description: t('challenges.craveCrusher.description'),
-      points: 100,
-      duration: '10 Days',
-      icon: <Challenge1Icon width={100} height={100} />,
-      status: 'locked',
-    },
-    {
-      title: t('challenges.flowMinute.title'),
-      description: t('challenges.flowMinute.description'),
-      points: 100,
-      duration: '10 Days',
-      icon: <Challenge1Icon width={100} height={100} />,
-      status: 'locked',
-    }
-  ], [t]);
+  // Convert challenges data to ChallengeCardProps format
+  const sampleChallenges: ChallengeCardProps[] = useMemo(() => {
+    return CHALLENGES_DATA.map((challenge, index) => {
+      // First challenge is active, others are locked
+      const status = index === 0 ? 'active' : 'locked';
+      const progress = index === 0 ? 40 : undefined;
+      const streak = index === 0 ? 4 : undefined;
+      const checkIns = index === 0 ? 5 : undefined;
+      
+      return convertToChallengeCardProps(challenge, status, progress, streak, checkIns);
+    });
+  }, []);
+  
+  // Sort challenges to show unlocked first, then locked
+  const sortedChallenges = useMemo(() => {
+    return [...sampleChallenges].sort((a, b) => {
+      if (a.status === 'active' && b.status === 'locked') return -1;
+      if (a.status === 'locked' && b.status === 'active') return 1;
+      return 0;
+    });
+  }, [sampleChallenges]);
   
   // Memoize the visible challenges to prevent recalculation
   const visibleChallenges = useMemo(() => 
-    isCollapsed ? sampleChallenges.slice(0, 3) : sampleChallenges,
-    [isCollapsed, sampleChallenges]
+    isCollapsed ? sortedChallenges.slice(0, 3) : sortedChallenges,
+    [isCollapsed, sortedChallenges]
   );
 
   // Memoize the toggle callback
@@ -104,24 +50,43 @@ const Challenges: React.FC = () => {
     // Handle check-in logic here
   }, []);
 
+  // Memoize the challenge press callback
+  const handleChallengePress = useCallback((challenge: ChallengeCardProps) => {
+    if (challenge.status === 'locked') {
+      setSelectedChallenge(challenge);
+      setModalVisible(true);
+    }
+  }, []);
+
+  // Memoize the modal close callback
+  const handleCloseModal = useCallback(() => {
+    setModalVisible(false);
+    setSelectedChallenge(null);
+  }, []);
+
   // Memoize the challenges list
   const challengesList = useMemo(() => (
     <View className="px-0">
       {visibleChallenges.map((ch, idx) => (
-        <MemoizedChallengeCard key={`${ch.title}-${idx}`} {...ch} onCheckIn={handleCheckIn} />
+        <MemoizedChallengeCard 
+          key={`${ch.title}-${idx}`} 
+          {...ch} 
+          onCheckIn={handleCheckIn}
+          onPress={() => handleChallengePress(ch)}
+        />
       ))}
 
       {/* Collapse/Expand Button */}
       <View className="items-center mt-2 mb-8">
         <Pressable
-          className="w-10 h-10 rounded-full bg-gray-600 justify-center items-center shadow-lg"
+          className="flex-row items-center bg-black/50 px-2 py-2 rounded-full shadow-lg"
           onPress={toggleCollapsed}
         >
-          <Ionicons name={isCollapsed ? 'chevron-down' : 'chevron-up'} size={20} color="#ffffff" />
+          <Ionicons name={isCollapsed ? "arrow-down" : "arrow-up"} size={16} color="#ffffff" />
         </Pressable>
       </View>
     </View>
-  ), [visibleChallenges, handleCheckIn, toggleCollapsed, isCollapsed]);
+  ), [visibleChallenges, handleCheckIn, handleChallengePress, toggleCollapsed, isCollapsed]);
 
   // Memoize the title
   const title = useMemo(() => (
@@ -129,12 +94,19 @@ const Challenges: React.FC = () => {
   ), [t]);
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 mb-8 pb-8">
       {/* Title */}
       {title}
 
       {/* Challenge List */}
       {challengesList}
+
+      {/* Challenge Modal */}
+      <ChallengeModal
+        visible={modalVisible}
+        challenge={selectedChallenge}
+        onClose={handleCloseModal}
+      />
     </View>
   );
 };

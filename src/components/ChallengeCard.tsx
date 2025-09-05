@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import CoinIcon from "../assets/icons/coins.svg";
 
 export type ChallengeStatus = "active" | "locked";
 
@@ -11,12 +12,16 @@ export interface ChallengeCardProps {
   points: number;
   duration: string; // e.g., "10 Days"
   imageUrl?: string;
-  icon?: any;
   status: ChallengeStatus;
   progress?: number; // 0-100
   streak?: number; // e.g., 4
   checkIns?: number; // e.g., 5
   onCheckIn?: () => void;
+  onPress?: () => void;
+  cardIcon?: any;
+  icon?: any;
+  motivation: string[];
+  buddyAdvice: string[];
 }
 
 const ChallengeCard: React.FC<ChallengeCardProps> = ({
@@ -31,23 +36,22 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   streak,
   checkIns,
   onCheckIn,
+  onPress,
 }) => {
   const { t } = useTranslation();
   const isLocked = status === "locked";
   const showProgress = !isLocked && typeof progress === "number";
 
-  return (
+  const CardContent = (
     <View className="bg-white rounded-2xl p-4 mb-4">
       {/* Main Content */}
       <View className="flex-row justify-between items-start mb-3">
         {/* Left: points badge + duration + title + description */}
         <View className="flex-1 mr-3">
-          <View className="self-start flex-row items-center bg-orange-50 border border-orange-300 px-2 py-1 rounded-full mb-2">
-            <Ionicons name="star" size={14} color="#F97316" />
-            <Text className="text-orange-500 font-semibold text-s ml-1">
-              +{points}
-            </Text>
-          </View>
+          <View className="flex-row items-center border border-orange-500 px-3 py-0.5 rounded-full self-start mb-1 gap-1">
+          <Text className="text-base font-bold text-orange-500">+{points}</Text>
+          <CoinIcon width={12} height={12} color="#FF6B35" />
+        </View>
           <Text className="text-gray-500 text-s mb-2">
             {duration} {t("challenges.challenge")}
           </Text>
@@ -120,6 +124,14 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
         </View>
       )}
     </View>
+  );
+
+  return onPress ? (
+    <Pressable onPress={onPress}>
+      {CardContent}
+    </Pressable>
+  ) : (
+    CardContent
   );
 };
 
