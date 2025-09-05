@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { View, Pressable, Image, Animated } from 'react-native';
+import { View, Pressable, Text, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import AchievementCard from './AchievementCard';
 import { useApp } from '../contexts/AppContext';
+import { achievementService } from '../services/achievementService';
 
 // Helper function to identify regular achievements
 const isRegularAchievement = (achievementId: string): boolean => {
@@ -47,13 +49,22 @@ const isRegularAchievement = (achievementId: string): boolean => {
 interface AchievementSectionProps {
   isCollapsed: boolean;
   onToggle: () => void;
+  onNavigateToProgressChallenges?: () => void;
 }
 
 const AchievementSection: React.FC<AchievementSectionProps> = ({
   isCollapsed,
-  onToggle
+  onToggle,
+  onNavigateToProgressChallenges
 }) => {
+  const { t } = useTranslation();
   const { achievements, getProgressForAchievement } = useApp();
+  
+  // Get translated achievements
+  const translatedAchievements = useMemo(
+    () => achievementService.getTranslatedAchievements(t),
+    [t]
+  );
   
   // Unified animation values for smooth cascading effect
   const cardAnimations = useRef([
@@ -68,9 +79,9 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
     new Animated.Value(0)  // Card 3 preview - starts hidden
   ]).current;
 
-  // Get the first 3 non-completed regular achievements
+  // Get the first 3 non-completed regular achievements (using translated achievements)
   const firstThreeAchievements = useMemo(() => {
-    const regularAchievements = achievements.filter(achievement => 
+    const regularAchievements = translatedAchievements.filter(achievement => 
       isRegularAchievement(achievement.id)
     );
 
@@ -80,7 +91,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
     });
 
     return nonCompletedRegularAchievements.slice(0, 3);
-  }, [achievements, getProgressForAchievement]);
+  }, [translatedAchievements, getProgressForAchievement]);
 
   // Initialize animations properly on mount
   useEffect(() => {
@@ -167,8 +178,11 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
     >            
       {firstThreeAchievements.map((achievement, index) => {
         const progress = getProgressForAchievement(achievement.id);
-        const timeLeft = progress.percentage === 100 ? "Completed!" : `${Math.max(0, progress.max - progress.current)}d left`;
-        
+        const timeLeft = progress.percentage === 100 
+          ? String(t('achievements.completed', 'Completed!')) 
+          : t('achievements.daysLeft', '{{days}}d left', { days: Math.max(0, progress.max - progress.current) });
+        // const timeLeft = progress.percentage === 100 ? "Completed!" : `${Math.max(0, progress.max - progress.current)}d left`;
+
         if (index === 0) {
           // First card - no animation, appears immediately
           return (
@@ -230,7 +244,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
           {/* Card 2 - Second achievement (showing a little) */}
           {firstThreeAchievements.length > 1 && (
             <Animated.View
-              className="absolute bg-white bottom-1 rounded-xl left-4 right-4 h-20 border"
+              className="absolute bg-white bottom-5 rounded-xl left-4 right-4 h-20 border"
               style={{
                 opacity: collapsedPreviewAnims[0].interpolate({
                   inputRange: [0, 1],
@@ -248,7 +262,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
           {/* Card 3 - Third achievement (showing a little less) */}
           {firstThreeAchievements.length > 2 && (
             <Animated.View
-              className="absolute bg-white -bottom-1 rounded-xl left-8 right-8 h-14"
+              className="absolute bg-white bottom-3 rounded-xl left-8 right-8 h-14"
               style={{
                 opacity: collapsedPreviewAnims[1].interpolate({
                   inputRange: [0, 1],
@@ -278,7 +292,9 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
             reward={firstThreeAchievements[0].coins || 0}
             timeLeft={(() => {
               const progress = getProgressForAchievement(firstThreeAchievements[0].id);
-              return progress.percentage === 100 ? "Completed!" : `${Math.max(0, progress.max - progress.current)}d left`;
+              return progress.percentage === 100 
+                ? String(t('achievements.completed', 'Completed!')) 
+                : t('achievements.daysLeft', '{{days}}d left', { days: Math.max(0, progress.max - progress.current) });
             })()}
             emoji={firstThreeAchievements[0].emoji}
             icon={firstThreeAchievements[0].icon}
@@ -295,7 +311,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
     <View className="relative px-5">
       {/* Toggle Arrow Button */}
       <Pressable 
-        className="absolute bottom-2 right-1/2 left-1/2 z-10 bg-black/50 rounded-full justify-center items-center px-1 py-2 z-5"
+        className="absolute bottom-2 right-1/2 left-1/2 z-10 bg-black/50 rounded-full justify-center items-center px-1 py-2"
         onPress={onToggle}
       >
         <Ionicons 
@@ -304,6 +320,21 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
           color="#ffffff"
         />
       </Pressable>
+
+      {/* More Button - Only show when cards are open, positioned in bottom right corner */}
+        {!isCollapsed && onNavigateToProgressChallenges && (
+          <Pressable 
+            className="absolute bottom-2 right-5 z-10 bg-black/50 rounded-full justify-center items-center px-3 py-2 flex-row gap-1"
+            onPress={onNavigateToProgressChallenges}
+          >
+            <Text className="text-white text-md">{t('achievements.more', 'More')}</Text>
+            <Ionicons 
+              name="arrow-forward" 
+              size={16} 
+              color="#ffffff"
+            />
+          </Pressable>
+        )}
 
       {!isCollapsed ? achievementCardsContent : collapsedAchievementView}
     </View>

@@ -6,12 +6,18 @@
       "subtitle": "Exclusive achievements are under construction",
       "title": "Coming Soon"
     },
+    "completed": "Completed!",
     "completedOn": "Completed on",
+    "daysLeft": "{{days}}d left",
     "locked": "Locked. Update your plan to unlock this achievement.",
+    "more": "More",
     "share": "Share",
     "timeLeft": "Time left",
     "update": "Update",
     "waitForLevel": "Wait. Reach the required level to unlock this achievement."
+  },
+  "progressChallenges": {
+    "title": "Progress challenges"
   },
   "buddies": {
     "fox-m": {

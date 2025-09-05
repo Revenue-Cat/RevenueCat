@@ -300,14 +300,14 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
         (progress?.percentage || 0) > 0 &&
         (progress?.percentage || 0) < 100 &&
         !isFirstThreeAchievement(achievement.id, getProgressForAchievement) && (
-          <View className="flex-row justify-center items-center mt-4">
+          <View className="flex-row  mt-4">
             <Ionicons
-              name="information-circle"
-              size={16}
+              name="information-circle-outline"
+              size={20}
               color={isDark ? "#485569" : "#64748B"}
             />
             <Text
-              className={`text-s text-center ml-2 ${
+              className={`text-s ml-2 ${
                 isDark ? "text-slate-100" : "text-slate-500"
               }`}
             >

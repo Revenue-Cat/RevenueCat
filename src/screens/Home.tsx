@@ -24,6 +24,7 @@ interface HomeProps {
   onShowChatAssistance: () => void;
   onNavigateToProfile: () => void;
   onNavigateToAchievements: () => void;
+  onNavigateToProgressChallenges: () => void;
   onNavigateToShop: () => void;
 }
 
@@ -33,6 +34,7 @@ const Home: React.FC<HomeProps> = ({
   onShowChatAssistance,
   onNavigateToProfile,
   onNavigateToAchievements,
+  onNavigateToProgressChallenges,
   onNavigateToShop,
 }) => {
   const {
@@ -119,6 +121,10 @@ const Home: React.FC<HomeProps> = ({
   const handleNavigateToShop = useCallback(() => {
     onNavigateToShop();
   }, [onNavigateToShop]);
+
+  const handleNavigateToProgressChallenges = useCallback(() => {
+    onNavigateToProgressChallenges();
+  }, [onNavigateToProgressChallenges]);
 
   const handleShowCravingSOS = useCallback(() => {
     onShowCravingSOS();
@@ -357,6 +363,7 @@ const Home: React.FC<HomeProps> = ({
               <AchievementSection
                 isCollapsed={isAchievementsCollapsed}
                 onToggle={toggleAchievements}
+                onNavigateToProgressChallenges={handleNavigateToProgressChallenges}
               />
 
               <HomeContent

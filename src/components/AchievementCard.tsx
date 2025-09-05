@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import ProgressRing from "./ProgressRing";
@@ -20,6 +20,8 @@ interface AchievementCardProps {
   progressPercentage?: number;
   isFirstThree?: boolean;
   isRegularAchievement?: boolean;
+  onPress?: () => void;
+  progressRingColor?: string;
 }
 
 const AchievementCard: React.FC<AchievementCardProps> = ({
@@ -33,8 +35,10 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
   progressPercentage = 0,
   isFirstThree = false,
   isRegularAchievement = false,
+  onPress,
+  progressRingColor = "#22C55E",
 }) => {
-  return (
+  const CardContent = (
     <View
       className={`bg-white rounded-2xl p-4 mb-3 flex-row items-center shadow-lg ${containerClassName}`}
     >
@@ -54,7 +58,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
             progress={progressPercentage}
             size={80}
             strokeWidth={3}
-            color={"#22C55E"}
+            color={progressRingColor}
             borderColor={"#d7d9df"}
           />
         )}
@@ -150,6 +154,16 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
       </View>
     </View>
   );
+
+  if (onPress) {
+    return (
+      <Pressable onPress={onPress}>
+        {CardContent}
+      </Pressable>
+    );
+  }
+
+  return CardContent;
 };
 
 export default React.memo(AchievementCard);

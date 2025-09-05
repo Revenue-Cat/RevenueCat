@@ -14,6 +14,7 @@ import ChallengeStart from "./src/screens/ChallengeStart";
 import Home from "./src/screens/Home";
 import Profile from "./src/screens/Profile";
 import Achievements from "./src/screens/Achievements";
+import ProgressChallenges from "./src/screens/ProgressChallenges";
 import Shop from "./src/screens/Shop";
 import CravingSOSModal from "./src/components/CravingSOSModal";
 import BreathingExercise from "./src/screens/BreathingExercise";
@@ -32,6 +33,7 @@ type Screen =
   | "home"
   | "profile"
   | "achievements"
+  | "progress-challenges"
   | "shop"
   | "edit-habits"
   | "edit-buddy";
@@ -134,6 +136,7 @@ const AppContent: React.FC = () => {
           onShowChatAssistance={handleShowChatAssistance}
           onNavigateToProfile={() => navigateTo("profile")}
           onNavigateToAchievements={() => navigateTo("achievements")}
+          onNavigateToProgressChallenges={() => navigateTo("progress-challenges")}
           onNavigateToShop={() => navigateTo("shop")}
         />
       )}
@@ -168,6 +171,12 @@ const AppContent: React.FC = () => {
         <Achievements
           onBack={() => navigateTo("home")}
           isExclusiveSelected={false}
+        />
+      )}
+
+      {currentScreen === "progress-challenges" && (
+        <ProgressChallenges
+          onBack={() => navigateTo("home")}
         />
       )}
 

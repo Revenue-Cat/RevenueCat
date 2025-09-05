@@ -6,12 +6,18 @@
       "subtitle": "Los logros exclusivos están en construcción",
       "title": "Próximamente"
     },
+    "completed": "¡Completado!",
     "completedOn": "Completado el",
+    "daysLeft": "{{days}}d restantes",
     "locked": "Bloqueado. Actualiza tu plan para desbloquear este logro.",
+    "more": "Más",
     "share": "Compartir",
     "timeLeft": "Tiempo restante",
     "update": "Actualizar",
     "waitForLevel": "Espera. Alcanza el nivel requerido para desbloquear este logro."
+  },
+  "progressChallenges": {
+    "title": "Desafíos de progreso"
   },
   "buddies": {
     "fox-m": {
