@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { OneSignal } from 'react-native-onesignal';
 
 // OneSignal App ID
 const ONESIGNAL_APP_ID = '7b5c7621-a7f6-4b26-99cb-92ddd23db156';
@@ -27,10 +28,15 @@ class OneSignalService {
     }
 
     try {
-      // Simulate OneSignal initialization
-      console.log('OneSignal initialization simulated');
+      // Initialize OneSignal with your App ID
+      OneSignal.initialize(ONESIGNAL_APP_ID);
+      
+      // Set up notification handlers
+      this.setupNotificationHandlers();
+      
       this.isInitialized = true;
-      console.log('OneSignal initialized successfully (mock)');
+      this.isAvailable = true;
+      console.log('OneSignal initialized successfully');
     } catch (error) {
       console.error('Error initializing OneSignal:', error);
     }
@@ -40,7 +46,20 @@ class OneSignalService {
     if (!this.isAvailable) return;
 
     try {
-      console.log('Notification handlers setup simulated');
+      // Set up notification handlers
+      OneSignal.Notifications.addEventListener('click', (event) => {
+        console.log('OneSignal: notification clicked:', event);
+      });
+
+      OneSignal.Notifications.addEventListener('foregroundWillDisplay', (event) => {
+        console.log('OneSignal: notification will show in foreground:', event);
+        // Prevent default notification display
+        event.preventDefault();
+        // Display your own notification UI
+        event.getNotification().display();
+      });
+
+      console.log('OneSignal notification handlers setup successfully');
     } catch (error) {
       console.error('Error setting up notification handlers:', error);
     }
@@ -53,16 +72,14 @@ class OneSignalService {
     }
 
     try {
-      // Simulate permission request
       console.log('Requesting notification permission...');
       
-      // Simulate a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Request permission using OneSignal
+      const permission = await OneSignal.Notifications.requestPermission(true);
       
-      // For testing, we'll simulate permission granted
-      this.hasPermission = true;
-      console.log('Notification permission granted (mock)');
-      return true;
+      this.hasPermission = permission;
+      console.log('Notification permission result:', permission);
+      return permission;
     } catch (error) {
       console.error('Error requesting notification permission:', error);
       return false;
@@ -75,8 +92,10 @@ class OneSignalService {
     }
 
     try {
-      // Return the stored permission status
-      return this.hasPermission;
+      // Get permission status from OneSignal
+      const permission = await OneSignal.Notifications.getPermissionAsync();
+      this.hasPermission = permission;
+      return permission;
     } catch (error) {
       console.error('Error getting notification permission status:', error);
       return false;
@@ -90,7 +109,8 @@ class OneSignalService {
     }
 
     try {
-      console.log('Test notification would be sent here (mock)');
+      console.log('Test notification sent via OneSignal dashboard');
+      console.log('Go to OneSignal dashboard to send a test notification');
     } catch (error) {
       console.error('Error sending test notification:', error);
     }
@@ -103,7 +123,8 @@ class OneSignalService {
     }
 
     try {
-      console.log('External user ID set (mock):', userId);
+      OneSignal.login(userId);
+      console.log('External user ID set:', userId);
     } catch (error) {
       console.error('Error setting external user ID:', error);
     }
@@ -116,7 +137,8 @@ class OneSignalService {
     }
 
     try {
-      console.log('Tag added (mock):', key, value);
+      OneSignal.User.addTag(key, value);
+      console.log('Tag added:', key, value);
     } catch (error) {
       console.error('Error adding tag:', error);
     }

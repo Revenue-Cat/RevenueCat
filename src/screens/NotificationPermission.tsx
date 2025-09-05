@@ -195,6 +195,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({
             )}
           </Text>
         )}
+
       </View>
 
       {/* Custom Permission Modal */}
