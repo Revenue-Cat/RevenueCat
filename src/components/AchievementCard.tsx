@@ -49,7 +49,13 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
         </View>
         <Text className="text-s text-gray-500 mb-2">{timeLeft}</Text>
         <Text className="text-base font-bold text-black mb-1">{title}</Text>
-        <Text className="text-sm text-gray-500 leading-5">{description}</Text>
+        <Text 
+          className="text-sm text-gray-500 leading-5" 
+          numberOfLines={1} 
+          ellipsizeMode="tail"
+        >
+          {description}
+        </Text>
       </View>
       <View className="w-15 h-15 rounded-full relative">
         {/* Progress Ring */}
