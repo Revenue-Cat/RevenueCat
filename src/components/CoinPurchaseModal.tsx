@@ -51,7 +51,6 @@ const CoinPurchaseModal: React.FC = () => {
       setUserCoins(coinsBalance);
       setShowCoinPurchase(false);
     } catch (error: any) {
-      alert("There is a problem retrieving the product from the AppStore, it will be available once the products are validated.")
       console.log("-----------error", error)
       if (error.userCancelled) {
         // User cancelled the purchase, do nothing

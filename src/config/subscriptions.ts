@@ -67,7 +67,7 @@ export const COIN_PACKS: CoinPack[] = [
   },
   {
     id: "popular",
-    label: "Booster",
+    label: "Popular",
     coins: 300,
     price: 3.99,
     oldPrice: 5.0,
@@ -78,7 +78,7 @@ export const COIN_PACKS: CoinPack[] = [
   },
   {
     id: "best",
-    label: "Pro",
+    label: "Best",
     coins: 500,
     price: 4.99,
     oldPrice: 9.0,
