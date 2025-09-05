@@ -5,32 +5,45 @@ import { useTranslation } from 'react-i18next';
 import ChallengeCard, { ChallengeCardProps } from '../components/ChallengeCard';
 import ChallengeModal from '../components/ChallengeModal';
 import { CHALLENGES_DATA, convertToChallengeCardProps } from '../data/challengesData';
+import { useApp } from '../contexts/AppContext';
 
 const Challenges: React.FC = () => {
   const { t } = useTranslation();
+  const { getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState<ChallengeCardProps | null>(null);
-  
+  const [selectedChallengeId, setSelectedChallengeId] = useState<string | null>(null);
+
   // Convert challenges data to ChallengeCardProps format
   const sampleChallenges: ChallengeCardProps[] = useMemo(() => {
-    return CHALLENGES_DATA.map((challenge, index) => {
-      // First challenge is active, others are locked
-      const status = index === 0 ? 'active' : 'locked';
-      const progress = index === 0 ? 40 : undefined;
-      const streak = index === 0 ? 4 : undefined;
-      const checkIns = index === 0 ? 5 : undefined;
+    return CHALLENGES_DATA.map((challenge) => {
+      const status = getChallengeStatus(challenge.id);
+      const progressData = getChallengeProgress(challenge.id);
+      console.log("status", status)
+      // Calculate progress based on time elapsed since start date (only for inprogress challenges)
+      const timeBasedProgress = status === 'inprogress' ? calculateProgressBasedOnTime(
+        challenge.id, 
+        challenge.duration, 
+        progressData.startDate
+      ) : 0;
       
-      return convertToChallengeCardProps(challenge, status, progress, streak, checkIns);
+      return convertToChallengeCardProps(
+        challenge, 
+        status, 
+        timeBasedProgress, 
+        progressData.streak, 
+        progressData.checkIns
+      );
     });
-  }, []);
+  }, [getChallengeStatus, getChallengeProgress, calculateProgressBasedOnTime]);
   
   // Sort challenges to show unlocked first, then locked
   const sortedChallenges = useMemo(() => {
     return [...sampleChallenges].sort((a, b) => {
-      if (a.status === 'active' && b.status === 'locked') return -1;
-      if (a.status === 'locked' && b.status === 'active') return 1;
-      return 0;
+      // Priority: active > inprogress > locked
+      const statusOrder = { 'active': 0, 'inprogress': 1, 'locked': 2 };
+      return statusOrder[a.status] - statusOrder[b.status];
     });
   }, [sampleChallenges]);
   
@@ -46,35 +59,47 @@ const Challenges: React.FC = () => {
   }, []);
 
   // Memoize the check-in callback
-  const handleCheckIn = useCallback(() => {
-    // Handle check-in logic here
-  }, []);
+  const handleCheckIn = useCallback((challengeId: string) => {
+    const currentProgress = getChallengeProgress(challengeId);
+    const newCheckIns = currentProgress.checkIns + 1;
+    const newStreak = currentProgress.streak + 1;
+    
+    // Progress is calculated based on time elapsed, so we don't need to set it manually
+    updateChallengeProgress(challengeId, 0, newStreak, newCheckIns);
+  }, [getChallengeProgress, updateChallengeProgress]);
 
   // Memoize the challenge press callback
-  const handleChallengePress = useCallback((challenge: ChallengeCardProps) => {
-    if (challenge.status === 'locked') {
-      setSelectedChallenge(challenge);
-      setModalVisible(true);
-    }
+  const handleChallengePress = useCallback((challenge: ChallengeCardProps, challengeId: string) => {
+    setSelectedChallenge(challenge);
+    setSelectedChallengeId(challengeId);
+    setModalVisible(true);
   }, []);
 
   // Memoize the modal close callback
   const handleCloseModal = useCallback(() => {
     setModalVisible(false);
     setSelectedChallenge(null);
+    setSelectedChallengeId(null);
   }, []);
 
   // Memoize the challenges list
   const challengesList = useMemo(() => (
     <View className="px-0">
-      {visibleChallenges.map((ch, idx) => (
-        <MemoizedChallengeCard 
-          key={`${ch.title}-${idx}`} 
-          {...ch} 
-          onCheckIn={handleCheckIn}
-          onPress={() => handleChallengePress(ch)}
-        />
-      ))}
+      {visibleChallenges.map((ch) => {
+        if (!ch.id) {
+          console.warn('Challenge ID not found for:', ch.title);
+          return null;
+        }
+        
+        return (
+          <MemoizedChallengeCard 
+            key={`${ch.title}-${ch.id}`} 
+            {...ch} 
+            onCheckIn={() => handleCheckIn(ch.id!)}
+            onPress={() => handleChallengePress(ch, ch.id!)}
+          />
+        );
+      })}
 
       {/* Collapse/Expand Button */}
       <View className="items-center mt-2 mb-8">
@@ -103,8 +128,10 @@ const Challenges: React.FC = () => {
 
       {/* Challenge Modal */}
       <ChallengeModal
+        key={selectedChallengeId} // Force re-render when challengeId changes
         visible={modalVisible}
         challenge={selectedChallenge}
+        challengeId={selectedChallengeId || undefined}
         onClose={handleCloseModal}
       />
     </View>

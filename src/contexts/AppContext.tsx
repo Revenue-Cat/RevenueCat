@@ -44,6 +44,11 @@ interface AppState {
   daysSmokeFree: number;
   startDate: Date | null;
 
+  // Challenge system
+  activeChallenges: string[];   // Array of challenge IDs that are active (can be started)
+  inProgressChallenges: string[];   // Array of challenge IDs that are in progress (started with startDate)
+  challengeProgress: Record<string, { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean }>; // Progress tracking for each challenge
+
   // UI state
   showShop: boolean;
   showCoinPurchase: boolean;
@@ -78,6 +83,14 @@ interface AppState {
   setPackPrice: (value: string) => void;
   setPackPriceCurrency: (value: string) => void;
   setGoal: (value: string) => void;
+
+  // Challenge actions
+  startChallenge: (challengeId: string) => void;
+  updateChallengeProgress: (challengeId: string, progress: number, streak: number, checkIns: number) => void;
+  cancelChallenge: (challengeId: string) => void;
+  getChallengeStatus: (challengeId: string) => 'active' | 'locked' | 'inprogress';
+  getChallengeProgress: (challengeId: string) => { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean };
+  calculateProgressBasedOnTime: (challengeId: string, duration: string, startDate: Date | null | undefined) => number;
 }
 
 const defaultCharacter: ShopItem = {
@@ -135,6 +148,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
   const [daysSmokeFree, setDaysSmokeFree] = useState(0);
 
+  // Challenge system state
+  const [activeChallenges, setActiveChallenges] = useState<string[]>([]);
+  const [inProgressChallenges, setInProgressChallenges] = useState<string[]>([]);
+  const [challengeProgress, setChallengeProgress] = useState<Record<string, { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean }>>({});
+
   // UI state
   const [showShop, setShowShop] = useState(false);
   const [showCoinPurchase, setShowCoinPurchase] = useState(false);
@@ -169,7 +187,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             breathingExercisesCompleted: 0,
             challengesCompleted: 0,
             purchasesMade: 0,
-          })
+          });
+          setActiveChallenges(parsed.activeChallenges || []);
+          setInProgressChallenges(parsed.inProgressChallenges || []);
+          setChallengeProgress(parsed.challengeProgress || {});
         }
       } catch (error) {
         console.error('Failed to load state:', error);
@@ -218,7 +239,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       packPrice,
       packPriceCurrency,
       goal,
-      userProgress
+      userProgress,
+      activeChallenges,
+      inProgressChallenges,
+      challengeProgress
     };
     AsyncStorage.setItem('@app_state', JSON.stringify(stateToSave))
       .catch(error => console.error('Failed to save state:', error));
@@ -237,7 +261,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     packPrice,
     packPriceCurrency,
     goal,
-    userProgress
+    userProgress,
+    activeChallenges,
+    inProgressChallenges,
+    challengeProgress
   ]);
 
   // Memoize all action functions to prevent recreation
@@ -323,6 +350,161 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setPackPrice = useCallback((value: string) => setPackPriceState(value), []);
   const setPackPriceCurrency = useCallback((value: string) => setPackPriceCurrencyState(value), []);
   const setGoal = useCallback((value: string) => setGoalState(value), []);
+
+  // Challenge actions (exposed) - memoized
+  const startChallenge = useCallback((challengeId: string) => {
+    // const startDate = new Date();
+    const startDate = new Date(Date.now() - (5 * 24 * 60 * 60 * 1000)); // 5 days ago
+    
+    console.log('startChallenge called:', {
+      challengeId,
+      currentActiveChallenges: activeChallenges,
+      currentInProgressChallenges: inProgressChallenges
+    });
+    
+    // Remove from activeChallenges and add to inProgressChallenges
+    setActiveChallenges(prev => {
+      const newActive = prev.filter(id => id !== challengeId);
+      console.log('Updated activeChallenges:', newActive);
+      return newActive;
+    });
+    setInProgressChallenges(prev => {
+      if (!prev.includes(challengeId)) {
+        const newInProgress = [...prev, challengeId];
+        console.log('Updated inProgressChallenges:', newInProgress);
+        return newInProgress;
+      }
+      return prev;
+    });
+    
+    // Initialize or update progress for the challenge with start date
+    setChallengeProgress(prev => {
+      const existingProgress = prev[challengeId];
+      return {
+        ...prev,
+        [challengeId]: { 
+          progress: existingProgress?.progress || 0, 
+          streak: existingProgress?.streak || 0, 
+          checkIns: existingProgress?.checkIns || 0, 
+          startDate,
+          isCancelled: false
+        }
+      };
+    });
+  }, [activeChallenges, inProgressChallenges]);
+
+  const updateChallengeProgress = useCallback((challengeId: string, progress: number, streak: number, checkIns: number) => {
+    setChallengeProgress(prev => ({
+      ...prev,
+      [challengeId]: { 
+        progress, 
+        streak, 
+        checkIns, 
+        startDate: prev[challengeId]?.startDate || null 
+      }
+    }));
+  }, []);
+
+  const cancelChallenge = useCallback((challengeId: string) => {
+    console.log('cancelChallenge called:', {
+      challengeId,
+      currentActiveChallenges: activeChallenges,
+      currentInProgressChallenges: inProgressChallenges
+    });
+    
+    // Remove from inProgressChallenges and add to activeChallenges
+    setInProgressChallenges(prev => {
+      const newInProgress = prev.filter(id => id !== challengeId);
+      console.log('Updated inProgressChallenges:', newInProgress);
+      return newInProgress;
+    });
+    setActiveChallenges(prev => {
+      if (!prev.includes(challengeId)) {
+        const newActive = [...prev, challengeId];
+        console.log('Updated activeChallenges:', newActive);
+        return newActive;
+      }
+      return prev;
+    });
+    
+    // Reset progress for the challenge
+    setChallengeProgress(prev => ({
+      ...prev,
+      [challengeId]: {
+        ...prev[challengeId],
+        progress: 0,
+        streak: 0,
+        checkIns: 0,
+        startDate: null,
+        isCancelled: false
+      }
+    }));
+    
+    console.log('Challenge cancelled:', challengeId);
+  }, [activeChallenges, inProgressChallenges]);
+
+  const getChallengeStatus = useCallback((challengeId: string): 'active' | 'locked' | 'inprogress' => {
+    const inProgress = inProgressChallenges.includes(challengeId);
+    const active = activeChallenges.includes(challengeId);
+    
+    console.log('getChallengeStatus:', {
+      challengeId,
+      inProgressChallenges,
+      activeChallenges,
+      inProgress,
+      active
+    });
+    
+    // Priority: inprogress > active > locked
+    if (inProgress) {
+      return 'inprogress'; // Challenge is being worked on
+    }
+    
+    if (active) {
+      return 'active'; // Challenge can be started
+    }
+    
+    return 'locked'; // Challenge not started
+  }, [activeChallenges, inProgressChallenges]);
+
+  const getChallengeProgress = useCallback((challengeId: string) => {
+    return challengeProgress[challengeId] || { progress: 0, streak: 0, checkIns: 0, startDate: null, isCancelled: false };
+  }, [challengeProgress]);
+
+  const calculateProgressBasedOnTime = useCallback((challengeId: string, duration: string, startDate: Date | null | undefined) => {
+    if (!startDate || !(startDate instanceof Date) || isNaN(startDate.getTime())) {
+      console.log('calculateProgressBasedOnTime: Invalid startDate for', challengeId, startDate);
+      return 0;
+    }
+    
+    // Extract number from duration string (e.g., "10 Days" -> 10)
+    const durationMatch = duration.match(/(\d+)/);
+    const totalDays = durationMatch ? parseInt(durationMatch[1]) : 10; // Default to 10 days
+    
+    // Calculate days elapsed since start date
+    const now = new Date();
+    const timeDiff = now.getTime() - startDate.getTime();
+    const daysElapsed = Math.floor(timeDiff / (1000 * 3600 * 24));
+    
+    // Calculate progress based on days elapsed vs total days
+    const progressPerDay = 100 / totalDays;
+    const calculatedProgress = Math.min(daysElapsed * progressPerDay, 100);
+    const finalProgress = Math.round(Math.max(calculatedProgress, 0));
+    
+    console.log('Progress calculation:', {
+      challengeId,
+      duration,
+      totalDays,
+      startDate: startDate.toISOString(),
+      now: now.toISOString(),
+      daysElapsed,
+      progressPerDay,
+      calculatedProgress,
+      finalProgress
+    });
+    
+    return finalProgress;
+  }, []);
 
   // Achievement functions
   const setStartDate = useCallback(async (startDate: Date) => {
@@ -417,6 +599,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     daysSmokeFree,
     startDate: userProgress.startDate,
 
+    // Challenge system
+    activeChallenges,
+    inProgressChallenges,
+    challengeProgress,
+
     showShop,
     showCoinPurchase,
     selectedShopTab,
@@ -447,6 +634,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setPackPrice,
     setPackPriceCurrency,
     setGoal,
+
+    // Challenge actions
+    startChallenge,
+    updateChallengeProgress,
+    cancelChallenge,
+    getChallengeStatus,
+    getChallengeProgress,
+    calculateProgressBasedOnTime,
   }), [
     userCoins,
     selectedBuddy,
@@ -465,6 +660,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     achievements,
     userProgress,
     daysSmokeFree,
+    activeChallenges,
+    inProgressChallenges,
+    challengeProgress,
     showShop,
     showCoinPurchase,
     selectedShopTab,
@@ -474,6 +672,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     getProgressForAchievement,
     resetProgress,
     setSampleData,
+    startChallenge,
+    updateChallengeProgress,
+    cancelChallenge,
+    getChallengeStatus,
+    getChallengeProgress,
+    calculateProgressBasedOnTime,
   ]);
 
   return (

@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import CoinIcon from "../assets/icons/coins.svg";
 
-export type ChallengeStatus = "active" | "locked";
+export type ChallengeStatus = "active" | "locked" | "inprogress";
 
 export interface ChallengeCardProps {
   title: string;
@@ -22,6 +22,7 @@ export interface ChallengeCardProps {
   icon?: any;
   motivation: string[];
   buddyAdvice: string[];
+  id?: string;
 }
 
 const ChallengeCard: React.FC<ChallengeCardProps> = ({
@@ -37,10 +38,13 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   checkIns,
   onCheckIn,
   onPress,
+  id: challengeId
 }) => {
   const { t } = useTranslation();
   const isLocked = status === "locked";
-  const showProgress = !isLocked && typeof progress === "number";
+  const isInProgress = status === "inprogress";
+  const isActive = status === "active";
+  const showProgress = !isLocked && !isActive && typeof progress === "number";
 
   const CardContent = (
     <View className="bg-white rounded-2xl p-4 mb-4">
@@ -76,32 +80,33 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
           ) : (
             <View className="w-full h-full bg-gray-200" />
           )}
-          {/* Overlay: streak or lock */}
+          {/* Overlay: streak, lock, or pause */}
           {isLocked ? (
             <View className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/40 items-center justify-center">
               <Ionicons name="lock-closed" size={14} color="#ffffff" />
             </View>
-          ) : typeof streak === "number" && streak > 0 ? (
-            <View className="absolute top-1.5 right-1.5 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
-              <Text className="text-white text-s font-bold">{streak}</Text>
-            </View>
+          ) : isInProgress ? (
+            typeof streak === "number" && streak > 0 ? (
+              <View className="absolute top-1.5 right-1.5 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
+                <Text className="text-white text-s font-bold">{streak}</Text>
+              </View>
+            ) : null
           ) : null}
         </View>
       </View>
 
-      {/* Actions (only for active) */}
-      {!isLocked && (
+      {/* Actions (only for inprogress) */}
+      {isInProgress && (
         <View>
           {/* Progress */}
           {showProgress && (
             <View className="mb-3">
               <View className="h-2 bg-gray-200 rounded-full overflow-hidden">
                 <View
-                  style={{ width: `${Math.min(Math.max(progress, 0), 100)}%` }}
+                  style={{ width: `${progress}%` }}
                   className="h-full bg-green-500"
                 />
               </View>
-              {/* <Text className="text-s text-gray-500 mt-1">{progress}% complete</Text> */}
             </View>
           )}
 

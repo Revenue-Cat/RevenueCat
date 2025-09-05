@@ -41,6 +41,7 @@ export interface ChallengeData {
   achievement: string;
   achievementDescription: string;
   duration: string;
+  totalDurations: number; // Duration in days for progress calculation
   hasImage: boolean;
   hasAchievement: boolean;
   cardAdvice?: string;
@@ -70,6 +71,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     achievement: 'AirMind',
     achievementDescription: 'You completed 10 days of mindful breathing and beat cravings with calm.',
     duration: '10 Days',
+    totalDurations: 10,
     hasImage: true,
     hasAchievement: true,
     cardIcon: <MasterOfAir />,
@@ -96,6 +98,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     achievement: 'HydroWin',
     achievementDescription: 'Drink a glass of water in mindful sips, feeling each one.',
     duration: '10 Days',
+    totalDurations: 10,
     hasImage: true,
     hasAchievement: true,
     cardAdvice: 'Sip and breathe',
@@ -124,6 +127,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     achievement: 'Strider',
     achievementDescription: 'You stayed smoke-free and strong with 10 days of mindful steps.',
     duration: '10 Days',
+    totalDurations: 10,
     hasImage: true,
     hasAchievement: true,
     cardAdvice: 'Walk to reset',
@@ -152,6 +156,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     achievement: 'Snackcess',
     achievementDescription: 'You stayed smoke-free for 10 days by choosing healthy bites over cigarettes.',
     duration: '10 Days',
+    totalDurations: 10,
     hasImage: true,
     hasAchievement: true,
     cardAdvice: 'Snack instead',
@@ -179,6 +184,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     achievement: 'Zen',
     achievementDescription: 'You completed 10 days of mindful meditation with music to manage cravings.',
     duration: '10 Days',
+    totalDurations: 10,
     hasImage: true,
     hasAchievement: true,
     cardAdvice: 'Meditate and listen',
@@ -206,6 +212,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     achievement: 'Gripped',
     achievementDescription: 'You squeezed and released your fists for 10 days to beat cravings.',
     duration: '10 Days',
+    totalDurations: 10,
     hasImage: true,
     hasAchievement: true,
     cardAdvice: 'Grip and release',
@@ -232,6 +239,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     achievement: 'Splash',
     achievementDescription: 'You completed 10 days of instant cold-water resets instead of cravings.',
     duration: '10 Days',
+    totalDurations: 10,
     hasImage: true,
     hasAchievement: true,
     cardAdvice: 'Splash and refresh',
@@ -260,6 +268,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     achievement: 'Released',
     achievementDescription: 'You drew or wrote your cravings and crushed them for 10 days.',
     duration: '10 Days',
+    totalDurations: 10,
     hasImage: true,
     hasAchievement: true,
     cardAdvice: 'Crumple cravings',
@@ -288,6 +297,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     achievement: 'Stretched',
     achievementDescription: 'You stretched and released tension for 10 days.',
     duration: '10 Days',
+    totalDurations: 10,
     hasImage: true,
     hasAchievement: true,
     cardAdvice: 'Stretch and relax',
@@ -298,7 +308,8 @@ export const CHALLENGES_DATA: ChallengeData[] = [
 ];
 
 // Helper function to convert ChallengeData to ChallengeCardProps
-export const convertToChallengeCardProps = (challenge: ChallengeData, status: 'active' | 'locked' = 'locked', progress?: number, streak?: number, checkIns?: number): ChallengeCardProps => ({
+export const convertToChallengeCardProps = (challenge: ChallengeData, status: 'active' | 'locked' | 'inprogress' = 'locked', progress?: number, streak?: number, checkIns?: number): ChallengeCardProps => ({
+  id: challenge.id,
   title: challenge.title,
   description: challenge.shortDescription,
   points: 100,
