@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import CoinIcon from "../assets/icons/coins.svg";
+import { useApp } from "../contexts/AppContext";
 
 export type ChallengeStatus = "active" | "locked" | "inprogress";
 
@@ -23,6 +24,8 @@ export interface ChallengeCardProps {
   motivation: string[];
   buddyAdvice: string[];
   id?: string;
+  unitWord?: string;
+  totalDurations?: number; // Total duration in days for progress calculation
 }
 
 const ChallengeCard: React.FC<ChallengeCardProps> = ({
@@ -38,13 +41,24 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   checkIns,
   onCheckIn,
   onPress,
-  id: challengeId
+  id: challengeId,
+  totalDurations
 }) => {
   const { t } = useTranslation();
+  const { calculateProgressBasedOnTime, getChallengeProgress } = useApp();
   const isLocked = status === "locked";
   const isInProgress = status === "inprogress";
   const isActive = status === "active";
-  const showProgress = !isLocked && !isActive && typeof progress === "number";
+  
+  // Get progress data for the challenge
+  const progressData = challengeId ? getChallengeProgress(challengeId) : null;
+  
+  // Calculate time-based progress for in-progress challenges (same as ChallengeModal)
+  const timeBasedProgress = challengeId && isInProgress && totalDurations && progressData?.startDate ? 
+    calculateProgressBasedOnTime(challengeId, totalDurations.toString(), new Date(progressData.startDate)) : 
+    progress;
+  
+  const showProgress = !isLocked && !isActive && typeof timeBasedProgress === "number";
 
   const CardContent = (
     <View className="bg-white rounded-2xl p-4 mb-4">
@@ -103,7 +117,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
             <View className="mb-3">
               <View className="h-2 bg-gray-200 rounded-full overflow-hidden">
                 <View
-                  style={{ width: `${progress}%` }}
+                  style={{ width: `${timeBasedProgress}%` }}
                   className="h-full bg-green-500"
                 />
               </View>

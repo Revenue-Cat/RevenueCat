@@ -48,6 +48,7 @@ export interface ChallengeData {
   cardAdviceDescription?: string;
   cardIcon?: any;
   icon?: any;
+  unitWord: string; // Word to display for tracking (e.g., "Glasses", "Times", "Walks")
 }
 
 export const CHALLENGES_DATA: ChallengeData[] = [
@@ -75,7 +76,8 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     hasImage: true,
     hasAchievement: true,
     cardIcon: <MasterOfAir />,
-    icon: <MasterOfAirIcon />
+    icon: <MasterOfAirIcon />,
+    unitWord: 'Times'
   },
   {
     id: 'master-of-air-water',
@@ -105,6 +107,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardIcon: <MasterOfAirWater />,
     icon: <MasterOfAirWaterIcon />,
     cardAdviceDescription: 'Replace the craving with a glass of water. Slowly drink the water, focusing on the taste and sensations. Take a few deep breaths and relax. If the craving returns — repeat the steps.',
+    unitWord: 'Glasses'
   },
   {
     id: 'master-of-air-walk',
@@ -133,7 +136,8 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdvice: 'Walk to reset',
     cardAdviceDescription: 'When you feel the urge to smoke, walk 500 steps to clear your mind and reset your body. This helps distract you from cravings and feel in control.',
     cardIcon: <MasterOfAirWalk />,
-    icon: <MasterOfAirWalkIcon />
+    icon: <MasterOfAirWalkIcon />,
+    unitWord: 'Walks'
   },
   {
     id: 'snack-break',
@@ -162,7 +166,8 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdvice: 'Snack instead',
     cardAdviceDescription: 'When you feel the urge to smoke, grab a healthy snack instead. Chew slowly, focus on the taste and texture, and take a sip of water. If the craving comes back, repeat the steps.',
     cardIcon: <SnackBreak />,
-    icon: <SnackBreakIcon />
+    icon: <SnackBreakIcon />,
+    unitWord: 'Snacks'
   },
   {
     id: 'calm-power',
@@ -190,7 +195,8 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdvice: 'Meditate and listen',
     cardAdviceDescription: 'Replace a craving with a short meditation and music. Focus on your breathing, relax your body, and let the craving pass.',
     cardIcon: <CalmPower />,
-    icon: <CalmPowerIcon />
+    icon: <CalmPowerIcon />,
+    unitWord: 'Sessions'
   },
   {
     id: 'fist-flow',
@@ -218,7 +224,8 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdvice: 'Grip and release',
     cardAdviceDescription: 'When you feel a craving, squeeze and release your fists 20 times. Focus on the sensations, breathe deeply, and let the urge pass. Repeat if needed.',
     icon: <FistFlowIcon />,
-    cardIcon: <FistFlow />
+    cardIcon: <FistFlow />,
+    unitWord: 'Squeezes'
   },
   {
     id: 'refresh',
@@ -245,7 +252,8 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdvice: 'Splash and refresh',
     cardAdviceDescription: 'When you feel the urge to smoke, splash cold water on your face or wrists. Breathe deeply, focus on the sensations, and let your body refresh. If the craving returns, repeat the steps.',
     cardIcon: <Refresh />,
-    icon: <RefreshIcon />
+    icon: <RefreshIcon />,
+    unitWord: 'Splashes'
   },
   {
     id: 'crave-crusher',
@@ -274,7 +282,8 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdvice: 'Crumple cravings',
     cardAdviceDescription: 'When you feel the urge to smoke, draw or write your craving on a piece of paper. Focus on the feeling, then crumple the paper. Breathe deeply and let the craving go. If it comes back, repeat the steps.',
     cardIcon: <CraveCrusher />,
-    icon: <CraveCrusherIcon />
+    icon: <CraveCrusherIcon />,
+    unitWord: 'Crumples'
   },
   {
     id: 'flow-minute',
@@ -303,7 +312,8 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdvice: 'Stretch and relax',
     cardAdviceDescription: 'When you feel tension or stiffness, gently stretch your neck, shoulders, and back for 2–3 minutes. Breathe deeply, focus on the sensations, and let your body relax. If tension returns, repeat the steps.',
     cardIcon: <FlowMinute />,
-    icon: <FlowMinuteIcon />
+    icon: <FlowMinuteIcon />,
+    unitWord: 'Stretches'
   }
 ];
 
@@ -321,5 +331,7 @@ export const convertToChallengeCardProps = (challenge: ChallengeData, status: 'a
   checkIns,
   cardIcon: challenge.cardIcon,
   motivation: challenge.motivation,
-  buddyAdvice: challenge.buddyAdvice
+  buddyAdvice: challenge.buddyAdvice,
+  unitWord: challenge.unitWord,
+  totalDurations: challenge.totalDurations
 });

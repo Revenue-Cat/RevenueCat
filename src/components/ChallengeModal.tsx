@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import SlideModal from './SlideModal';
@@ -8,6 +8,9 @@ import { ChallengeCardProps } from './ChallengeCard';
 import { useApp } from '../contexts/AppContext';
 import CoinIcon from "../assets/icons/coins.svg";
 import LockLight from "../assets/icons/lock.svg";
+import GlassIcon from "../assets/challenges/glass.svg";
+import TimeIcon from "../assets/challenges/time.svg";
+import CoinsIcon from "../assets/challenges/coins.svg";
 interface ChallengeModalProps {
   visible: boolean;
   challenge: ChallengeCardProps | null;
@@ -24,8 +27,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { t } = useTranslation();
-  const { startChallenge, activeChallenges, inProgressChallenges,getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge } = useApp();
-  console.log("!!!!! challenge", challengeId)
+  const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns } = useApp();
 
   const handleStartChallenge = () => {
     if (challengeId) {
@@ -53,19 +55,58 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   const isInProgress = challengeStatus === 'inprogress';
   const isLocked = challengeStatus === 'locked';
   
-  // Force re-render when challenge status changes
-  useEffect(() => {
-    console.log('ChallengeModal useEffect - status changed:', {
-      challengeId,
-      challengeStatus,
-      visible
-    });
-  }, [challengeStatus, challengeId, visible]);
+  // // Force re-render when challenge status changes
+  // useEffect(() => {
+  //   console.log('ChallengeModal useEffect - status changed:', {
+  //     challengeId,
+  //     challengeStatus,
+  //     visible
+  //   });
+  // }, [challengeStatus, challengeId, visible]);
   
   // Calculate progress based on time elapsed since start date (only for inprogress challenges)
-  const timeBasedProgress = challenge && challengeId && isInProgress ? 
-    calculateProgressBasedOnTime(challengeId, challenge.duration, progressData.startDate) : 
+  const timeBasedProgress = challenge && challengeId && isInProgress && challenge.totalDurations && progressData.startDate ? 
+    calculateProgressBasedOnTime(challengeId, challenge.totalDurations.toString(), new Date(progressData.startDate)) : 
     0;
+
+  console.log("TEST timeBasedProgress", {
+    totalDurations: challenge?.totalDurations,
+    challengeId,
+    startDate: progressData.startDate,
+    startDateType: typeof progressData.startDate,
+    convertedStartDate: progressData.startDate ? new Date(progressData.startDate) : null,
+    timeBasedProgress,
+    isInProgress
+  })
+  // Calculate previous days data
+  const previousDaysData = useMemo(() => {
+    if (!challengeId || !progressData.startDate) return [];
+    console.log("TEST previousDaysData", challengeId, progressData.startDate)
+    const dailyCheckInsData = getDailyCheckIns(challengeId);
+    const startDate = new Date(progressData.startDate);
+    const today = new Date();
+    const previousDays = [];
+    
+    // Calculate days since start date
+    const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Show up to 4 previous days, but not more than days since start
+    const daysToShow = Math.min(4, daysSinceStart);
+    
+    for (let i = 1; i <= daysToShow; i++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateKey = date.toISOString().split('T')[0]; // Format: "2024-09-04"
+      const dateStr = date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric' 
+      });
+      const checkIns = dailyCheckInsData[dateKey] || 0;
+      previousDays.push({ date: dateStr, count: checkIns });
+    }
+    
+    return previousDays;
+  }, [challengeId, progressData.startDate, getDailyCheckIns]);
 
 
   if (!challenge) return null;
@@ -92,7 +133,12 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             </Text>
           </View>
         </View>
-
+        {/* ScrollView for the content */}
+         <ScrollView 
+           showsVerticalScrollIndicator={false}
+           bounces={false}
+           style={{ maxHeight: 600 }}
+         >
         {/* Full-width Icon */}
         <View className="items-center mb-6">
           <View 
@@ -132,12 +178,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             )}
           </View>
         </View>
-                 {/* ScrollView for the content */}
-         <ScrollView 
-           showsVerticalScrollIndicator={false}
-           bounces={false}
-           style={{ maxHeight: 300 }}
-         >
+     
         {/* Challenge Title */}
         <Text className={`text-2xl font-bold text-center ${isDark ? "text-slate-100" : "text-slate-900"}`}>
           {challenge.title}
@@ -150,51 +191,59 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           </Text>
         )}
 
-        {/* History Section - Only show for active challenges */}
+        {/* History Section - Only show for inprogress challenges */}
         {isInProgress && (
-          <View className="mb-4">
-            <Text className={`text-lg font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
-              History
-            </Text>
-            <View className="bg-slate-100 dark:bg-slate-800 rounded-xl p-4">
-                <View className="flex-row justify-between items-center mb-2">
-                  <Text className={`text-sm font-semibold ${isDark ? "text-slate-200" : "text-slate-700"}`}>
-                    Progress
-                  </Text>
-                  <Text className={`text-sm font-bold ${isDark ? "text-green-400" : "text-green-600"}`}>
-                    {timeBasedProgress}%
-                  </Text>
-                </View>
-                <View className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mb-3">
+          <View className="my-4">
+            <View className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden my-3">
                   <View
                     style={{ width: `${Math.min(Math.max(timeBasedProgress, 0), 100)}%` }}
                     className="h-full bg-green-500"
                   />
                 </View>
-              <View className="flex-row justify-between">
-                <View className="items-center">
-                  <Text className={`text-lg font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
-                    {progressData.streak}
-                  </Text>
-                  <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                    Day Streak
-                  </Text>
+            <Text className={`text-lg font-bold mb-3`}>
+              History
+            </Text>
+              <View>
+                {/* Today */}
+                <View className="flex-row justify-between items-center mb-3">
+                  <View className="flex-row items-center">
+                    <GlassIcon width={24} height={24} color={isDark ? "#64748b" : "#94a3b8"} />
+                    <View className="ml-2">
+                      <Text className={`text-md font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+                        Today
+                      </Text>
+                      <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                        {progressData.checkIns} {challenge.unitWord || 'Check-ins'}
+                      </Text>
+                    </View>
+                  </View>
+                  <View className="flex-row items-center">
+                      <TimeIcon width={24} height={24} color={isDark ? "#64748b" : "#94a3b8"} />
+                  </View>
                 </View>
-                <View className="items-center">
-                  <Text className={`text-lg font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
-                    {progressData.checkIns}
-                  </Text>
-                  <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                    Check-ins
-                  </Text>
-                </View>
+
+                {/* Previous Days with same UI as Today */}
+                {previousDaysData.map((dayData, index) => (
+                  <View key={index} className="flex-row justify-between items-center mb-3">
+                    <View className="flex-row items-center">
+                      <GlassIcon width={24} height={24} color={isDark ? "#64748b" : "#94a3b8"} />
+                      <View className="ml-2">
+                        <Text className={`text-md font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+                          {dayData.date}
+                        </Text>
+                        <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                          {dayData.count} {challenge.unitWord || 'Check-ins'}
+                        </Text>
+                      </View>
+                    </View>
+                    <View className="flex-row items-center">
+                      <Ionicons name="checkmark" size={24} color={isDark ? "#64748b" : "#46c120"} />
+                    </View>
+                  </View>
+                ))}
               </View>
-            </View>
           </View>
         )}
-
-        {/* Divider Line */}
-        <View className={`w-full h-px my-3 ${isDark ? "bg-slate-600" : "bg-slate-300"}`} />
 
         {/* Benefits Section */}
         <View className="mb-6">
@@ -241,24 +290,21 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
         {/* Cancel Challenge Section */}
         {isInProgress && (
           <View className="mb-4">
-            <Text className={`text-lg font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
-              Cancel challenge
-            </Text>
             <Pressable 
-              className={`rounded-xl p-4 border ${isDark ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200'}`}
+              className={`rounded-2xl p-4 flex-row items-center justify-center ${isDark ? 'bg-red-900/20' : 'bg-red-50'}`}
               onPress={() => {
                 if (challengeId) {
                   cancelChallenge(challengeId);
                   onClose();
                 }
               }}
-            >
-              <Text className={`text-center font-semibold ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-                Cancel this challenge
+              >
+              <Ionicons name="close" size={24} color={isDark ? "#64748b" : "#94a3b8"} />
+              <Text className={`text-center font-semibold mx-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>
+                Cancel challenge
               </Text>
-              <Text className={`text-center text-sm mt-1 ${isDark ? 'text-red-300' : 'text-red-500'}`}>
-                You can restart it later
-              </Text>
+              <CoinsIcon width={24} height={24} color={isDark ? "#64748b" : "#94a3b8"} />
+
             </Pressable>
           </View>
         )}

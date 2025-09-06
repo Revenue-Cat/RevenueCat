@@ -48,6 +48,7 @@ interface AppState {
   activeChallenges: string[];   // Array of challenge IDs that are active (can be started)
   inProgressChallenges: string[];   // Array of challenge IDs that are in progress (started with startDate)
   challengeProgress: Record<string, { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean }>; // Progress tracking for each challenge
+  dailyCheckIns: Record<string, Record<string, number>>; // Daily check-ins for each challenge: { challengeId: { "2024-09-04": 3, "2024-09-03": 2 } }
 
   // UI state
   showShop: boolean;
@@ -91,6 +92,8 @@ interface AppState {
   getChallengeStatus: (challengeId: string) => 'active' | 'locked' | 'inprogress';
   getChallengeProgress: (challengeId: string) => { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean };
   calculateProgressBasedOnTime: (challengeId: string, duration: string, startDate: Date | null | undefined) => number;
+  getDailyCheckIns: (challengeId: string) => Record<string, number>;
+  addDailyCheckIn: (challengeId: string, date: string, count: number) => void;
 }
 
 const defaultCharacter: ShopItem = {
@@ -152,6 +155,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeChallenges, setActiveChallenges] = useState<string[]>([]);
   const [inProgressChallenges, setInProgressChallenges] = useState<string[]>([]);
   const [challengeProgress, setChallengeProgress] = useState<Record<string, { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean }>>({});
+  const [dailyCheckIns, setDailyCheckIns] = useState<Record<string, Record<string, number>>>({});
 
   // UI state
   const [showShop, setShowShop] = useState(false);
@@ -353,8 +357,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Challenge actions (exposed) - memoized
   const startChallenge = useCallback((challengeId: string) => {
-    // const startDate = new Date();
-    const startDate = new Date(Date.now() - (5 * 24 * 60 * 60 * 1000)); // 5 days ago
+    const startDate = new Date();
     
     console.log('startChallenge called:', {
       challengeId,
@@ -506,6 +509,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return finalProgress;
   }, []);
 
+  const getDailyCheckIns = useCallback((challengeId: string): Record<string, number> => {
+    return dailyCheckIns[challengeId] || {};
+  }, [dailyCheckIns]);
+
+  const addDailyCheckIn = useCallback((challengeId: string, date: string, count: number) => {
+    setDailyCheckIns(prev => ({
+      ...prev,
+      [challengeId]: {
+        ...prev[challengeId],
+        [date]: count
+      }
+    }));
+  }, []);
+
   // Achievement functions
   const setStartDate = useCallback(async (startDate: Date) => {
     setUserProgress(prev => ({ ...prev, startDate }));
@@ -603,6 +620,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     activeChallenges,
     inProgressChallenges,
     challengeProgress,
+    dailyCheckIns,
 
     showShop,
     showCoinPurchase,
@@ -642,6 +660,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     getChallengeStatus,
     getChallengeProgress,
     calculateProgressBasedOnTime,
+    getDailyCheckIns,
+    addDailyCheckIn,
   }), [
     userCoins,
     selectedBuddy,
@@ -663,6 +683,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     activeChallenges,
     inProgressChallenges,
     challengeProgress,
+    dailyCheckIns,
     showShop,
     showCoinPurchase,
     selectedShopTab,
@@ -678,6 +699,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     getChallengeStatus,
     getChallengeProgress,
     calculateProgressBasedOnTime,
+    getDailyCheckIns,
+    addDailyCheckIn,
   ]);
 
   return (
