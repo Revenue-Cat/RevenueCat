@@ -19,7 +19,7 @@ export const useHomeScroll = () => {
         const savedPosition = await AsyncStorage.getItem('homeScrollPosition');
         if (savedPosition) {
           const position = parseFloat(savedPosition);
-          console.log("Loading saved position:", position);
+
           scrollY.setValue(position);
           maxScrollReached.current = position;
           

@@ -33,7 +33,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     setLoading(true);
     try {
       await loginWithEmail(email, password);
-      console.log("User logged in successfully");
     } catch (error: any) {
       Alert.alert("Login Error", error.message);
     } finally {

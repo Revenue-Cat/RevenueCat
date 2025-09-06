@@ -307,7 +307,6 @@ class AchievementService {
       if (!achievement) return;
       const shouldBeUnlocked = daysPassed >= achievement.requiredDays;
 
-      console.log('shouldBeUnlocked', shouldBeUnlocked, daysPassed, achievement.requiredDays)
 
       if (shouldBeUnlocked && !achievement.unlocked) {
         // Unlock achievements that are done (progress = 100%)
@@ -401,8 +400,6 @@ class AchievementService {
     const current = Math.min(daysPassed, achievement.requiredDays);
     const max = achievement.requiredDays;
     const percentage = Math.min((current / max) * 100, 100);
-
-    console.log('Progress for', achievementId, ':', { current, max, percentage, daysPassed });
 
     return { current, max, percentage };
   }

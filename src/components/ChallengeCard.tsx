@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -21,6 +21,8 @@ export interface ChallengeCardProps {
   onPress?: () => void;
   cardIcon?: any;
   icon?: any;
+  achievementIcon?: any;
+  achievementDescription?: string;
   motivation: string[];
   buddyAdvice: string[];
   id?: string;
@@ -45,7 +47,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   totalDurations
 }) => {
   const { t } = useTranslation();
-  const { calculateProgressBasedOnTime, getChallengeProgress } = useApp();
+  const { calculateProgressBasedOnTime, getChallengeProgress, getChallengeCompletions } = useApp();
   const isLocked = status === "locked";
   const isInProgress = status === "inprogress";
   const isActive = status === "active";
@@ -53,9 +55,21 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   // Get progress data for the challenge
   const progressData = challengeId ? getChallengeProgress(challengeId) : null;
   
-  // Check if challenge is completed (has completion count)
-  const isCompleted = true;
-    // progressData?.completionCount && progressData.completionCount > 0;
+  // Check if challenge is completed (days since start equals total duration)
+  const isCompleted = useMemo(() => {
+    if (!challengeId || !progressData?.startDate || !totalDurations) return false;
+    const startDate = new Date(progressData.startDate);
+    const today = new Date();
+    const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    return daysSinceStart >= totalDurations;
+  }, [challengeId, progressData?.startDate, totalDurations]);
+
+  // Get completion count (number of times this challenge was completed)
+  const completionCount = useMemo(() => {
+    if (!challengeId) return 0;
+    const completions = getChallengeCompletions(challengeId);
+    return completions.length;
+  }, [challengeId, getChallengeCompletions]);
   
   // Calculate time-based progress for in-progress challenges (same as ChallengeModal)
   const timeBasedProgress = challengeId && isInProgress && totalDurations && progressData?.startDate ? 
@@ -104,9 +118,9 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
               <Ionicons name="lock-closed" size={14} color="#ffffff" />
             </View>
              ) : isCompleted ? (
-            <View className="absolute top-1.5 right-1.5 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
+            <View className="absolute top-1 right-1 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
               <Text className="text-white text-xs font-bold">
-                {streak}
+                {completionCount}
               </Text>
             </View>
           ) : null}
@@ -114,37 +128,54 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
         </View>
       </View>
 
-      {/* Actions (only for inprogress) */}
+      {/* Actions */}
       {isInProgress && (
         <View>
-          {/* Progress */}
-          {showProgress && (
-            <View className="mb-3">
-              <View className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                <View
-                  style={{ width: `${timeBasedProgress}%` }}
-                  className="h-full bg-green-500"
-                />
-              </View>
-            </View>
-          )}
+          {isCompleted ? (
+            /* Restart Challenge Button for completed challenges */
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={onPress}
+              className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
+            >
+              <Ionicons name="refresh" size={18} color="#ffffff" />
+              <Text className="text-white font-semibold text-base ml-2">
+                Restart challenge
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            /* Progress and Check In for active in-progress challenges */
+            <>
+              {/* Progress */}
+              {showProgress && (
+                <View className="mb-3">
+                  <View className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <View
+                      style={{ width: `${timeBasedProgress}%` }}
+                      className="h-full bg-green-500"
+                    />
+                  </View>
+                </View>
+              )}
 
-          {/* Check In Button */}
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={onCheckIn}
-            className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
-          >
-            <Ionicons name="checkmark" size={18} color="#ffffff" />
-            <Text className="text-white font-semibold text-base ml-2">
-              {t("challenges.checkIn")}
-            </Text>
-            {typeof checkIns === "number" && (
-              <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
-                <Text className="text-white text-s font-bold">{checkIns}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
+              {/* Check In Button */}
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={onCheckIn}
+                className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
+              >
+                <Ionicons name="checkmark" size={18} color="#ffffff" />
+                <Text className="text-white font-semibold text-base ml-2">
+                  {t("challenges.checkIn")}
+                </Text>
+                {typeof checkIns === "number" && (
+                  <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
+                    <Text className="text-white text-s font-bold">{checkIns}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       )}
     </View>

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, Image, Share, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import SlideModal from './SlideModal';
 import { useTheme } from '../contexts/ThemeContext';
@@ -11,6 +11,8 @@ import LockLight from "../assets/icons/lock.svg";
 import GlassIcon from "../assets/challenges/glass.svg";
 import TimeIcon from "../assets/challenges/time.svg";
 import CoinsIcon from "../assets/challenges/coins.svg";
+import ProgressRing from './ProgressRing';
+import ClapIcon from "../assets/icons/clap.svg";
 interface ChallengeModalProps {
   visible: boolean;
   challenge: ChallengeCardProps | null;
@@ -27,7 +29,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { t } = useTranslation();
-  const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns, getChallengeCompletions, setChallengeCompletionsForId } = useApp();
+  const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns, getChallengeCompletions, setChallengeCompletionsForId, addDailyCheckIn } = useApp();
 
   const handleStartChallenge = () => {
     if (challengeId) {
@@ -39,12 +41,20 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   const handleCheckIn = () => {
     if (challengeId) {
       const currentProgress = getChallengeProgress(challengeId);
+
       const newCheckIns = currentProgress.checkIns + 1;
       const newStreak = currentProgress.streak + 1;
       
       // Progress is calculated based on time elapsed, so we don't need to set it manually
       updateChallengeProgress(challengeId, 0, newStreak, newCheckIns);
-      onClose();
+      
+      // Also record the daily check-in for the History section
+      const today = new Date();
+      const dateKey = today.toISOString().split('T')[0]; // Format: "2024-09-04"
+      const dailyCheckInsData = getDailyCheckIns(challengeId);
+      const todayCheckIns = dailyCheckInsData[dateKey] || 0;
+      addDailyCheckIn(challengeId, dateKey, todayCheckIns + 1);
+      
     }
   };
 
@@ -133,7 +143,26 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   }, [challengeId, progressData.startDate, getDailyCheckIns]);
 
 
+  const handleShare = async () => {
+    
+    try {
+      const message = `🎉 I just unlocked the "${challenge?.name}" achievement! ${challenge?.description}`;
+            
+      const result = await Share.share({
+        message: message,
+        title: 'Achievement Unlocked!'
+      });
+      
+    } catch (error) {
+      console.error('Error sharing achievement:', error);
+      alert('Share failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
+  };
+
+
   if (!challenge) return null;
+
+  console.log("challenge.achievementIcon", challenge?.achievementIcon)
 
   return (
     <SlideModal
@@ -213,6 +242,45 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           <Text className={`text-base text-center leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
             {challenge.description}
           </Text>
+        )}
+
+        {/* Achievement Section - Only show for completed challenges */}
+        {isCompleted && challenge.achievementIcon && (
+          <View className="items-center">
+                <View className="relative items-center justify-center">
+                  <ProgressRing
+                    progress={100}
+                    size={110}
+                    strokeWidth={4}
+                    color={"#22C55E"}
+                    borderColor={"#22C55E"}
+                  />
+                  <View className="absolute items-center justify-center">
+                    <Image
+                      source={challenge.achievementIcon}
+                      style={{ width: 102, height: 102 }}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View className="absolute top-1 right-1 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
+                    <Text className="text-white text-xs font-bold">
+                      {previousCompletions.length}
+                    </Text>
+                  </View>
+                </View>
+                
+                {/* Share Button */}
+                <Pressable 
+                  className="bg-indigo-100 rounded-2xl p-3 flex-row items-center justify-center mt-4 w-full"
+                  onPress={handleShare}
+                >
+                  <ClapIcon width={18} height={18} color={isDark ? "#353131" : "#353131"} />
+                  <Text className={`${isDark ? "text-indigo-950" : "text-indigo-950"} font-semibold text-base ml-2`}>
+                    Share
+                  </Text>
+                </Pressable>
+              
+          </View>
         )}
 
         {/* Progress Bar - Only show for inprogress challenges */}
@@ -361,10 +429,27 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             <Pressable 
               className={`rounded-2xl p-4 flex-row items-center justify-center ${isDark ? 'bg-red-900/20' : 'bg-red-50'}`}
               onPress={() => {
-                if (challengeId) {
-                  cancelChallenge(challengeId);
-                  onClose();
-                }
+                Alert.alert(
+                  "Are you sure?",
+                  "The challenge will stop and its progress will be lost. You can start this challenge again or choose any other challenge.",
+                  [
+                    {
+                      text: "Continue",
+                      style: "cancel"
+                    },
+                    {
+                      text: "Give up",
+                      style: "destructive",
+                      onPress: () => {
+                        if (challengeId) {
+                          cancelChallenge(challengeId);
+                          onClose();
+                        }
+                      }
+                    }
+                  ],
+                  { cancelable: true }
+                );
               }}
               >
               <Ionicons name="close" size={24} color={isDark ? "#64748b" : "#94a3b8"} />
@@ -404,6 +489,11 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             <Text className="text-white font-bold text-lg ml-2 mr-2">
               {isCompleted ? 'Restart challenge' : (isInProgress ? 'Check In' : 'Start now')}
             </Text>
+            {isInProgress && !isCompleted && (
+                <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
+                  <Text className="text-white text-s font-bold">{progressData.checkIns}</Text>
+                </View>
+              )}
             {(isInProgress || isActive || isCompleted) ? (
              ""
             ) : (

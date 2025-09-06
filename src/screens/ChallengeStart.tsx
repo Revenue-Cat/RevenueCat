@@ -19,7 +19,7 @@ const ChallengeStart: React.FC<ChallengeStartProps> = ({ onNext }) => {
   const { t } = useTranslation();
   const { completeOnboarding } = useApp();
   const isDark = theme === 'dark';
-  console.log("test", t('challengeStart.mainSubtitle'))
+
   return (
     <View className={`flex-1 ${isDark ? 'bg-dark-background' : 'bg-light-background'}`}>
       <ScrollView className="flex-1 px-6 pt-16">

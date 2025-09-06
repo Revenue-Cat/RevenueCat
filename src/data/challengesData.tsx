@@ -28,6 +28,15 @@ import CraveCrusherIcon from '../assets/challenges/crave-crusher-icon.svg';
 import FlowMinute from '../assets/challenges/flow-minute.svg';
 import FlowMinuteIcon from '../assets/challenges/flow-minute-icon.svg';
 
+const AchievementMasterOfAirIcon = require("../assets/exclusive-achievements/achievement-master-of-air.png");
+const AchievementHydroWinIcon = require("../assets/exclusive-achievements/achievement-hydro-win.png");
+const AchievementStriderIcon = require("../assets/exclusive-achievements/achievement-strider.png");
+const AchievementSnackIcon = require("../assets/exclusive-achievements/achievement-snack.png");
+const AchievementZenIcon = require("../assets/exclusive-achievements/achievement-zen.png");
+const AchievementGrippedIcon = require("../assets/exclusive-achievements/achievement-gripped.png");
+const AchievementSplashIcon = require("../assets/exclusive-achievements/achievement-splash.png");
+const AchievementCraveCrusherIcon = require("../assets/exclusive-achievements/achievement-crave-crusher.png");
+const AchievementStretchedIcon = require("../assets/exclusive-achievements/achievement-stretched.png");
 
 import React from 'react';
 
@@ -48,6 +57,7 @@ export interface ChallengeData {
   cardAdviceDescription?: string;
   cardIcon?: any;
   icon?: any;
+  achievementIcon?: any;
   unitWord: string; // Word to display for tracking (e.g., "Glasses", "Times", "Walks")
 }
 
@@ -77,6 +87,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     hasAchievement: true,
     cardIcon: <MasterOfAir />,
     icon: <MasterOfAirIcon />,
+    achievementIcon: AchievementMasterOfAirIcon,
     unitWord: 'Times'
   },
   {
@@ -106,6 +117,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdvice: 'Sip and breathe',
     cardIcon: <MasterOfAirWater />,
     icon: <MasterOfAirWaterIcon />,
+    achievementIcon: AchievementHydroWinIcon,
     cardAdviceDescription: 'Replace the craving with a glass of water. Slowly drink the water, focusing on the taste and sensations. Take a few deep breaths and relax. If the craving returns — repeat the steps.',
     unitWord: 'Glasses'
   },
@@ -137,6 +149,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdviceDescription: 'When you feel the urge to smoke, walk 500 steps to clear your mind and reset your body. This helps distract you from cravings and feel in control.',
     cardIcon: <MasterOfAirWalk />,
     icon: <MasterOfAirWalkIcon />,
+    achievementIcon: AchievementStriderIcon,
     unitWord: 'Walks'
   },
   {
@@ -167,6 +180,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdviceDescription: 'When you feel the urge to smoke, grab a healthy snack instead. Chew slowly, focus on the taste and texture, and take a sip of water. If the craving comes back, repeat the steps.',
     cardIcon: <SnackBreak />,
     icon: <SnackBreakIcon />,
+    achievementIcon: AchievementSnackIcon,
     unitWord: 'Snacks'
   },
   {
@@ -196,6 +210,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdviceDescription: 'Replace a craving with a short meditation and music. Focus on your breathing, relax your body, and let the craving pass.',
     cardIcon: <CalmPower />,
     icon: <CalmPowerIcon />,
+    achievementIcon: AchievementZenIcon,
     unitWord: 'Sessions'
   },
   {
@@ -225,6 +240,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdviceDescription: 'When you feel a craving, squeeze and release your fists 20 times. Focus on the sensations, breathe deeply, and let the urge pass. Repeat if needed.',
     icon: <FistFlowIcon />,
     cardIcon: <FistFlow />,
+    achievementIcon: AchievementGrippedIcon,
     unitWord: 'Squeezes'
   },
   {
@@ -253,6 +269,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdviceDescription: 'When you feel the urge to smoke, splash cold water on your face or wrists. Breathe deeply, focus on the sensations, and let your body refresh. If the craving returns, repeat the steps.',
     cardIcon: <Refresh />,
     icon: <RefreshIcon />,
+    achievementIcon: AchievementSplashIcon,
     unitWord: 'Splashes'
   },
   {
@@ -283,6 +300,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdviceDescription: 'When you feel the urge to smoke, draw or write your craving on a piece of paper. Focus on the feeling, then crumple the paper. Breathe deeply and let the craving go. If it comes back, repeat the steps.',
     cardIcon: <CraveCrusher />,
     icon: <CraveCrusherIcon />,
+    achievementIcon: AchievementCraveCrusherIcon,
     unitWord: 'Crumples'
   },
   {
@@ -313,6 +331,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardAdviceDescription: 'When you feel tension or stiffness, gently stretch your neck, shoulders, and back for 2–3 minutes. Breathe deeply, focus on the sensations, and let your body relax. If tension returns, repeat the steps.',
     cardIcon: <FlowMinute />,
     icon: <FlowMinuteIcon />,
+    achievementIcon: AchievementStretchedIcon,
     unitWord: 'Stretches'
   }
 ];
@@ -333,5 +352,7 @@ export const convertToChallengeCardProps = (challenge: ChallengeData, status: 'a
   motivation: challenge.motivation,
   buddyAdvice: challenge.buddyAdvice,
   unitWord: challenge.unitWord,
-  totalDurations: challenge.totalDurations
+  totalDurations: challenge.totalDurations,
+  achievementIcon: challenge.achievementIcon,
+  achievementDescription: challenge.achievementDescription
 });

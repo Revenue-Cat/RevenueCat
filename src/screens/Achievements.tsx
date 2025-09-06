@@ -176,7 +176,6 @@ const Achievements: React.FC<AchievementsProps> = ({
     setSelectedAchievement(null);
   }, []);
 
-  console.log("filteredAchievements", filteredAchievements);
 
   const gradientColors = parseGradient(selectedBackground.backgroundColor);
 

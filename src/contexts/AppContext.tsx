@@ -453,15 +453,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const getChallengeStatus = useCallback((challengeId: string): 'active' | 'locked' | 'inprogress' => {
     const inProgress = inProgressChallenges.includes(challengeId);
     const active = activeChallenges.includes(challengeId);
-    
-    console.log('getChallengeStatus:', {
-      challengeId,
-      inProgressChallenges,
-      activeChallenges,
-      inProgress,
-      active
-    });
-    
     // Priority: inprogress > active > locked
     if (inProgress) {
       return 'inprogress'; // Challenge is being worked on
@@ -475,28 +466,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [activeChallenges, inProgressChallenges]);
 
   const getChallengeProgress = useCallback((challengeId: string) => {
-    // Fake start data for 2 challenges
-    let fakeProgress = null;
+    // Get real progress data first
+    const realProgress = challengeProgress[challengeId] || { progress: 0, streak: 0, checkIns: 0, startDate: null, isCancelled: false };
     
+    // Apply fake start dates for testing, but preserve real progress data
     if (challengeId === 'master-of-air-breathing') {
-      fakeProgress = { 
-        progress: 0, 
-        streak: 0, 
-        checkIns: 0, 
+      return {
+        ...realProgress,
         startDate: new Date('2025-08-20'), // August 20
-        isCancelled: false 
       };
     } else if (challengeId === 'master-of-air-water') {
-      fakeProgress = { 
-        progress: 0, 
-        streak: 0, 
-        checkIns: 0, 
-        startDate: new Date('2025-09-01'), // 11 days ago
-        isCancelled: false 
+      return {
+        ...realProgress,
+        startDate: new Date('2025-09-01'), // September 1
       };
     }
     
-    return fakeProgress || challengeProgress[challengeId] || { progress: 0, streak: 0, checkIns: 0, startDate: null, isCancelled: false };
+    return realProgress;
   }, [challengeProgress]);
 
   const getChallengeCompletions = useCallback((challengeId: string) => {
@@ -558,18 +544,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const progressPerDay = 100 / totalDays;
     const calculatedProgress = Math.min(daysElapsed * progressPerDay, 100);
     const finalProgress = Math.round(Math.max(calculatedProgress, 0));
-    
-    console.log('Progress calculation:', {
-      challengeId,
-      duration,
-      totalDays,
-      startDate: startDate.toISOString(),
-      now: now.toISOString(),
-      daysElapsed,
-      progressPerDay,
-      calculatedProgress,
-      finalProgress
-    });
+  
     
     return finalProgress;
   }, []);

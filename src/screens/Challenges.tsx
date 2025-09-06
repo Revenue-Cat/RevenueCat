@@ -9,7 +9,7 @@ import { useApp } from '../contexts/AppContext';
 
 const Challenges: React.FC = () => {
   const { t } = useTranslation();
-  const { getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime } = useApp();
+  const { getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, challengeProgress, addDailyCheckIn, getDailyCheckIns } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState<ChallengeCardProps | null>(null);
@@ -20,7 +20,7 @@ const Challenges: React.FC = () => {
     return CHALLENGES_DATA.map((challenge) => {
       const status = getChallengeStatus(challenge.id);
       const progressData = getChallengeProgress(challenge.id);
-      console.log("status", status)
+
       // Calculate progress based on time elapsed since start date (only for inprogress challenges)
       const timeBasedProgress = status === 'inprogress' ? calculateProgressBasedOnTime(
         challenge.id, 
@@ -36,7 +36,7 @@ const Challenges: React.FC = () => {
         progressData.checkIns
       );
     });
-  }, [getChallengeStatus, getChallengeProgress, calculateProgressBasedOnTime]);
+  }, [getChallengeStatus, getChallengeProgress, calculateProgressBasedOnTime, challengeProgress]);
   
   // Sort challenges to show unlocked first, then locked
   const sortedChallenges = useMemo(() => {
@@ -66,7 +66,14 @@ const Challenges: React.FC = () => {
     
     // Progress is calculated based on time elapsed, so we don't need to set it manually
     updateChallengeProgress(challengeId, 0, newStreak, newCheckIns);
-  }, [getChallengeProgress, updateChallengeProgress]);
+    
+    // Also record the daily check-in for the History section
+    const today = new Date();
+    const dateKey = today.toISOString().split('T')[0]; // Format: "2024-09-04"
+    const dailyCheckInsData = getDailyCheckIns(challengeId);
+    const todayCheckIns = dailyCheckInsData[dateKey] || 0;
+    addDailyCheckIn(challengeId, dateKey, todayCheckIns + 1);
+  }, [getChallengeProgress, updateChallengeProgress, addDailyCheckIn, getDailyCheckIns]);
 
   // Memoize the challenge press callback
   const handleChallengePress = useCallback((challenge: ChallengeCardProps, challengeId: string) => {

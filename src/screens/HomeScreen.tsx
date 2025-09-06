@@ -30,7 +30,6 @@ const HomeScreen: React.FC = () => {
             setLoading(true);
             try {
               await logout();
-              console.log('Logout successful');
             } catch (error: any) {
               Alert.alert('Logout Error', error.message);
             } finally {
