@@ -106,7 +106,214 @@
       "description": "Camina 10,000 pasos diarios.",
       "title": "Asesino de pasos"
     },
-    "title": "Desafíos"
+    "title": "Desafíos",
+    "modal": {
+      "today": "Hoy",
+      "history": "Historial",
+      "completed": "Completado",
+      "benefits": "Beneficios",
+      "buddyAdvice": "Consejos de un amigo",
+      "cancelChallenge": "Cancelar desafío",
+      "startNow": "Comenzar ahora",
+      "restartChallenge": "Reiniciar desafío",
+      "share": "Compartir",
+      "cancelAlert": {
+        "title": "¿Estás seguro?",
+        "message": "El desafío se detendrá y su progreso se perderá. Puedes comenzar este desafío nuevamente o elegir cualquier otro desafío.",
+        "continue": "Continuar",
+        "giveUp": "Rendirse"
+      },
+      "dayChallenge": "Desafío de {{count}} Día{{count, plural, one {} other {s}}}"
+    },
+    "data": {
+      "masterOfAir": {
+        "title": "Maestro del aire",
+        "shortDescription": "Practica 5 respiraciones profundas.",
+        "longDescription": "Practica 5 respiraciones profundas, tres veces al día durante 10 días.",
+        "motivation": [
+          "Reduce el estrés y la ansiedad",
+          "Disminuye los antojos naturalmente",
+          "Aumenta el enfoque y la calma",
+          "Aumenta la energía"
+        ],
+        "buddyAdvice": [
+          "Toma una inhalación y exhalación lenta y profunda.",
+          "Enfócate en las sensaciones de tu respiración.",
+          "Repite 5 veces.",
+          "Haz esto diariamente durante 10 días."
+        ],
+        "achievement": "MenteAire",
+        "achievementDescription": "Completaste 10 días de respiración consciente y venciste los antojos con calma.",
+        "duration": "1 Día"
+      },
+      "hydrationBoost": {
+        "title": "Impulso de hidratación",
+        "shortDescription": "Bebe agua en cada antojo.",
+        "longDescription": "Bebe un vaso de agua cada vez que sientas un antojo.",
+        "motivation": [
+          "Reduce la intensidad del antojo de nicotina.",
+          "Ayuda a eliminar toxinas de tu cuerpo.",
+          "Te mantiene hidratado y enfocado.",
+          "Proporciona una distracción saludable."
+        ],
+        "buddyAdvice": [
+          "Reemplaza el antojo con un vaso de agua.",
+          "Bebe el agua lentamente, enfocándote en el sabor y las sensaciones.",
+          "Toma algunas respiraciones profundas y relájate.",
+          "Si el antojo regresa — repite los pasos.",
+          "Repite diariamente durante 10 días."
+        ],
+        "achievement": "HidroVictoria",
+        "achievementDescription": "Bebiste un vaso de agua en sorbos conscientes, sintiendo cada uno.",
+        "duration": "2 Días"
+      },
+      "stepSlayer": {
+        "title": "Asesino de pasos",
+        "shortDescription": "Camina 500 pasos para reiniciar.",
+        "longDescription": "Da una caminata corta de 500 pasos cada vez que sientas un antojo.",
+        "motivation": [
+          "Reduce el estrés y la ansiedad.",
+          "Aumenta las endorfinas naturalmente.",
+          "Proporciona una distracción saludable.",
+          "Mejora el estado de ánimo general."
+        ],
+        "buddyAdvice": [
+          "Toma caminatas cortas y conscientes en lugar de fumar.",
+          "Enfócate en tu respiración y pasos.",
+          "Úsalo como una mini-pausa para refrescar tu mente.",
+          "Si el antojo regresa — camina de nuevo.",
+          "Repite diariamente durante 10 días."
+        ],
+        "achievement": "Caminante",
+        "achievementDescription": "Te mantuviste libre de humo y fuerte con 10 días de pasos conscientes.",
+        "duration": "3 Días"
+      },
+      "snackBreak": {
+        "title": "Descanso de bocadillo",
+        "shortDescription": "Bocadillo en lugar de fumar.",
+        "longDescription": "Elige bocadillos saludables en lugar de cigarrillos cuando lleguen los antojos.",
+        "motivation": [
+          "Reduce los antojos naturalmente.",
+          "Proporciona nutrición saludable.",
+          "Mantiene tu boca y manos ocupadas.",
+          "Mejora la salud general."
+        ],
+        "buddyAdvice": [
+          "Mantén frutas, nueces o verduras cerca.",
+          "Cuando llegue el impulso — mastica lentamente, enfócate en el sabor y textura.",
+          "Combina el bocadillo con un vaso de agua.",
+          "Si el antojo regresa — repite el paso.",
+          "Repite diariamente durante 10 días."
+        ],
+        "achievement": "BocadilloÉxito",
+        "achievementDescription": "Te mantuviste libre de humo durante 10 días eligiendo bocados saludables en lugar de cigarrillos.",
+        "duration": "10 Días"
+      },
+      "calmPower": {
+        "title": "Poder de calma",
+        "shortDescription": "Medita 2 minutos.",
+        "longDescription": "Practica 2 minutos de meditación para manejar los antojos.",
+        "motivation": [
+          "Reduce el estrés y la tensión.",
+          "Aumenta la atención plena y la conciencia.",
+          "Ayuda a manejar mejor los antojos.",
+          "Promueve la paz interior."
+        ],
+        "buddyAdvice": [
+          "Siéntate cómodamente y cierra los ojos.",
+          "Toma respiraciones lentas y profundas y enfócate en las sensaciones.",
+          "Si tu mente divaga, gentilmente lleva la atención de vuelta a tu respiración.",
+          "Repite cada vez que surja un antojo.",
+          "Repite diariamente durante 10 días."
+        ],
+        "achievement": "Zen",
+        "achievementDescription": "Completaste 10 días de meditación consciente con música para manejar los antojos.",
+        "duration": "10 Días"
+      },
+      "fistFlow": {
+        "title": "Flujo de puño",
+        "shortDescription": "Aprieta 20 veces.",
+        "longDescription": "Aprieta tus puños 20 veces para liberar tensión y antojos.",
+        "motivation": [
+          "Reduce los antojos de nicotina.",
+          "Libera la tensión física.",
+          "Proporciona alivio inmediato.",
+          "Ayuda a manejar el estrés."
+        ],
+        "buddyAdvice": [
+          "Haz un puño y aprieta firmemente 20 veces.",
+          "Enfócate en las sensaciones en tus manos y brazos.",
+          "Respira profundamente y relájate.",
+          "Repite cada vez que surjan antojos.",
+          "Repite diariamente durante 10 días."
+        ],
+        "achievement": "Apretado",
+        "achievementDescription": "Apretaste y liberaste tus puños durante 10 días para vencer los antojos.",
+        "duration": "10 Días"
+      },
+      "refresh": {
+        "title": "Refrescar",
+        "shortDescription": "Salpica agua para frenar los antojos.",
+        "longDescription": "Salpica agua fría en tu cara para reiniciar instantáneamente y frenar los antojos.",
+        "motivation": [
+          "Reduce los antojos de nicotina.",
+          "Proporciona refrescamiento instantáneo.",
+          "Ayuda a reiniciar tu mente.",
+          "Aumenta el estado de alerta."
+        ],
+        "buddyAdvice": [
+          "Salpica agua fría en tu cara o muñecas.",
+          "Toma una respiración profunda y relájate.",
+          "Repite si los antojos regresan.",
+          "Repite diariamente durante 10 días."
+        ],
+        "achievement": "Salpicada",
+        "achievementDescription": "Completaste 10 días de reinicios instantáneos con agua fría en lugar de antojos.",
+        "duration": "10 Días"
+      },
+      "craveCrusher": {
+        "title": "Triturador de antojos",
+        "shortDescription": "Arruga tu antojo.",
+        "longDescription": "Dibuja o escribe tu antojo en papel, luego arrúgalo para liberarlo.",
+        "motivation": [
+          "Te ayuda a reconocer y liberar antojos.",
+          "Proporciona una salida física para las emociones.",
+          "Aumenta la autoconciencia.",
+          "Promueve el dejar ir."
+        ],
+        "buddyAdvice": [
+          "Toma una hoja de papel y dibuja tu antojo de un cigarrillo o escríbelo.",
+          "Enfócate en el sentimiento mientras lo creas.",
+          "Arruga el papel en una bola.",
+          "Toma una respiración profunda y déjalo ir.",
+          "Repite cada vez que surjan antojos."
+        ],
+        "achievement": "Liberado",
+        "achievementDescription": "Dibujaste o escribiste tus antojos y los aplastaste durante 10 días.",
+        "duration": "10 Días"
+      },
+      "flowMinute": {
+        "title": "Minuto de flujo",
+        "shortDescription": "Estira para liberar tensión.",
+        "longDescription": "Haz estiramientos suaves durante 1 minuto para liberar tensión y estrés.",
+        "motivation": [
+          "Reduce el estrés y la rigidez muscular.",
+          "Mejora la flexibilidad y movilidad.",
+          "Aumenta la circulación sanguínea.",
+          "Promueve la relajación."
+        ],
+        "buddyAdvice": [
+          "Siéntate o párate cómodamente.",
+          "Estira lentamente tu cuello, hombros y espalda durante 2-3 minutos.",
+          "Respira profundamente y siente cómo se libera la tensión.",
+          "Repite cada vez que te sientas tenso o estresado.",
+          "Repite diariamente durante 10 días."
+        ],
+        "achievement": "Estirado",
+        "achievementDescription": "Te estiraste y liberaste tensión durante 10 días.",
+        "duration": "10 Días"
+      }
+    }
   },
   "challengeStart": {
     "actionButton": "Comenzar Mi Viaje",

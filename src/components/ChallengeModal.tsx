@@ -29,6 +29,22 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { t } = useTranslation();
+
+  // Helper function to map challenge IDs to translation keys
+  const getChallengeTranslationKey = (challengeId: string): string => {
+    const mapping: Record<string, string> = {
+      'master-of-air-breathing': 'masterOfAir',
+      'master-of-air-water': 'hydrationBoost',
+      'master-of-air-walk': 'stepSlayer',
+      'snack-break': 'snackBreak',
+      'calm-power': 'calmPower',
+      'fist-flow': 'fistFlow',
+      'refresh': 'refresh',
+      'crave-crusher': 'craveCrusher',
+      'flow-minute': 'flowMinute'
+    };
+    return mapping[challengeId] || challengeId;
+  };
   const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns, getChallengeCompletions, setChallengeCompletionsForId, addDailyCheckIn } = useApp();
 
   const handleStartChallenge = () => {
@@ -162,8 +178,6 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
 
   if (!challenge) return null;
 
-  console.log("challenge.achievementIcon", challenge?.achievementIcon)
-
   return (
     <SlideModal
       visible={visible}
@@ -182,7 +196,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           {/* Duration */}
           <View className="flex-row items-center pr-2">
             <Text className={`font-semibold text-base ml-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
-              {challenge.duration} Challenge
+              {challenge.duration} {t("challenges.challenge")}
             </Text>
           </View>
         </View>
@@ -233,12 +247,19 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
         </View>
      
         {/* Challenge Title */}
-        <Text className={`text-2xl font-bold text-center ${isDark ? "text-slate-100" : "text-slate-900"}`}>
-          {challenge.title}
+        <Text className={`text-3xl font-bold text-center ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+          {challengeId ? t(`challenges.data.${getChallengeTranslationKey(challengeId)}.title`) : challenge.title}
         </Text>
 
         {/* Challenge Description */}
-        {challenge.description && (
+        {challengeId ? (() => {
+          const description = t(`challenges.data.${getChallengeTranslationKey(challengeId)}.shortDescription`);
+          return description && (
+            <Text className={`text-lg text-center leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+              {description}
+            </Text>
+          );
+        })() : challenge.description && (
           <Text className={`text-base text-center leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
             {challenge.description}
           </Text>
@@ -276,7 +297,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                 >
                   <ClapIcon width={18} height={18} color={isDark ? "#353131" : "#353131"} />
                   <Text className={`${isDark ? "text-indigo-950" : "text-indigo-950"} font-semibold text-base ml-2`}>
-                    Share
+                    {t('challenges.modal.share')}
                   </Text>
                 </Pressable>
               
@@ -300,8 +321,8 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
         {/* History Section - Show for inprogress challenges that are not completed */}
         {isInProgress && !isCompleted && (
           <View className="my-4">
-            <Text className={`text-lg font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
-              History
+            <Text className={`text-xl font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+              {t('challenges.modal.history')}
             </Text>
               <View>
                 {/* Today */}
@@ -310,10 +331,10 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                     <GlassIcon width={24} height={24} color={isDark ? "#64748b" : "#94a3b8"} />
                     <View className="ml-2">
                       <Text className={`text-md font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
-                        Today
+                        {t('challenges.modal.today')}
                       </Text>
-                      <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                        {progressData.checkIns} {challenge.unitWord || 'Check-ins'}
+                      <Text className={`text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                        {progressData.checkIns} {challenge.unitWord || t('challenges.checkIn')}
                       </Text>
                     </View>
                   </View>
@@ -332,7 +353,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                           {dayData.date}
                         </Text>
                         <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                          {dayData.count} {challenge.unitWord || 'Check-ins'}
+                          {dayData.count} {challenge.unitWord || t('challenges.checkIn')}
                         </Text>
                       </View>
                     </View>
@@ -349,7 +370,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
         {previousCompletions.length > 0 && (
           <View className="my-4">
             <Text className={`text-lg font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
-              Completed
+              {t('challenges.modal.completed')}
             </Text>
             {previousCompletions.map((completion, index) => {
               const formatDate = (date: Date) => {
@@ -362,13 +383,17 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
               return (
                 <View key={index} className="flex-row justify-between items-center mb-3">
                   <View className="flex-row items-center">
-                    <GlassIcon width={24} height={24} color={isDark ? "#64748b" : "#94a3b8"} />
+                     <Image
+                      source={challenge.achievementIcon}
+                      style={{ width: 48, height: 48 }}
+                      resizeMode="contain"
+                    />
                     <View className="ml-2">
                       <Text className={`text-md font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
                         {formatDate(completion.startDate)} - {formatDate(completion.endDate)}
                       </Text>
                       <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                        {completion.checkIns} {challenge?.unitWord || 'Check-ins'}
+                        {completion.checkIns} {challenge?.unitWord || t('challenges.checkIn')}
                       </Text>
                     </View>
                   </View>
@@ -383,44 +408,54 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
 
         {/* Benefits Section */}
         <View className="mb-6">
-          <Text className={`text-lg font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
-            Benefits
+          <Text className={`text-xl font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+            {t('challenges.modal.benefits')}
           </Text>
-          {challenge.motivation && Array.isArray(challenge.motivation) && challenge.motivation.length > 0 && (
-            <View className="space-y-2">
-              {challenge.motivation.map((benefit: string, index: number) => (
-                <View key={index} className="flex-row items-start">
-                  <Text className={`text-green-500 mr-2 mt-1 ${isDark ? "text-green-400" : "text-green-600"}`}>
-                    •
-                  </Text>
-                  <Text className={`flex-1 text-sm leading-5 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-                    {benefit}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
+          {challengeId && (() => {
+            const challengeKey = getChallengeTranslationKey(challengeId);
+            const motivationKey = `challenges.data.${challengeKey}.motivation`;
+            const motivation = t(motivationKey, { returnObjects: true }) as string[];
+            return motivation && Array.isArray(motivation) && motivation.length > 0 && (
+              <View className="space-y-2">
+                {motivation.map((benefit: string, index: number) => (
+                  <View key={index} className="flex-row items-start">
+                    <Text className={`text-green-500 mr-2 mt-1 ${isDark ? "text-green-400" : "text-green-600"}`}>
+                      •
+                    </Text>
+                    <Text className={`flex-1 text-md leading-5 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+                      {benefit}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            );
+          })()}
         </View>
 
         {/* Tips from a friend Section */}
         <View className="mb-4">
-          <Text className={`text-lg font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
-            Tips from a friend
+          <Text className={`text-xl font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+            {t('challenges.modal.buddyAdvice')}
           </Text>
-          {challenge.buddyAdvice && challenge.buddyAdvice.length > 0 && (
-            <View className="space-y-2">
-              {challenge.buddyAdvice.map((tip, index) => (
-                <View key={index} className="flex-row items-start">
-                  <Text className={`text-blue-500 mr-2 mt-1 ${isDark ? "text-blue-400" : "text-blue-600"}`}>
-                    •
-                  </Text>
-                  <Text className={`flex-1 text-sm leading-5 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-                    {tip}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
+          {challengeId && (() => {
+            const challengeKey = getChallengeTranslationKey(challengeId);
+            const buddyAdviceKey = `challenges.data.${challengeKey}.buddyAdvice`;
+            const buddyAdvice = t(buddyAdviceKey, { returnObjects: true }) as string[];
+            return buddyAdvice && Array.isArray(buddyAdvice) && buddyAdvice.length > 0 && (
+              <View className="space-y-2">
+                {buddyAdvice.map((tip, index) => (
+                  <View key={index} className="flex-row items-start">
+                    <Text className={`text-blue-500 mr-2 mt-1 ${isDark ? "text-blue-400" : "text-blue-600"}`}>
+                      •
+                    </Text>
+                    <Text className={`flex-1 text-md leading-5 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+                      {tip}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            );
+          })()}
         </View>
 
         {/* Cancel Challenge Section */}
@@ -430,15 +465,15 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
               className={`rounded-2xl p-4 flex-row items-center justify-center ${isDark ? 'bg-red-900/20' : 'bg-red-50'}`}
               onPress={() => {
                 Alert.alert(
-                  "Are you sure?",
-                  "The challenge will stop and its progress will be lost. You can start this challenge again or choose any other challenge.",
+                  t('challenges.modal.cancelAlert.title'),
+                  t('challenges.modal.cancelAlert.message'),
                   [
                     {
-                      text: "Continue",
+                      text: t('challenges.modal.cancelAlert.continue'),
                       style: "cancel"
                     },
                     {
-                      text: "Give up",
+                      text: t('challenges.modal.cancelAlert.giveUp'),
                       style: "destructive",
                       onPress: () => {
                         if (challengeId) {
@@ -452,11 +487,11 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                 );
               }}
               >
-              <Ionicons name="close" size={24} color={isDark ? "#64748b" : "#94a3b8"} />
-              <Text className={`text-center font-semibold mx-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-                Cancel challenge
+              <Ionicons name="close" size={24} color={isDark ? "#f87171" : "#dc2626"} />
+              <Text className={`text-center text-md font-semibold mx-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>
+                {t('challenges.modal.cancelChallenge')}
               </Text>
-              <CoinsIcon width={24} height={24} color={isDark ? "#64748b" : "#94a3b8"} />
+              <CoinsIcon width={24} height={24} color={isDark ? "#e55b0b" : "#94a3b8"} />
 
             </Pressable>
           </View>
@@ -487,7 +522,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
               ""
             )}     
             <Text className="text-white font-bold text-lg ml-2 mr-2">
-              {isCompleted ? 'Restart challenge' : (isInProgress ? 'Check In' : 'Start now')}
+              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? t('challenges.checkIn') : t('challenges.modal.startNow'))}
             </Text>
             {isInProgress && !isCompleted && (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">

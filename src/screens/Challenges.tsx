@@ -15,6 +15,22 @@ const Challenges: React.FC = () => {
   const [selectedChallenge, setSelectedChallenge] = useState<ChallengeCardProps | null>(null);
   const [selectedChallengeId, setSelectedChallengeId] = useState<string | null>(null);
 
+  // Helper function to map challenge IDs to translation keys
+  const getChallengeTranslationKey = (challengeId: string): string => {
+    const mapping: Record<string, string> = {
+      'master-of-air-breathing': 'masterOfAir',
+      'master-of-air-water': 'hydrationBoost',
+      'master-of-air-walk': 'stepSlayer',
+      'snack-break': 'snackBreak',
+      'calm-power': 'calmPower',
+      'fist-flow': 'fistFlow',
+      'refresh': 'refresh',
+      'crave-crusher': 'craveCrusher',
+      'flow-minute': 'flowMinute'
+    };
+    return mapping[challengeId] || challengeId;
+  };
+
   // Convert challenges data to ChallengeCardProps format
   const sampleChallenges: ChallengeCardProps[] = useMemo(() => {
     return CHALLENGES_DATA.map((challenge) => {
@@ -28,15 +44,29 @@ const Challenges: React.FC = () => {
         progressData.startDate
       ) : 0;
       
-      return convertToChallengeCardProps(
+      // Get translated title, description, and duration
+      const challengeKey = getChallengeTranslationKey(challenge.id);
+      const translatedTitle = t(`challenges.data.${challengeKey}.title`);
+      const translatedDescription = t(`challenges.data.${challengeKey}.shortDescription`);
+      const translatedDuration = t(`challenges.data.${challengeKey}.duration`);
+      
+      const cardProps = convertToChallengeCardProps(
         challenge, 
         status, 
         timeBasedProgress, 
         progressData.streak, 
         progressData.checkIns
       );
+      
+      // Override with translated text
+      return {
+        ...cardProps,
+        title: translatedTitle,
+        description: translatedDescription,
+        duration: translatedDuration
+      };
     });
-  }, [getChallengeStatus, getChallengeProgress, calculateProgressBasedOnTime, challengeProgress]);
+  }, [getChallengeStatus, getChallengeProgress, calculateProgressBasedOnTime, challengeProgress, t]);
   
   // Sort challenges to show unlocked first, then locked
   const sortedChallenges = useMemo(() => {
@@ -122,7 +152,7 @@ const Challenges: React.FC = () => {
 
   // Memoize the title
   const title = useMemo(() => (
-    <Text className="text-white text-center text-3xl font-bold mb-6">{t('challenges.title')}</Text>
+    <Text className="text-white text-center text-2xl font-bold mb-6">{t('challenges.title')}</Text>
   ), [t]);
 
   return (

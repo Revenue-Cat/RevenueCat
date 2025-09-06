@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { achievementService, Achievement, UserProgress } from '../services/achievementService';
 import { Scene, SCENES_DATA } from '../data/scenesData';
+import { CHALLENGES_DATA } from '../data/challengesData';
 import { parse } from 'react-native-svg';
 import Purchases from 'react-native-purchases';
 
@@ -466,55 +467,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [activeChallenges, inProgressChallenges]);
 
   const getChallengeProgress = useCallback((challengeId: string) => {
-    // Get real progress data first
-    const realProgress = challengeProgress[challengeId] || { progress: 0, streak: 0, checkIns: 0, startDate: null, isCancelled: false };
-    
-    // Apply fake start dates for testing, but preserve real progress data
-    if (challengeId === 'master-of-air-breathing') {
-      return {
-        ...realProgress,
-        startDate: new Date('2025-08-20'), // August 20
-      };
-    } else if (challengeId === 'master-of-air-water') {
-      return {
-        ...realProgress,
-        startDate: new Date('2025-09-01'), // September 1
-      };
-    }
-    
-    return realProgress;
+    return challengeProgress[challengeId] || { progress: 0, streak: 0, checkIns: 0, startDate: null, isCancelled: false };
   }, [challengeProgress]);
 
   const getChallengeCompletions = useCallback((challengeId: string) => {
-    // Add fake completion data for testing
-    if (challengeId === 'master-of-air-breathing') {
-      const fakeCompletions = [
-        {
-          startDate: new Date('2025-08-20'), // August 20
-          endDate: new Date('2025-08-30'), // August 30
-          checkIns: 8,
-          duration: 10
-        },
-        {
-          startDate: new Date('2025-08-10'), // August 20
-          endDate: new Date('2025-08-20'), // August 30
-          checkIns: 6,
-          duration: 10
-        }
-      ];
-      return fakeCompletions;
-    } else if (challengeId === 'master-of-air-water') {
-      const fakeCompletions = [
-        {
-          startDate: new Date('2025-08-20'), // August 20
-          endDate: new Date('2025-08-30'), // August 30
-          checkIns: 7,
-          duration: 10
-        }
-      ];
-      return fakeCompletions;
-    }
-    
     return challengeCompletions[challengeId] || [];
   }, [challengeCompletions]);
 

@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from "../contexts/AppContext";
+import LockLight from "../assets/icons/lock.svg";
 
 export type ChallengeStatus = "active" | "locked" | "inprogress";
 
@@ -84,18 +85,18 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
       <View className="flex-row justify-between items-start mb-3">
         {/* Left: points badge + duration + title + description */}
         <View className="flex-1 mr-3">
-          <View className="flex-row items-center border border-orange-500 px-3 py-0.5 rounded-full self-start mb-1 gap-1">
+          <View className="flex-row items-center border border-orange-500 px-1 py-0.5 rounded-full self-start mb-1 gap-1">
           <Text className="text-base font-bold text-orange-500">+{points}</Text>
-          <CoinIcon width={12} height={12} color="#FF6B35" />
+          <CoinIcon width={16} height={16} color="#FF6B35" />
         </View>
-          <Text className="text-gray-500 text-s mb-2">
+          <Text className="text-gray-600 text-sm font-semibold my-1">
             {duration} {t("challenges.challenge")}
           </Text>
 
           {/* Title and Description */}
-          <Text className="text-lg font-bold text-black mb-1">{title}</Text>
+          <Text className="text-xl font-bold text-black mb-1">{title}</Text>
           {!!description && (
-            <Text className="text-gray-600 text-sm">{description}</Text>
+            <Text className="text-slate-600 text-md">{description}</Text>
           )}
         </View>
 
@@ -114,8 +115,8 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
           )}
           {/* Overlay: completion, streak, lock, or pause */}
           {isLocked ? (
-            <View className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/40 items-center justify-center">
-              <Ionicons name="lock-closed" size={14} color="#ffffff" />
+            <View className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/50 items-center justify-center">
+              <LockLight width={14} height={14} color="#ffffff" />
             </View>
              ) : isCompleted ? (
             <View className="absolute top-1 right-1 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
@@ -133,16 +134,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
         <View>
           {isCompleted ? (
             /* Restart Challenge Button for completed challenges */
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={onPress}
-              className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
-            >
-              <Ionicons name="refresh" size={18} color="#ffffff" />
-              <Text className="text-white font-semibold text-base ml-2">
-                Restart challenge
-              </Text>
-            </TouchableOpacity>
+            null
           ) : (
             /* Progress and Check In for active in-progress challenges */
             <>
@@ -164,13 +156,13 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
                 onPress={onCheckIn}
                 className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
               >
-                <Ionicons name="checkmark" size={18} color="#ffffff" />
+                <Ionicons name="checkmark" size={20} color="#ffffff"  />
                 <Text className="text-white font-semibold text-base ml-2">
                   {t("challenges.checkIn")}
                 </Text>
                 {typeof checkIns === "number" && (
                   <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
-                    <Text className="text-white text-s font-bold">{checkIns}</Text>
+                    <Text className="text-white text-s font-semibold">{checkIns}</Text>
                   </View>
                 )}
               </TouchableOpacity>
