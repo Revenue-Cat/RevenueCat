@@ -41,6 +41,7 @@ const AchievementStretchedIcon = require("../assets/exclusive-achievements/achie
 import React from 'react';
 
 export interface ChallengeData {
+  timeBasedProgress: number;
   id: string;
   title: string;
   shortDescription: string;

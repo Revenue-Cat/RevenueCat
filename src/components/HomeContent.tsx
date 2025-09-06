@@ -47,7 +47,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
         <>
           {/* Stats */}
           <HomeStats />
-          {/* <Challenges /> */}
+          <Challenges />
         </>
       )}
 

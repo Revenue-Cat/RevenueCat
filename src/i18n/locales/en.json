@@ -6,6 +6,11 @@
       "subtitle": "Exclusive achievements are under construction",
       "title": "Coming Soon"
     },
+    "exclusive": {
+      "title": "Exclusive Achievements",
+      "subtitle": "Special challenges with unique rewards",
+      "footer": "Complete challenges to unlock exclusive achievements and earn special rewards!"
+    },
     "completed": "Completed!",
     "completedOn": "Completed on",
     "daysLeft": "{{days}}d left",

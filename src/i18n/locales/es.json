@@ -6,6 +6,11 @@
       "subtitle": "Los logros exclusivos están en construcción",
       "title": "Próximamente"
     },
+    "exclusive": {
+      "title": "Logros Exclusivos",
+      "subtitle": "Desafíos especiales con recompensas únicas",
+      "footer": "¡Completa desafíos para desbloquear logros exclusivos y ganar recompensas especiales!"
+    },
     "completed": "¡Completado!",
     "completedOn": "Completado el",
     "daysLeft": "{{days}}d restantes",
