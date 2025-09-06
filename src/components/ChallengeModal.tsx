@@ -307,7 +307,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
         {/* Progress Bar - Only show for inprogress challenges */}
         {isInProgress && !isCompleted && (
           <View className="my-4">
-            <View className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden my-3">
+            <View className={`h-2 ${isDark ? 'bg-slate-600' : 'bg-gray-200'} rounded-full overflow-hidden my-3`}>
                   <View
                     style={{ width: `${Math.min(Math.max(timeBasedProgress, 0), 100)}%` }}
                     className="h-full bg-green-500"

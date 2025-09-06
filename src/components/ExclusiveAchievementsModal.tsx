@@ -59,9 +59,6 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
                 ? "#22C55E" 
                 : "transparent"
             }
-            borderColor={
-                isCompleted ? "#22C55E" : "#d7d9df"
-            }
             />
 
         {/* Challenge Icon Background */}

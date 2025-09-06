@@ -75,14 +75,14 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
                 ? "#22C55E"
                 : "transparent"
             }
-            borderColor={
-              (progress?.percentage || 0) === 100 ? "#22C55E" : borderColor
-            }
+            // borderColor={
+            //   (progress?.percentage || 0) === 100 ? "#22C55E" : borderColor
+            // }
           />
         )}
 
         {/* Achievement Icon Background */}
-        <View className="absolute inset-0 bg-gradient-to-br from-green-400 to-yellow-400 rounded-full justify-center items-center">
+        <View className="absolute inset-0  rounded-full justify-center items-center">
           {isRegularAchievement(achievement.id) ? (
             // Regular achievements logic
             <>

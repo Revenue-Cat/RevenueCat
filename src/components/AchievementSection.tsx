@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import AchievementCard from './AchievementCard';
 import { useApp } from '../contexts/AppContext';
 import { achievementService } from '../services/achievementService';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Helper function to identify regular achievements
 const isRegularAchievement = (achievementId: string): boolean => {
@@ -21,30 +22,6 @@ const isRegularAchievement = (achievementId: string): boolean => {
   return regularAchievementIds.includes(achievementId);
 };
 
-// Helper function to check if achievement is in first 3 (excluding 100% progress achievements)
-// const isFirstThreeAchievement = (achievementId: string, allAchievements: any[], getProgressForAchievement: any): boolean => {
-//   const regularAchievementIds = [
-//     'first-spark',
-//     'hold-on', 
-//     'steel-week',
-//     'bright-moon',
-//     'fresh-path',
-//     'freedom',
-//     'hero',
-//     'legend'
-//   ];
-  
-//   // Filter regular achievements that don't have 100% progress
-//   const nonCompletedRegularAchievements = regularAchievementIds.filter(id => {
-//     const progress = getProgressForAchievement(id);
-//     return progress.percentage < 100;
-//   });
-  
-//   // Take the first 3 non-completed regular achievements
-//   const firstThreeNonCompleted = nonCompletedRegularAchievements.slice(0, 3);
-  
-//   return firstThreeNonCompleted.includes(achievementId);
-// };
 
 interface AchievementSectionProps {
   isCollapsed: boolean;
@@ -59,6 +36,8 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const { achievements, getProgressForAchievement } = useApp();
+   const { theme } = useTheme();
+  const isDark = theme === "dark";
   
   // Get translated achievements
   const translatedAchievements = useMemo(
@@ -244,7 +223,8 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
           {/* Card 2 - Second achievement (showing a little) */}
           {firstThreeAchievements.length > 1 && (
             <Animated.View
-              className="absolute bg-white bottom-5 rounded-xl left-4 right-4 h-20 border"
+              className={`absolute ${isDark ? 'bg-slate-700' : 'bg-white'} bottom-5 rounded-xl left-4 right-4 h-20 border`}
+              
               style={{
                 opacity: collapsedPreviewAnims[0].interpolate({
                   inputRange: [0, 1],
@@ -262,7 +242,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
           {/* Card 3 - Third achievement (showing a little less) */}
           {firstThreeAchievements.length > 2 && (
             <Animated.View
-              className="absolute bg-white bottom-3 rounded-xl left-8 right-8 h-14"
+              className={`absolute ${isDark ? 'bg-slate-700' : 'bg-white'} bottom-3 rounded-xl left-8 right-8 h-14`}
               style={{
                 opacity: collapsedPreviewAnims[1].interpolate({
                   inputRange: [0, 1],

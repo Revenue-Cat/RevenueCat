@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from "../contexts/AppContext";
+import { useTheme } from "../contexts/ThemeContext";
 import LockLight from "../assets/icons/lock.svg";
 
 export type ChallengeStatus = "active" | "locked" | "inprogress";
@@ -48,6 +49,8 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   totalDurations
 }) => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const { calculateProgressBasedOnTime, getChallengeProgress, getChallengeCompletions } = useApp();
   const isLocked = status === "locked";
   const isInProgress = status === "inprogress";
@@ -80,7 +83,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   const showProgress = !isLocked && !isActive && typeof timeBasedProgress === "number";
 
   const CardContent = (
-    <View className="bg-white rounded-2xl p-4 mb-4">
+    <View className={`${isDark ? 'bg-slate-700' : 'bg-white'} rounded-2xl p-4 mb-4`}>
       {/* Main Content */}
       <View className="flex-row justify-between items-start mb-3">
         {/* Left: points badge + duration + title + description */}
@@ -89,14 +92,14 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
           <Text className="text-base font-bold text-orange-500">+{points}</Text>
           <CoinIcon width={16} height={16} color="#FF6B35" />
         </View>
-          <Text className="text-gray-600 text-sm font-semibold my-1">
+          <Text className={`${isDark ? 'text-slate-300' : 'text-slate-600'} text-sm font-semibold my-1`}>
             {duration} {t("challenges.challenge")}
           </Text>
 
           {/* Title and Description */}
-          <Text className="text-xl font-bold text-black mb-1">{title}</Text>
+          <Text className={`text-xl font-bold mb-1 ${isDark ? 'text-slate-50' : 'text-black'}`}>{title}</Text>
           {!!description && (
-            <Text className="text-slate-600 text-md">{description}</Text>
+            <Text className={`text-md ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{description}</Text>
           )}
         </View>
 
@@ -141,7 +144,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
               {/* Progress */}
               {showProgress && (
                 <View className="mb-3">
-                  <View className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <View className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-600' : 'bg-gray-200'}`}>
                     <View
                       style={{ width: `${timeBasedProgress}%` }}
                       className="h-full bg-green-500"

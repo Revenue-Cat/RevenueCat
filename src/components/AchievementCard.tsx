@@ -3,6 +3,7 @@ import { View, Text, Image, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import ProgressRing from "./ProgressRing";
+import { useTheme } from "../contexts/ThemeContext";
 
 const AchievementLockedIcon = require("../assets/achievements/achievement-locked.png");
 const LockIcon = require("../assets/achievements/lock.png");
@@ -38,19 +39,22 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
   onPress,
   progressRingColor = "#22C55E",
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  
   const CardContent = (
     <View
-      className={`bg-white rounded-2xl p-4 mb-3 flex-row items-center shadow-lg ${containerClassName}`}
+      className={`${isDark ? 'bg-slate-700' : 'bg-white'} rounded-2xl p-4 mb-3 flex-row items-center shadow-lg ${containerClassName}`}
     >
       <View className="flex-1 mr-4">
         <View className="flex-row items-center border border-orange-500 px-3 py-1.5 rounded-full self-start mb-1 gap-1">
           <Text className="text-base font-bold text-orange-500">+{reward}</Text>
           <CoinIcon width={12} height={12} color="#FF6B35" />
         </View>
-        <Text className="text-s text-gray-500 mb-2">{timeLeft}</Text>
-        <Text className="text-base font-bold text-black mb-1">{title}</Text>
+        <Text className={`text-s ${isDark ? 'text-slate-400' : 'text-gray-500'} my-1`}>{timeLeft}</Text>
+        <Text className={`text-base font-bold mb-1 ${isDark ? 'text-slate-100' : 'text-black'}`}>{title}</Text>
         <Text 
-          className="text-sm text-gray-500 leading-5" 
+          className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'} leading-5`} 
           numberOfLines={1} 
           ellipsizeMode="tail"
         >
@@ -65,7 +69,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
             size={80}
             strokeWidth={3}
             color={progressRingColor}
-            borderColor={"#d7d9df"}
+            borderColor={isDark ? "#475569" : "#d7d9df"}
           />
         )}
 
