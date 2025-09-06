@@ -21,13 +21,10 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
   const { t } = useTranslation();
   
   const handleShare = async () => {
-    console.log('Share button pressed for achievement:', achievement.name);
     
     try {
       const message = `🎉 I just unlocked the "${achievement.name}" achievement! ${achievement.description}${achievement.coins ? `\n💰 Reward: ${achievement.coins} coins` : ''}`;
-      
-      console.log('Attempting to share message:', message);
-      
+            
       const result = await Share.share({
         message: message,
         title: 'Achievement Unlocked!'
@@ -56,7 +53,6 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
         <Pressable 
           className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
           onPress={() => {
-            console.log('Button pressed! Achievement unlocked:', achievement.unlocked);
             if (achievement.unlocked && (progress?.percentage || 0) === 100) {
               handleShare();
             } else if (isRegularAchievement(achievement.id)) {

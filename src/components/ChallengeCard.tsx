@@ -25,7 +25,7 @@ export interface ChallengeCardProps {
   buddyAdvice: string[];
   id?: string;
   unitWord?: string;
-  totalDurations?: number; // Total duration in days for progress calculation
+  totalDurations?: any; // Total duration in days for progress calculation
 }
 
 const ChallengeCard: React.FC<ChallengeCardProps> = ({
@@ -52,6 +52,10 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   
   // Get progress data for the challenge
   const progressData = challengeId ? getChallengeProgress(challengeId) : null;
+  
+  // Check if challenge is completed (has completion count)
+  const isCompleted = true;
+    // progressData?.completionCount && progressData.completionCount > 0;
   
   // Calculate time-based progress for in-progress challenges (same as ChallengeModal)
   const timeBasedProgress = challengeId && isInProgress && totalDurations && progressData?.startDate ? 
@@ -94,18 +98,19 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
           ) : (
             <View className="w-full h-full bg-gray-200" />
           )}
-          {/* Overlay: streak, lock, or pause */}
+          {/* Overlay: completion, streak, lock, or pause */}
           {isLocked ? (
             <View className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/40 items-center justify-center">
               <Ionicons name="lock-closed" size={14} color="#ffffff" />
             </View>
-          ) : isInProgress ? (
-            typeof streak === "number" && streak > 0 ? (
-              <View className="absolute top-1.5 right-1.5 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
-                <Text className="text-white text-s font-bold">{streak}</Text>
-              </View>
-            ) : null
+             ) : isCompleted ? (
+            <View className="absolute top-1.5 right-1.5 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
+              <Text className="text-white text-xs font-bold">
+                {streak}
+              </Text>
+            </View>
           ) : null}
+        
         </View>
       </View>
 

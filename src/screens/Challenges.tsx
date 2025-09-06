@@ -42,7 +42,7 @@ const Challenges: React.FC = () => {
   const sortedChallenges = useMemo(() => {
     return [...sampleChallenges].sort((a, b) => {
       // Priority: active > inprogress > locked
-      const statusOrder = { 'active': 0, 'inprogress': 1, 'locked': 2 };
+      const statusOrder = { 'inprogress': 0, 'active': 1, 'locked': 2 };
       return statusOrder[a.status] - statusOrder[b.status];
     });
   }, [sampleChallenges]);
