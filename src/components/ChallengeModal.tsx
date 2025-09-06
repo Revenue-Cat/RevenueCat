@@ -27,7 +27,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { t } = useTranslation();
-  const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns } = useApp();
+  const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns, getChallengeCompletions, setChallengeCompletionsForId } = useApp();
 
   const handleStartChallenge = () => {
     if (challengeId) {
@@ -48,36 +48,62 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
     }
   };
 
+  const handleRestartChallenge = () => {
+    if (challengeId && challenge) {
+      // Save the current completion before restarting
+      const currentProgress = getChallengeProgress(challengeId);
+      if (currentProgress.startDate) {
+        const startDate = new Date(currentProgress.startDate);
+        const endDate = new Date(startDate.getTime() + challenge.totalDurations * 24 * 60 * 60 * 1000);
+        
+        // Add to completions history
+        const existingCompletions = getChallengeCompletions(challengeId);
+        setChallengeCompletionsForId(challengeId, [
+          ...existingCompletions,
+          {
+            startDate,
+            endDate,
+            checkIns: currentProgress.checkIns,
+            duration: challenge.totalDurations
+          }
+        ]);
+      }
+      
+      // Reset the challenge progress and start fresh
+      updateChallengeProgress(challengeId, 0, 0, 0);
+      // Start the challenge again with a new start date
+      startChallenge(challengeId);
+    }
+  };
+
   // Get challenge status and progress data - always use fresh state, not props
   const challengeStatus = challengeId ? getChallengeStatus(challengeId) : 'locked';
   const progressData = challengeId ? getChallengeProgress(challengeId) : { progress: 0, streak: 0, checkIns: 0, startDate: null, isCancelled: false };
   const isActive = challengeStatus === 'active';
   const isInProgress = challengeStatus === 'inprogress';
   const isLocked = challengeStatus === 'locked';
-  
-  // // Force re-render when challenge status changes
-  // useEffect(() => {
-  //   console.log('ChallengeModal useEffect - status changed:', {
-  //     challengeId,
-  //     challengeStatus,
-  //     visible
-  //   });
-  // }, [challengeStatus, challengeId, visible]);
-  
+
   // Calculate progress based on time elapsed since start date (only for inprogress challenges)
   const timeBasedProgress = challenge && challengeId && isInProgress && challenge.totalDurations && progressData.startDate ? 
     calculateProgressBasedOnTime(challengeId, challenge.totalDurations.toString(), new Date(progressData.startDate)) : 
     0;
+  // Check if challenge is completed (days since start equals total duration)
+  const isCompleted = useMemo(() => {
+    if (!challengeId || !progressData.startDate || !challenge) return false;
+    const startDate = new Date(progressData.startDate);
+    const today = new Date();
+    const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    return daysSinceStart >= challenge.totalDurations;
+  }, [challengeId, progressData.startDate, challenge]);
 
-  console.log("TEST timeBasedProgress", {
-    totalDurations: challenge?.totalDurations,
-    challengeId,
-    startDate: progressData.startDate,
-    startDateType: typeof progressData.startDate,
-    convertedStartDate: progressData.startDate ? new Date(progressData.startDate) : null,
-    timeBasedProgress,
-    isInProgress
-  })
+  // Get previous completions
+  const previousCompletions = useMemo(() => {
+    if (!challengeId) return [];
+    return getChallengeCompletions(challengeId);
+  }, [challengeId, getChallengeCompletions]);
+
+  console.log("previousCompletions", previousCompletions);
+  
   // Calculate previous days data
   const previousDaysData = useMemo(() => {
     if (!challengeId || !progressData.startDate) return [];
@@ -89,9 +115,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
     
     // Calculate days since start date
     const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Show up to 4 previous days, but not more than days since start
-    const daysToShow = Math.min(4, daysSinceStart);
+    const daysToShow = daysSinceStart
     
     for (let i = 1; i <= daysToShow; i++) {
       const date = new Date(today);
@@ -191,8 +215,8 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           </Text>
         )}
 
-        {/* History Section - Only show for inprogress challenges */}
-        {isInProgress && (
+        {/* Progress Bar - Only show for inprogress challenges */}
+        {isInProgress && !isCompleted && (
           <View className="my-4">
             <View className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden my-3">
                   <View
@@ -200,7 +224,15 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                     className="h-full bg-green-500"
                   />
                 </View>
-            <Text className={`text-lg font-bold mb-3`}>
+          </View>
+        )}
+
+       
+
+        {/* History Section - Show for inprogress challenges that are not completed */}
+        {isInProgress && !isCompleted && (
+          <View className="my-4">
+            <Text className={`text-lg font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
               History
             </Text>
               <View>
@@ -242,6 +274,42 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                   </View>
                 ))}
               </View>
+          </View>
+        )}
+
+        {/* Completed Section - Show all previous completions */}
+        {previousCompletions.length > 0 && (
+          <View className="my-4">
+            <Text className={`text-lg font-bold mb-3 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+              Completed
+            </Text>
+            {previousCompletions.map((completion, index) => {
+              const formatDate = (date: Date) => {
+                return date.toLocaleDateString('en-US', { 
+                  month: 'short', 
+                  day: 'numeric' 
+                });
+              };
+              
+              return (
+                <View key={index} className="flex-row justify-between items-center mb-3">
+                  <View className="flex-row items-center">
+                    <GlassIcon width={24} height={24} color={isDark ? "#64748b" : "#94a3b8"} />
+                    <View className="ml-2">
+                      <Text className={`text-md font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+                        {formatDate(completion.startDate)} - {formatDate(completion.endDate)}
+                      </Text>
+                      <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                        {completion.checkIns} {challenge?.unitWord || 'Check-ins'}
+                      </Text>
+                    </View>
+                  </View>
+                  <View className="flex-row items-center">
+                    <Ionicons name="checkmark" size={24} color={isDark ? "#46c120" : "#46c120"} />
+                  </View>
+                </View>
+              );
+            })}
           </View>
         )}
 
@@ -288,7 +356,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
         </View>
 
         {/* Cancel Challenge Section */}
-        {isInProgress && (
+        {isInProgress && !isCompleted && (
           <View className="mb-4">
             <Pressable 
               className={`rounded-2xl p-4 flex-row items-center justify-center ${isDark ? 'bg-red-900/20' : 'bg-red-50'}`}
@@ -321,20 +389,22 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
         </Pressable>
 
-      {/* Action Button - Start now or Check In */}
+      {/* Action Button - Start now, Check In, or Restart challenge */}
         <Pressable 
           className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[70%] flex-row"
-          onPress={isInProgress ? handleCheckIn : handleStartChallenge}
+          onPress={isCompleted ? handleRestartChallenge : (isInProgress ? handleCheckIn : handleStartChallenge)}
           >      
           {isInProgress ? (
               <Ionicons name="checkmark" size={18} color="#ffffff" />
+            ) : isCompleted ? (
+              <Ionicons name="refresh" size={18} color="#ffffff" />
             ) : (
               ""
             )}     
             <Text className="text-white font-bold text-lg ml-2 mr-2">
-              {isInProgress ? 'Check In' : 'Start now'}
+              {isCompleted ? 'Restart challenge' : (isInProgress ? 'Check In' : 'Start now')}
             </Text>
-            {(isInProgress || isActive) ? (
+            {(isInProgress || isActive || isCompleted) ? (
              ""
             ) : (
               <LockLight width={16} height={14} color="#ffffff" opacity={0.5} />

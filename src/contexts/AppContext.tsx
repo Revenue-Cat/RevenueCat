@@ -48,6 +48,7 @@ interface AppState {
   activeChallenges: string[];   // Array of challenge IDs that are active (can be started)
   inProgressChallenges: string[];   // Array of challenge IDs that are in progress (started with startDate)
   challengeProgress: Record<string, { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean }>; // Progress tracking for each challenge
+  challengeCompletions: Record<string, Array<{ startDate: Date; endDate: Date; checkIns: number; duration: number }>>; // History of completed challenges
   dailyCheckIns: Record<string, Record<string, number>>; // Daily check-ins for each challenge: { challengeId: { "2024-09-04": 3, "2024-09-03": 2 } }
 
   // UI state
@@ -91,6 +92,8 @@ interface AppState {
   cancelChallenge: (challengeId: string) => void;
   getChallengeStatus: (challengeId: string) => 'active' | 'locked' | 'inprogress';
   getChallengeProgress: (challengeId: string) => { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean };
+  getChallengeCompletions: (challengeId: string) => Array<{ startDate: Date; endDate: Date; checkIns: number; duration: number }>;
+  setChallengeCompletionsForId: (challengeId: string, completions: Array<{ startDate: Date; endDate: Date; checkIns: number; duration: number }>) => void;
   calculateProgressBasedOnTime: (challengeId: string, duration: string, startDate: Date | null | undefined) => number;
   getDailyCheckIns: (challengeId: string) => Record<string, number>;
   addDailyCheckIn: (challengeId: string, date: string, count: number) => void;
@@ -155,6 +158,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeChallenges, setActiveChallenges] = useState<string[]>([]);
   const [inProgressChallenges, setInProgressChallenges] = useState<string[]>([]);
   const [challengeProgress, setChallengeProgress] = useState<Record<string, { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean }>>({});
+  const [challengeCompletions, setChallengeCompletions] = useState<Record<string, Array<{ startDate: Date; endDate: Date; checkIns: number; duration: number }>>>({});
   const [dailyCheckIns, setDailyCheckIns] = useState<Record<string, Record<string, number>>>({});
 
   // UI state
@@ -471,8 +475,69 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [activeChallenges, inProgressChallenges]);
 
   const getChallengeProgress = useCallback((challengeId: string) => {
-    return challengeProgress[challengeId] || { progress: 0, streak: 0, checkIns: 0, startDate: null, isCancelled: false };
+    // Fake start data for 2 challenges
+    let fakeProgress = null;
+    
+    if (challengeId === 'master-of-air-breathing') {
+      fakeProgress = { 
+        progress: 0, 
+        streak: 0, 
+        checkIns: 0, 
+        startDate: new Date('2025-08-20'), // August 20
+        isCancelled: false 
+      };
+    } else if (challengeId === 'master-of-air-water') {
+      fakeProgress = { 
+        progress: 0, 
+        streak: 0, 
+        checkIns: 0, 
+        startDate: new Date('2025-09-01'), // 11 days ago
+        isCancelled: false 
+      };
+    }
+    
+    return fakeProgress || challengeProgress[challengeId] || { progress: 0, streak: 0, checkIns: 0, startDate: null, isCancelled: false };
   }, [challengeProgress]);
+
+  const getChallengeCompletions = useCallback((challengeId: string) => {
+    // Add fake completion data for testing
+    if (challengeId === 'master-of-air-breathing') {
+      const fakeCompletions = [
+        {
+          startDate: new Date('2025-08-20'), // August 20
+          endDate: new Date('2025-08-30'), // August 30
+          checkIns: 8,
+          duration: 10
+        },
+        {
+          startDate: new Date('2025-08-10'), // August 20
+          endDate: new Date('2025-08-20'), // August 30
+          checkIns: 6,
+          duration: 10
+        }
+      ];
+      return fakeCompletions;
+    } else if (challengeId === 'master-of-air-water') {
+      const fakeCompletions = [
+        {
+          startDate: new Date('2025-08-20'), // August 20
+          endDate: new Date('2025-08-30'), // August 30
+          checkIns: 7,
+          duration: 10
+        }
+      ];
+      return fakeCompletions;
+    }
+    
+    return challengeCompletions[challengeId] || [];
+  }, [challengeCompletions]);
+
+  const setChallengeCompletionsForId = useCallback((challengeId: string, completions: Array<{ startDate: Date; endDate: Date; checkIns: number; duration: number }>) => {
+    setChallengeCompletions(prev => ({
+      ...prev,
+      [challengeId]: completions
+    }));
+  }, []);
 
   const calculateProgressBasedOnTime = useCallback((challengeId: string, duration: string, startDate: Date | null | undefined) => {
     if (!startDate || !(startDate instanceof Date) || isNaN(startDate.getTime())) {
@@ -620,6 +685,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     activeChallenges,
     inProgressChallenges,
     challengeProgress,
+    challengeCompletions,
     dailyCheckIns,
 
     showShop,
@@ -659,6 +725,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     cancelChallenge,
     getChallengeStatus,
     getChallengeProgress,
+    getChallengeCompletions,
+    setChallengeCompletionsForId,
     calculateProgressBasedOnTime,
     getDailyCheckIns,
     addDailyCheckIn,
@@ -698,6 +766,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     cancelChallenge,
     getChallengeStatus,
     getChallengeProgress,
+    getChallengeCompletions,
+    setChallengeCompletionsForId,
     calculateProgressBasedOnTime,
     getDailyCheckIns,
     addDailyCheckIn,
