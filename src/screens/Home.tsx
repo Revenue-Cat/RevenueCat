@@ -69,22 +69,6 @@ const Home: React.FC<HomeProps> = ({
     isInitialized,
   } = useHomeScroll();
 
-  // Calculate dynamic ScrollView height based on scroll position
-  // const scrollViewHeight = useMemo(() => {
-  //   if (currentView === "home") {
-  //     return scrollY.interpolate({
-  //       inputRange: [0, 100],
-  //       outputRange: ["60%", "70%"],
-  //       extrapolate: "clamp",
-  //     });
-  //   } else {
-  //     return scrollY.interpolate({
-  //       inputRange: [0, 100],
-  //       outputRange: ["55%", "60%"],
-  //       extrapolate: "clamp",
-  //     });
-  //   }
-  // }, [scrollY, currentView]);
 
   const buddyAnimSource = useMemo(() => {
     const id = selectedBuddyId as string;

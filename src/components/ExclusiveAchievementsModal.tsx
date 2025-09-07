@@ -35,7 +35,7 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
   const { t } = useTranslation();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const { startDate, getChallengeStatus } = useApp();
+  const { startChallenge, getChallengeStatus, getChallengeCompletions } = useApp();
 
   if (!challenge) return null;
 
@@ -45,6 +45,9 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
   const isLocked = status === 'locked';
   const borderColor = isDark ? "#475569" : "#d7d9df";
 
+  // Compute completion count from stored completions
+  const completionCount = getChallengeCompletions(challenge.id).length;
+
   // Helper function to render challenge icon and badges
   const renderChallengeIcon = () => {
     return (
@@ -52,10 +55,10 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
         {/* Progress Ring */}
          <ProgressRing
             progress={isCompleted ? 100 : challenge.timeBasedProgress+1}
-            size={110}
+            size={114}
             strokeWidth={4}
             color={
-                isCompleted ||  isInProgress  
+                (isCompleted ||  isInProgress || completionCount > 0) 
                 ? "#22C55E" 
                 : "transparent"
             }
@@ -98,6 +101,16 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
               <LockLight width={14} height={14} color="white" />
             </View>
           )}
+
+          {/* Completion count badge (same style as ExclusiveAchievements grid) */}
+          {completionCount > 0 && (
+            <View className="absolute -top-0 -right-1 bg-green-500 rounded-full w-7 h-7 justify-center items-center">
+              <Text className="text-white text-xs font-bold">
+                  {completionCount == 1 ?  <Ionicons name="checkmark" size={16} color="white" /> : completionCount}
+
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     );
@@ -118,8 +131,10 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
     }
   };
 
-  const handleUpdate = () => {
-    console.log('Update challenge:', challenge.title);
+  const handleStartChallenge = () => {
+     if (challenge.id) {
+        startChallenge(challenge.id);
+      }
   };
 
   return (
@@ -211,6 +226,8 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
           challenge={challenge}
           progress={progress}
           onClose={onClose}
+          handleStartChallenge={handleStartChallenge}
+          handleShare={handleShare}
         />
     </SlideModal>
   );

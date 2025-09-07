@@ -162,7 +162,8 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
             const isInProgress = challenge.status === 'inprogress';
             const isLocked = challenge.status === 'locked';
             const completionCount = challenge.previousCompletions.length;
-
+            const isActive = challenge.status === 'active';
+              
             return (
               <View
                 key={`${challenge.id}-${index}`}
@@ -185,7 +186,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                   />
                   {/* Achievement Icon */}
                   <View className="absolute w-[70px] h-[70px] rounded-full justify-center items-center">
-                    {challenge.achievementIcon && !isLocked ? (
+                    {challenge.achievementIcon && !isLocked && !isActive ? (
                       <Image
                         source={challenge.achievementIcon}
                         style={{ width: 80, height: 80 }}
@@ -199,12 +200,6 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                       />
                     )}
                     
-                    {/* Check icon for completed challenges */}
-                    {isCompleted && (
-                      <View className="absolute -top-2 -right-1 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
-                        <Ionicons name="checkmark" size={12} color="white" />
-                      </View>
-                    )}
                     
                     {/* Lock icon for locked challenges */}
                     {isLocked && (
@@ -215,13 +210,15 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
 
                     {/* Completion count badge */}
                     {completionCount > 0 && (
-                      <View className="absolute -top-1 -left-1 bg-indigo-500 rounded-full w-5 h-5 justify-center items-center">
+                      <View className="absolute -top-2 -right-1 bg-green-500 rounded-full w-5 h-5 justify-center items-center">
                         <Text className="text-white text-xs font-bold">
-                          {completionCount}
+                          {completionCount == 1 ?  <Ionicons name="checkmark" size={16} color="white" /> : completionCount}
                         </Text>
                       </View>
                     )}
-                         </View>
+                             
+                            
+                </View>
                
                   </Pressable>
 

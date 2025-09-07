@@ -76,24 +76,8 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
 
   const handleRestartChallenge = () => {
     if (challengeId && challenge) {
-      // Save the current completion before restarting
-      const currentProgress = getChallengeProgress(challengeId);
-      if (currentProgress.startDate) {
-        const startDate = new Date(currentProgress.startDate);
-        const endDate = new Date(startDate.getTime() + challenge.totalDurations * 24 * 60 * 60 * 1000);
-        
-        // Add to completions history
-        const existingCompletions = getChallengeCompletions(challengeId);
-        setChallengeCompletionsForId(challengeId, [
-          ...existingCompletions,
-          {
-            startDate,
-            endDate,
-            checkIns: currentProgress.checkIns,
-            duration: challenge.totalDurations
-          }
-        ]);
-      }
+      // Note: Completion is already automatically added when challenge is completed
+      // via the useEffect hook above, so we don't need to add it again here
       
       // Reset the challenge progress and start fresh
       updateChallengeProgress(challengeId, 0, 0, 0);
@@ -121,6 +105,33 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
     const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
     return daysSinceStart >= challenge.totalDurations;
   }, [challengeId, progressData.startDate, challenge]);
+
+  // Auto-add completion to challengeCompletions when challenge is completed
+  useEffect(() => {
+    if (isCompleted && challengeId && challenge && progressData.startDate) {
+      const existingCompletions = getChallengeCompletions(challengeId);
+      const startDate = new Date(progressData.startDate);
+      const endDate = new Date(startDate.getTime() + challenge.totalDurations * 24 * 60 * 60 * 1000);
+      
+      // Check if this completion already exists to avoid duplicates
+      const completionExists = existingCompletions.some(completion => {
+        const existingStartDate = completion.startDate instanceof Date ? completion.startDate : new Date(completion.startDate);
+        return existingStartDate.getTime() === startDate.getTime();
+      });
+      
+      if (!completionExists) {
+        setChallengeCompletionsForId(challengeId, [
+          ...existingCompletions,
+          {
+            startDate,
+            endDate,
+            checkIns: progressData.checkIns,
+            duration: challenge.totalDurations
+          }
+        ]);
+      }
+    }
+  }, [isCompleted, challengeId, challenge, progressData.startDate, progressData.checkIns, getChallengeCompletions, setChallengeCompletionsForId]);
 
   // Get previous completions
   const previousCompletions = useMemo(() => {
@@ -162,7 +173,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   const handleShare = async () => {
     
     try {
-      const message = `🎉 I just unlocked the "${challenge?.name}" achievement! ${challenge?.description}`;
+      const message = `🎉 I just unlocked the "${challenge?.title}" achievement! ${challenge?.description}`;
             
       const result = await Share.share({
         message: message,
@@ -373,8 +384,10 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
               {t('challenges.modal.completed')}
             </Text>
             {previousCompletions.map((completion, index) => {
-              const formatDate = (date: Date) => {
-                return date.toLocaleDateString('en-US', { 
+              const formatDate = (date: Date | string) => {
+                // Ensure we have a Date object
+                const dateObj = date instanceof Date ? date : new Date(date);
+                return dateObj.toLocaleDateString('en-US', { 
                   month: 'short', 
                   day: 'numeric' 
                 });
@@ -512,17 +525,17 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
       {/* Action Button - Start now, Check In, or Restart challenge */}
         <Pressable 
           className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[70%] flex-row"
-          onPress={isCompleted ? handleRestartChallenge : (isInProgress ? handleCheckIn : handleStartChallenge)}
+          onPress={isCompleted ? handleRestartChallenge : (isInProgress ? handleCheckIn : (previousCompletions.length > 0 ? handleRestartChallenge : handleStartChallenge))}
           >      
           {isInProgress ? (
               <Ionicons name="checkmark" size={18} color="#ffffff" />
-            ) : isCompleted ? (
+            ) : (isCompleted || previousCompletions.length > 0) ? (
               <Ionicons name="refresh" size={18} color="#ffffff" />
             ) : (
               ""
             )}     
             <Text className="text-white font-bold text-lg ml-2 mr-2">
-              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? t('challenges.checkIn') : t('challenges.modal.startNow'))}
+              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? t('challenges.checkIn') : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : t('challenges.modal.startNow')))}
             </Text>
             {isInProgress && !isCompleted && (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">

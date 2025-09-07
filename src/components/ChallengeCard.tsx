@@ -7,7 +7,7 @@ import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
 import LockLight from "../assets/icons/lock.svg";
 
-export type ChallengeStatus = "active" | "locked" | "inprogress";
+export type ChallengeStatus = "active" | "locked" | "inprogress" | "completed";
 
 export interface ChallengeCardProps {
   title: string;
@@ -55,6 +55,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   const isLocked = status === "locked";
   const isInProgress = status === "inprogress";
   const isActive = status === "active";
+  const isCompletedStatus = status === "completed";
   
   // Get progress data for the challenge
   const progressData = challengeId ? getChallengeProgress(challengeId) : null;
@@ -121,10 +122,11 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
             <View className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/50 items-center justify-center">
               <LockLight width={14} height={14} color="#ffffff" />
             </View>
-             ) : isCompleted ? (
+             ) : (isCompletedStatus) ? (
             <View className="absolute top-1 right-1 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
               <Text className="text-white text-xs font-bold">
-                {completionCount}
+                {completionCount == 1 ?  <Ionicons name="checkmark" size={16} color="white" /> : completionCount}
+
               </Text>
             </View>
           ) : null}
@@ -133,46 +135,42 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
       </View>
 
       {/* Actions */}
-      {isInProgress && (
+      {isInProgress && !isCompletedStatus && (
         <View>
-          {isCompleted ? (
-            /* Restart Challenge Button for completed challenges */
-            null
-          ) : (
-            /* Progress and Check In for active in-progress challenges */
-            <>
-              {/* Progress */}
-              {showProgress && (
-                <View className="mb-3">
-                  <View className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-600' : 'bg-gray-200'}`}>
-                    <View
-                      style={{ width: `${timeBasedProgress}%` }}
-                      className="h-full bg-green-500"
-                    />
-                  </View>
+          {/* Progress and Check In for active in-progress challenges */}
+          <>
+            {/* Progress */}
+            {showProgress && (
+              <View className="mb-3">
+                <View className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-600' : 'bg-gray-200'}`}>
+                  <View
+                    style={{ width: `${timeBasedProgress}%` }}
+                    className="h-full bg-green-500"
+                  />
+                </View>
+              </View>
+            )}
+
+            {/* Check In Button */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={onCheckIn}
+              className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
+            >
+              <Ionicons name="checkmark" size={20} color="#ffffff"  />
+              <Text className="text-white font-semibold text-base ml-2">
+                {t("challenges.checkIn")}
+              </Text>
+              {typeof checkIns === "number" && (
+                <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
+                  <Text className="text-white text-s font-semibold">{checkIns}</Text>
                 </View>
               )}
-
-              {/* Check In Button */}
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={onCheckIn}
-                className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
-              >
-                <Ionicons name="checkmark" size={20} color="#ffffff"  />
-                <Text className="text-white font-semibold text-base ml-2">
-                  {t("challenges.checkIn")}
-                </Text>
-                {typeof checkIns === "number" && (
-                  <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
-                    <Text className="text-white text-s font-semibold">{checkIns}</Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            </>
-          )}
+            </TouchableOpacity>
+          </>
         </View>
       )}
+
     </View>
   );
 

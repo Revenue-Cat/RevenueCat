@@ -9,12 +9,16 @@ interface ExclusiveAchievementsModalActionsProps {
   challenge: ChallengeData;
   progress?: any;
   onClose: () => void;
+  handleStartChallenge: () => void;
+  handleShare: () => void;
 }
 
 const ExclusiveAchievementsModalActions: React.FC<ExclusiveAchievementsModalActionsProps> = ({
   challenge,
   progress,
-  onClose
+  onClose,
+  handleStartChallenge,
+  handleShare
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -22,28 +26,9 @@ const ExclusiveAchievementsModalActions: React.FC<ExclusiveAchievementsModalActi
   const { getChallengeStatus } = useApp();
 
   const status = getChallengeStatus(challenge.id);
-  const isCompleted = progress?.percentage === 100;
+  const isCompleted = challenge.timeBasedProgress >= challenge.totalDurations;
   const isInProgress = status === 'inprogress';
   const isLocked = status === 'locked';
-  
-  const handleShare = async () => {
-    try {
-      const message = `🎉 I just completed the "${challenge.title}" challenge! ${challenge.shortDescription}\n💰 Reward: 100 coins`;
-            
-      const result = await Share.share({
-        message: message,
-        title: 'Challenge Completed!'
-      });
-      
-    } catch (error) {
-      console.error('Error sharing challenge:', error);
-      alert('Share failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
-    }
-  };
-
-  const handleUpdate = () => {
-    console.log('Update challenge:', challenge.title);
-  };
 
   return (
     <View className="my-6 flex-row justify-center gap-4">
@@ -54,14 +39,14 @@ const ExclusiveAchievementsModalActions: React.FC<ExclusiveAchievementsModalActi
         <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-100 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
       </Pressable>
 
-      {isInProgress ? null : (
+      {(isInProgress || isLocked )? null : (
         <Pressable 
           className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
           onPress={() => {
             if (isCompleted) {
               handleShare();
-            } else if (isLocked) {
-              handleUpdate();
+            } else {
+              handleStartChallenge();
             }
           }}
           style={({ pressed }) => [
@@ -74,7 +59,7 @@ const ExclusiveAchievementsModalActions: React.FC<ExclusiveAchievementsModalActi
           <View className="flex-row items-center">
             {isLocked ? <UpgradeIcon width={24} height={24} color="white" /> : ""}
             <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">
-              {isCompleted ? t('achievements.share') : (isLocked ? t('achievements.update') : t('achievements.close'))}
+              {isCompleted ? t('achievements.share') : "Start Challenge"}
             </Text>
           </View>
         </Pressable>

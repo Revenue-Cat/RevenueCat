@@ -91,7 +91,7 @@ interface AppState {
   startChallenge: (challengeId: string) => void;
   updateChallengeProgress: (challengeId: string, progress: number, streak: number, checkIns: number) => void;
   cancelChallenge: (challengeId: string) => void;
-  getChallengeStatus: (challengeId: string) => 'active' | 'locked' | 'inprogress';
+  getChallengeStatus: (challengeId: string) => 'active' | 'locked' | 'inprogress' | 'completed';
   getChallengeProgress: (challengeId: string) => { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean };
   getChallengeCompletions: (challengeId: string) => Array<{ startDate: Date; endDate: Date; checkIns: number; duration: number }>;
   setChallengeCompletionsForId: (challengeId: string, completions: Array<{ startDate: Date; endDate: Date; checkIns: number; duration: number }>) => void;
@@ -198,8 +198,61 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             purchasesMade: 0,
           });
           setActiveChallenges(parsed.activeChallenges || []);
-          setInProgressChallenges(parsed.inProgressChallenges || []);
-          setChallengeProgress(parsed.challengeProgress || {});
+          
+          // Add master-of-air-breathing to inProgressChallenges if not already present
+          const inProgressChallenges = parsed.inProgressChallenges || [];
+          if (!inProgressChallenges.includes("master-of-air-breathing")) {
+            inProgressChallenges.push("master-of-air-breathing");
+          }
+          setInProgressChallenges(inProgressChallenges);
+          // Convert string dates back to Date objects for challengeProgress
+          const challengeProgress = parsed.challengeProgress || {};
+          const convertedChallengeProgress: Record<string, { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean }> = {};
+          
+          Object.keys(challengeProgress).forEach(challengeId => {
+            const progress = challengeProgress[challengeId];
+            convertedChallengeProgress[challengeId] = {
+              ...progress,
+              startDate: progress.startDate ? new Date(progress.startDate) : null
+            };
+          });
+          
+          // Add fake data for master-of-air-breathing if not already present
+          if (!convertedChallengeProgress["master-of-air-breathing"]) {
+            convertedChallengeProgress["master-of-air-breathing"] = {
+              checkIns: 7,
+              progress: 100,
+              startDate: new Date("2025-09-05T19:19:02.966Z"),
+              // endDate: new Date("2025-09-06T19:19:02.966Z"),
+              streak: 7
+            };
+          }
+          
+          setChallengeProgress(convertedChallengeProgress);
+          // Convert string dates back to Date objects for challengeCompletions
+          const challengeCompletions = parsed.challengeCompletions || {};
+          const convertedChallengeCompletions: Record<string, Array<{ startDate: Date; endDate: Date; checkIns: number; duration: number }>> = {};
+          
+          Object.keys(challengeCompletions).forEach(challengeId => {
+            convertedChallengeCompletions[challengeId] = challengeCompletions[challengeId].map((completion: any) => ({
+              ...completion,
+              startDate: new Date(completion.startDate),
+              endDate: new Date(completion.endDate)
+            }));
+          });
+          
+          // Add fake completion data for master-of-air-breathing if not already present
+          if (!convertedChallengeCompletions["master-of-air-breathing"]) {
+            convertedChallengeCompletions["master-of-air-breathing"] = [{
+              startDate: new Date("2025-09-05T19:19:02.966Z"),
+              endDate: new Date("2025-09-06T19:19:02.966Z"),
+              checkIns: 7,
+              duration: 1
+            }];
+          }
+          
+          setChallengeCompletions(convertedChallengeCompletions);
+          setDailyCheckIns(parsed.dailyCheckIns || {});
         }
       } catch (error) {
         console.error('Failed to load state:', error);
@@ -251,7 +304,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       userProgress,
       activeChallenges,
       inProgressChallenges,
-      challengeProgress
+      challengeProgress,
+      challengeCompletions,
+      dailyCheckIns
     };
     AsyncStorage.setItem('@app_state', JSON.stringify(stateToSave))
       .catch(error => console.error('Failed to save state:', error));
@@ -273,7 +328,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     userProgress,
     activeChallenges,
     inProgressChallenges,
-    challengeProgress
+    challengeProgress,
+    challengeCompletions,
+    dailyCheckIns
   ]);
 
   // Memoize all action functions to prevent recreation
@@ -451,12 +508,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     console.log('Challenge cancelled:', challengeId);
   }, [activeChallenges, inProgressChallenges]);
 
-  const getChallengeStatus = useCallback((challengeId: string): 'active' | 'locked' | 'inprogress' => {
+  const getChallengeStatus = useCallback((challengeId: string): 'active' | 'locked' | 'inprogress' | 'completed' => {
     const inProgress = inProgressChallenges.includes(challengeId);
     const active = activeChallenges.includes(challengeId);
-    // Priority: inprogress > active > locked
+    const hasCompletions = challengeCompletions[challengeId] && challengeCompletions[challengeId].length > 0;
+    
+    // Priority: inprogress > completed > active > locked
     if (inProgress) {
       return 'inprogress'; // Challenge is being worked on
+    }
+    
+    if (hasCompletions) {
+      return 'completed'; // Challenge has been completed before
     }
     
     if (active) {
@@ -464,7 +527,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     
     return 'locked'; // Challenge not started
-  }, [activeChallenges, inProgressChallenges]);
+  }, [activeChallenges, inProgressChallenges, challengeCompletions]);
 
   const getChallengeProgress = useCallback((challengeId: string) => {
     return challengeProgress[challengeId] || { progress: 0, streak: 0, checkIns: 0, startDate: null, isCancelled: false };
