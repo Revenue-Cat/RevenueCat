@@ -17,11 +17,10 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useApp } from "../contexts/AppContext";
 import AchievementModal from "../components/AchievementModal";
 import ProgressRing from "../components/ProgressRing";
-import ComingSoon from "../components/ComingSoon";
+import ExclusiveAchievements from "../components/ExclusiveAchievements";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
 import { Achievement } from "../services/achievementService";
 import { achievementService } from "../services/achievementService";
-import { EXCLUSIVE_ACHIEVEMENTS_DATA } from "../data/exclusiveAchievementsData";
 const AchievementLockedIcon = require("../assets/achievements/achievement-locked.png");
 const AchievementBreatheIcon = require("../assets/achievements/achievement-breathe.png");
 const LockIcon = require("../assets/achievements/lock.png");
@@ -155,12 +154,8 @@ const Achievements: React.FC<AchievementsProps> = ({
       useNativeDriver: true,
     }).start();
 
-    // Return exclusive or regular achievements based on selection
-    if (isExclusiveSelected) {
-      return EXCLUSIVE_ACHIEVEMENTS_DATA;
-    } else {
-      return translatedAchievements;
-    }
+    // Return regular achievements (exclusive tab now shows challenges)
+    return translatedAchievements;
   }, [isExclusiveSelected, parallaxAnim, translatedAchievements]);
 
   // Memoize the achievement selection callback
@@ -240,24 +235,8 @@ const Achievements: React.FC<AchievementsProps> = ({
               : "from-indigo-800/30 to-purple-800/30"
           }`}
         />
-
-        <ScrollView
-          className="flex-1 gap-3"
-          contentContainerStyle={{
-            paddingTop: 10,
-            paddingBottom: 150,
-            minHeight: Dimensions.get("window").height * 0.7,
-          }}
-          bounces={false}
-          overScrollMode="never"
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: parallaxAnim } } }],
-            { useNativeDriver: true }
-          )}
-          scrollEventThrottle={16}
-        >
-          <ComingSoon />
-        </ScrollView>
+       {/* <ComingSoon /> */}
+        <ExclusiveAchievements />
       </View>
     );
   }
