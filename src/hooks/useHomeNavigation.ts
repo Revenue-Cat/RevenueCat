@@ -35,7 +35,7 @@ export const useHomeNavigation = () => {
   }, []);
 
   // Drive drag during ACTIVE state
-  const onHeaderGestureEvent = useMemo(
+  const onHeaderGestureEvent = useCallback(
     () =>
       Animated.event([
         { nativeEvent: { translationX: dragX } },

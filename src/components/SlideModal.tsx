@@ -32,7 +32,7 @@ const SlideModal: React.FC<SlideModalProps> = ({
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const hasConfirm = typeof onConfirm === "function";
-  const { height: screenHeight } = Dimensions.get("window");
+  const { height: screenHeight } = Dimensions.get("screen"); // Changed to "screen" for Android compatibility
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [modalVisible, setModalVisible] = useState(false);
@@ -40,9 +40,16 @@ const SlideModal: React.FC<SlideModalProps> = ({
   const easeIn = Easing.bezier(0.4, 0, 1, 1);
 
   useEffect(() => {
-    if (visible) {
-      // Show modal and slide up from bottom with fade
+    if (visible && !modalVisible) {
       setModalVisible(true);
+    }
+  }, [visible, modalVisible]);
+
+  useEffect(() => {
+    if (modalVisible && visible) {
+      // Reset values and animate in (slide up + fade in)
+      slideAnim.setValue(screenHeight);
+      fadeAnim.setValue(0);
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: 0,
@@ -57,8 +64,8 @@ const SlideModal: React.FC<SlideModalProps> = ({
           useNativeDriver: true,
         }),
       ]).start();
-    } else {
-      // Slide down to bottom and fade out
+    } else if (modalVisible && !visible) {
+      // Animate out (slide down + fade out), then hide
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: screenHeight,
@@ -73,11 +80,10 @@ const SlideModal: React.FC<SlideModalProps> = ({
           useNativeDriver: true,
         }),
       ]).start(() => {
-        // Hide modal after animation completes
         setModalVisible(false);
       });
     }
-  }, [visible, slideAnim, fadeAnim, screenHeight]);
+  }, [modalVisible, visible, slideAnim, fadeAnim, screenHeight]);
 
   return (
     <Modal

@@ -307,7 +307,6 @@ class AchievementService {
       if (!achievement) return;
       const shouldBeUnlocked = daysPassed >= achievement.requiredDays;
 
-
       if (shouldBeUnlocked && !achievement.unlocked) {
         // Unlock achievements that are done (progress = 100%)
         achievement.unlocked = true;
@@ -349,7 +348,6 @@ class AchievementService {
         achievement.unlockedDate = undefined; // No unlock date for default unlocks
         unlockedCount++;
         hasChanges = true;
-        console.log('Unlocking achievement:', achievementId, 'unlockedCount:', unlockedCount);
       } else if (!shouldBeUnlocked && achievement.unlocked && unlockedCount >= 3) {
         // Reset achievements that shouldn't be unlocked (for testing)
         achievement.unlocked = false;

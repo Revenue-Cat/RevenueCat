@@ -30,6 +30,7 @@ class OneSignalService {
     try {
       // Initialize OneSignal with your App ID
       OneSignal.initialize(ONESIGNAL_APP_ID);
+      OneSignal.Notifications.requestPermission(true);
       
       // Set up notification handlers
       this.setupNotificationHandlers();

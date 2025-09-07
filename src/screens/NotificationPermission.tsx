@@ -125,7 +125,7 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({
                 borderTopRightRadius: 24,
               }}
             />
-            <NotificationIcon width="auto" preserveAspectRatio="none" />
+            <NotificationIcon width="100%" preserveAspectRatio="none" />
           </View>
 
           {/* Notification Preview Card - Positioned on top */}
