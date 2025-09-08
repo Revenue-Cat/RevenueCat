@@ -199,12 +199,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           });
           setActiveChallenges(parsed.activeChallenges || []);
           
-          // Add master-of-air-breathing to inProgressChallenges if not already present
-          const inProgressChallenges = parsed.inProgressChallenges || [];
-          if (!inProgressChallenges.includes("master-of-air-breathing")) {
-            inProgressChallenges.push("master-of-air-breathing");
-          }
-          setInProgressChallenges(inProgressChallenges);
+          setInProgressChallenges(parsed.inProgressChallenges || []);
           // Convert string dates back to Date objects for challengeProgress
           const challengeProgress = parsed.challengeProgress || {};
           const convertedChallengeProgress: Record<string, { progress: number; streak: number; checkIns: number; startDate: Date | null; isCancelled?: boolean }> = {};
@@ -217,16 +212,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             };
           });
           
-          // Add fake data for master-of-air-breathing if not already present
-          if (!convertedChallengeProgress["master-of-air-breathing"]) {
-            convertedChallengeProgress["master-of-air-breathing"] = {
-              checkIns: 7,
-              progress: 100,
-              startDate: new Date("2025-09-05T19:19:02.966Z"),
-              // endDate: new Date("2025-09-06T19:19:02.966Z"),
-              streak: 7
-            };
-          }
           
           setChallengeProgress(convertedChallengeProgress);
           // Convert string dates back to Date objects for challengeCompletions
@@ -241,15 +226,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             }));
           });
           
-          // Add fake completion data for master-of-air-breathing if not already present
-          if (!convertedChallengeCompletions["master-of-air-breathing"]) {
-            convertedChallengeCompletions["master-of-air-breathing"] = [{
-              startDate: new Date("2025-09-05T19:19:02.966Z"),
-              endDate: new Date("2025-09-06T19:19:02.966Z"),
-              checkIns: 7,
-              duration: 1
-            }];
-          }
           
           setChallengeCompletions(convertedChallengeCompletions);
           setDailyCheckIns(parsed.dailyCheckIns || {});
@@ -477,20 +453,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       currentInProgressChallenges: inProgressChallenges
     });
     
-    // Remove from inProgressChallenges and add to activeChallenges
+    // Check if challenge was completed before
+    const hasCompletions = challengeCompletions[challengeId] && challengeCompletions[challengeId].length > 0;
+    
+    // Remove from inProgressChallenges
     setInProgressChallenges(prev => {
       const newInProgress = prev.filter(id => id !== challengeId);
       console.log('Updated inProgressChallenges:', newInProgress);
       return newInProgress;
     });
-    setActiveChallenges(prev => {
-      if (!prev.includes(challengeId)) {
-        const newActive = [...prev, challengeId];
-        console.log('Updated activeChallenges:', newActive);
-        return newActive;
-      }
-      return prev;
-    });
+    
+    // Only add to activeChallenges if it was never completed before
+    if (!hasCompletions) {
+      setActiveChallenges(prev => {
+        if (!prev.includes(challengeId)) {
+          const newActive = [...prev, challengeId];
+          console.log('Updated activeChallenges:', newActive);
+          return newActive;
+        }
+        return prev;
+      });
+    }
     
     // Reset progress for the challenge
     setChallengeProgress(prev => ({
@@ -506,7 +489,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
     
     console.log('Challenge cancelled:', challengeId);
-  }, [activeChallenges, inProgressChallenges]);
+  }, [activeChallenges, inProgressChallenges, challengeCompletions]);
 
   const getChallengeStatus = useCallback((challengeId: string): 'active' | 'locked' | 'inprogress' | 'completed' => {
     const inProgress = inProgressChallenges.includes(challengeId);

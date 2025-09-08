@@ -158,7 +158,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
         {/* Achievements Grid */}
         <View className="flex-row flex-wrap gap-0 justify-between">
           {challengesWithProgress.map((challenge, index) => {
-            const isCompleted = challenge.timeBasedProgress >= challenge.totalDurations;
+            const isCompleted = challenge.status === 'completed';
             const isInProgress = challenge.status === 'inprogress';
             const isLocked = challenge.status === 'locked';
             const completionCount = challenge.previousCompletions.length;
@@ -179,11 +179,12 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                     size={80}
                     strokeWidth={3}
                     color={
-                      isCompleted ||  isInProgress  
+                        (isCompleted ||  isInProgress || completionCount > 0) 
                         ? "#22C55E" 
                         : "transparent"
                     }
-                  />
+                    borderColor={isDark ? "#475569" : "#626366"}
+                    />
                   {/* Achievement Icon */}
                   <View className="absolute w-[70px] h-[70px] rounded-full justify-center items-center">
                     {challenge.achievementIcon && !isLocked && !isActive ? (

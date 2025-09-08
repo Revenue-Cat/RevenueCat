@@ -112,7 +112,7 @@ const ProgressChallenges: React.FC<ProgressChallengesProps> = ({ onBack }) => {
     <View
       className={`flex-1 absolute inset-0 ${isDark ? "bg-dark-background" : "bg-indigo-50"}`}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mt-20 pl-3">
+      <View className="flex-row items-center justify-between mt-16 pl-3">
         <Pressable
           className="w-10 h-10 rounded-full justify-center items-center"
           onPress={onBack}
@@ -144,7 +144,7 @@ const ProgressChallenges: React.FC<ProgressChallengesProps> = ({ onBack }) => {
         }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="gap-3">
+        <View className="gap-1">
           {allRegularAchievements.map((achievement) => {
             const progress = getProgressForAchievement(achievement.id);
             const timeLeft = progress.percentage === 100 

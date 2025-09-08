@@ -276,13 +276,13 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           </Text>
         )}
 
-        {/* Achievement Section - Only show for completed challenges */}
-        {isCompleted && challenge.achievementIcon && (
+        {/* Achievement Section - Show for completed challenges or challenges with previous completions, but not when in progress */}
+        {(isCompleted || (previousCompletions.length > 0 && !isInProgress)) && challenge.achievementIcon && (
           <View className="items-center">
                 <View className="relative items-center justify-center">
                   <ProgressRing
                     progress={100}
-                    size={110}
+                    size={100}
                     strokeWidth={4}
                     color={"#22C55E"}
                     borderColor={"#22C55E"}
@@ -290,11 +290,11 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                   <View className="absolute items-center justify-center">
                     <Image
                       source={challenge.achievementIcon}
-                      style={{ width: 102, height: 102 }}
+                      style={{ width: 105, height: 105 }}
                       resizeMode="contain"
                     />
                   </View>
-                  <View className="absolute top-1 right-1 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
+                  <View className="absolute -top-1 right-1 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
                     <Text className="text-white text-xs font-bold">
                       {previousCompletions.length}
                     </Text>
@@ -537,7 +537,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             <Text className="text-white font-bold text-lg ml-2 mr-2">
               {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? t('challenges.checkIn') : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : t('challenges.modal.startNow')))}
             </Text>
-            {isInProgress && !isCompleted && (
+            {isInProgress && !isCompleted && previousCompletions.length === 0 && (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
                   <Text className="text-white text-s font-bold">{progressData.checkIns}</Text>
                 </View>

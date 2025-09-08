@@ -4,8 +4,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import ProgressRing from "./ProgressRing";
 import { useTheme } from "../contexts/ThemeContext";
-
-const AchievementLockedIcon = require("../assets/achievements/achievement-locked.png");
+import LockLight from "../assets/icons/lock.svg";
+// const AchievementLockedIcon = require("../assets/achievements/achievement-locked.png");
+const AchievementLockedIcon = require("../assets/achievements/achievement-placeholder.png");
 const LockIcon = require("../assets/achievements/lock.png");
 const TimeIcon = require("../assets/achievements/time.png");
 import CoinIcon from "../assets/icons/coins.svg";
@@ -44,12 +45,12 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
   
   const CardContent = (
     <View
-      className={`${isDark ? 'bg-slate-700' : 'bg-white'} rounded-2xl p-4 mb-3 flex-row items-center shadow-lg ${containerClassName}`}
+      className={`${isDark ? 'bg-slate-700' : 'bg-white'} rounded-2xl p-4 mb-3 flex-row items-center shadow-xs ${containerClassName}`}
     >
       <View className="flex-1 mr-4">
-        <View className="flex-row items-center border border-orange-500 px-3 py-1.5 rounded-full self-start mb-1 gap-1">
+        <View className="flex-row items-center border border-orange-500 px-1 py-0 rounded-full self-start mb-1 gap-1">
           <Text className="text-base font-bold text-orange-500">+{reward}</Text>
-          <CoinIcon width={12} height={12} color="#FF6B35" />
+          <CoinIcon width={16} height={16} color="#FF6B35" />
         </View>
         <Text className={`text-s ${isDark ? 'text-slate-400' : 'text-gray-500'} my-1`}>{timeLeft}</Text>
         <Text className={`text-base font-bold mb-1 ${isDark ? 'text-slate-100' : 'text-black'}`}>{title}</Text>

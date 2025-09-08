@@ -26,7 +26,7 @@ const ExclusiveAchievementsModalActions: React.FC<ExclusiveAchievementsModalActi
   const { getChallengeStatus } = useApp();
 
   const status = getChallengeStatus(challenge.id);
-  const isCompleted = challenge.timeBasedProgress >= challenge.totalDurations;
+  const isCompleted = status === 'completed';
   const isInProgress = status === 'inprogress';
   const isLocked = status === 'locked';
 

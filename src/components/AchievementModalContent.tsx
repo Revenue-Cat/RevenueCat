@@ -10,6 +10,7 @@ import {
   isFirstThreeAchievement,
   calculateAchievementTargetDate,
 } from "../utils/achievementHelpers";
+import LockLight from "../assets/icons/lock.svg";
 
 // Helper function to identify new achievements (the 10 new ones)
 const isNewAchievement = (achievementId: string): boolean => {
@@ -32,7 +33,7 @@ import { useTranslation } from "react-i18next";
 
 const LockIcon = require("../assets/achievements/lock.png");
 const TimeIcon = require("../assets/achievements/time.png");
-const AchievementLockedIcon = require("../assets/achievements/achievement-locked.png");
+const AchievementLockedIcon = require("../assets/achievements/achievement-placeholder.png");
 
 interface AchievementModalContentProps {
   achievement: Achievement;
@@ -65,7 +66,7 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
         {isRegularAchievement(achievement.id) && (
           <ProgressRing
             progress={progress?.percentage || 0}
-            size={110}
+            size={112}
             strokeWidth={4}
             color={
               isFirstThreeAchievement(
@@ -75,9 +76,9 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
                 ? "#22C55E"
                 : "transparent"
             }
-            // borderColor={
-            //   (progress?.percentage || 0) === 100 ? "#22C55E" : borderColor
-            // }
+            borderColor={
+              (progress?.percentage || 0) === 100 ? "#22C55E" : borderColor
+            }
           />
         )}
 
@@ -147,23 +148,21 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
               {/* Time icon for progress > 0 but < 100% */}
               {(progress?.percentage || 0) > 0 &&
                 (progress?.percentage || 0) < 100 && (
-                  <View className="absolute -top-1 -right-1 bg-black/20 rounded-full w-8 h-8 justify-center items-center">
+                  <View className="absolute -top-1 -right-1 bg-black/50 rounded-full w-7 h-7 justify-center items-center">
                     <Image
                       source={TimeIcon}
                       style={{ width: "100%", height: "100%" }}
                       resizeMode="contain"
-                    />
+                  />
+                    {/* <LockLight width={14} height={14} color="white" /> */}
+
                   </View>
                 )}
             </>
           ) : (
             // Exclusive achievement badge
             <View className="absolute -top-1 -right-1 bg-white/20 rounded-full w-8 h-8 justify-center items-center">
-              <Image
-                source={LockIcon}
-                style={{ width: "100%", height: "100%" }}
-                resizeMode="stretch"
-              />
+              <LockLight width={16} height={16} color="white" />
             </View>
           )}
         </View>
