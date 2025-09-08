@@ -7,8 +7,9 @@ import SmokeIcon from "../assets/icons/smoke.svg";
 import CoinIcon from "../assets/icons/coins.svg";
 import SmokingDog from "../assets/smoking-dog.png";
 import ProtectDog from "../assets/protect-dog.png";
+import { SLIPS_CONFIG } from "../config/subscriptions";
 
-type Props = { onBack: () => void };
+type Props = { onBack: () => void; handleISmoked: () => void };
 
 const formatDateShort = (iso: string) => {
   const d = new Date(iso);
@@ -56,11 +57,12 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
   };
 
   const onBuy = async () => {
-    const ok = await purchaseExtraSlips(1000);
+    const cost = SLIPS_CONFIG.extraPack.coins;
+    const ok = await purchaseExtraSlips(cost);
     if (!ok) {
       Alert.alert(
-        t("slipsLog.buy.notEnough.title", "Not enough coins"),
-        t("slipsLog.buy.notEnough.body", "You need 1000 coins to buy +5 slips.")
+        t("slipsLog.buy.notEnough.title"),
+        t("slipsLog.buy.notEnough.body", { coins: cost })
       );
     }
   };
@@ -232,7 +234,7 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
               className="mt-4 rounded-2xl px-5 py-4 items-center justify-center bg-indigo-600 flex-row"
             >
               <Text className="text-white font-semibold text-base mr-2">
-                {t("slipsLog.buy.cta", "Buy for 1000")}
+                {t("slipsLog.buy.cta", { coins: SLIPS_CONFIG.extraPack.coins })}
               </Text>
               <CoinIcon width={18} height={18} />
             </Pressable>
