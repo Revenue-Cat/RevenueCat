@@ -58,10 +58,6 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
     }
   };
 
-  const handleCoinPurchase = useCallback(() => {
-    setShowCoinPurchase(true);
-  }, [setShowCoinPurchase]);
-
   const onBuy = async () => {
     const cost = SLIPS_CONFIG.extraPack.coins;
     const ok = await purchaseExtraSlips(cost);
@@ -72,6 +68,10 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
       );
     }
   };
+
+  const handleCoinPurchase = useCallback(() => {
+    setShowCoinPurchase(true);
+  }, [setShowCoinPurchase]);
 
   // Colors
   const cardBg = isDark ? "bg-slate-700" : "bg-indigo-50";
@@ -112,10 +112,10 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
         </Text>
 
         <Pressable
+          onPress={handleCoinPurchase}
           className={`rounded-full px-3 py-1 flex-row items-center ${
             isDark ? "bg-amber-300/20" : "bg-yellow-200"
           }`}
-          onPress={handleCoinPurchase}
         >
           <CoinIcon width={16} height={16} />
           <Text className="ml-1 text-yellow-800 font-semibold">

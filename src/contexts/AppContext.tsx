@@ -326,7 +326,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             }
           );
           setActiveChallenges(parsed.activeChallenges || []);
-          
+
           setInProgressChallenges(parsed.inProgressChallenges || []);
           // Convert string dates back to Date objects for challengeProgress
           const challengeProgress = parsed.challengeProgress || {};
@@ -350,8 +350,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                 : null,
             };
           });
-          
-          
+
           setChallengeProgress(convertedChallengeProgress);
           // Convert string dates back to Date objects for challengeCompletions
           const challengeCompletions = parsed.challengeCompletions || {};
@@ -374,8 +373,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
               endDate: new Date(completion.endDate),
             }));
           });
-          
-          
+
           setChallengeCompletions(convertedChallengeCompletions);
           setDailyCheckIns(parsed.dailyCheckIns || {});
         }
@@ -913,11 +911,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     const newCount = slipsUsed + 1;
 
     const nowIso = new Date().toISOString();
-    setSlipsDates((prev) => [nowIso, ...prev]);
-    setSlipsUsed(newCount);
 
-    return newCount > allowed ? "limit" : "ok";
-  }, [slipsUsed, getSlipsAllowed]);
+    // Always record the slip in history (optional—remove if you don't want to keep the last one)
+    setSlipsDates((prev) => [nowIso, ...prev]);
+
+    if (newCount > allowed) {
+      // Exceeded allowance → reset current cycle
+      setSlipsUsed(0);
+      setSlipsDates([]); // clear the visible grid for the new cycle
+      setStartDate(new Date()); // reset smoke-free timer/streak start
+      return "limit";
+    }
+
+    // Still within allowance → increment normally
+    setSlipsUsed(newCount);
+    return "ok";
+  }, [slipsUsed, getSlipsAllowed, setStartDate]);
 
   const purchaseExtraSlips = useCallback(
     async (costCoins: number = 1000): Promise<boolean> => {
