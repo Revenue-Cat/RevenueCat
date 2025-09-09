@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-import React, { useMemo } from "react";
-=======
 import React, { useCallback, useMemo } from "react";
->>>>>>> Stashed changes
 import { View, Text, Pressable, ScrollView, Alert, Image } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../contexts/AppContext";
@@ -32,10 +28,7 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
     shouldOfferProtectStreak,
     addSlip,
     purchaseExtraSlips,
-<<<<<<< Updated upstream
-=======
     setShowCoinPurchase,
->>>>>>> Stashed changes
     userCoins,
   } = useApp();
 
@@ -75,13 +68,10 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
     }
   };
 
-<<<<<<< Updated upstream
-=======
   const handleCoinPurchase = useCallback(() => {
     setShowCoinPurchase(true);
   }, [setShowCoinPurchase]);
 
->>>>>>> Stashed changes
   // Colors
   const cardBg = isDark ? "bg-slate-700" : "bg-indigo-50";
   const titleColor = isDark ? "text-slate-100" : "text-indigo-950";
@@ -118,18 +108,6 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
           {t("slipsLog.title", "Slips log")}
         </Text>
 
-<<<<<<< Updated upstream
-        <View
-          className={`rounded-full px-3 py-1 flex-row items-center ${
-            isDark ? "bg-amber-300/20" : "bg-yellow-200"
-          }`}
-        >
-          <CoinIcon width={16} height={16} />
-          <Text className="ml-1 text-yellow-800 font-semibold">
-            +{userCoins}
-          </Text>
-        </View>
-=======
         <Pressable
           className={`rounded-full px-3 py-1 flex-row items-center ${
             isDark ? "bg-amber-300/20" : "bg-yellow-200"
@@ -141,7 +119,6 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
             {userCoins}
           </Text>
         </Pressable>
->>>>>>> Stashed changes
       </View>
 
       <ScrollView
