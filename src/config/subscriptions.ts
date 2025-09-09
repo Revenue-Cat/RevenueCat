@@ -45,14 +45,14 @@ export type CoinPackId = "starter" | "popular" | "best";
 
 export type CoinPack = {
   id: CoinPackId;
-  label: string;      // e.g., "Starter"
-  coins: number;      // e.g., 100
-  price: number;      // e.g., 0.99
+  label: string; // e.g., "Starter"
+  coins: number; // e.g., 100
+  price: number; // e.g., 0.99
   currency: "USD" | string;
-  oldPrice?: number;  // e.g., 2.0
-  bonusTag?: string;  // e.g., "+20% bonus included"
+  oldPrice?: number; // e.g., 2.0
+  bonusTag?: string; // e.g., "+20% bonus included"
   featured?: boolean; // highlighted card (only this one gets border)
-  caption?: string;   // small subtitle
+  caption?: string; // small subtitle
 };
 
 export const COIN_PACKS: CoinPack[] = [
@@ -85,8 +85,15 @@ export const COIN_PACKS: CoinPack[] = [
     currency: "USD",
     bonusTag: "+45% bonus included",
     caption: "Go big, stay on track.",
-  }
+  },
 ];
+
+export const SLIPS_CONFIG = {
+  extraPack: {
+    coins: 1000, // how many coins needed to buy +5 slips
+    slipsGranted: 5,
+  },
+};
 
 // App Store links (replace with your real IDs/links)
 export const APP_STORE_REVIEW_URL =
