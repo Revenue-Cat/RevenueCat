@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { View, Text, Pressable, ScrollView, Alert, Image } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../contexts/AppContext";
@@ -8,8 +8,9 @@ import CoinIcon from "../assets/icons/coins.svg";
 import SmokingDog from "../assets/smoking-dog.png";
 import ProtectDog from "../assets/protect-dog.png";
 import { SLIPS_CONFIG } from "../config/subscriptions";
+import CoinPurchaseModal from "../components/CoinPurchaseModal";
 
-type Props = { onBack: () => void; handleISmoked: () => void };
+type Props = { onBack: () => void };
 
 const formatDateShort = (iso: string) => {
   const d = new Date(iso);
@@ -29,6 +30,7 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
     addSlip,
     purchaseExtraSlips,
     userCoins,
+    setShowCoinPurchase,
   } = useApp();
 
   const allowed = getSlipsAllowed();
@@ -56,6 +58,10 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
     }
   };
 
+  const handleCoinPurchase = useCallback(() => {
+    setShowCoinPurchase(true);
+  }, [setShowCoinPurchase]);
+
   const onBuy = async () => {
     const cost = SLIPS_CONFIG.extraPack.coins;
     const ok = await purchaseExtraSlips(cost);
@@ -82,6 +88,8 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
   return (
     <View className={`flex-1 ${isDark ? "bg-dark-background" : "bg-white"}`}>
       {/* Header */}
+      <CoinPurchaseModal></CoinPurchaseModal>
+
       <View className="px-4 pt-4 pb-3 flex-row items-center justify-between">
         <Pressable
           onPress={onBack}
@@ -103,16 +111,17 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
           {t("slipsLog.title", "Slips log")}
         </Text>
 
-        <View
+        <Pressable
           className={`rounded-full px-3 py-1 flex-row items-center ${
             isDark ? "bg-amber-300/20" : "bg-yellow-200"
           }`}
+          onPress={handleCoinPurchase}
         >
           <CoinIcon width={16} height={16} />
           <Text className="ml-1 text-yellow-800 font-semibold">
             +{userCoins}
           </Text>
-        </View>
+        </Pressable>
       </View>
 
       <ScrollView
@@ -156,7 +165,7 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
         </View>
 
         {/* Grid */}
-        <View className="mt-4 flex-row flex-wrap">
+        <View className="mt-4 flex-row flex-wrap justify-center">
           {grid.map((isoOrNull, i) => {
             const isUsed = !!isoOrNull;
             return (

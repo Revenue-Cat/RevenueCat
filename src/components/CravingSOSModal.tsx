@@ -1,25 +1,45 @@
-import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
-import { Animated, Dimensions, Pressable, Text, View, Modal } from 'react-native';
-import SlideModal from './SlideModal';
-import { useTheme } from '../contexts/ThemeContext';
-import { useTranslation } from 'react-i18next';
-import { useApp } from '../contexts/AppContext';
-import { strategies } from '../data/strategiesData';
-import HeartIcon from '../assets/strategies/heart.svg';
-import LockLight from '../assets/icons/lock.svg';
+import React, {
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import {
+  Animated,
+  Dimensions,
+  Pressable,
+  Text,
+  View,
+  Modal,
+} from "react-native";
+import SlideModal from "./SlideModal";
+import { useTheme } from "../contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
+import { useApp } from "../contexts/AppContext";
+import { strategies } from "../data/strategiesData";
+import HeartIcon from "../assets/strategies/heart.svg";
+import LockLight from "../assets/icons/lock.svg";
+import SmokeIcon from "../assets/icons/smoke.svg";
 
 interface CravingSOSModalProps {
   visible: boolean;
   onClose: () => void;
   onStartBreathing: () => void;
+  onOpenSlipsLog: () => void;
 }
 
-const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onStartBreathing }) => {
+const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
+  visible,
+  onClose,
+  onStartBreathing,
+  onOpenSlipsLog,
+}) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { setStartDate } = useApp();
-  const isDark = theme === 'dark';
-  const { width } = Dimensions.get('window');
+  const isDark = theme === "dark";
+  const { width } = Dimensions.get("window");
   const ITEM_WIDTH = width * 0.7; // center card width (~70%)
   const SIDE_GUTTER = width * 0.1; // side visibility (~10% each side)
 
@@ -38,12 +58,12 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
   const handleDontGiveUpOk = async () => {
     setShowDontGiveUpModal(false);
     onClose(); // Close the CravingSOS modal
-    
+
     // Reset start date to current date and time
     const newStartDate = new Date();
     await setStartDate(newStartDate);
-    
-    console.log('Start date reset to:', newStartDate.toISOString());
+
+    console.log("Start date reset to:", newStartDate.toISOString());
   };
 
   // Reset to first card when modal becomes visible
@@ -59,12 +79,19 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
   }, [visible, scrollX]);
 
   return (
-    <SlideModal visible={visible} onClose={onClose} title={t('cravingSOS.modal.title')} showCloseButton={false}>
+    <SlideModal
+      visible={visible}
+      onClose={onClose}
+      title={t("cravingSOS.modal.title")}
+      showCloseButton={false}
+    >
       <Text
-        className={`${isDark ? 'text-slate-300' : 'text-slate-500'} text-center`}
+        className={`${
+          isDark ? "text-slate-300" : "text-slate-500"
+        } text-center`}
         style={{ fontSize: 14, lineHeight: 20 }}
       >
-        {t('cravingSOS.modal.subtitle')}
+        {t("cravingSOS.modal.subtitle")}
       </Text>
 
       <Animated.FlatList
@@ -81,7 +108,10 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
         maxToRenderPerBatch={2}
         windowSize={5}
         removeClippedSubviews
-        contentContainerStyle={{ paddingHorizontal: SIDE_GUTTER, paddingVertical: 16 }}
+        contentContainerStyle={{
+          paddingHorizontal: SIDE_GUTTER,
+          paddingVertical: 16,
+        }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: true }
@@ -91,83 +121,124 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
           const index = Math.round(e.nativeEvent.contentOffset.x / ITEM_WIDTH);
           setActiveIndex(index);
         }}
-        renderItem={useCallback(({ item, index }: { item: any; index: number }) => {
-          const inputRange = [
-            (index - 1) * ITEM_WIDTH,
-            index * ITEM_WIDTH,
-            (index + 1) * ITEM_WIDTH,
-          ];
-          const scale = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.94, 1, 0.94],
-            extrapolate: 'clamp',
-          });
-          const translateY = scrollX.interpolate({
-            inputRange,
-            outputRange: [9, 0, 9],
-            extrapolate: 'clamp',
-          });
-          return (
-            <Animated.View
-              style={{
-                width: ITEM_WIDTH,
-                transform: [{ scale }, { translateY }],
-              }}
-            >
-              <View
-                className={`${isDark ? 'bg-slate-700' : 'bg-indigo-50'} rounded-2xl px-3 py-4`}
-                style={{ minHeight: 320, justifyContent: 'space-between' }}
+        renderItem={useCallback(
+          ({ item, index }: { item: any; index: number }) => {
+            const inputRange = [
+              (index - 1) * ITEM_WIDTH,
+              index * ITEM_WIDTH,
+              (index + 1) * ITEM_WIDTH,
+            ];
+            const scale = scrollX.interpolate({
+              inputRange,
+              outputRange: [0.94, 1, 0.94],
+              extrapolate: "clamp",
+            });
+            const translateY = scrollX.interpolate({
+              inputRange,
+              outputRange: [9, 0, 9],
+              extrapolate: "clamp",
+            });
+            return (
+              <Animated.View
+                style={{
+                  width: ITEM_WIDTH,
+                  transform: [{ scale }, { translateY }],
+                }}
               >
-                {/* Heart Icon */}
-                <View className="items-center mb-1">
-                  <HeartIcon width={40} height={40} color={isDark ? '#CBD5E1' : '#1e1b4b'} />
-                </View>
-
-                {/* Title */}
-                <Text
-                  className={`${isDark ? 'text-slate-100' : 'text-indigo-950'} mb-1`}
-                  style={{ fontWeight: '700', fontSize: 16, lineHeight: 22, textAlign: 'center' }}
+                <View
+                  className={`${
+                    isDark ? "bg-slate-700" : "bg-indigo-50"
+                  } rounded-2xl px-3 py-4`}
+                  style={{ minHeight: 320, justifyContent: "space-between" }}
                 >
-                  {t(item.titleKey)}
-                </Text>
-
-                {/* Description */}
-                <Text
-                  className={`${isDark ? 'text-slate-300' : 'text-slate-600'}`}
-                  style={{ fontWeight: '500', fontSize: 14, lineHeight: 20, marginBottom: 16 }}
-                >
-                  {t(item.descriptionKey)}
-                </Text>
-
-                {/* Challenge Box */}
-                <View className={`${item.bgColor} rounded-xl p-1 flex-row justify-between items-center relative`}>
-                  {/* Lock Icon - Top Right Corner */}
-                  <View className="absolute top-1 right-1 z-10 bg-black/50 rounded-full p-1">
-                    <LockLight width={12} height={12} color="white" />
+                  {/* Heart Icon */}
+                  <View className="items-center mb-1">
+                    <HeartIcon
+                      width={40}
+                      height={40}
+                      color={isDark ? "#CBD5E1" : "#1e1b4b"}
+                    />
                   </View>
-                  
-                  <View className="flex-1 p-3">
-                    <Text
-                      className={`${isDark ? 'text-slate-100' : 'text-indigo-950'}`}
-                      style={{ fontWeight: '700', fontSize: 14, lineHeight: 18 }}
-                    >
-                      {t(item.challengeKey)}
-                    </Text>
-                    <Text
-                      className={`${isDark ? 'text-slate-300' : 'text-slate-600'}`}
-                      style={{ fontWeight: '500', fontSize: 12, lineHeight: 16 }}
-                    >
-                      {t(item.daysKey)}
-                    </Text>
-                  </View>
-                  <View className="ml-3 mr-1">
-                    <item.icon width={48} height={48} color={isDark ? '#CBD5E1' : '#1e1b4b'} />
+
+                  {/* Title */}
+                  <Text
+                    className={`${
+                      isDark ? "text-slate-100" : "text-indigo-950"
+                    } mb-1`}
+                    style={{
+                      fontWeight: "700",
+                      fontSize: 16,
+                      lineHeight: 22,
+                      textAlign: "center",
+                    }}
+                  >
+                    {t(item.titleKey)}
+                  </Text>
+
+                  {/* Description */}
+                  <Text
+                    className={`${
+                      isDark ? "text-slate-300" : "text-slate-600"
+                    }`}
+                    style={{
+                      fontWeight: "500",
+                      fontSize: 14,
+                      lineHeight: 20,
+                      marginBottom: 16,
+                    }}
+                  >
+                    {t(item.descriptionKey)}
+                  </Text>
+
+                  {/* Challenge Box */}
+                  <View
+                    className={`${item.bgColor} rounded-xl p-1 flex-row justify-between items-center relative`}
+                  >
+                    {/* Lock Icon - Top Right Corner */}
+                    <View className="absolute top-1 right-1 z-10 bg-black/50 rounded-full p-1">
+                      <LockLight width={12} height={12} color="white" />
+                    </View>
+
+                    <View className="flex-1 p-3">
+                      <Text
+                        className={`${
+                          isDark ? "text-slate-100" : "text-indigo-950"
+                        }`}
+                        style={{
+                          fontWeight: "700",
+                          fontSize: 14,
+                          lineHeight: 18,
+                        }}
+                      >
+                        {t(item.challengeKey)}
+                      </Text>
+                      <Text
+                        className={`${
+                          isDark ? "text-slate-300" : "text-slate-600"
+                        }`}
+                        style={{
+                          fontWeight: "500",
+                          fontSize: 12,
+                          lineHeight: 16,
+                        }}
+                      >
+                        {t(item.daysKey)}
+                      </Text>
+                    </View>
+                    <View className="ml-3 mr-1">
+                      <item.icon
+                        width={48}
+                        height={48}
+                        color={isDark ? "#CBD5E1" : "#1e1b4b"}
+                      />
+                    </View>
                   </View>
                 </View>
-              </View>
-            </Animated.View>
-          );
-        }, [ITEM_WIDTH, isDark, scrollX, t])}
+              </Animated.View>
+            );
+          },
+          [ITEM_WIDTH, isDark, scrollX, t]
+        )}
       />
 
       {/* Indicators */}
@@ -178,12 +249,12 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
             const scale = position.interpolate({
               inputRange: [i - 1, i, i + 1],
               outputRange: [1, 1.2, 1],
-              extrapolate: 'clamp',
+              extrapolate: "clamp",
             });
             const opacity = position.interpolate({
               inputRange: [i - 0.5, i, i + 0.5],
               outputRange: [0.5, 1, 0.5],
-              extrapolate: 'clamp',
+              extrapolate: "clamp",
             });
             return (
               <Animated.View
@@ -192,7 +263,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
                   width: 6,
                   height: 6,
                   borderRadius: 4,
-                  backgroundColor: '#312e81',
+                  backgroundColor: "#312e81",
                   marginHorizontal: 0.5,
                   transform: [{ scale }],
                   opacity,
@@ -203,25 +274,47 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
         </View>
       </View>
 
-      <View className="flex-row items-center gap-5 justify-center mt-4 w-full">
-        {/* Close Button */}
-        <Pressable 
-          className={`w-15 h-15 rounded-2xl justify-center items-center іelf-center ${
-            isDark ? 'bg-slate-700' : 'bg-indigo-50'
-          }`} 
+      <View className="flex-row items-center gap-4 justify-center mt-4 w-full px-4">
+        {/* Close (✕) — made 48x48 to match smoke button */}
+        <Pressable
           onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel={t("common.close")}
+          className={`${
+            isDark ? "bg-slate-700" : "bg-indigo-50"
+          } rounded-2xl justify-center items-center`}
+          style={{ width: 48, height: 48 }}
         >
-          <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
+          <Text
+            className={`${
+              isDark ? "text-slate-50" : "text-indigo-900"
+            } font-bold`}
+            style={{ fontSize: 20, lineHeight: 20 }}
+          >
+            ✕
+          </Text>
         </Pressable>
 
-      {/* I smoked! Button */}
-      <Pressable 
-        className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[70%]"
-        onPress={handleISmoked}
-      >
-        <Text className="text-white font-bold text-lg">{t('cravingSOS.iSmokedButton')}</Text>
-      </Pressable>
-      </View>     
+        {/* I smoked! — keep same styling but make it flex */}
+        <Pressable
+          onPress={handleISmoked}
+          style={{ height: 48 }}
+          className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 flex-1"
+        >
+          <Text className="text-white font-bold text-lg">
+            {t("cravingSOS.iSmokedButton")}
+          </Text>
+        </Pressable>
+
+        {/* NEW: Smoke icon button — 48x48, rounded-2xl, white 24x24 icon */}
+        <Pressable
+          onPress={onOpenSlipsLog}
+          className="bg-red-500 rounded-2xl justify-center items-center"
+          style={{ width: 48, height: 48 }}
+        >
+          <SmokeIcon width={24} height={24} color="#ffffff" />
+        </Pressable>
+      </View>
 
       {/* Don't Give Up Modal */}
       <Modal
@@ -230,24 +323,36 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
         animationType="fade"
       >
         <View className="flex-1 justify-center items-center bg-black/50">
-          <View className={`mx-6 p-6 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-xl`}>
+          <View
+            className={`mx-6 p-6 rounded-2xl ${
+              isDark ? "bg-slate-800" : "bg-white"
+            } shadow-xl`}
+          >
             {/* Title */}
-            <Text className={`text-xl font-bold text-center mb-4 ${isDark ? 'text-slate-100' : 'text-gray-900'}`}>
-              {t('cravingSOS.dontGiveUp.title')}
+            <Text
+              className={`text-xl font-bold text-center mb-4 ${
+                isDark ? "text-slate-100" : "text-gray-900"
+              }`}
+            >
+              {t("cravingSOS.dontGiveUp.title")}
             </Text>
-            
+
             {/* Description */}
-            <Text className={`text-base text-center mb-6 leading-6 ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-              {t('cravingSOS.dontGiveUp.description')}
+            <Text
+              className={`text-base text-center mb-6 leading-6 ${
+                isDark ? "text-slate-300" : "text-gray-600"
+              }`}
+            >
+              {t("cravingSOS.dontGiveUp.description")}
             </Text>
-            
+
             {/* Ok Button */}
             <Pressable
               className="bg-indigo-600 py-3 px-6 rounded-xl"
               onPress={handleDontGiveUpOk}
             >
               <Text className="text-center font-semibold text-white text-lg">
-                {t('cravingSOS.dontGiveUp.okButton')}
+                {t("cravingSOS.dontGiveUp.okButton")}
               </Text>
             </Pressable>
           </View>
