@@ -6,23 +6,20 @@
       "subtitle": "Exclusive achievements are under construction",
       "title": "Coming Soon"
     },
-    "exclusive": {
-      "title": "Exclusive Achievements",
-      "subtitle": "Special challenges with unique rewards",
-      "footer": "Complete challenges to unlock exclusive achievements and earn special rewards!"
-    },
     "completed": "Completed!",
     "completedOn": "Completed on",
     "daysLeft": "{{days}}d left",
+    "exclusive": {
+      "footer": "Complete challenges to unlock exclusive achievements and earn special rewards!",
+      "subtitle": "Special challenges with unique rewards",
+      "title": "Exclusive Achievements"
+    },
     "locked": "Locked. Update your plan to unlock this achievement.",
     "more": "More",
     "share": "Share",
     "timeLeft": "Time left",
     "update": "Update",
     "waitForLevel": "Wait. Reach the required level to unlock this achievement."
-  },
-  "progressChallenges": {
-    "title": "Progress challenges"
   },
   "buddies": {
     "fox-m": {
@@ -83,6 +80,195 @@
       "description": "Practice stress relief techniques.",
       "title": "Crave crusher"
     },
+    "data": {
+      "calmPower": {
+        "achievement": "Zen",
+        "achievementDescription": "You completed 10 days of mindful meditation with music to manage cravings.",
+        "buddyAdvice": [
+          "If your mind wanders, gently bring attention back to your breath.",
+          "Repeat daily for 10 days.",
+          "Repeat each time a craving arises.",
+          "Sit comfortably and close your eyes.",
+          "Take slow, deep breaths and focus on the sensations."
+        ],
+        "duration": "10 Days",
+        "longDescription": "Practice 2 minutes of meditation to manage cravings.",
+        "motivation": [
+          "Helps manage cravings better.",
+          "Increases mindfulness and awareness.",
+          "Promotes inner peace.",
+          "Reduces stress and tension."
+        ],
+        "shortDescription": "Meditate 2 minutes.",
+        "title": "Calm power"
+      },
+      "craveCrusher": {
+        "achievement": "Released",
+        "achievementDescription": "You drew or wrote your cravings and crushed them for 10 days.",
+        "buddyAdvice": [
+          "Crumple the paper into a ball.",
+          "Focus on the feeling as you create it.",
+          "Repeat whenever cravings arise.",
+          "Take a deep breath and let it go.",
+          "Take a piece of paper and draw your craving for a cigarette or write it down."
+        ],
+        "duration": "10 Days",
+        "longDescription": "Draw or write your craving on paper, then crumple it up to release it.",
+        "motivation": [
+          "Helps you acknowledge and release cravings.",
+          "Increases self-awareness.",
+          "Promotes letting go.",
+          "Provides a physical outlet for emotions."
+        ],
+        "shortDescription": "Crumple your craving.",
+        "title": "Crave crusher"
+      },
+      "fistFlow": {
+        "achievement": "Gripped",
+        "achievementDescription": "You squeezed and released your fists for 10 days to beat cravings.",
+        "buddyAdvice": [
+          "Breathe deeply and relax.",
+          "Focus on the sensations in your hands and arms.",
+          "Make a fist and squeeze tightly 20 times.",
+          "Repeat daily for 10 days.",
+          "Repeat whenever cravings arise."
+        ],
+        "duration": "10 Days",
+        "longDescription": "Squeeze your fists 20 times to release tension and cravings.",
+        "motivation": [
+          "Helps manage stress.",
+          "Provides immediate relief.",
+          "Reduces nicotine cravings.",
+          "Releases physical tension."
+        ],
+        "shortDescription": "Squeeze 20 times.",
+        "title": "Fist flow"
+      },
+      "flowMinute": {
+        "achievement": "Stretched",
+        "achievementDescription": "You stretched and released tension for 10 days.",
+        "buddyAdvice": [
+          "Breathe deeply and feel the tension release.",
+          "Repeat daily for 10 days.",
+          "Repeat whenever you feel tight or stressed.",
+          "Sit or stand comfortably.",
+          "Slowly stretch your neck, shoulders, and back for 2–3 minutes."
+        ],
+        "duration": "10 Days",
+        "longDescription": "Do gentle stretching for 1 minute to release tension and stress.",
+        "motivation": [
+          "Improves flexibility and mobility.",
+          "Increases blood circulation.",
+          "Promotes relaxation.",
+          "Reduces stress and muscle tightness."
+        ],
+        "shortDescription": "Stretch to release tension.",
+        "title": "Flow minute"
+      },
+      "hydrationBoost": {
+        "achievement": "HydroWin",
+        "achievementDescription": "Drink a glass of water in mindful sips, feeling each one.",
+        "buddyAdvice": [
+          "If the craving returns — repeat the steps.",
+          "Repeat daily for 10 days.",
+          "Replace the craving with a glass of water.",
+          "Slowly drink the water, focusing on the taste and sensations.",
+          "Take a few deep breaths and relax."
+        ],
+        "duration": "2 Days",
+        "longDescription": "Drink a glass of water each time you feel a craving.",
+        "motivation": [
+          "Helps flush toxins from your body.",
+          "Keeps you hydrated and focused.",
+          "Provides a healthy distraction.",
+          "Reduces nicotine craving intensity."
+        ],
+        "shortDescription": "Drink water each craving.",
+        "title": "Hydration boost"
+      },
+      "masterOfAir": {
+        "achievement": "AirMind",
+        "achievementDescription": "You completed 10 days of mindful breathing and beat cravings with calm.",
+        "buddyAdvice": [
+          "Do this daily for 10 days.",
+          "Focus on the sensations of your breathing.",
+          "Repeat 5 times.",
+          "Take a slow, deep inhale and exhale."
+        ],
+        "duration": "1 Day",
+        "longDescription": "Practice 5 deep breaths, three times a day for 10 days.",
+        "motivation": [
+          "Boosts energy",
+          "Increases focus and calm",
+          "Lowers cravings naturally",
+          "Reduces stress and anxiety"
+        ],
+        "shortDescription": "Practice 5 deep breaths.",
+        "title": "Master of air"
+      },
+      "refresh": {
+        "achievement": "Splash",
+        "achievementDescription": "You completed 10 days of instant cold-water resets instead of cravings.",
+        "buddyAdvice": [
+          "Repeat daily for 10 days.",
+          "Repeat if cravings return.",
+          "Splash cold water on your face or wrists.",
+          "Take a deep breath and relax."
+        ],
+        "duration": "10 Days",
+        "longDescription": "Splash cold water on your face to instantly reset and curb cravings.",
+        "motivation": [
+          "Helps reset your mind.",
+          "Increases alertness.",
+          "Provides instant refreshment.",
+          "Reduces nicotine cravings."
+        ],
+        "shortDescription": "Splash water to curb cravings.",
+        "title": "Refresh"
+      },
+      "snackBreak": {
+        "achievement": "Snackcess",
+        "achievementDescription": "You stayed smoke-free for 10 days by choosing healthy bites over cigarettes.",
+        "buddyAdvice": [
+          "If craving returns — repeat the step.",
+          "Keep fruits, nuts, or veggies nearby.",
+          "Pair the snack with a glass of water.",
+          "Repeat daily for 10 days.",
+          "When the urge hits — chew slowly, focus on taste and texture."
+        ],
+        "duration": "10 Days",
+        "longDescription": "Choose healthy snacks over cigarettes when cravings hit.",
+        "motivation": [
+          "Improves overall health.",
+          "Keeps your mouth and hands busy.",
+          "Provides healthy nutrition.",
+          "Reduces cravings naturally."
+        ],
+        "shortDescription": "Snack instead of smoking.",
+        "title": "Snack break"
+      },
+      "stepSlayer": {
+        "achievement": "Strider",
+        "achievementDescription": "You stayed smoke-free and strong with 10 days of mindful steps.",
+        "buddyAdvice": [
+          "Focus on your breath and steps.",
+          "If the craving returns — walk again.",
+          "Repeat daily for 10 days.",
+          "Take short mindful walks instead of smoking.",
+          "Use it as a mini-break to refresh your mind."
+        ],
+        "duration": "3 Days",
+        "longDescription": "Take a short walk of 500 steps whenever you feel a craving.",
+        "motivation": [
+          "Improves overall mood.",
+          "Increases endorphins naturally.",
+          "Provides a healthy distraction.",
+          "Reduces stress and anxiety."
+        ],
+        "shortDescription": "Walk 500 steps to reset.",
+        "title": "Step slayer"
+      }
+    },
     "fistFlow": {
       "description": "Hold a plank for 2 minutes.",
       "title": "Fist flow"
@@ -99,6 +285,24 @@
       "description": "Practice 5 deep breaths.",
       "title": "Master of air"
     },
+    "modal": {
+      "benefits": "Benefits",
+      "buddyAdvice": "Buddy Advice",
+      "cancelAlert": {
+        "continue": "Continue",
+        "giveUp": "Give up",
+        "message": "The challenge will stop and its progress will be lost. You can start this challenge again or choose any other challenge.",
+        "title": "Are you sure?"
+      },
+      "cancelChallenge": "Cancel challenge",
+      "completed": "Completed",
+      "dayChallenge": "{{count}} Day{{count, plural, one {} other {s}}} Challenge",
+      "history": "History",
+      "restartChallenge": "Restart challenge",
+      "share": "Share",
+      "startNow": "Start now",
+      "today": "Today"
+    },
     "refresh": {
       "description": "Swim 20 laps in one session.",
       "title": "Refresh"
@@ -111,214 +315,7 @@
       "description": "Take 10,000 steps daily.",
       "title": "Step slayer"
     },
-    "title": "Challenges",
-    "modal": {
-      "today": "Today",
-      "history": "History",
-      "completed": "Completed",
-      "benefits": "Benefits",
-      "buddyAdvice": "Buddy Advice",
-      "cancelChallenge": "Cancel challenge",
-      "startNow": "Start now",
-      "restartChallenge": "Restart challenge",
-      "share": "Share",
-      "cancelAlert": {
-        "title": "Are you sure?",
-        "message": "The challenge will stop and its progress will be lost. You can start this challenge again or choose any other challenge.",
-        "continue": "Continue",
-        "giveUp": "Give up"
-      },
-      "dayChallenge": "{{count}} Day{{count, plural, one {} other {s}}} Challenge"
-    },
-    "data": {
-      "masterOfAir": {
-        "title": "Master of air",
-        "shortDescription": "Practice 5 deep breaths.",
-        "longDescription": "Practice 5 deep breaths, three times a day for 10 days.",
-        "motivation": [
-          "Reduces stress and anxiety",
-          "Lowers cravings naturally",
-          "Increases focus and calm",
-          "Boosts energy"
-        ],
-        "buddyAdvice": [
-          "Take a slow, deep inhale and exhale.",
-          "Focus on the sensations of your breathing.",
-          "Repeat 5 times.",
-          "Do this daily for 10 days."
-        ],
-        "achievement": "AirMind",
-        "achievementDescription": "You completed 10 days of mindful breathing and beat cravings with calm.",
-        "duration": "1 Day"
-      },
-      "hydrationBoost": {
-        "title": "Hydration boost",
-        "shortDescription": "Drink water each craving.",
-        "longDescription": "Drink a glass of water each time you feel a craving.",
-        "motivation": [
-          "Reduces nicotine craving intensity.",
-          "Helps flush toxins from your body.",
-          "Keeps you hydrated and focused.",
-          "Provides a healthy distraction."
-        ],
-        "buddyAdvice": [
-          "Replace the craving with a glass of water.",
-          "Slowly drink the water, focusing on the taste and sensations.",
-          "Take a few deep breaths and relax.",
-          "If the craving returns — repeat the steps.",
-          "Repeat daily for 10 days."
-        ],
-        "achievement": "HydroWin",
-        "achievementDescription": "Drink a glass of water in mindful sips, feeling each one.",
-        "duration": "2 Days"
-      },
-      "stepSlayer": {
-        "title": "Step slayer",
-        "shortDescription": "Walk 500 steps to reset.",
-        "longDescription": "Take a short walk of 500 steps whenever you feel a craving.",
-        "motivation": [
-          "Reduces stress and anxiety.",
-          "Increases endorphins naturally.",
-          "Provides a healthy distraction.",
-          "Improves overall mood."
-        ],
-        "buddyAdvice": [
-          "Take short mindful walks instead of smoking.",
-          "Focus on your breath and steps.",
-          "Use it as a mini-break to refresh your mind.",
-          "If the craving returns — walk again.",
-          "Repeat daily for 10 days."
-        ],
-        "achievement": "Strider",
-        "achievementDescription": "You stayed smoke-free and strong with 10 days of mindful steps.",
-        "duration": "3 Days"
-      },
-      "snackBreak": {
-        "title": "Snack break",
-        "shortDescription": "Snack instead of smoking.",
-        "longDescription": "Choose healthy snacks over cigarettes when cravings hit.",
-        "motivation": [
-          "Reduces cravings naturally.",
-          "Provides healthy nutrition.",
-          "Keeps your mouth and hands busy.",
-          "Improves overall health."
-        ],
-        "buddyAdvice": [
-          "Keep fruits, nuts, or veggies nearby.",
-          "When the urge hits — chew slowly, focus on taste and texture.",
-          "Pair the snack with a glass of water.",
-          "If craving returns — repeat the step.",
-          "Repeat daily for 10 days."
-        ],
-        "achievement": "Snackcess",
-        "achievementDescription": "You stayed smoke-free for 10 days by choosing healthy bites over cigarettes.",
-        "duration": "10 Days"
-      },
-      "calmPower": {
-        "title": "Calm power",
-        "shortDescription": "Meditate 2 minutes.",
-        "longDescription": "Practice 2 minutes of meditation to manage cravings.",
-        "motivation": [
-          "Reduces stress and tension.",
-          "Increases mindfulness and awareness.",
-          "Helps manage cravings better.",
-          "Promotes inner peace."
-        ],
-        "buddyAdvice": [
-          "Sit comfortably and close your eyes.",
-          "Take slow, deep breaths and focus on the sensations.",
-          "If your mind wanders, gently bring attention back to your breath.",
-          "Repeat each time a craving arises.",
-          "Repeat daily for 10 days."
-        ],
-        "achievement": "Zen",
-        "achievementDescription": "You completed 10 days of mindful meditation with music to manage cravings.",
-        "duration": "10 Days"
-      },
-      "fistFlow": {
-        "title": "Fist flow",
-        "shortDescription": "Squeeze 20 times.",
-        "longDescription": "Squeeze your fists 20 times to release tension and cravings.",
-        "motivation": [
-          "Reduces nicotine cravings.",
-          "Releases physical tension.",
-          "Provides immediate relief.",
-          "Helps manage stress."
-        ],
-        "buddyAdvice": [
-          "Make a fist and squeeze tightly 20 times.",
-          "Focus on the sensations in your hands and arms.",
-          "Breathe deeply and relax.",
-          "Repeat whenever cravings arise.",
-          "Repeat daily for 10 days."
-        ],
-        "achievement": "Gripped",
-        "achievementDescription": "You squeezed and released your fists for 10 days to beat cravings.",
-        "duration": "10 Days"
-      },
-      "refresh": {
-        "title": "Refresh",
-        "shortDescription": "Splash water to curb cravings.",
-        "longDescription": "Splash cold water on your face to instantly reset and curb cravings.",
-        "motivation": [
-          "Reduces nicotine cravings.",
-          "Provides instant refreshment.",
-          "Helps reset your mind.",
-          "Increases alertness."
-        ],
-        "buddyAdvice": [
-          "Splash cold water on your face or wrists.",
-          "Take a deep breath and relax.",
-          "Repeat if cravings return.",
-          "Repeat daily for 10 days."
-        ],
-        "achievement": "Splash",
-        "achievementDescription": "You completed 10 days of instant cold-water resets instead of cravings.",
-        "duration": "10 Days"
-      },
-      "craveCrusher": {
-        "title": "Crave crusher",
-        "shortDescription": "Crumple your craving.",
-        "longDescription": "Draw or write your craving on paper, then crumple it up to release it.",
-        "motivation": [
-          "Helps you acknowledge and release cravings.",
-          "Provides a physical outlet for emotions.",
-          "Increases self-awareness.",
-          "Promotes letting go."
-        ],
-        "buddyAdvice": [
-          "Take a piece of paper and draw your craving for a cigarette or write it down.",
-          "Focus on the feeling as you create it.",
-          "Crumple the paper into a ball.",
-          "Take a deep breath and let it go.",
-          "Repeat whenever cravings arise."
-        ],
-        "achievement": "Released",
-        "achievementDescription": "You drew or wrote your cravings and crushed them for 10 days.",
-        "duration": "10 Days"
-      },
-      "flowMinute": {
-        "title": "Flow minute",
-        "shortDescription": "Stretch to release tension.",
-        "longDescription": "Do gentle stretching for 1 minute to release tension and stress.",
-        "motivation": [
-          "Reduces stress and muscle tightness.",
-          "Improves flexibility and mobility.",
-          "Increases blood circulation.",
-          "Promotes relaxation."
-        ],
-        "buddyAdvice": [
-          "Sit or stand comfortably.",
-          "Slowly stretch your neck, shoulders, and back for 2–3 minutes.",
-          "Breathe deeply and feel the tension release.",
-          "Repeat whenever you feel tight or stressed.",
-          "Repeat daily for 10 days."
-        ],
-        "achievement": "Stretched",
-        "achievementDescription": "You stretched and released tension for 10 days.",
-        "duration": "10 Days"
-      }
-    }
+    "title": "Challenges"
   },
   "challengeStart": {
     "actionButton": "Start My Journey",
@@ -477,6 +474,9 @@
       "theme": "Theme"
     },
     "title": "Profile"
+  },
+  "progressChallenges": {
+    "title": "Progress challenges"
   },
   "promos": {
     "refer": {
@@ -724,6 +724,30 @@
       "dark": "Dark side"
     },
     "title": "Bright or dark side?"
+  },
+  "slipsLog": {
+    "buy": {
+      "cta": "Buy for {{coins}}",
+      "notEnough": {
+        "body": "You need {{coins}} coins to buy +5 slips.",
+        "title": "Not enough coins"
+      }
+    },
+    "counter": {
+      "times": "times"
+    },
+    "freeSlip": "Free Slip",
+    "limit": {
+      "body": "You've reached your slip limit. Protect your streak to add +5, or reset your timer.",
+      "title": "Don't give up"
+    },
+    "protect": {
+      "body": "Use coins to get extra slips so your smoke-free timer won’t reset.",
+      "title": "Protect your streak"
+    },
+    "smokedButton": "I smoked",
+    "summary": "You have {{remaining}} slips allowed. If you reach the limit, your smoke-free timer resets — and you can start fresh",
+    "title": "Slips log"
   },
   "stats": {
     "description": "Average US savings from not smoking. Add your habits to get your number."
