@@ -87,9 +87,9 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
 
   return (
     <View className={`flex-1 ${isDark ? "bg-dark-background" : "bg-white"}`}>
-      {/* Header */}
       <CoinPurchaseModal></CoinPurchaseModal>
 
+      {/* Header */}
       <View className="px-4 pt-4 pb-3 flex-row items-center justify-between">
         <Pressable
           onPress={onBack}
