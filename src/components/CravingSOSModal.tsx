@@ -214,12 +214,15 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({ visible, onClose, onS
           <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
         </Pressable>
 
-      {/* I smoked! Button */}
-      <Pressable 
+      {/* Take 5 breaths Button */}
+      <Pressable
         className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[70%]"
-        onPress={handleISmoked}
+        onPress={() => {
+          onClose(); // Close modal first
+          onStartBreathing(); // Then navigate to breathing exercise
+        }}
       >
-        <Text className="text-white font-bold text-lg">{t('cravingSOS.iSmokedButton')}</Text>
+        <Text className="text-white font-bold text-lg">Take 5 breaths</Text>
       </Pressable>
       </View>     
 
