@@ -10,12 +10,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
 import CTAButton from '../components/CTAButton';
+import { useApp } from '../contexts/AppContext';
+import * as BreathingData from '../data/breathingData';
 
 const BreathingBg = require('../assets/breathing/breathing_bg.png');
-const Slide1 = require('../assets/breathing/fox/slide1.png');
-const Slide2 = require('../assets/breathing/fox/slide2.png');
-const Slide3 = require('../assets/breathing/fox/slide3.png');
-const BuddyIcon = require('../assets/breathing/fox/fox.png');
 
 interface BreathingExerciseProps {
   onClose: () => void;
@@ -35,6 +33,14 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completedSessionsCount, setCompletedSessionsCount] = useState(0);
+
+  const {
+    selectedBuddyId,
+  } = useApp();
+  
+  // Get breathing assets for the selected buddy
+  const breathingData = BreathingData.getBreathingDataById(selectedBuddyId || '') || BreathingData.DEFAULT_BREATHING_DATA;
+  const { slide1: Slide1, slide2: Slide2, slide3: Slide3, buddyIcon: BuddyIcon } = breathingData.assets;
 
   // Animation for slide images movement
   const slideAnimation = useRef(new Animated.Value(0)).current;
