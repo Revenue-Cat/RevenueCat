@@ -13,6 +13,8 @@ import CTAButton from '../components/CTAButton';
 import { useApp } from '../contexts/AppContext';
 import * as BreathingData from '../data/breathingData';
 import CoinsIcon from "../assets/icons/coins.svg";
+import PauseIcon from "../assets/icons/pause.svg";
+// import PlayIcon from "../assets/icons/play.svg";
 
 const BreathingBg = require('../assets/breathing/breathing_bg.png');
 
@@ -692,12 +694,17 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
                     isPaused ? 'bg-indigo-700' : 'bg-indigo-700'
                   }`}
                   onPress={isPaused ? handleResume : handlePause}
-                >
-                  <Ionicons 
-                    name={isPaused ? "play" : "pause"} 
-                    size={24} 
-                    color="white" 
-                  />
+                  >
+                    {isPaused ? (
+                        <Ionicons 
+                          name={"play" } 
+                          size={20} 
+                          color="white" 
+                        />
+                    ) :
+                      <PauseIcon width={20} height={20} color="white" />
+                    }
+                  
                 </Pressable>
                 
                
