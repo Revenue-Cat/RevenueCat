@@ -68,6 +68,9 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
   
   // Animation for progress bar
   const progressAnimation = useRef(new Animated.Value(0)).current;
+  
+  // Ref to track cycle count for completion check
+  const cycleCountRef = useRef(1);
 
   // Countdown effect
   useEffect(() => {
@@ -136,20 +139,21 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
               setCurrentPhase('inhale');
               setCycle(prev => {
                 const newCycle = prev + 1;
-                // TODO FIX IT to 5
-                if (newCycle > 5) {
-                  // Complete the breathing exercise (defer updates to next frame)
-                  requestAnimationFrame(() => {
-                    setCompletedSessionsCount(prevCount => prevCount + 1);
-                    buddyIconOpacity.setValue(1);
-                    completionOpacity.setValue(1);
-                    setIsCompleted(true);
-                    setIsActive(false);
-                    setIsPaused(false);
-                  });
-                }
+                cycleCountRef.current = newCycle;
                 return newCycle;
               });
+              
+              // Check if we should complete the exercise
+              if (cycleCountRef.current > 4) {
+                // Complete the breathing exercise
+                setCompletedSessionsCount(prevCount => prevCount + 1);
+                buddyIconOpacity.setValue(1);
+                completionOpacity.setValue(1);
+                setIsCompleted(true);
+                setIsActive(false);
+                setIsPaused(false);
+              }
+              
               return 5;
             }
           }
@@ -425,6 +429,9 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
     // Reset progress animation
     progressAnimation.setValue(0);
     
+    // Reset cycle count ref
+    cycleCountRef.current = 1;
+    
     // Fade in BuddyIcon smoothly
     Animated.timing(buddyIconOpacity, {
       toValue: 1,
@@ -442,14 +449,14 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
       case 'exhale':
         return 'Breathe out';
       case 'complete':
-        return 'Complete';
+        return 'Breathe out';
       default:
         return 'Relax';
     }
   };
 
   const getOverallProgress = () => {
-    const totalTime = 5 + 5 + 5 + 1; // inhale + hold + exhale + complete = 16 seconds total
+    const totalTime = 5 + 5 + 5 + 2; // inhale + hold + exhale + complete = 17 seconds total
     let elapsedTime = 0;
     
     switch (currentPhase) {
