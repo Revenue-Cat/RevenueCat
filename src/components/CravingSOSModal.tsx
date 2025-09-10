@@ -304,7 +304,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
             onStartBreathing(); // Then navigate to breathing exercise
           }}
         >
-          <Text className="text-white font-bold text-lg">Take 5 breaths</Text>
+          <Text className="text-white font-bold text-lg">{t('breathing.controls.takeBreaths', { count: 5 })}</Text>
         </Pressable>
 
         {/* NEW: Smoke icon button — 48x48, rounded-2xl, white 24x24 icon */}

@@ -21,6 +21,27 @@
     "update": "Update",
     "waitForLevel": "Wait. Reach the required level to unlock this achievement."
   },
+  "breathing": {
+    "title": "Breathing place",
+    "motivationalText": "You don't need a cigarette! You need a moment",
+    "phases": {
+      "inhale": "Breathe In",
+      "hold": "Hold",
+      "exhale": "Breathe out",
+      "complete": "Complete",
+      "relax": "Relax"
+    },
+    "cycle": "Breathe {{cycle}}",
+    "completion": {
+      "breathsDone": "{{count}} Breaths done",
+      "coinsEarned": "{{count}} Coins earned",
+      "takeNewBreaths": "Take new {{count}} breaths"
+    },
+    "controls": {
+      "takeBreaths": "Take {{count}} breaths",
+      "startBreaths": "Start {{count}} breaths"
+    }
+  },
   "buddies": {
     "fox-m": {
       "description": "A soft and comforting buddy for difficult moments.",

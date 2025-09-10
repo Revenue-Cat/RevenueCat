@@ -14,6 +14,7 @@ import { useApp } from '../contexts/AppContext';
 import * as BreathingData from '../data/breathingData';
 import CoinsIcon from "../assets/icons/coins.svg";
 import PauseIcon from "../assets/icons/pause.svg";
+import { useTranslation } from 'react-i18next';
 // import PlayIcon from "../assets/icons/play.svg";
 
 const BreathingBg = require('../assets/breathing/breathing_bg.png');
@@ -26,6 +27,7 @@ interface BreathingExerciseProps {
 const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const { t } = useTranslation();
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isResuming, setIsResuming] = useState(false);
@@ -66,8 +68,8 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
   const completionOpacity = useRef(new Animated.Value(0)).current;
   const completionScale = useRef(new Animated.Value(0.8)).current;
   
-  // Animation for progress bar
-  const progressAnimation = useRef(new Animated.Value(0)).current;
+  // Animation for progress bar - separate for each phase
+  const phaseProgressAnimation = useRef(new Animated.Value(0)).current;
   
   // Ref to track cycle count for completion check
   const cycleCountRef = useRef(1);
@@ -99,6 +101,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
         setTimeLeft(5);
         setCurrentPhase('inhale');
         setCycle(1);
+        phaseProgressAnimation.setValue(0); // Reset progress for new exercise
         // Fade in new text
         Animated.parallel([
           Animated.timing(textOpacity, {
@@ -127,16 +130,20 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
             setIsPhaseTransitioning(true);
             if (currentPhase === 'inhale') {
               setCurrentPhase('hold');
-              return 5;
+              phaseProgressAnimation.setValue(0); // Reset progress for new phase
+              return 2;
             } else if (currentPhase === 'hold') {
               setCurrentPhase('exhale');
+              phaseProgressAnimation.setValue(0); // Reset progress for new phase
               return 5;
             } else if (currentPhase === 'exhale') {
               setCurrentPhase('complete');
+              phaseProgressAnimation.setValue(0); // Reset progress for new phase
               return 1; // 1 seconds for complete phase
             } else {
               // From complete phase, start new cycle
               setCurrentPhase('inhale');
+              phaseProgressAnimation.setValue(0); // Reset progress for new phase
               setCycle(prev => {
                 const newCycle = prev + 1;
                 cycleCountRef.current = newCycle;
@@ -221,14 +228,15 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
   // Progress bar animation effect
   useEffect(() => {
     if (isActive && !isPaused) {
-      const progress = getOverallProgress();
-      Animated.timing(progressAnimation, {
+      const progress = getPhaseProgress();
+      // Use shorter duration for more responsive updates
+      Animated.timing(phaseProgressAnimation, {
         toValue: progress,
-        duration: 1000, // Smooth 1-second transition
+        duration: 200, // Faster updates for better responsiveness
         useNativeDriver: false,
       }).start();
     }
-  }, [isActive, currentPhase, timeLeft, isPaused, progressAnimation]);
+  }, [isActive, currentPhase, timeLeft, isPaused, phaseProgressAnimation]);
 
   // Completion animation effect
   useEffect(() => {
@@ -427,7 +435,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
     completionScale.setValue(0.8);
     
     // Reset progress animation
-    progressAnimation.setValue(0);
+    phaseProgressAnimation.setValue(0);
     
     // Reset cycle count ref
     cycleCountRef.current = 1;
@@ -443,45 +451,38 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
   const getPhaseText = () => {
     switch (currentPhase) {
       case 'inhale':
-        return 'Breathe In';
+        return t('breathing.phases.inhale');
       case 'hold':
-        return 'Hold';
+        return t('breathing.phases.hold');
       case 'exhale':
-        return 'Breathe out';
+        return t('breathing.phases.exhale');
       case 'complete':
-        return 'Breathe out';
+        return t('breathing.phases.exhale');
       default:
-        return 'Relax';
+        return t('breathing.phases.relax');
     }
   };
 
-  const getOverallProgress = () => {
-    const totalTime = 5 + 5 + 5 + 2; // inhale + hold + exhale + complete = 17 seconds total
-    let elapsedTime = 0;
+  const getPhaseProgress = () => {
+    let phaseDuration = 5; // Default for inhale, exhale
     
-    switch (currentPhase) {
-      case 'inhale':
-        elapsedTime = 5 - timeLeft;
-        break;
-      case 'hold':
-        elapsedTime = 5 + (5 - timeLeft);
-        break;
-      case 'exhale':
-        elapsedTime = 5 + 5 + (5 - timeLeft);
-        break;
-      case 'complete':
-        elapsedTime = 5 + 5 + 5 + (2 - timeLeft);
-        break;
-      default:
-        return 0;
+    if (currentPhase === 'hold') {
+      phaseDuration = 2;
+    } else if (currentPhase === 'complete') {
+      phaseDuration = 0;
     }
     
-    // Ensure we reach 100% when complete phase finishes
-    if (currentPhase === 'complete' && timeLeft <= 0) {
+    // Calculate progress based on remaining time
+    // When timeLeft = phaseDuration, progress = 0%
+    // When timeLeft = 0, progress = 100%
+    const progress = ((phaseDuration - timeLeft+1) / phaseDuration) * 100;
+    
+    // Ensure we reach 100% when timeLeft reaches 0
+    if (timeLeft <= 0) {
       return 100;
     }
     
-    return Math.min((elapsedTime / totalTime) * 100, 100);
+    return Math.min(Math.max(progress, 0), 100);
   };
 
   const getPhaseColor = () => {
@@ -560,7 +561,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
                 transform: [{ scale: textScale }]
               }}
             >
-              Breathing place
+              {t('breathing.title')}
             </Animated.Text>
             <View className="w-10" />
             </>
@@ -577,7 +578,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
               opacity: motivationalTextOpacity,
             }}
           >
-            You don't need a cigarette! You need a moment
+            {t('breathing.motivationalText')}
           </Animated.Text>
         </View>
       )}
@@ -601,7 +602,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
               <View className="mb-8">
                 {isActive && (
                   <Text className={`text-2lg font-semibold text-center ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
-                  Breathe {cycle}
+                  {t('breathing.cycle', { cycle })}
                   </Text>
                 )}
               </View>
@@ -643,7 +644,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
                 <Text className={`text-3xl font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
                   {completedSessionsCount * 5}
                 </Text>
-                <Text className={`text-sm text-slate-500`}>Breaths done</Text>
+                <Text className={`text-sm text-slate-500`}>{t('breathing.completion.breathsDone', { count: completedSessionsCount * 5 })}</Text>
               </View>
               
                 {/* Second Box - 5 Coins earned */}
@@ -654,7 +655,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
                     </Text>
                     <CoinsIcon width={24} height={24} color="#FF6B35" />
                   </View>
-                  <Text className={`text-sm text-slate-500`}>Coins earned</Text>
+                  <Text className={`text-sm text-slate-500`}>{t('breathing.completion.coinsEarned', { count: completedSessionsCount * 5 })}</Text>
                 </View>
             </View>
                        
@@ -666,7 +667,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
         
         {!isActive && countdown === null && !isPaused ? (
           <CTAButton
-              label={isCompleted ? "Take new 5 breaths" : "Take 5 breaths"}
+              label={isCompleted ? t('breathing.completion.takeNewBreaths', { count: 5 }) : t('breathing.controls.takeBreaths', { count: 5 })}
               onPress={handleStart}
               rightIconName={null}
               containerClassName="absolute bottom-0 left-0 right-0 z-[200]"
@@ -674,11 +675,11 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
         ) : (
             <View className="items-center">
               {/* Linear Progress Bar for All Phases */}
-              <View className="w-[90%] h-1 bg-white/30 rounded-full overflow-hidden mb-3">
+              <View className="w-[90%] h-1 bg-white/20 rounded-full overflow-hidden mb-3">
                 <Animated.View 
                   className="h-full bg-white rounded-full"
                   style={{
-                    width: progressAnimation.interpolate({
+                    width: phaseProgressAnimation.interpolate({
                       inputRange: [0, 100],
                       outputRange: ['0%', '100%'],
                       extrapolate: 'clamp',
