@@ -298,6 +298,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
       {/* Take 5 breaths Button */}
         <Pressable
           className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[70%]"
+           style={{ height: 48 }}
           onPress={() => {
             onClose(); // Close modal first
             onStartBreathing(); // Then navigate to breathing exercise

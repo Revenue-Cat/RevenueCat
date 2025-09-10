@@ -12,6 +12,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import CTAButton from '../components/CTAButton';
 import { useApp } from '../contexts/AppContext';
 import * as BreathingData from '../data/breathingData';
+import CoinsIcon from "../assets/icons/coins.svg";
 
 const BreathingBg = require('../assets/breathing/breathing_bg.png');
 
@@ -27,7 +28,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
   const [isPaused, setIsPaused] = useState(false);
   const [isResuming, setIsResuming] = useState(false);
   const [isPhaseTransitioning, setIsPhaseTransitioning] = useState(false);
-  const [currentPhase, setCurrentPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+  const [currentPhase, setCurrentPhase] = useState<'inhale' | 'hold' | 'exhale' | 'complete'>('inhale');
   const [timeLeft, setTimeLeft] = useState(5);
   const [cycle, setCycle] = useState(1);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -62,6 +63,9 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
   // Animation for completion state
   const completionOpacity = useRef(new Animated.Value(0)).current;
   const completionScale = useRef(new Animated.Value(0.8)).current;
+  
+  // Animation for progress bar
+  const progressAnimation = useRef(new Animated.Value(0)).current;
 
   // Countdown effect
   useEffect(() => {
@@ -122,12 +126,16 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
             } else if (currentPhase === 'hold') {
               setCurrentPhase('exhale');
               return 5;
+            } else if (currentPhase === 'exhale') {
+              setCurrentPhase('complete');
+              return 1; // 1 seconds for complete phase
             } else {
+              // From complete phase, start new cycle
               setCurrentPhase('inhale');
               setCycle(prev => {
                 const newCycle = prev + 1;
                 // TODO FIX IT to 5
-                if (newCycle > 1) {
+                if (newCycle > 5) {
                   // Complete the breathing exercise (defer updates to next frame)
                   requestAnimationFrame(() => {
                     setCompletedSessionsCount(prevCount => prevCount + 1);
@@ -153,29 +161,32 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
 
   // Animation effect for slide images during different phases
   useEffect(() => {
-    if (isActive && !isPaused && !isResuming) {
-      if (currentPhase === 'inhale') {
-        setCurrentSlide('slide1');
-        // Reset animation to bottom position
-        slideAnimation.setValue(0);
+    if (!isActive || isPaused || isResuming) return;
 
-        // Animate from bottom to middle over 5 seconds (matching inhale duration)
-        currentAnimationRef.current = Animated.timing(slideAnimation, {
-          toValue: 0.5,
-          duration: 5000, // 5 seconds for inhale phase
-          useNativeDriver: true,
-        });
-        currentAnimationRef.current.start(() => {
-          setIsPhaseTransitioning(false);
-        });
+    // Stop any existing animation
+    if (currentAnimationRef.current) {
+      currentAnimationRef.current.stop();
+      currentAnimationRef.current = null;
+    }
+
+    if (currentPhase === 'inhale') {
+      setCurrentSlide('slide1');
+      
+      // Always animate from current position to middle (0.5)
+      // This prevents jumping by not resetting the position
+      currentAnimationRef.current = Animated.timing(slideAnimation, {
+        toValue: 0.5,
+        duration: 5000, // 5 seconds for inhale phase
+        useNativeDriver: true,
+      });
+      currentAnimationRef.current.start(() => {
+        setIsPhaseTransitioning(false);
+      });
       } else if (currentPhase === 'hold') {
         setCurrentSlide('slide2');
-        // Only set to middle position if we're transitioning naturally
-        // This prevents jumping when transitioning from paused inhale/exhale to hold
-        if (isPhaseTransitioning) {
-          slideAnimation.setValue(0.5);
-          setIsPhaseTransitioning(false);
-        }
+        // Always set to middle position when transitioning to hold
+        slideAnimation.setValue(0.5);
+        setIsPhaseTransitioning(false);
       } else if (currentPhase === 'exhale') {
         setCurrentSlide('slide3');
         // Only set to middle position if we're transitioning naturally
@@ -193,9 +204,25 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
         currentAnimationRef.current.start(() => {
           setIsPhaseTransitioning(false);
         });
+      } else if (currentPhase === 'complete') {
+        setCurrentSlide('slide1');
+        // Stay at bottom position during complete phase
+        slideAnimation.setValue(1);
+        setIsPhaseTransitioning(false);
       }
+  }, [isActive, currentPhase, isPaused, isResuming, isPhaseTransitioning]);
+
+  // Progress bar animation effect
+  useEffect(() => {
+    if (isActive && !isPaused) {
+      const progress = getOverallProgress();
+      Animated.timing(progressAnimation, {
+        toValue: progress,
+        duration: 1000, // Smooth 1-second transition
+        useNativeDriver: false,
+      }).start();
     }
-  }, [isActive, currentPhase, slideAnimation, isPaused, isResuming, isPhaseTransitioning]);
+  }, [isActive, currentPhase, timeLeft, isPaused, progressAnimation]);
 
   // Completion animation effect
   useEffect(() => {
@@ -292,6 +319,12 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
   };
 
   const handlePause = () => {
+    // If no animation is running and we're not in an active breathing phase, return to initial screen
+    if (!currentAnimationRef.current && !isActive) {
+      handleReset();
+      return;
+    }
+    
     setIsPaused(true);
     // Stop the current animation mid-way
     if (currentAnimationRef.current) {
@@ -387,6 +420,9 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
     completionOpacity.setValue(0);
     completionScale.setValue(0.8);
     
+    // Reset progress animation
+    progressAnimation.setValue(0);
+    
     // Fade in BuddyIcon smoothly
     Animated.timing(buddyIconOpacity, {
       toValue: 1,
@@ -403,9 +439,40 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
         return 'Hold';
       case 'exhale':
         return 'Breathe out';
+      case 'complete':
+        return 'Complete';
       default:
         return 'Relax';
     }
+  };
+
+  const getOverallProgress = () => {
+    const totalTime = 5 + 5 + 5 + 1; // inhale + hold + exhale + complete = 16 seconds total
+    let elapsedTime = 0;
+    
+    switch (currentPhase) {
+      case 'inhale':
+        elapsedTime = 5 - timeLeft;
+        break;
+      case 'hold':
+        elapsedTime = 5 + (5 - timeLeft);
+        break;
+      case 'exhale':
+        elapsedTime = 5 + 5 + (5 - timeLeft);
+        break;
+      case 'complete':
+        elapsedTime = 5 + 5 + 5 + (2 - timeLeft);
+        break;
+      default:
+        return 0;
+    }
+    
+    // Ensure we reach 100% when complete phase finishes
+    if (currentPhase === 'complete' && timeLeft <= 0) {
+      return 100;
+    }
+    
+    return Math.min((elapsedTime / totalTime) * 100, 100);
   };
 
   const getPhaseColor = () => {
@@ -468,7 +535,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
         {countdown === null && !isActive && (
           <>
             <Pressable
-              className="w-10 h-10 rounded-full justify-center items-center"
+              className="w-10 h-10 rounded-full justify-center items-center ml-1.5"
               onPress={onBack}
             >
                <Ionicons 
@@ -478,7 +545,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
               />
             </Pressable>
             <Animated.Text 
-              className={`text-2xl font-bold text-indigo-950`}
+              className={`text-xl font-bold text-indigo-950`}
               style={{
                 opacity: textOpacity,
                 transform: [{ scale: textScale }]
@@ -496,7 +563,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
       {countdown !== null && (
         <View className="flex-row justify-between items-center w-full px-5">
           <Animated.Text 
-            className={`text-2xl font-bold text-indigo-950 text-center`}
+            className={`text-xl font-bold text-indigo-950 text-center`}
             style={{
               opacity: motivationalTextOpacity,
             }}
@@ -510,7 +577,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
         {isActive && (
           <View className="items-center w-full mb-12 pt-4">
             <View
-              className="w-100 h-50 rounded-full justify-center items-center shadow-lg"
+              className="w-100 h-50 rounded-full justify-center items-center"
            
             >
               <Animated.Text 
@@ -524,12 +591,11 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
               </Animated.Text>
               <View className="mb-8">
                 {isActive && (
-                  <Text className={`text-lg font-semibold text-center ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+                  <Text className={`text-2lg font-semibold text-center ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
                   Breathe {cycle}
                   </Text>
                 )}
               </View>
-              <Text className="text-6xl font-bold text-black">{timeLeft}</Text>
             </View>
           </View>
       )}
@@ -565,19 +631,22 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
             <View className="flex-row items-center gap-4 mx-4">
               {/* First Box - 5 Breaths done */}
               <View className="flex-1 items-center justify-center bg-indigo-50 p-4 rounded-xl">
-                <Text className={`text-2xl font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+                <Text className={`text-3xl font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
                   {completedSessionsCount * 5}
                 </Text>
-                <Text className={`text-xs text-slate-500`}>Breaths done</Text>
+                <Text className={`text-sm text-slate-500`}>Breaths done</Text>
               </View>
               
-              {/* Second Box - 5 Coins earned */}
-              <View className="flex-1 items-center justify-center bg-indigo-50 p-4 rounded-xl">
-                <Text className={`text-lg font-semibold ${isDark ? "text-yellow-400" : "text-yellow-600"}`}>
-                  {completedSessionsCount * 5}
-                </Text>
-                <Text className={`text-xs text-slate-500`}>Coins earned</Text>
-              </View>
+                {/* Second Box - 5 Coins earned */}
+                <View className="flex-1 items-center justify-center bg-indigo-50 p-4 rounded-xl">
+                  <View className="flex-row items-center gap-2">
+                    <Text className={`text-3xl font-semibold text-orange-500`}>
+                      +{completedSessionsCount * 5}
+                    </Text>
+                    <CoinsIcon width={24} height={24} color="#FF6B35" />
+                  </View>
+                  <Text className={`text-sm text-slate-500`}>Coins earned</Text>
+                </View>
             </View>
                        
           </Animated.View>}
@@ -594,7 +663,20 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
               containerClassName="absolute bottom-0 left-0 right-0 z-[200]"
             />
         ) : (
-          <View className="items-center">
+            <View className="items-center">
+              {/* Linear Progress Bar for All Phases */}
+              <View className="w-[90%] h-1 bg-white/30 rounded-full overflow-hidden mb-3">
+                <Animated.View 
+                  className="h-full bg-white rounded-full"
+                  style={{
+                    width: progressAnimation.interpolate({
+                      inputRange: [0, 100],
+                      outputRange: ['0%', '100%'],
+                      extrapolate: 'clamp',
+                    }),
+                  }}
+                />
+              </View>
             <View className="w-auto">
               <View className="flex-row gap-2">
                   {/* Reset Button */}
@@ -602,7 +684,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
                   className="flex-row items-center justify-center py-3 px-4 rounded-xl  bg-indigo-50"
                   onPress={handleReset}
                 >
-                  <Ionicons name="close" size={24} color={'black'} />
+                  <Ionicons name="close" size={26} color={'black'} />
                 </Pressable>
                 {/* Primary Action Button */}
                 <Pressable
