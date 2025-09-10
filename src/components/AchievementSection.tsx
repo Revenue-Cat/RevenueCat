@@ -223,7 +223,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
           {/* Card 2 - Second achievement (showing a little) */}
           {firstThreeAchievements.length > 1 && (
             <Animated.View
-              className={`absolute ${isDark ? 'bg-slate-700' : 'bg-white'} bottom-5 rounded-xl left-4 right-4 h-20 border`}
+              className={`absolute ${isDark ? 'bg-slate-700' : 'bg-white'} bottom-8 rounded-xl left-4 right-4 h-20 border`}
               
               style={{
                 opacity: collapsedPreviewAnims[0].interpolate({
@@ -242,7 +242,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
           {/* Card 3 - Third achievement (showing a little less) */}
           {firstThreeAchievements.length > 2 && (
             <Animated.View
-              className={`absolute ${isDark ? 'bg-slate-700' : 'bg-white'} bottom-3 rounded-xl left-8 right-8 h-14`}
+              className={`absolute ${isDark ? 'bg-slate-700' : 'bg-white'} bottom-6 rounded-xl left-8 right-8 h-14`}
               style={{
                 opacity: collapsedPreviewAnims[1].interpolate({
                   inputRange: [0, 1],

@@ -64,6 +64,7 @@ const Home: React.FC<HomeProps> = ({
     handleScroll,
     toggleAchievements,
     backgroundHeight,
+    backgroundTransform,
     scrollViewTransform,
     buddyTransform,
     isInitialized,
@@ -185,7 +186,9 @@ const Home: React.FC<HomeProps> = ({
           </View>
 
           <Animated.View
-            style={{ height: backgroundHeight }}
+            style={{ 
+              height: backgroundHeight
+            }}
             pointerEvents="none"
           >
             <ParallaxBackground scrollY={scrollY} height={330} />

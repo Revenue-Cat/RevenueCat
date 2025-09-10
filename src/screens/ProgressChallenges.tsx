@@ -112,9 +112,9 @@ const ProgressChallenges: React.FC<ProgressChallengesProps> = ({ onBack }) => {
     <View
       className={`flex-1 absolute inset-0 ${isDark ? "bg-dark-background" : "bg-indigo-50"}`}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mt-16 pl-3">
+      <View className="relative mt-16 pl-3">
         <Pressable
-          className="w-10 h-10 rounded-full justify-center items-center"
+          className="w-10 h-10 rounded-full justify-center items-center z-10"
           onPress={onBack}
         >
           <Ionicons 
@@ -125,14 +125,13 @@ const ProgressChallenges: React.FC<ProgressChallengesProps> = ({ onBack }) => {
         </Pressable>
         
         <Text
-          className={`text-xl font-semibold ${
+          className={`absolute top-1 left-0 right-0 text-xl font-semibold text-center ${
             isDark ? "text-slate-100" : "text-indigo-950"
           }`}
+          style={{ zIndex: 1 }}
         >
           {t('progressChallenges.title', 'Progress challenges')}
         </Text>
-        
-        <View className="w-10" /> {/* Spacer for centering */}
       </View>
 
       {/* Content */}

@@ -64,7 +64,7 @@ export const useHomeScroll = () => {
     Animated.event(
       [{ nativeEvent: { contentOffset: { y: scrollY } } }],
       { 
-        useNativeDriver: true,
+        useNativeDriver: false, // Set to false to support height animations
         listener: scrollListener
       }
     ),
@@ -85,6 +85,15 @@ export const useHomeScroll = () => {
     }),
     [isBackgroundShrunk, scrollY]
   );
+
+  // Memoize the background transform for native driver compatibility
+  const backgroundTransform = useMemo(() => [{
+    scaleY: scrollY.interpolate({
+      inputRange: [0, 100],
+      outputRange: [1, 0.33], // 100/300 = 0.33
+      extrapolate: 'clamp'
+    })
+  }], [scrollY]);
 
   // Memoize the scroll view transform
   const scrollViewTransform = useMemo(() => [{
@@ -111,6 +120,7 @@ export const useHomeScroll = () => {
     handleScroll,
     toggleAchievements,
     backgroundHeight,
+    backgroundTransform,
     scrollViewTransform,
     buddyTransform,
     isInitialized

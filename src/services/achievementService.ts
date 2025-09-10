@@ -397,7 +397,7 @@ class AchievementService {
     const daysPassed = this.calculateDaysPassed();
     const current = Math.min(daysPassed, achievement.requiredDays);
     const max = achievement.requiredDays;
-    const percentage = Math.min((current / max) * 100, 100);
+    const percentage = Math.min((current / max) * 100, 100) + 1;
 
     return { current, max, percentage };
   }
