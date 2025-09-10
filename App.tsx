@@ -23,6 +23,7 @@ import CoinPurchaseModal from "./src/components/CoinPurchaseModal";
 import Purchases, { LOG_LEVEL } from "react-native-purchases";
 import { Platform } from "react-native";
 import oneSignalService from "./src/services/oneSignalService";
+import SlipsLog from "./src/screens/SlipsLog";
 
 type Screen =
   | "welcome"
@@ -37,16 +38,15 @@ type Screen =
   | "shop"
   | "edit-habits"
   | "edit-buddy"
-  | "breathing-exercise";
+  | "breathing-exercise"
+  | "slips-log";
 
 const AppContent: React.FC = () => {
-  const {
-    goal
-  } = useApp();
+  const { goal } = useApp();
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
   const [isScenesSelected, setIsScenesSelected] = useState(false);
-  const [currentScreen, setCurrentScreen] = useState<Screen>( "welcome");
+  const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
   const { theme } = useTheme();
 
   const navigateTo = useCallback((screen: Screen) => {
@@ -73,6 +73,11 @@ const AppContent: React.FC = () => {
     setShowChatAssistance(false);
   }, []);
 
+  const handleOpenSlipsLog = useCallback(() => {
+    setShowCravingSOS(false);
+    navigateTo("slips-log");
+  }, [navigateTo]);
+
   useEffect(() => {
     // Initialize RevenueCat
     if (Platform.OS === "ios") {
@@ -91,9 +96,8 @@ const AppContent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if(goal && currentScreen == "welcome")
-      setCurrentScreen("home")
-  }, [goal])
+    if (goal && currentScreen == "welcome") setCurrentScreen("home");
+  }, [goal]);
 
   return (
     <SafeAreaView
@@ -110,15 +114,11 @@ const AppContent: React.FC = () => {
       )}
 
       {currentScreen === "buddy-selection" && (
-        <BuddySelection
-          onNext={() => navigateTo("notification-permission")}
-        />
+        <BuddySelection onNext={() => navigateTo("notification-permission")} />
       )}
 
       {currentScreen === "notification-permission" && (
-        <NotificationPermission
-          onNext={() => navigateTo("challenge-start")}
-        />
+        <NotificationPermission onNext={() => navigateTo("challenge-start")} />
       )}
 
       {currentScreen === "challenge-start" && (
@@ -132,7 +132,9 @@ const AppContent: React.FC = () => {
           onShowChatAssistance={handleShowChatAssistance}
           onNavigateToProfile={() => navigateTo("profile")}
           onNavigateToAchievements={() => navigateTo("achievements")}
-          onNavigateToProgressChallenges={() => navigateTo("progress-challenges")}
+          onNavigateToProgressChallenges={() =>
+            navigateTo("progress-challenges")
+          }
           onNavigateToShop={() => navigateTo("shop")}
         />
       )}
@@ -171,9 +173,7 @@ const AppContent: React.FC = () => {
       )}
 
       {currentScreen === "progress-challenges" && (
-        <ProgressChallenges
-          onBack={() => navigateTo("home")}
-        />
+        <ProgressChallenges onBack={() => navigateTo("home")} />
       )}
 
       {currentScreen === "shop" && (
@@ -191,11 +191,16 @@ const AppContent: React.FC = () => {
         />
       )}
 
+      {currentScreen === "slips-log" && (
+        <SlipsLog onBack={() => navigateTo("home")} />
+      )}
+
       {/* Modals */}
       <CravingSOSModal
         visible={showCravingSOS}
         onClose={handleCloseCravingSOS}
         onStartBreathing={handleShowBreathingExercise}
+        onOpenSlipsLog={handleOpenSlipsLog}
       />
 
 
