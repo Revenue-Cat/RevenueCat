@@ -6,7 +6,6 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   achievementService,
   Achievement,
@@ -14,8 +13,10 @@ import {
 } from "../services/achievementService";
 import { Scene, SCENES_DATA } from "../data/scenesData";
 import { CHALLENGES_DATA } from "../data/challengesData";
-import { parse } from "react-native-svg";
 import Purchases from "react-native-purchases";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { signInAnonymously } from "firebase/auth";
+import {db, auth} from "../../firebaseConfig"
 
 type ShopTab = "buddies" | "backgrounds";
 export type UserGender = "man" | "lady" | "any";
@@ -282,13 +283,48 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const [showCoinPurchase, setShowCoinPurchase] = useState(false);
   const [selectedShopTab, setSelectedShopTab] = useState<ShopTab>("buddies");
 
-  // Load from AsyncStorage on mount
+  // RevenueCat appUserId for Firebase key
+  const [appUserId, setAppUserId] = useState<string | null>(null);
+
+  // Load from Firebase on mount
   useEffect(() => {
     const loadState = async () => {
       try {
-        const savedState = await AsyncStorage.getItem("@app_state");
-        if (savedState) {
-          const parsed = JSON.parse(savedState);
+        console.log("---------auth", auth)
+        if (!auth.currentUser) {
+          const userCredential = await signInAnonymously(auth);
+          console.log("Authenticated UID:", userCredential.user.uid);
+        } else {
+          console.log("Authenticated user:", auth.currentUser);
+        }
+        const customerInfo = await Purchases.getCustomerInfo();
+        console.log(customerInfo.originalAppUserId)
+        const userId = customerInfo.originalAppUserId; // Use Firebase UID
+        setAppUserId(userId);
+        if (userId) {
+          await Purchases.logIn(userId); // Link RevenueCat to Firebase UID
+        }
+
+        if (!userId) {
+          throw new Error("No user ID available");
+        }
+
+        const userDocRef = doc(db, "users", userId); // Using Firebase UID as the document key
+        const docSnap = await getDoc(userDocRef);
+
+        let parsed;
+        if (docSnap.exists()) {
+          const savedState = docSnap.data()?.appState;
+          if (savedState) {
+            parsed = JSON.parse(savedState);
+          }
+          console.log("----------- doc exist", savedState)
+        } else {
+          console.log("----------- doc not exist")
+        }
+
+        if (parsed) {
+          console.log("----------- parsed", parsed)
           setUserCoinsState(parsed.userCoins || 0);
           setSelectedBuddyState(parsed.selectedBuddy || defaultCharacter);
           setSelectedBackgroundState(
@@ -314,17 +350,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           setPackPriceState(parsed.packPrice || "");
           setPackPriceCurrencyState(parsed.packPriceCurrency || "$");
           setGoalState(parsed.goal || "");
-          setUserProgress(
-            parsed.userProgress || {
-              startDate: null,
-              daysSmokeFree: 0,
-              totalMoneySaved: 0,
-              cigarettesAvoided: 0,
-              breathingExercisesCompleted: 0,
-              challengesCompleted: 0,
-              purchasesMade: 0,
-            }
-          );
+
+          // Fix: Convert userProgress startDate to Date (was missing in original code)
+          const userProgressData = parsed.userProgress || {
+            startDate: null,
+            daysSmokeFree: 0,
+            totalMoneySaved: 0,
+            cigarettesAvoided: 0,
+            breathingExercisesCompleted: 0,
+            challengesCompleted: 0,
+            purchasesMade: 0,
+          };
+          userProgressData.startDate = userProgressData.startDate
+            ? new Date(userProgressData.startDate)
+            : null;
+          setUserProgress(userProgressData);
+
           setActiveChallenges(parsed.activeChallenges || []);
 
           setInProgressChallenges(parsed.inProgressChallenges || []);
@@ -376,9 +417,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
           setChallengeCompletions(convertedChallengeCompletions);
           setDailyCheckIns(parsed.dailyCheckIns || {});
+          setSlipsUsed(parsed.slipsUsed || 0);
+          setSlipsDates(parsed.slipsDates || []);
+          setExtraSlipPacks(parsed.extraSlipPacks || 0);
         }
       } catch (error) {
         console.error("Failed to load state:", error);
+        alert("Error loading data. Please try again.");
       }
     };
     loadState();
@@ -407,8 +452,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [userProgress.startDate]);
 
-  // Save to AsyncStorage when state changes
+  // Save to Firebase when state changes
   useEffect(() => {
+    if (!appUserId) return;
+
     const stateToSave = {
       userCoins,
       selectedBuddy,
@@ -434,10 +481,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       slipsDates,
       extraSlipPacks,
     };
-    AsyncStorage.setItem("@app_state", JSON.stringify(stateToSave)).catch(
-      (error) => console.error("Failed to save state:", error)
+
+    const userDocRef = doc(db, "users", appUserId);
+    setDoc(userDocRef, { appState: JSON.stringify(stateToSave) }).catch(
+      (error) => {
+        console.error("Failed to save state:", error);
+        alert("Failed to save data. Please check your network or try again.");
+      }
     );
   }, [
+    appUserId,
     userCoins,
     selectedBuddy,
     selectedBackground,
@@ -458,6 +511,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     challengeProgress,
     challengeCompletions,
     dailyCheckIns,
+    slipsUsed,
+    slipsDates,
+    extraSlipPacks,
   ]);
 
   // Memoize all action functions to prevent recreation
@@ -499,8 +555,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("----- customer", customerInfo);
       const appUserId = customerInfo.originalAppUserId;
 
-      const API_KEY = "sk_wvGZopHNPiRznxZZiJKvIxKaOXbRE"; // Replace with your RevenueCat secret key (DO NOT COMMIT TO GIT)
+      const API_KEY = process.env.REVENUECAT_API_KEY; // Use environment variable (configure with react-native-dotenv or similar)
       const PROJECT_ID = "2ea2fbba"; // Replace with your RevenueCat project ID
+
+      if (!API_KEY) {
+        console.error("RevenueCat API key is missing");
+        return false;
+      }
 
       const response = await fetch(
         `https://api.revenuecat.com/v2/projects/${PROJECT_ID}/customers/${appUserId}/virtual_currencies/transactions`,
@@ -935,8 +996,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const customerInfo = await Purchases.getCustomerInfo();
         const appUserId = customerInfo.originalAppUserId;
-        const API_KEY = "sk_wvGZopHNPiRznxZZiJKvIxKaOXbRE"; // ⚠️ don’t commit secrets
+        const API_KEY = process.env.REVENUECAT_API_KEY; // Use environment variable (configure with react-native-dotenv or similar)
         const PROJECT_ID = "2ea2fbba";
+
+        if (!API_KEY) {
+          console.error("RevenueCat API key is missing");
+          return false;
+        }
 
         const res = await fetch(
           `https://api.revenuecat.com/v2/projects/${PROJECT_ID}/customers/${appUserId}/virtual_currencies/transactions`,
