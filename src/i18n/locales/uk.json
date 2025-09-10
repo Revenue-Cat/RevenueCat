@@ -24,6 +24,27 @@
   "progressChallenges": {
     "title": "Виклики прогресу"
   },
+  "breathing": {
+    "title": "Місце дихання",
+    "motivationalText": "Тобі не потрібна сигарета! Тобі потрібна хвилина",
+    "phases": {
+      "inhale": "Вдихни",
+      "hold": "Затримай",
+      "exhale": "Видихни",
+      "complete": "Завершено",
+      "relax": "Розслабся"
+    },
+    "cycle": "Дихання {{cycle}}",
+    "completion": {
+      "breathsDone": "{{count}} Дихань виконано",
+      "coinsEarned": "{{count}} Монет зароблено",
+      "takeNewBreaths": "Зробити нові {{count}} дихання"
+    },
+    "controls": {
+      "takeBreaths": "Зробити {{count}} дихання",
+      "startBreaths": "Почати {{count}} дихання"
+    }
+  },
   "buddies": {
     "dog-m": {
       "description": "Тримайся зі мною — ми переможемо дим швидше, ніж він думає.",

@@ -21,6 +21,27 @@
     "update": "Actualizar",
     "waitForLevel": "Espera. Alcanza el nivel requerido para desbloquear este logro."
   },
+  "breathing": {
+    "title": "Lugar de respiración",
+    "motivationalText": "¡No necesitas un cigarrillo! Necesitas un momento",
+    "phases": {
+      "inhale": "Inhalar",
+      "hold": "Mantener",
+      "exhale": "Exhalar",
+      "complete": "Completado",
+      "relax": "Relajar"
+    },
+    "cycle": "Respira {{cycle}}",
+    "completion": {
+      "breathsDone": "{{count}} Respiración completada",
+      "coinsEarned": "{{count}} Monedas ganadas",
+      "takeNewBreaths": "Tomar nuevas {{count}} respiraciones"
+    },
+    "controls": {
+      "takeBreaths": "Tomar {{count}} respiraciones",
+      "startBreaths": "Comenzar {{count}} respiraciones"
+    }
+  },
   "buddies": {
     "fox-m": {
       "description": "Un compañero suave y reconfortante para momentos difíciles.",
