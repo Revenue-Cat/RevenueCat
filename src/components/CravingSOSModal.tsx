@@ -295,15 +295,16 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
           </Text>
         </Pressable>
 
-        {/* I smoked! — keep same styling but make it flex */}
+      {/* Take 5 breaths Button */}
         <Pressable
-          onPress={handleISmoked}
-          style={{ height: 48 }}
-          className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 flex-1"
+          className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[70%]"
+           style={{ height: 48 }}
+          onPress={() => {
+            onClose(); // Close modal first
+            onStartBreathing(); // Then navigate to breathing exercise
+          }}
         >
-          <Text className="text-white font-bold text-lg">
-            {t("cravingSOS.iSmokedButton")}
-          </Text>
+          <Text className="text-white font-bold text-lg">Take 5 breaths</Text>
         </Pressable>
 
         {/* NEW: Smoke icon button — 48x48, rounded-2xl, white 24x24 icon */}

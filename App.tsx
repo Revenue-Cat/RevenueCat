@@ -38,12 +38,12 @@ type Screen =
   | "shop"
   | "edit-habits"
   | "edit-buddy"
+  | "breathing-exercise"
   | "slips-log";
 
 const AppContent: React.FC = () => {
   const { goal } = useApp();
   const [showCravingSOS, setShowCravingSOS] = useState(false);
-  const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
   const [isScenesSelected, setIsScenesSelected] = useState(false);
   const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
@@ -62,12 +62,8 @@ const AppContent: React.FC = () => {
   }, []);
 
   const handleShowBreathingExercise = useCallback(() => {
-    setShowBreathingExercise(true);
-  }, []);
-
-  const handleCloseBreathingExercise = useCallback(() => {
-    setShowBreathingExercise(false);
-  }, []);
+    navigateTo("breathing-exercise");
+  }, [navigateTo]);
 
   const handleShowChatAssistance = useCallback(() => {
     setShowChatAssistance(true);
@@ -188,6 +184,13 @@ const AppContent: React.FC = () => {
         />
       )}
 
+      {currentScreen === "breathing-exercise" && (
+        <BreathingExercise
+          onClose={() => navigateTo("home")}
+          onBack={() => navigateTo("home")}
+        />
+      )}
+
       {currentScreen === "slips-log" && (
         <SlipsLog onBack={() => navigateTo("home")} />
       )}
@@ -200,16 +203,6 @@ const AppContent: React.FC = () => {
         onOpenSlipsLog={handleOpenSlipsLog}
       />
 
-      <Modal
-        visible={showBreathingExercise}
-        animationType="slide"
-        presentationStyle="fullScreen"
-      >
-        <BreathingExercise
-          onClose={handleCloseBreathingExercise}
-          onBack={handleCloseBreathingExercise}
-        />
-      </Modal>
 
       <Modal
         visible={showChatAssistance}
