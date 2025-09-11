@@ -135,8 +135,14 @@ const Home: React.FC<HomeProps> = ({
       <CoinPurchaseModal></CoinPurchaseModal>
 
       {/* Horizontal pan for view switching */}
-      <PanGestureHandler onGestureEvent={onHeaderGestureEvent} onHandlerStateChange={handleHeaderGesture}>
-        <View className="absolute top-0 left-0 right-0 bottom-0 z-[10]">
+      <PanGestureHandler 
+        onGestureEvent={onHeaderGestureEvent} 
+        onHandlerStateChange={handleHeaderGesture}
+        activeOffsetX={[-20, 20]}
+        activeOffsetY={[-10, 10]}
+        shouldCancelWhenOutside={true}
+      >
+        <View className="absolute top-0 left-0 right-0 bottom-0 z-[50]" pointerEvents="box-none">
           {/* Fixed Buddy Icon and User Coins - outside of swipe animation */}
           <View className="absolute top-10 left-0 right-0 p-6 z-[60]" pointerEvents="box-none">
             <View className="flex-row justify-between items-start">
