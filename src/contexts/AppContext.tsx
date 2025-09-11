@@ -17,6 +17,7 @@ import Purchases from "react-native-purchases";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { signInAnonymously } from "firebase/auth";
 import {db, auth} from "../../firebaseConfig"
+import { debounce } from "lodash";
 
 type ShopTab = "buddies" | "backgrounds";
 export type UserGender = "man" | "lady" | "any";
@@ -286,10 +287,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // RevenueCat appUserId for Firebase key
   const [appUserId, setAppUserId] = useState<string | null>(null);
 
+  // Loading state for initial data load
+  const [isLoading, setIsLoading] = useState(true);
+
   // Load from Firebase on mount
   useEffect(() => {
     const loadState = async () => {
       try {
+        setIsLoading(true);
         console.log("---------auth", auth)
         if (!auth.currentUser) {
           const userCredential = await signInAnonymously(auth);
@@ -301,156 +306,215 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log(customerInfo.originalAppUserId)
         const userId = customerInfo.originalAppUserId; // Use Firebase UID
         setAppUserId(userId);
-        if (userId) {
-          await Purchases.logIn(userId); // Link RevenueCat to Firebase UID
-        }
 
         if (!userId) {
           throw new Error("No user ID available");
+        }
+        if (userId) {
+          await Purchases.logIn(userId); // Link RevenueCat to Firebase UID
         }
 
         const userDocRef = doc(db, "users", userId); // Using Firebase UID as the document key
         const docSnap = await getDoc(userDocRef);
 
-        let parsed;
         if (docSnap.exists()) {
           const savedState = docSnap.data()?.appState;
           if (savedState) {
-            parsed = JSON.parse(savedState);
+            if (typeof savedState !== "string") {
+              console.warn("appState is not a string, initializing with defaults");
+              await saveDefaultState(userDocRef);
+              return;
+            }
+            try {
+              const parsed = JSON.parse(savedState);
+              console.log("----------- parsed", parsed)
+              // Only update state if parsed data is valid
+              if (parsed && typeof parsed === "object") {
+                setUserCoinsState(parsed.userCoins ?? 0);
+                setSelectedBuddyState(parsed.selectedBuddy ?? defaultCharacter);
+                setSelectedBackgroundState(
+                  parsed.selectedBackground ?? defaultBackground
+                );
+                setOwnedBuddies(
+                  parsed.ownedBuddies ?? [
+                    "llama-m",
+                    "llama-w",
+                    "zebra-m",
+                    "zebra-w",
+                    "dog-m",
+                    "dog-w",
+                  ]
+                );
+                setOwnedBackgrounds(parsed.ownedBackgrounds ?? ["bg1", "bg3"]);
+                setOwnedAccessories(parsed.ownedAccessories ?? []);
+                setGenderState(parsed.gender ?? "man");
+                setSelectedBuddyIdState(parsed.selectedBuddyId ?? "llama-m");
+                setBuddyNameState(parsed.buddyName ?? "Llama Calmington");
+                setSmokeTypeState(parsed.smokeType ?? "");
+                setDailyAmountState(parsed.dailyAmount ?? "");
+                setPackPriceState(parsed.packPrice ?? "");
+                setPackPriceCurrencyState(parsed.packPriceCurrency ?? "$");
+                setGoalState(parsed.goal ?? "");
+
+                // Fix: Convert userProgress startDate to Date (was missing in original code)
+                const userProgressData = parsed.userProgress ?? {
+                  startDate: null,
+                  daysSmokeFree: 0,
+                  totalMoneySaved: 0,
+                  cigarettesAvoided: 0,
+                  breathingExercisesCompleted: 0,
+                  challengesCompleted: 0,
+                  purchasesMade: 0,
+                };
+                userProgressData.startDate = userProgressData.startDate
+                  ? new Date(userProgressData.startDate)
+                  : null;
+                setUserProgress(userProgressData);
+
+                setActiveChallenges(parsed.activeChallenges ?? []);
+
+                setInProgressChallenges(parsed.inProgressChallenges ?? []);
+                // Convert string dates back to Date objects for challengeProgress
+                const challengeProgress = parsed.challengeProgress ?? {};
+                const convertedChallengeProgress: Record<
+                  string,
+                  {
+                    progress: number;
+                    streak: number;
+                    checkIns: number;
+                    startDate: Date | null;
+                    isCancelled?: boolean;
+                  }
+                > = {};
+
+                Object.keys(challengeProgress).forEach((challengeId) => {
+                  const progress = challengeProgress[challengeId];
+                  convertedChallengeProgress[challengeId] = {
+                    ...progress,
+                    startDate: progress.startDate
+                      ? new Date(progress.startDate)
+                      : null,
+                  };
+                });
+
+                setChallengeProgress(convertedChallengeProgress);
+                // Convert string dates back to Date objects for challengeCompletions
+                const challengeCompletions = parsed.challengeCompletions ?? {};
+                const convertedChallengeCompletions: Record<
+                  string,
+                  Array<{
+                    startDate: Date;
+                    endDate: Date;
+                    checkIns: number;
+                    duration: number;
+                  }>
+                > = {};
+
+                Object.keys(challengeCompletions).forEach((challengeId) => {
+                  convertedChallengeCompletions[challengeId] = challengeCompletions[
+                    challengeId
+                  ].map((completion: any) => ({
+                    ...completion,
+                    startDate: new Date(completion.startDate),
+                    endDate: new Date(completion.endDate),
+                  }));
+                });
+
+                setChallengeCompletions(convertedChallengeCompletions);
+                setDailyCheckIns(parsed.dailyCheckIns ?? {});
+                setSlipsUsed(parsed.slipsUsed ?? 0);
+                setSlipsDates(parsed.slipsDates ?? []);
+                setExtraSlipPacks(parsed.extraSlipPacks ?? 0);
+              } else {
+                console.warn("Parsed data is invalid, using defaults");
+                await saveDefaultState(userDocRef);
+              }
+            } catch (parseError) {
+              console.error("Failed to parse Firestore data:", parseError);
+              await saveDefaultState(userDocRef);
+            }
+          } else {
+            console.warn("No appState found in Firestore document");
+            await saveDefaultState(userDocRef);
           }
-          console.log("----------- doc exist", savedState)
         } else {
           console.log("----------- doc not exist")
-        }
-
-        if (parsed) {
-          console.log("----------- parsed", parsed)
-          setUserCoinsState(parsed.userCoins || 0);
-          setSelectedBuddyState(parsed.selectedBuddy || defaultCharacter);
-          setSelectedBackgroundState(
-            parsed.selectedBackground || defaultBackground
-          );
-          setOwnedBuddies(
-            parsed.ownedBuddies || [
-              "llama-m",
-              "llama-w",
-              "zebra-m",
-              "zebra-w",
-              "dog-m",
-              "dog-w",
-            ]
-          );
-          setOwnedBackgrounds(parsed.ownedBackgrounds || ["bg1", "bg3"]);
-          setOwnedAccessories(parsed.ownedAccessories || []);
-          setGenderState(parsed.gender || "man");
-          setSelectedBuddyIdState(parsed.selectedBuddyId || "llama-m");
-          setBuddyNameState(parsed.buddyName || "Llama Calmington");
-          setSmokeTypeState(parsed.smokeType || "");
-          setDailyAmountState(parsed.dailyAmount || "");
-          setPackPriceState(parsed.packPrice || "");
-          setPackPriceCurrencyState(parsed.packPriceCurrency || "$");
-          setGoalState(parsed.goal || "");
-
-          // Fix: Convert userProgress startDate to Date (was missing in original code)
-          const userProgressData = parsed.userProgress || {
-            startDate: null,
-            daysSmokeFree: 0,
-            totalMoneySaved: 0,
-            cigarettesAvoided: 0,
-            breathingExercisesCompleted: 0,
-            challengesCompleted: 0,
-            purchasesMade: 0,
-          };
-          userProgressData.startDate = userProgressData.startDate
-            ? new Date(userProgressData.startDate)
-            : null;
-          setUserProgress(userProgressData);
-
-          setActiveChallenges(parsed.activeChallenges || []);
-
-          setInProgressChallenges(parsed.inProgressChallenges || []);
-          // Convert string dates back to Date objects for challengeProgress
-          const challengeProgress = parsed.challengeProgress || {};
-          const convertedChallengeProgress: Record<
-            string,
-            {
-              progress: number;
-              streak: number;
-              checkIns: number;
-              startDate: Date | null;
-              isCancelled?: boolean;
-            }
-          > = {};
-
-          Object.keys(challengeProgress).forEach((challengeId) => {
-            const progress = challengeProgress[challengeId];
-            convertedChallengeProgress[challengeId] = {
-              ...progress,
-              startDate: progress.startDate
-                ? new Date(progress.startDate)
-                : null,
-            };
-          });
-
-          setChallengeProgress(convertedChallengeProgress);
-          // Convert string dates back to Date objects for challengeCompletions
-          const challengeCompletions = parsed.challengeCompletions || {};
-          const convertedChallengeCompletions: Record<
-            string,
-            Array<{
-              startDate: Date;
-              endDate: Date;
-              checkIns: number;
-              duration: number;
-            }>
-          > = {};
-
-          Object.keys(challengeCompletions).forEach((challengeId) => {
-            convertedChallengeCompletions[challengeId] = challengeCompletions[
-              challengeId
-            ].map((completion: any) => ({
-              ...completion,
-              startDate: new Date(completion.startDate),
-              endDate: new Date(completion.endDate),
-            }));
-          });
-
-          setChallengeCompletions(convertedChallengeCompletions);
-          setDailyCheckIns(parsed.dailyCheckIns || {});
-          setSlipsUsed(parsed.slipsUsed || 0);
-          setSlipsDates(parsed.slipsDates || []);
-          setExtraSlipPacks(parsed.extraSlipPacks || 0);
+          console.log("Firestore document does not exist, creating with defaults");
+          await saveDefaultState(userDocRef);
         }
       } catch (error) {
         console.error("Failed to load state:", error);
         alert("Error loading data. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
     };
+
+    // Helper function to save default state to Firestore
+    const saveDefaultState = async (userDocRef: any) => {
+      const defaultState = {
+        userCoins: 0,
+        selectedBuddy: defaultCharacter,
+        selectedBackground: defaultBackground,
+        ownedBuddies: ["llama-m", "llama-w", "zebra-m", "zebra-w", "dog-m", "dog-w"],
+        ownedBackgrounds: ["bg1", "bg3"],
+        ownedAccessories: [],
+        gender: "man",
+        selectedBuddyId: "llama-m",
+        buddyName: "Llama Calmington",
+        smokeType: "",
+        dailyAmount: "",
+        packPrice: "",
+        packPriceCurrency: "$",
+        goal: "",
+        userProgress: {
+          startDate: null,
+          daysSmokeFree: 0,
+          totalMoneySaved: 0,
+          cigarettesAvoided: 0,
+          breathingExercisesCompleted: 0,
+          challengesCompleted: 0,
+          purchasesMade: 0,
+        },
+        activeChallenges: [],
+        inProgressChallenges: [],
+        challengeProgress: {},
+        challengeCompletions: {},
+        dailyCheckIns: {},
+        slipsUsed: 0,
+        slipsDates: [],
+        extraSlipPacks: 0,
+      };
+
+      try {
+        await setDoc(userDocRef, { appState: JSON.stringify(defaultState) });
+        console.log("Default state saved to Firestore");
+      } catch (error) {
+        console.error("Failed to save default state:", error);
+        alert("Failed to initialize data. Please check your network.");
+      }
+    };
+
     loadState();
   }, []);
 
-  // Sync with achievement service
-  useEffect(() => {
-    const unsubscribe = achievementService.subscribe(() => {
-      setAchievements(achievementService.getAllAchievements());
-      setUserProgress(achievementService.getUserProgress());
-      setDaysSmokeFree(achievementService.calculateDaysPassed());
-    });
-
-    // Initial load
-    setAchievements(achievementService.getAllAchievements());
-    setUserProgress(achievementService.getUserProgress());
-    setDaysSmokeFree(achievementService.calculateDaysPassed());
-
-    return unsubscribe;
-  }, []);
-
-  // Sync start date changes with achievement service
-  useEffect(() => {
-    if (userProgress.startDate) {
-      achievementService.setStartDate(userProgress.startDate);
-    }
-  }, [userProgress.startDate]);
+  // Debounced save function
+  const saveState = useCallback(
+    debounce(async (stateToSave: any, userId: string) => {
+      const userDocRef = doc(db, "users", userId);
+      console.log("Saving state to Firestore:", {
+        userId: userId,
+        state: stateToSave,
+      });
+      try {
+        await setDoc(userDocRef, { appState: JSON.stringify(stateToSave) });
+      } catch (error) {
+        console.error("Failed to save state:", error);
+        alert("Failed to save data. Please check your network or try again.");
+      }
+    }, 1000),
+    []
+  );
 
   // Save to Firebase when state changes
   useEffect(() => {
@@ -482,13 +546,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       extraSlipPacks,
     };
 
-    const userDocRef = doc(db, "users", appUserId);
-    setDoc(userDocRef, { appState: JSON.stringify(stateToSave) }).catch(
-      (error) => {
-        console.error("Failed to save state:", error);
-        alert("Failed to save data. Please check your network or try again.");
-      }
-    );
+    saveState(stateToSave, appUserId);
   }, [
     appUserId,
     userCoins,
@@ -515,6 +573,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     slipsDates,
     extraSlipPacks,
   ]);
+
+  // Sync with achievement service
+  useEffect(() => {
+    const unsubscribe = achievementService.subscribe(() => {
+      setAchievements(achievementService.getAllAchievements());
+      setUserProgress(achievementService.getUserProgress());
+      setDaysSmokeFree(achievementService.calculateDaysPassed());
+    });
+
+    // Initial load
+    setAchievements(achievementService.getAllAchievements());
+    setUserProgress(achievementService.getUserProgress());
+    setDaysSmokeFree(achievementService.calculateDaysPassed());
+
+    return unsubscribe;
+  }, []);
+
+  // Sync start date changes with achievement service
+  useEffect(() => {
+    if (userProgress.startDate) {
+      achievementService.setStartDate(userProgress.startDate);
+    }
+  }, [userProgress.startDate]);
 
   // Memoize all action functions to prevent recreation
   const setUserCoins = useCallback(
@@ -1162,6 +1243,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       purchaseExtraSlips,
     ]
   );
+
+  if (isLoading) {
+    console.log("----------- Loading")
+  }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
