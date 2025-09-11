@@ -1,6 +1,6 @@
 import "./global.css";
 import React, { useState, useEffect, useCallback } from "react";
-import { View, SafeAreaView, Modal } from "react-native";
+import { SafeAreaView, Modal, Dimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AppProvider, useApp } from "./src/contexts/AppContext";
 import { ThemeProvider, useTheme } from "./src/contexts/ThemeContext";
@@ -24,6 +24,7 @@ import Purchases, { LOG_LEVEL } from "react-native-purchases";
 import { Platform } from "react-native";
 import oneSignalService from "./src/services/oneSignalService";
 import SlipsLog from "./src/screens/SlipsLog";
+import LottieView from "lottie-react-native";
 
 type Screen =
   | "welcome"
@@ -42,7 +43,7 @@ type Screen =
   | "slips-log";
 
 const AppContent: React.FC = () => {
-  const { goal } = useApp();
+  const { goal, isLoading } = useApp();
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
   const [isScenesSelected, setIsScenesSelected] = useState(false);
@@ -99,13 +100,28 @@ const AppContent: React.FC = () => {
     if (goal && currentScreen == "welcome") setCurrentScreen("home");
   }, [goal]);
 
-  return (
+  return isLoading ? <SafeAreaView
+      className={`flex-1 justify-center items-center ${
+        theme === "dark" ? "bg-dark-background" : "bg-light-background"
+      }`}
+    >
+      <LottieView
+        source={require("./src/assets/Loadercat.json")}
+        autoPlay
+        loop
+        style={{
+          width: Dimensions.get("window").width * 0.8,
+          height: 200,
+          alignSelf: "center",
+        }}
+      />
+    </SafeAreaView> : (
     <SafeAreaView
       className={`flex-1 ${
         theme === "dark" ? "bg-dark-background" : "bg-light-background"
       }`}
     >
-      {currentScreen === "welcome" && (
+      {currentScreen === "welcome" && !goal && (
         <Welcome onNext={() => navigateTo("setup")} />
       )}
 

@@ -6,30 +6,25 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   achievementService,
   Achievement,
   UserProgress,
 } from "../services/achievementService";
 import { Scene, SCENES_DATA } from "../data/scenesData";
-import { CHALLENGES_DATA } from "../data/challengesData";
-import { parse } from "react-native-svg";
 import Purchases from "react-native-purchases";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { signInAnonymously } from "firebase/auth";
+import {db, auth} from "../../firebaseConfig"
+import {getOrCreatePersistentUserId} from "../utils/keychain"
+import { DEFAULT_BACKGROUND, DEFAULT_CHARACTER, DEFAULT_STATE, ShopItem } from "../data/state";
 
 type ShopTab = "buddies" | "backgrounds";
 export type UserGender = "man" | "lady" | "any";
 
-interface ShopItem {
-  id: string;
-  emoji: string;
-  name: string;
-  price: number;
-  owned: boolean;
-  isNew?: boolean;
-}
-
 interface AppState {
+  isLoading: boolean;
+  
   // User data
   userCoins: number;
   selectedBuddy: ShopItem;
@@ -171,16 +166,6 @@ interface AppState {
   purchaseExtraSlips: (costCoins?: number) => Promise<boolean>; // +5 slips
 }
 
-const defaultCharacter: ShopItem = {
-  id: "1",
-  emoji: "🦫",
-  name: "Chill Capybara",
-  price: 0,
-  owned: true,
-};
-
-const defaultBackground: Scene = SCENES_DATA[0]; // Use the first scene as default
-
 const AppContext = createContext<AppState | undefined>(undefined);
 
 export const useApp = () => {
@@ -197,9 +182,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // Shop/state
   const [userCoins, setUserCoinsState] = useState(0);
   const [selectedBuddy, setSelectedBuddyState] =
-    useState<ShopItem>(defaultCharacter);
+    useState<ShopItem>(DEFAULT_CHARACTER);
   const [selectedBackground, setSelectedBackgroundState] =
-    useState<Scene>(defaultBackground);
+    useState<Scene>(DEFAULT_BACKGROUND);
   const [ownedBuddies, setOwnedBuddies] = useState<string[]>([
     "llama-m",
     "llama-w",
@@ -282,133 +267,197 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const [showCoinPurchase, setShowCoinPurchase] = useState(false);
   const [selectedShopTab, setSelectedShopTab] = useState<ShopTab>("buddies");
 
-  // Load from AsyncStorage on mount
+  // RevenueCat appUserId for Firebase key
+  const [appUserId, setAppUserId] = useState<string | null>(null);
+
+  // Loading state for initial data load
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load from Firebase on mount
   useEffect(() => {
+
     const loadState = async () => {
       try {
-        const savedState = await AsyncStorage.getItem("@app_state");
-        if (savedState) {
-          const parsed = JSON.parse(savedState);
-          setUserCoinsState(parsed.userCoins || 0);
-          setSelectedBuddyState(parsed.selectedBuddy || defaultCharacter);
-          setSelectedBackgroundState(
-            parsed.selectedBackground || defaultBackground
-          );
-          setOwnedBuddies(
-            parsed.ownedBuddies || [
-              "llama-m",
-              "llama-w",
-              "zebra-m",
-              "zebra-w",
-              "dog-m",
-              "dog-w",
-            ]
-          );
-          setOwnedBackgrounds(parsed.ownedBackgrounds || ["bg1", "bg3"]);
-          setOwnedAccessories(parsed.ownedAccessories || []);
-          setGenderState(parsed.gender || "man");
-          setSelectedBuddyIdState(parsed.selectedBuddyId || "llama-m");
-          setBuddyNameState(parsed.buddyName || "Llama Calmington");
-          setSmokeTypeState(parsed.smokeType || "");
-          setDailyAmountState(parsed.dailyAmount || "");
-          setPackPriceState(parsed.packPrice || "");
-          setPackPriceCurrencyState(parsed.packPriceCurrency || "$");
-          setGoalState(parsed.goal || "");
-          setUserProgress(
-            parsed.userProgress || {
-              startDate: null,
-              daysSmokeFree: 0,
-              totalMoneySaved: 0,
-              cigarettesAvoided: 0,
-              breathingExercisesCompleted: 0,
-              challengesCompleted: 0,
-              purchasesMade: 0,
+        const userId = await getOrCreatePersistentUserId()
+
+        setIsLoading(true);
+        if (!auth.currentUser) {
+          await signInAnonymously(auth);
+        }
+
+        setAppUserId(userId);
+
+        if (!userId) {
+          throw new Error("No user ID available");
+        }
+        if (userId) {
+          await Purchases.logIn(userId); // Link RevenueCat to generated UID
+        }
+
+        const userDocRef = doc(db, "users", userId); // Using Firebase UID as the document key
+        const docSnap = await getDoc(userDocRef);
+
+        if (docSnap.exists()) {
+          const savedState = docSnap.data()?.appState;
+
+          if (savedState) {
+            if (typeof savedState !== "string") {
+              console.warn("appState is not a string, initializing with defaults");
+              await saveDefaultState(userDocRef);
+              return;
             }
-          );
-          setActiveChallenges(parsed.activeChallenges || []);
+            try {
+              const parsed = JSON.parse(savedState);
+              // Only update state if parsed data is valid
+              if (parsed && typeof parsed === "object") {
+                setUserCoinsState(parsed.userCoins ?? 0);
+                setSelectedBuddyState(parsed.selectedBuddy ?? DEFAULT_CHARACTER);
+                setSelectedBackgroundState(
+                  parsed.selectedBackground ?? DEFAULT_BACKGROUND
+                );
+                setOwnedBuddies(
+                  parsed.ownedBuddies ?? [
+                    "llama-m",
+                    "llama-w",
+                    "zebra-m",
+                    "zebra-w",
+                    "dog-m",
+                    "dog-w",
+                  ]
+                );
+                setOwnedBackgrounds(parsed.ownedBackgrounds ?? ["bg1", "bg3"]);
+                setOwnedAccessories(parsed.ownedAccessories ?? []);
+                setGenderState(parsed.gender ?? "man");
+                setSelectedBuddyIdState(parsed.selectedBuddyId ?? "llama-m");
+                setBuddyNameState(parsed.buddyName ?? "Llama Calmington");
+                setSmokeTypeState(parsed.smokeType ?? "");
+                setDailyAmountState(parsed.dailyAmount ?? "");
+                setPackPriceState(parsed.packPrice ?? "");
+                setPackPriceCurrencyState(parsed.packPriceCurrency ?? "$");
+                setGoalState(parsed.goal ?? "");
 
-          setInProgressChallenges(parsed.inProgressChallenges || []);
-          // Convert string dates back to Date objects for challengeProgress
-          const challengeProgress = parsed.challengeProgress || {};
-          const convertedChallengeProgress: Record<
-            string,
-            {
-              progress: number;
-              streak: number;
-              checkIns: number;
-              startDate: Date | null;
-              isCancelled?: boolean;
+                // Fix: Convert userProgress startDate to Date (was missing in original code)
+                const userProgressData = parsed.userProgress ?? {
+                  startDate: null,
+                  daysSmokeFree: 0,
+                  totalMoneySaved: 0,
+                  cigarettesAvoided: 0,
+                  breathingExercisesCompleted: 0,
+                  challengesCompleted: 0,
+                  purchasesMade: 0,
+                };
+                userProgressData.startDate = userProgressData.startDate
+                  ? new Date(userProgressData.startDate)
+                  : null;
+                setUserProgress(userProgressData);
+
+                setActiveChallenges(parsed.activeChallenges ?? []);
+
+                setInProgressChallenges(parsed.inProgressChallenges ?? []);
+                // Convert string dates back to Date objects for challengeProgress
+                const challengeProgress = parsed.challengeProgress ?? {};
+                const convertedChallengeProgress: Record<
+                  string,
+                  {
+                    progress: number;
+                    streak: number;
+                    checkIns: number;
+                    startDate: Date | null;
+                    isCancelled?: boolean;
+                  }
+                > = {};
+
+                Object.keys(challengeProgress).forEach((challengeId) => {
+                  const progress = challengeProgress[challengeId];
+                  convertedChallengeProgress[challengeId] = {
+                    ...progress,
+                    startDate: progress.startDate
+                      ? new Date(progress.startDate)
+                      : null,
+                  };
+                });
+
+                setChallengeProgress(convertedChallengeProgress);
+                // Convert string dates back to Date objects for challengeCompletions
+                const challengeCompletions = parsed.challengeCompletions ?? {};
+                const convertedChallengeCompletions: Record<
+                  string,
+                  Array<{
+                    startDate: Date;
+                    endDate: Date;
+                    checkIns: number;
+                    duration: number;
+                  }>
+                > = {};
+
+                Object.keys(challengeCompletions).forEach((challengeId) => {
+                  convertedChallengeCompletions[challengeId] = challengeCompletions[
+                    challengeId
+                  ].map((completion: any) => ({
+                    ...completion,
+                    startDate: new Date(completion.startDate),
+                    endDate: new Date(completion.endDate),
+                  }));
+                });
+
+                setChallengeCompletions(convertedChallengeCompletions);
+                setDailyCheckIns(parsed.dailyCheckIns ?? {});
+                setSlipsUsed(parsed.slipsUsed ?? 0);
+                setSlipsDates(parsed.slipsDates ?? []);
+                setExtraSlipPacks(parsed.extraSlipPacks ?? 0);
+              } else {
+                console.warn("Parsed data is invalid, using defaults");
+                await saveDefaultState(userDocRef);
+              }
+            } catch (parseError) {
+              console.error("Failed to parse Firestore data:", parseError);
+              await saveDefaultState(userDocRef);
             }
-          > = {};
-
-          Object.keys(challengeProgress).forEach((challengeId) => {
-            const progress = challengeProgress[challengeId];
-            convertedChallengeProgress[challengeId] = {
-              ...progress,
-              startDate: progress.startDate
-                ? new Date(progress.startDate)
-                : null,
-            };
-          });
-
-          setChallengeProgress(convertedChallengeProgress);
-          // Convert string dates back to Date objects for challengeCompletions
-          const challengeCompletions = parsed.challengeCompletions || {};
-          const convertedChallengeCompletions: Record<
-            string,
-            Array<{
-              startDate: Date;
-              endDate: Date;
-              checkIns: number;
-              duration: number;
-            }>
-          > = {};
-
-          Object.keys(challengeCompletions).forEach((challengeId) => {
-            convertedChallengeCompletions[challengeId] = challengeCompletions[
-              challengeId
-            ].map((completion: any) => ({
-              ...completion,
-              startDate: new Date(completion.startDate),
-              endDate: new Date(completion.endDate),
-            }));
-          });
-
-          setChallengeCompletions(convertedChallengeCompletions);
-          setDailyCheckIns(parsed.dailyCheckIns || {});
+          } else {
+            console.warn("No appState found in Firestore document");
+            await saveDefaultState(userDocRef);
+          }
+        } else {
+          console.log("Firestore document does not exist, creating with defaults");
+          await saveDefaultState(userDocRef);
         }
       } catch (error) {
         console.error("Failed to load state:", error);
+        alert("Error loading data. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
     };
+
+    // Helper function to save default state to Firestore
+    const saveDefaultState = async (userDocRef: any) => {
+
+      try {
+        await setDoc(userDocRef, { appState: JSON.stringify(DEFAULT_STATE) });
+        console.log("Default state saved to Firestore");
+      } catch (error) {
+        console.error("Failed to save default state:", error);
+        alert("Failed to initialize data. Please check your network.");
+      }
+    };
+
     loadState();
   }, []);
 
-  // Sync with achievement service
-  useEffect(() => {
-    const unsubscribe = achievementService.subscribe(() => {
-      setAchievements(achievementService.getAllAchievements());
-      setUserProgress(achievementService.getUserProgress());
-      setDaysSmokeFree(achievementService.calculateDaysPassed());
-    });
-
-    // Initial load
-    setAchievements(achievementService.getAllAchievements());
-    setUserProgress(achievementService.getUserProgress());
-    setDaysSmokeFree(achievementService.calculateDaysPassed());
-
-    return unsubscribe;
-  }, []);
-
-  // Sync start date changes with achievement service
-  useEffect(() => {
-    if (userProgress.startDate) {
-      achievementService.setStartDate(userProgress.startDate);
+  const saveState = async(stateToSave: any, userId: string) => {
+    const userDocRef = doc(db, "users", userId);
+    try {
+      await setDoc(userDocRef, { appState: JSON.stringify(stateToSave) });
+    } catch (error) {
+      console.error("Failed to save state:", error);
+      alert("Failed to save data. Please check your network or try again.");
     }
-  }, [userProgress.startDate]);
+  };
 
-  // Save to AsyncStorage when state changes
+  // Save to Firebase when state changes
   useEffect(() => {
+    if (!appUserId) return;
+
     const stateToSave = {
       userCoins,
       selectedBuddy,
@@ -434,10 +483,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       slipsDates,
       extraSlipPacks,
     };
-    AsyncStorage.setItem("@app_state", JSON.stringify(stateToSave)).catch(
-      (error) => console.error("Failed to save state:", error)
-    );
+
+    if(!isLoading) {
+      saveState(stateToSave, appUserId);
+    }
   }, [
+    appUserId,
     userCoins,
     selectedBuddy,
     selectedBackground,
@@ -458,7 +509,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     challengeProgress,
     challengeCompletions,
     dailyCheckIns,
+    slipsUsed,
+    slipsDates,
+    extraSlipPacks,
   ]);
+
+  // Sync with achievement service
+  useEffect(() => {
+    const unsubscribe = achievementService.subscribe(() => {
+      setAchievements(achievementService.getAllAchievements());
+      setUserProgress(achievementService.getUserProgress());
+      setDaysSmokeFree(achievementService.calculateDaysPassed());
+    });
+
+    // Initial load
+    setAchievements(achievementService.getAllAchievements());
+    setUserProgress(achievementService.getUserProgress());
+    setDaysSmokeFree(achievementService.calculateDaysPassed());
+
+    return unsubscribe;
+  }, []);
+
+  // Sync start date changes with achievement service
+  useEffect(() => {
+    if (userProgress.startDate) {
+      achievementService.setStartDate(userProgress.startDate);
+    }
+  }, [userProgress.startDate]);
 
   // Memoize all action functions to prevent recreation
   const setUserCoins = useCallback(
@@ -499,8 +576,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("----- customer", customerInfo);
       const appUserId = customerInfo.originalAppUserId;
 
-      const API_KEY = "sk_wvGZopHNPiRznxZZiJKvIxKaOXbRE"; // Replace with your RevenueCat secret key (DO NOT COMMIT TO GIT)
+      const API_KEY = process.env.REVENUECAT_API_KEY; // Use environment variable (configure with react-native-dotenv or similar)
       const PROJECT_ID = "2ea2fbba"; // Replace with your RevenueCat project ID
+
+      if (!API_KEY) {
+        console.error("RevenueCat API key is missing");
+        return false;
+      }
 
       const response = await fetch(
         `https://api.revenuecat.com/v2/projects/${PROJECT_ID}/customers/${appUserId}/virtual_currencies/transactions`,
@@ -935,8 +1017,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const customerInfo = await Purchases.getCustomerInfo();
         const appUserId = customerInfo.originalAppUserId;
-        const API_KEY = "sk_wvGZopHNPiRznxZZiJKvIxKaOXbRE"; // ⚠️ don’t commit secrets
+        const API_KEY = process.env.REVENUECAT_API_KEY; // Use environment variable (configure with react-native-dotenv or similar)
         const PROJECT_ID = "2ea2fbba";
+
+        if (!API_KEY) {
+          console.error("RevenueCat API key is missing");
+          return false;
+        }
 
         const res = await fetch(
           `https://api.revenuecat.com/v2/projects/${PROJECT_ID}/customers/${appUserId}/virtual_currencies/transactions`,
@@ -966,6 +1053,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // Memoize the context value to prevent unnecessary re-renders
   const value: AppState = useMemo(
     () => ({
+      isLoading,
       userCoins,
       selectedBuddy,
       selectedBackground,
@@ -1047,6 +1135,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       purchaseExtraSlips,
     }),
     [
+      isLoading,
       userCoins,
       selectedBuddy,
       selectedBackground,
@@ -1096,6 +1185,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       purchaseExtraSlips,
     ]
   );
+
+  if (isLoading) {
+    console.log("----------- Loading")
+  }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
