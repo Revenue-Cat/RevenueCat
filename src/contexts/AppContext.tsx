@@ -12,26 +12,19 @@ import {
   UserProgress,
 } from "../services/achievementService";
 import { Scene, SCENES_DATA } from "../data/scenesData";
-import { CHALLENGES_DATA } from "../data/challengesData";
 import Purchases from "react-native-purchases";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { signInAnonymously } from "firebase/auth";
 import {db, auth} from "../../firebaseConfig"
-import { debounce } from "lodash";
+import {getOrCreatePersistentUserId} from "../utils/keychain"
+import { DEFAULT_BACKGROUND, DEFAULT_CHARACTER, DEFAULT_STATE, ShopItem } from "../data/state";
 
 type ShopTab = "buddies" | "backgrounds";
 export type UserGender = "man" | "lady" | "any";
 
-interface ShopItem {
-  id: string;
-  emoji: string;
-  name: string;
-  price: number;
-  owned: boolean;
-  isNew?: boolean;
-}
-
 interface AppState {
+  isLoading: boolean;
+  
   // User data
   userCoins: number;
   selectedBuddy: ShopItem;
@@ -173,16 +166,6 @@ interface AppState {
   purchaseExtraSlips: (costCoins?: number) => Promise<boolean>; // +5 slips
 }
 
-const defaultCharacter: ShopItem = {
-  id: "1",
-  emoji: "🦫",
-  name: "Chill Capybara",
-  price: 0,
-  owned: true,
-};
-
-const defaultBackground: Scene = SCENES_DATA[0]; // Use the first scene as default
-
 const AppContext = createContext<AppState | undefined>(undefined);
 
 export const useApp = () => {
@@ -199,9 +182,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // Shop/state
   const [userCoins, setUserCoinsState] = useState(0);
   const [selectedBuddy, setSelectedBuddyState] =
-    useState<ShopItem>(defaultCharacter);
+    useState<ShopItem>(DEFAULT_CHARACTER);
   const [selectedBackground, setSelectedBackgroundState] =
-    useState<Scene>(defaultBackground);
+    useState<Scene>(DEFAULT_BACKGROUND);
   const [ownedBuddies, setOwnedBuddies] = useState<string[]>([
     "llama-m",
     "llama-w",
@@ -292,26 +275,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Load from Firebase on mount
   useEffect(() => {
+
     const loadState = async () => {
       try {
+        const userId = await getOrCreatePersistentUserId()
+
         setIsLoading(true);
-        console.log("---------auth", auth)
         if (!auth.currentUser) {
-          const userCredential = await signInAnonymously(auth);
-          console.log("Authenticated UID:", userCredential.user.uid);
-        } else {
-          console.log("Authenticated user:", auth.currentUser);
+          await signInAnonymously(auth);
         }
-        const customerInfo = await Purchases.getCustomerInfo();
-        console.log(customerInfo.originalAppUserId)
-        const userId = customerInfo.originalAppUserId; // Use Firebase UID
+
         setAppUserId(userId);
 
         if (!userId) {
           throw new Error("No user ID available");
         }
         if (userId) {
-          await Purchases.logIn(userId); // Link RevenueCat to Firebase UID
+          await Purchases.logIn(userId); // Link RevenueCat to generated UID
         }
 
         const userDocRef = doc(db, "users", userId); // Using Firebase UID as the document key
@@ -319,6 +299,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
         if (docSnap.exists()) {
           const savedState = docSnap.data()?.appState;
+
           if (savedState) {
             if (typeof savedState !== "string") {
               console.warn("appState is not a string, initializing with defaults");
@@ -327,13 +308,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             }
             try {
               const parsed = JSON.parse(savedState);
-              console.log("----------- parsed", parsed)
               // Only update state if parsed data is valid
               if (parsed && typeof parsed === "object") {
                 setUserCoinsState(parsed.userCoins ?? 0);
-                setSelectedBuddyState(parsed.selectedBuddy ?? defaultCharacter);
+                setSelectedBuddyState(parsed.selectedBuddy ?? DEFAULT_CHARACTER);
                 setSelectedBackgroundState(
-                  parsed.selectedBackground ?? defaultBackground
+                  parsed.selectedBackground ?? DEFAULT_BACKGROUND
                 );
                 setOwnedBuddies(
                   parsed.ownedBuddies ?? [
@@ -438,7 +418,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             await saveDefaultState(userDocRef);
           }
         } else {
-          console.log("----------- doc not exist")
           console.log("Firestore document does not exist, creating with defaults");
           await saveDefaultState(userDocRef);
         }
@@ -452,42 +431,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Helper function to save default state to Firestore
     const saveDefaultState = async (userDocRef: any) => {
-      const defaultState = {
-        userCoins: 0,
-        selectedBuddy: defaultCharacter,
-        selectedBackground: defaultBackground,
-        ownedBuddies: ["llama-m", "llama-w", "zebra-m", "zebra-w", "dog-m", "dog-w"],
-        ownedBackgrounds: ["bg1", "bg3"],
-        ownedAccessories: [],
-        gender: "man",
-        selectedBuddyId: "llama-m",
-        buddyName: "Llama Calmington",
-        smokeType: "",
-        dailyAmount: "",
-        packPrice: "",
-        packPriceCurrency: "$",
-        goal: "",
-        userProgress: {
-          startDate: null,
-          daysSmokeFree: 0,
-          totalMoneySaved: 0,
-          cigarettesAvoided: 0,
-          breathingExercisesCompleted: 0,
-          challengesCompleted: 0,
-          purchasesMade: 0,
-        },
-        activeChallenges: [],
-        inProgressChallenges: [],
-        challengeProgress: {},
-        challengeCompletions: {},
-        dailyCheckIns: {},
-        slipsUsed: 0,
-        slipsDates: [],
-        extraSlipPacks: 0,
-      };
 
       try {
-        await setDoc(userDocRef, { appState: JSON.stringify(defaultState) });
+        await setDoc(userDocRef, { appState: JSON.stringify(DEFAULT_STATE) });
         console.log("Default state saved to Firestore");
       } catch (error) {
         console.error("Failed to save default state:", error);
@@ -498,23 +444,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     loadState();
   }, []);
 
-  // Debounced save function
-  const saveState = useCallback(
-    debounce(async (stateToSave: any, userId: string) => {
-      const userDocRef = doc(db, "users", userId);
-      console.log("Saving state to Firestore:", {
-        userId: userId,
-        state: stateToSave,
-      });
-      try {
-        await setDoc(userDocRef, { appState: JSON.stringify(stateToSave) });
-      } catch (error) {
-        console.error("Failed to save state:", error);
-        alert("Failed to save data. Please check your network or try again.");
-      }
-    }, 1000),
-    []
-  );
+  const saveState = async(stateToSave: any, userId: string) => {
+    const userDocRef = doc(db, "users", userId);
+    try {
+      await setDoc(userDocRef, { appState: JSON.stringify(stateToSave) });
+    } catch (error) {
+      console.error("Failed to save state:", error);
+      alert("Failed to save data. Please check your network or try again.");
+    }
+  };
 
   // Save to Firebase when state changes
   useEffect(() => {
@@ -546,7 +484,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       extraSlipPacks,
     };
 
-    saveState(stateToSave, appUserId);
+    if(!isLoading) {
+      saveState(stateToSave, appUserId);
+    }
   }, [
     appUserId,
     userCoins,
@@ -1113,6 +1053,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // Memoize the context value to prevent unnecessary re-renders
   const value: AppState = useMemo(
     () => ({
+      isLoading,
       userCoins,
       selectedBuddy,
       selectedBackground,
@@ -1194,6 +1135,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       purchaseExtraSlips,
     }),
     [
+      isLoading,
       userCoins,
       selectedBuddy,
       selectedBackground,
