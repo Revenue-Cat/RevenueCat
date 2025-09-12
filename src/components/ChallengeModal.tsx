@@ -18,6 +18,7 @@ interface ChallengeModalProps {
   challenge: ChallengeCardProps | null;
   challengeId?: string;
   onClose: () => void;
+  onNavigateToBreathing?: (skipInitialScreen?: boolean) => void;
 }
 
 const ChallengeModal: React.FC<ChallengeModalProps> = ({
@@ -25,6 +26,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   challenge,
   challengeId,
   onClose,
+  onNavigateToBreathing,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -525,7 +527,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
       {/* Action Button - Start now, Check In, or Restart challenge */}
         <Pressable 
           className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[70%] flex-row"
-          onPress={isCompleted ? handleRestartChallenge : (isInProgress ? handleCheckIn : (previousCompletions.length > 0 ? handleRestartChallenge : handleStartChallenge))}
+          onPress={isCompleted ? handleRestartChallenge : (isInProgress ? (challenge?.isExclusive ? () => onNavigateToBreathing?.(true) : handleCheckIn) : (previousCompletions.length > 0 ? handleRestartChallenge : handleStartChallenge))}
           >      
           {isInProgress ? (
               <Ionicons name="checkmark" size={18} color="#ffffff" />
@@ -535,7 +537,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
               ""
             )}     
             <Text className="text-white font-bold text-lg ml-2 mr-2">
-              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? t('challenges.checkIn') : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : t('challenges.modal.startNow')))}
+              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : t('challenges.modal.startNow')))}
             </Text>
             {isInProgress && !isCompleted && previousCompletions.length === 0 && (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">

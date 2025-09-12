@@ -32,7 +32,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 
 const LockIcon = require("../assets/achievements/lock.png");
-const TimeIcon = require("../assets/achievements/time.png");
+import TimeIcon from "../assets/icons/time.svg";
 const AchievementLockedIcon = require("../assets/achievements/achievement-placeholder.png");
 
 interface AchievementModalContentProps {
@@ -148,12 +148,8 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
               {/* Time icon for progress > 0 but < 100% */}
               {(progress?.percentage || 0) > 0 &&
                 (progress?.percentage || 0) < 100 && (
-                  <View className="absolute -top-1 -right-1 bg-black/50 rounded-full w-7 h-7 justify-center items-center">
-                    <Image
-                      source={TimeIcon}
-                      style={{ width: "100%", height: "100%" }}
-                      resizeMode="contain"
-                  />
+                  <View className="absolute -top-1 -right-1 bg-black/40 rounded-full w-7 h-7 justify-center items-center">
+                    <TimeIcon width={22} height={22} color="white" />
                     {/* <LockLight width={14} height={14} color="white" /> */}
 
                   </View>

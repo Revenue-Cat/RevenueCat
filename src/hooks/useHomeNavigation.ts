@@ -5,8 +5,8 @@ import { PanGestureHandlerStateChangeEvent, State } from 'react-native-gesture-h
 type ViewType = 'home' | 'achievements' | 'shop';
 
 export const useHomeNavigation = () => {
-  const [currentView, setCurrentView] = useState<ViewType>('home');
   const { width } = Dimensions.get('window');
+  const [currentPageIndex, setCurrentPageIndex] = useState(1); // Start at 'home' (index 1)
 
   // Horizontal swipe animation state
   const [offsetX] = useState(() => new Animated.Value(-width)); // start at 'home' (middle)
@@ -34,52 +34,77 @@ export const useHomeNavigation = () => {
     return 'home';
   }, []);
 
-  // Drive drag during ACTIVE state
+  const currentView = indexToView(currentPageIndex);
+
+  // Handle continuous gesture updates
   const onHeaderGestureEvent = useCallback(
-    () =>
-      Animated.event([
-        { nativeEvent: { translationX: dragX } },
-      ], { useNativeDriver: true }),
+    (event: any) => {
+      // Update dragX during continuous drag for immediate visual feedback
+      dragX.setValue(event.nativeEvent.translationX);
+    },
     [dragX]
   );
 
   const handleHeaderGesture = useCallback((event: PanGestureHandlerStateChangeEvent) => {
-    if (event.nativeEvent.state === State.END || event.nativeEvent.state === State.CANCELLED) {
-      const { translationX, velocityX } = event.nativeEvent;
-      const threshold = width * 0.2;
+    const { state, translationX, velocityX } = event.nativeEvent;
 
-      // Determine intended direction
-      let nextIndex = viewToIndex(currentView);
-      if (translationX > threshold || (velocityX > 800 && translationX > 0)) {
-        nextIndex = Math.max(0, nextIndex - 1);
-      } else if (translationX < -threshold || (velocityX < -800 && translationX < 0)) {
-        nextIndex = Math.min(2, nextIndex + 1);
+    if (state === State.BEGAN) {
+      // Reset drag when gesture begins
+      dragX.setValue(0);
+      return;
+    }
+
+    if (state === State.END || state === State.CANCELLED) {
+      const threshold = width * 0.2; // Threshold for switching pages
+
+      // Determine if we should switch pages based on drag distance and velocity
+      let shouldSwitch = false;
+      let nextIndex = currentPageIndex;
+
+      // Check if dragged far enough or fast enough
+      if (Math.abs(translationX) > threshold) {
+        shouldSwitch = true;
+        nextIndex = translationX > 0
+          ? Math.max(0, currentPageIndex - 1) // Swipe right = previous page
+          : Math.min(2, currentPageIndex + 1); // Swipe left = next page
+      } else if (Math.abs(velocityX) > 400) {
+        // Fast swipe regardless of distance
+        shouldSwitch = true;
+        nextIndex = velocityX > 0
+          ? Math.max(0, currentPageIndex - 1)
+          : Math.min(2, currentPageIndex + 1);
       }
 
-      const targetView = indexToView(nextIndex);
-      
-      // Animate to snap position and reset drag
-      Animated.parallel([
-        Animated.timing(offsetX, {
-          toValue: -nextIndex * width,
-          duration: 220,
-          useNativeDriver: true,
-        }),
+      if (shouldSwitch && nextIndex !== currentPageIndex) {
+        // Animate to new page
+        Animated.parallel([
+          Animated.timing(offsetX, {
+            toValue: -nextIndex * width,
+            duration: 250,
+            useNativeDriver: true,
+          }),
+          Animated.timing(dragX, {
+            toValue: 0,
+            duration: 250,
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          setCurrentPageIndex(nextIndex);
+        });
+      } else {
+        // Snap back to current page
         Animated.timing(dragX, {
           toValue: 0,
-          duration: 220,
+          duration: 150,
           useNativeDriver: true,
-        }),
-      ]).start(() => {
-        // Update view state after animation completes to prevent content mismatch
-        setCurrentView(targetView);
-      });
+        }).start();
+      }
     }
-  }, [currentView, indexToView, offsetX, dragX, viewToIndex, width]);
+  }, [currentPageIndex, offsetX, dragX, width]);
 
   const changeView = useCallback((view: ViewType) => {
-    setCurrentView(view);
     const index = viewToIndex(view);
+    setCurrentPageIndex(index);
     Animated.timing(offsetX, {
       toValue: -index * width,
       duration: 220,

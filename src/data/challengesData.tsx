@@ -41,7 +41,7 @@ const AchievementStretchedIcon = require("../assets/exclusive-achievements/achie
 import React from 'react';
 
 export interface ChallengeData {
-  timeBasedProgress: number;
+  timeBasedProgress?: number;
   id: string;
   title: string;
   shortDescription: string;
@@ -54,6 +54,7 @@ export interface ChallengeData {
   totalDurations: number; // Duration in days for progress calculation
   hasImage: boolean;
   hasAchievement: boolean;
+  isExclusive?: boolean;
   cardAdvice?: string;
   cardAdviceDescription?: string;
   cardIcon?: any;
@@ -86,6 +87,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     totalDurations: 1,
     hasImage: true,
     hasAchievement: true,
+    isExclusive: true,
     cardIcon: <MasterOfAir />,
     icon: <MasterOfAirIcon />,
     achievementIcon: AchievementMasterOfAirIcon,
@@ -338,7 +340,7 @@ export const CHALLENGES_DATA: ChallengeData[] = [
 ];
 
 // Helper function to convert ChallengeData to ChallengeCardProps
-export const convertToChallengeCardProps = (challenge: ChallengeData, status: 'active' | 'locked' | 'inprogress' = 'locked', progress?: number, streak?: number, checkIns?: number): ChallengeCardProps => ({
+export const convertToChallengeCardProps = (challenge: ChallengeData, status: 'active' | 'locked' | 'inprogress' | 'completed' = 'locked', progress?: number, streak?: number, checkIns?: number): ChallengeCardProps => ({
   id: challenge.id,
   title: challenge.title,
   description: challenge.shortDescription,
@@ -350,6 +352,7 @@ export const convertToChallengeCardProps = (challenge: ChallengeData, status: 'a
   streak,
   checkIns,
   cardIcon: challenge.cardIcon,
+  isExclusive: challenge.isExclusive,
   motivation: challenge.motivation,
   buddyAdvice: challenge.buddyAdvice,
   unitWord: challenge.unitWord,

@@ -8,7 +8,7 @@ import LockLight from "../assets/icons/lock.svg";
 // const AchievementLockedIcon = require("../assets/achievements/achievement-locked.png");
 const AchievementLockedIcon = require("../assets/achievements/achievement-placeholder.png");
 const LockIcon = require("../assets/achievements/lock.png");
-const TimeIcon = require("../assets/achievements/time.png");
+import TimeIcon from "../assets/icons/time.svg";
 import CoinIcon from "../assets/icons/coins.svg";
 
 interface AchievementCardProps {
@@ -52,11 +52,11 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
           <Text className="text-base font-bold text-orange-500">+{reward}</Text>
           <CoinIcon width={16} height={16} color="#FF6B35" />
         </View>
-        <Text className={`text-s ${isDark ? 'text-slate-400' : 'text-gray-500'} my-1`}>{timeLeft}</Text>
-        <Text className={`text-base font-bold mb-1 ${isDark ? 'text-slate-100' : 'text-black'}`}>{title}</Text>
-        <Text 
-          className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'} leading-5`} 
-          numberOfLines={1} 
+                  <Text className={`${isDark ? 'text-slate-300' : 'text-slate-600'} text-sm font-semibold my-1`}>{timeLeft}</Text>
+        <Text className={`text-xl font-bold mb-1 ${isDark ? 'text-slate-100' : 'text-black'}`}>{title}</Text>
+        <Text
+          className={`text-md ${isDark ? 'text-slate-400' : 'text-gray-500'} leading-5`}
+          numberOfLines={1}
           ellipsizeMode="tail"
         >
           {description}
@@ -107,11 +107,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
                       className="absolute -top-1 -right-1 rounded-full w-6 h-6 justify-center items-center border-2 border-white"
                       style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
                     >
-                      <Image
-                        source={TimeIcon}
-                        style={{ width: "80%", height: "80%" }}
-                        resizeMode="contain"
-                      />
+                      <TimeIcon width={16} height={16} color="white" />
                     </View>
                   )}
                 </>
@@ -129,11 +125,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
                       className="absolute -top-1 -right-1 rounded-full w-6 h-6 justify-center items-center border-2 border-white"
                       style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
                     >
-                      <Image
-                        source={TimeIcon}
-                        style={{ width: "80%", height: "80%" }}
-                        resizeMode="contain"
-                      />
+                      <TimeIcon width={16} height={16} color="white" />
                     </View>
                   )}
                 </>

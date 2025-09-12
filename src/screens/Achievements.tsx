@@ -21,10 +21,10 @@ import ExclusiveAchievements from "../components/ExclusiveAchievements";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
 import { Achievement } from "../services/achievementService";
 import { achievementService } from "../services/achievementService";
-const AchievementLockedIcon = require("../assets/achievements/achievement-locked.png");
+const AchievementLockedIcon = require("../assets/achievements/achievement-placeholder.png");
 const AchievementBreatheIcon = require("../assets/achievements/achievement-breathe.png");
 const LockIcon = require("../assets/achievements/lock.png");
-const TimeIcon = require("../assets/achievements/time.png");
+import TimeIcon from "../assets/icons/time.svg";
 // Helper function to identify regular achievements
 const isRegularAchievement = (achievementId: string): boolean => {
   const regularAchievementIds = [
@@ -124,6 +124,8 @@ const Achievements: React.FC<AchievementsProps> = ({
     null
   );
   const [parallaxAnim] = useState(new Animated.Value(0));
+  const [contentOpacity] = useState(new Animated.Value(1));
+  const [contentTranslateY] = useState(new Animated.Value(0));
 
   // Gesture handler for parallax effect
   const onGestureEvent = useRef(
@@ -147,16 +149,45 @@ const Achievements: React.FC<AchievementsProps> = ({
 
   // Use the appropriate achievements array based on toggle selection
   const filteredAchievements = useMemo(() => {
-    // Parallax animation
-    Animated.timing(parallaxAnim, {
-      toValue: isExclusiveSelected ? 1 : 0,
-      duration: 400,
-      useNativeDriver: true,
-    }).start();
+    // Content transition animation
+    Animated.sequence([
+      // Fade out and slide up
+      Animated.parallel([
+        Animated.timing(contentOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentTranslateY, {
+          toValue: -20,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]),
+      // Update parallax animation
+      Animated.timing(parallaxAnim, {
+        toValue: isExclusiveSelected ? 1 : 0,
+        duration: 0,
+        useNativeDriver: true,
+      }),
+      // Fade in and slide down
+      Animated.parallel([
+        Animated.timing(contentOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentTranslateY, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
 
     // Return regular achievements (exclusive tab now shows challenges)
     return translatedAchievements;
-  }, [isExclusiveSelected, parallaxAnim, translatedAchievements]);
+  }, [isExclusiveSelected, parallaxAnim, contentOpacity, contentTranslateY, translatedAchievements]);
 
   // Memoize the achievement selection callback
   const handleAchievementPress = useCallback(
@@ -236,7 +267,15 @@ const Achievements: React.FC<AchievementsProps> = ({
           }`}
         />
        {/* <ComingSoon /> */}
-        <ExclusiveAchievements />
+        <Animated.View
+          style={{
+            flex: 1,
+            opacity: contentOpacity,
+            transform: [{ translateY: contentTranslateY }],
+          }}
+        >
+          <ExclusiveAchievements />
+        </Animated.View>
       </View>
     );
   }
@@ -301,21 +340,28 @@ const Achievements: React.FC<AchievementsProps> = ({
         }`}
       />
 
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingTop: 10,
-          paddingBottom: 10,
+      <Animated.View
+        style={{
+          flex: 1,
+          opacity: contentOpacity,
+          transform: [{ translateY: contentTranslateY }],
         }}
-        bounces={false}
-        overScrollMode="never"
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: parallaxAnim } } }],
-          { useNativeDriver: true }
-        )}
-        scrollEventThrottle={16}
       >
-        <View className="flex-row flex-wrap gap-0">
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            paddingTop: 10,
+            paddingBottom: 10,
+          }}
+          bounces={false}
+          overScrollMode="never"
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: parallaxAnim } } }],
+            { useNativeDriver: true }
+          )}
+          scrollEventThrottle={16}
+        >
+          <View className="flex-row flex-wrap gap-0 ">
           {filteredAchievements.map((achievement, index) => {
             const progress = getProgressForAchievement(achievement.id);
             const progressPercentage = progress.percentage;
@@ -323,10 +369,10 @@ const Achievements: React.FC<AchievementsProps> = ({
             return (
               <View
                 key={`${achievement.id}-${index}`}
-                className="items-center w-1/4 p-3"
+                className="items-center w-[25%] mb-8"
               >
                 <Pressable
-                  className="w-[75px] h-[75px] rounded-full relative justify-center items-center"
+                  className="w-[70px] h-[70px] rounded-full relative justify-center items-center"
                   onPress={() => handleAchievementPress(achievement, progress)}
                 >
                   {/* Progress Ring */}
@@ -336,8 +382,8 @@ const Achievements: React.FC<AchievementsProps> = ({
                         ? progressPercentage
                         : 0
                     }
-                    size={68}
-                    strokeWidth={4}
+                    size={80}
+                    strokeWidth={3}
                     color={
                       isFirstThreeAchievement(
                         achievement.id,
@@ -347,10 +393,11 @@ const Achievements: React.FC<AchievementsProps> = ({
                         ? "#22C55E"
                         : "transparent"
                     }
+                    borderColor={isDark ? "#475569" : "#626366"}
                   />
 
                   {/* Achievement Icon */}
-                  <View className="absolute w-[75px] h-[75px] rounded-full justify-center items-center">
+                  <View className="absolute w-[70px] h-[70px] rounded-full justify-center items-center">
                     {isRegularAchievement(achievement.id) ? (
                       // Regular achievements logic
                       <>
@@ -364,19 +411,19 @@ const Achievements: React.FC<AchievementsProps> = ({
                             {achievement.icon ? (
                               <Image
                                 source={achievement.icon}
-                                style={{ width: 75, height: 75 }}
+                                style={{ width: 80, height: 80 }}
                                 resizeMode="contain"
                               />
                             ) : (
                               <Image
                                 source={AchievementLockedIcon}
-                                style={{ width: 75, height: 75 }}
+                                style={{ width: 80, height: 80 }}
                                 resizeMode="contain"
                               />
                             )}
                             {/* Check icon for 100% progress */}
                             {progressPercentage === 100 && (
-                              <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-6 h-6 justify-center items-center">
+                                <View className="absolute -top-2 -right-2 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
                                 <Ionicons
                                   name="checkmark"
                                   size={12}
@@ -387,13 +434,8 @@ const Achievements: React.FC<AchievementsProps> = ({
                             {/* Time icon for progress > 0 but < 100% */}
                             {progressPercentage > 0 &&
                               progressPercentage < 100 && (
-                                <View className="absolute -top-0.5 -right-0.5 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
-                                  <Image
-                                    className="color-white p-0.5"
-                                    source={TimeIcon}
-                                    style={{ width: "100%", height: "100%" }}
-                                    resizeMode="contain"
-                                  />
+                                <View className="absolute -top-2 -right-2 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
+                                  <TimeIcon width={16} height={16} color="white" />
                                 </View>
                               )}
                           </>
@@ -402,19 +444,14 @@ const Achievements: React.FC<AchievementsProps> = ({
                           <>
                             <Image
                               source={AchievementLockedIcon}
-                              style={{ width: 75, height: 75 }}
+                              style={{ width: 80, height: 80 }}
                               resizeMode="contain"
                             />
                             {/* Time icon for progress > 0 but < 100% */}
                             {progressPercentage > 0 &&
                               progressPercentage < 100 && (
-                                <View className="absolute -top-0.5 -right-0.5 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
-                                  <Image
-                                    className="color-white p-0.5"
-                                    source={TimeIcon}
-                                    style={{ width: "100%", height: "100%" }}
-                                    resizeMode="contain"
-                                  />
+                                <View className="absolute -top-2 -right-1 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
+                                  <TimeIcon width={16} height={16} color="white" />
                                 </View>
                               )}
                           </>
@@ -428,13 +465,13 @@ const Achievements: React.FC<AchievementsProps> = ({
                             {achievement.icon ? (
                               <Image
                                 source={achievement.icon}
-                                style={{ width: 75, height: 75 }}
+                                style={{ width: 80, height: 80 }}
                                 resizeMode="contain"
                               />
                             ) : (
                               <Image
                                 source={AchievementLockedIcon}
-                                style={{ width: 75, height: 75 }}
+                                style={{ width: 80, height: 80 }}
                                 resizeMode="contain"
                               />
                             )}
@@ -452,7 +489,7 @@ const Achievements: React.FC<AchievementsProps> = ({
                           <>
                             <Image
                               source={AchievementLockedIcon}
-                              style={{ width: 75, height: 75 }}
+                              style={{ width: 80, height: 80 }}
                               resizeMode="contain"
                             />
                           </>
@@ -462,7 +499,7 @@ const Achievements: React.FC<AchievementsProps> = ({
                   </View>
                 </Pressable>
                 <Text
-                  className={`text-s mt-2 text-center ${
+                  className={`text-xs mt-2 text-center font-medium ${
                     achievement.unlocked
                       ? isDark
                         ? "text-slate-100"
@@ -478,7 +515,8 @@ const Achievements: React.FC<AchievementsProps> = ({
             );
           })}
         </View>
-      </ScrollView>
+        </ScrollView>
+      </Animated.View>
 
       {selectedAchievement && (
         <AchievementModal

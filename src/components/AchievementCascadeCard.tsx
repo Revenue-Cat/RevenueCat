@@ -43,13 +43,13 @@ const AchievementCascadeCard: React.FC<AchievementCascadeCardProps> = ({
     : "flex-row items-center bg-orange-100 px-2 py-0.5 rounded-full self-start mb-1 gap-1";
 
   const starSize = isMedium ? 10 : 8;
-  const timeText = "text-s text-gray-500 mb-1";
+  const timeText = "text-sm text-gray-500 mb-1";
   const titleText = isMedium
-    ? "text-sm font-bold text-black mb-1"
-    : "text-sm font-bold text-black mb-1";
+    ? "text-xl font-bold text-black mb-1"
+    : "text-lg font-bold text-black mb-1";
   const descText = isMedium
-    ? "text-s text-gray-500 leading-4"
-    : "text-s text-gray-500 leading-3";
+    ? "text-md text-gray-500 leading-4"
+    : "text-sm text-gray-500 leading-3";
 
   const badgeSize = isMedium ? "w-12 h-12" : "w-10 h-10";
   const emojiSize = isMedium ? "text-lg" : "text-base";

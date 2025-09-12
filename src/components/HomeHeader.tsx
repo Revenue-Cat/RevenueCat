@@ -103,7 +103,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
       {/* Carousel Header - Centered with Consistent Layout */}
       <View className="items-center justify-center flex-1 mt-2">
         {/* Title - Consistent positioning */}
-        <Text className="text-lg font-bold text-indigo-950 leading-7 text-center">
+        <Text className="text-2xl font-bold text-indigo-950 leading-7 text-center">
           {getViewTitle()}
         </Text>
 
@@ -122,7 +122,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
             currentView === "home" && (
               <View className="items-center">
                 <Text className="text-3xl font-bold text-indigo-950">00</Text>
-                <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center">
+                <Text className="text-lg font-medium text-indigo-950/50 text-center mt-0.5">
                   {t("countdownTimer.days")}
                 </Text>
               </View>
@@ -140,7 +140,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
                   /{achievements.length}
                 </Text>
               </View>
-              <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center mt-0.5">
+              <Text className="text-lg font-medium text-indigo-950/50 text-center mt-0.5">
                 {t("home.badgesCollected")}
               </Text>
             </View>
@@ -154,7 +154,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
                   {goodiesCount}
                 </Text>
               </View>
-              <Text className="text-s font-medium text-indigo-950/50 leading-4 text-center">
+              <Text className="text-lg font-medium text-indigo-950/50 text-center mt-0.5">
                 {t("home.goodiesAvailable", "Goodies available")}
               </Text>
             </View>

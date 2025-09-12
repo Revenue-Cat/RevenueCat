@@ -1,5 +1,5 @@
 // src/screens/Shop.tsx
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   Dimensions,
   Image,
+  Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useApp } from "../contexts/AppContext";
@@ -57,6 +58,42 @@ const Shop: React.FC<ShopProps> = ({
   const [showBuddyModal, setShowBuddyModal] = useState(false);
   const [selectedSceneForModal, setSelectedSceneForModal] = useState<any>(null);
   const [showSceneModal, setShowSceneModal] = useState(false);
+  
+  // Animation state for content transitions
+  const [contentOpacity] = useState(new Animated.Value(1));
+  const [contentTranslateY] = useState(new Animated.Value(0));
+
+  // Animation effect when toggling between buddies and scenes
+  useEffect(() => {
+    Animated.sequence([
+      // Fade out and slide up
+      Animated.parallel([
+        Animated.timing(contentOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentTranslateY, {
+          toValue: -20,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]),
+      // Fade in and slide down
+      Animated.parallel([
+        Animated.timing(contentOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentTranslateY, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+  }, [isScenesSelected, contentOpacity, contentTranslateY]);
 
   // Helper function to parse gradient string and return colors
   const parseGradient = useCallback(
@@ -114,14 +151,8 @@ const Shop: React.FC<ShopProps> = ({
             onPress={() => handleBuddySelect(item)}
           >
             <View
-              className={`items-center rounded-xl p-2 relative ${
+              className={`items-center rounded-xl relative ${
                 isDark ? "bg-slate-700/50" : "bg-white/10"
-              } ${
-                isOwned && !isSelected
-                  ? isDark
-                    ? "bg-slate-600/50"
-                    : "bg-white/15"
-                  : ""
               }`}
             >
               <View className="w-[80px] h-[80px] overflow-hidden relative">
@@ -131,7 +162,7 @@ const Shop: React.FC<ShopProps> = ({
                   autoPlay={isSelected}
                   loop={isSelected}
                   {...(!isSelected ? ({ progress: 0 } as any) : {})}
-                  style={{ width: 80, height: 110 }}
+                  style={{ width: 80, height: 110, marginTop: -5 }}
                   resizeMode="contain"
                   enableMergePathsAndroidForKitKatAndAbove
                 />
@@ -151,11 +182,10 @@ const Shop: React.FC<ShopProps> = ({
               {isSelected && (
                 <View className="absolute top-1 right-1">
                   <Ionicons
-                    className="bg-green-500 rounded-full p-0 bold"
+                    className="bg-green-500 rounded-full p-0.5 bold"
                     name="checkmark"
                     size={18}
                     color="white"
-                    fill="white"
                   />
                 </View>
               )}
@@ -225,18 +255,26 @@ const Shop: React.FC<ShopProps> = ({
       className={`flex-1 ${isDark ? "bg-dark-background" : ""}`}
       style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}
     >
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingHorizontal: 4,
-          paddingVertical: 20,
-          minHeight: Dimensions.get("window").height * 0.8,
+      <Animated.View
+        style={{
+          flex: 1,
+          opacity: contentOpacity,
+          transform: [{ translateY: contentTranslateY }],
         }}
       >
-        <View className="flex-1">
-          {!isScenesSelected ? renderBuddiesGrid() : renderScenesGrid()}
-        </View>
-      </ScrollView>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            paddingHorizontal: 4,
+            paddingVertical: 20,
+            minHeight: Dimensions.get("window").height * 0.8,
+          }}
+        >
+          <View className="flex-1">
+            {!isScenesSelected ? renderBuddiesGrid() : renderScenesGrid()}
+          </View>
+        </ScrollView>
+      </Animated.View>
 
       <BuddyModal
         visible={showBuddyModal}

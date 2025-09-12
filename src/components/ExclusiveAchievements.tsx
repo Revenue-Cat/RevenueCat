@@ -204,7 +204,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                     
                     {/* Lock icon for locked challenges */}
                     {isLocked && (
-                      <View className="absolute -top-2 -right-1 bg-slate-500/50 rounded-full w-6 h-6 justify-center items-center">
+                      <View className="absolute -top-2 -right-2 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
                         <LockLight width={12} height={12} color="white" opacity={0.5} />
                       </View>
                     )}
