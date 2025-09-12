@@ -387,7 +387,7 @@ const Home: React.FC<HomeProps> = ({
             <Animated.View style={{ transform: buddyTransform }}>
               {buddyAnimSource ? (
                 <LottieView
-                  key={`home-buddy-${currentView === "home" ? "play" : "stop"}`}
+                  key={`home-buddy-play`}
                   source={buddyAnimSource}
                   autoPlay={currentView === "home"}
                   loop={currentView === "home"}
