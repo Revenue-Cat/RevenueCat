@@ -11,11 +11,10 @@ import CountdownTimer from './CountdownTimer';
 import SlideModal from './SlideModal';
 import ExclusiveAchievementsModalActions from './ExclusiveAchievementsModalActions';
 import LockLight from "../assets/icons/lock.svg";
-import TimeIcon1 from "../assets/icons/time.svg";
+import TimeIcon from '../assets/icons/time.svg';
 
 const AchievementLockedIcon = require('../assets/achievements/achievement-locked.png');
 const LockIcon = require('../assets/achievements/lock.png');
-const TimeIcon = require('../assets/achievements/time.png');
 
 interface ExclusiveAchievementsModalProps {
   visible: boolean;
@@ -88,12 +87,8 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
             </View>
           )}
           {isInProgress && !isCompleted && (
-            <View className="absolute top-0 -right-1 bg-black/50 rounded-full w-7 h-7 justify-center items-center">
-              <Image
-                source={TimeIcon}
-                style={{ width: "100%", height: "100%" }}
-                resizeMode="contain"
-              />
+            <View className="absolute top-0 -right-1 bg-black/40 rounded-full w-7 h-7 justify-center items-center">
+              <TimeIcon width={22} height={22} color="white" />
             </View>
           )}
           {isLocked && (

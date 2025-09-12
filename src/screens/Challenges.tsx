@@ -7,7 +7,11 @@ import ChallengeModal from '../components/ChallengeModal';
 import { CHALLENGES_DATA, convertToChallengeCardProps } from '../data/challengesData';
 import { useApp } from '../contexts/AppContext';
 
-const Challenges: React.FC = () => {
+interface ChallengesProps {
+  onNavigateToBreathing?: (skipInitialScreen?: boolean) => void;
+}
+
+const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
   const { t } = useTranslation();
   const { getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, challengeProgress, addDailyCheckIn, getDailyCheckIns } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -71,8 +75,8 @@ const Challenges: React.FC = () => {
   // Sort challenges to show unlocked first, then locked
   const sortedChallenges = useMemo(() => {
     return [...sampleChallenges].sort((a, b) => {
-      // Priority: active > inprogress > locked
-      const statusOrder = { 'inprogress': 0, 'active': 1, 'locked': 2 };
+      // Priority: active > inprogress > completed > locked
+      const statusOrder = { 'inprogress': 0, 'active': 1, 'completed': 2, 'locked': 3 };
       return statusOrder[a.status] - statusOrder[b.status];
     });
   }, [sampleChallenges]);
@@ -119,6 +123,15 @@ const Challenges: React.FC = () => {
     setSelectedChallengeId(null);
   }, []);
 
+  const handleNavigateToBreathingFromModal = useCallback(() => {
+    handleCloseModal(); // Close modal first
+    if (onNavigateToBreathing) {
+      // Pass skipInitialScreen=true for exclusive challenges
+      const skipInitialScreen = selectedChallenge?.isExclusive === true;
+      onNavigateToBreathing(skipInitialScreen);
+    }
+  }, [handleCloseModal, onNavigateToBreathing, selectedChallenge]);
+
   // Memoize the challenges list
   const challengesList = useMemo(() => (
     <View className="px-0">
@@ -129,11 +142,12 @@ const Challenges: React.FC = () => {
         }
         
         return (
-          <MemoizedChallengeCard 
-            key={`${ch.title}-${ch.id}`} 
-            {...ch} 
+          <MemoizedChallengeCard
+            key={`${ch.title}-${ch.id}`}
+            {...ch}
             onCheckIn={() => handleCheckIn(ch.id!)}
             onPress={() => handleChallengePress(ch, ch.id!)}
+            onNavigateToBreathing={onNavigateToBreathing}
           />
         );
       })}
@@ -170,6 +184,7 @@ const Challenges: React.FC = () => {
         challenge={selectedChallenge}
         challengeId={selectedChallengeId || undefined}
         onClose={handleCloseModal}
+        onNavigateToBreathing={handleNavigateToBreathingFromModal}
       />
     </View>
   );

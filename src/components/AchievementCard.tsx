@@ -8,7 +8,7 @@ import LockLight from "../assets/icons/lock.svg";
 // const AchievementLockedIcon = require("../assets/achievements/achievement-locked.png");
 const AchievementLockedIcon = require("../assets/achievements/achievement-placeholder.png");
 const LockIcon = require("../assets/achievements/lock.png");
-const TimeIcon = require("../assets/achievements/time.png");
+import TimeIcon from "../assets/icons/time.svg";
 import CoinIcon from "../assets/icons/coins.svg";
 
 interface AchievementCardProps {
@@ -107,11 +107,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
                       className="absolute -top-1 -right-1 rounded-full w-6 h-6 justify-center items-center border-2 border-white"
                       style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
                     >
-                      <Image
-                        source={TimeIcon}
-                        style={{ width: "80%", height: "80%" }}
-                        resizeMode="contain"
-                      />
+                      <TimeIcon width={16} height={16} color="white" />
                     </View>
                   )}
                 </>
@@ -129,11 +125,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
                       className="absolute -top-1 -right-1 rounded-full w-6 h-6 justify-center items-center border-2 border-white"
                       style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
                     >
-                      <Image
-                        source={TimeIcon}
-                        style={{ width: "80%", height: "80%" }}
-                        resizeMode="contain"
-                      />
+                      <TimeIcon width={16} height={16} color="white" />
                     </View>
                   )}
                 </>

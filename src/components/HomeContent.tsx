@@ -14,6 +14,7 @@ interface HomeContentProps {
   isScenesSelected: boolean;
   setIsScenesSelected: (isScenes: boolean) => void;
   onNavigateToShop: () => void;
+  onNavigateToBreathing?: (skipInitialScreen?: boolean) => void;
 }
 
 const HomeContent: React.FC<HomeContentProps> = ({
@@ -22,7 +23,8 @@ const HomeContent: React.FC<HomeContentProps> = ({
   isExclusiveSelected,
   isScenesSelected,
   setIsScenesSelected,
-  onNavigateToShop
+  onNavigateToShop,
+  onNavigateToBreathing
 }) => {
   const { t } = useTranslation();
   const { selectedBackground } = useApp();
@@ -47,7 +49,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
         <>
           {/* Stats */}
           <HomeStats />
-          <Challenges />
+          <Challenges onNavigateToBreathing={(skipInitialScreen) => onNavigateToBreathing?.(skipInitialScreen)} />
         </>
       )}
 

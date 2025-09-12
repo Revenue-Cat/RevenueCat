@@ -21,6 +21,7 @@ export interface ChallengeCardProps {
   checkIns?: number; // e.g., 5
   onCheckIn?: () => void;
   onPress?: () => void;
+  onNavigateToBreathing?: (skipInitialScreen?: boolean) => void;
   cardIcon?: any;
   icon?: any;
   achievementIcon?: any;
@@ -30,6 +31,7 @@ export interface ChallengeCardProps {
   id?: string;
   unitWord?: string;
   totalDurations?: any; // Total duration in days for progress calculation
+  isExclusive?: boolean;
 }
 
 const ChallengeCard: React.FC<ChallengeCardProps> = ({
@@ -45,8 +47,10 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   checkIns,
   onCheckIn,
   onPress,
+  onNavigateToBreathing,
   id: challengeId,
-  totalDurations
+  totalDurations,
+  isExclusive
 }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -154,12 +158,12 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
             {/* Check In Button */}
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={onCheckIn}
+              onPress={isExclusive ? () => onNavigateToBreathing?.(true) : onCheckIn}
               className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
             >
               <Ionicons name="checkmark" size={20} color="#ffffff"  />
               <Text className="text-white font-semibold text-base ml-2">
-                {t("challenges.checkIn")}
+                {isExclusive ? "Take 5 breathe" : t("challenges.checkIn")}
               </Text>
               {typeof checkIns === "number" && (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">

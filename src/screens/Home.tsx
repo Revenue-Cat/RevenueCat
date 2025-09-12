@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import { View, Animated, Pressable, Text, Dimensions } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import LottieView from "lottie-react-native";
@@ -6,6 +6,8 @@ import { Ionicons } from "@expo/vector-icons";
 import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from "../contexts/AppContext";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
+import { BUDDIES_DATA, getTranslatedBuddyData } from "../data/buddiesData";
+import { SCENES_DATA, getTranslatedSceneData } from "../data/scenesData";
 import ParallaxBackground from "../components/ParallaxBackground";
 import HomeHeader from "../components/HomeHeader";
 import HomeContent from "../components/HomeContent";
@@ -20,7 +22,7 @@ import { t } from "i18next";
 
 interface HomeProps {
   onShowCravingSOS: () => void;
-  onShowBreathingExercise: () => void;
+  onShowBreathingExercise: (skipInitialScreen?: boolean) => void;
   onShowChatAssistance: () => void;
   onNavigateToProfile: () => void;
   onNavigateToAchievements: () => void;
@@ -45,6 +47,9 @@ const Home: React.FC<HomeProps> = ({
     selectedBackground,
     gender,
     startDate,
+    ownedBuddies,
+    ownedBackgrounds,
+    purchaseItem,
   } = useApp();
 
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
@@ -54,6 +59,12 @@ const Home: React.FC<HomeProps> = ({
 
   // Add state for shop toggle
   const [isScenesSelected, setIsScenesSelected] = useState(false);
+
+  // CTA Button animations
+  const homeButtonOpacity = useRef(new Animated.Value(0)).current;
+  const shopButtonOpacity = useRef(new Animated.Value(0)).current;
+  const homeButtonTranslateY = useRef(new Animated.Value(50)).current;
+  const shopButtonTranslateY = useRef(new Animated.Value(50)).current;
 
   // Use custom hooks for navigation and scroll handling
   const { currentView, handleHeaderGesture, changeView, onHeaderGestureEvent, contentTranslateX } = useHomeNavigation();
@@ -126,6 +137,173 @@ const Home: React.FC<HomeProps> = ({
   }, []);
 
   const gradientColors = parseGradient(selectedBackground.backgroundColor);
+
+  // Calculate total cost of all available buddies for current gender
+  const totalBuddyCost = useMemo(() => {
+    const translatedBuddies = getTranslatedBuddyData(t);
+    const genderSpecificBuddies = translatedBuddies.filter(buddy => 
+      buddy.id.endsWith(`-${sexKey}`) && !ownedBuddies?.includes(buddy.id)
+    );
+    return genderSpecificBuddies.reduce((total, buddy) => total + buddy.coin, 0);
+  }, [sexKey, ownedBuddies, t]);
+
+  // Calculate total cost of all available scenes
+  const totalSceneCost = useMemo(() => {
+    const translatedScenes = getTranslatedSceneData(t);
+    const availableScenes = translatedScenes.filter(scene => 
+      !ownedBackgrounds?.includes(scene.id)
+    );
+    return availableScenes.reduce((total, scene) => total + scene.coin, 0);
+  }, [ownedBackgrounds, t]);
+
+  // Get the appropriate total cost and label based on current shop tab
+  const shopTotalCost = useMemo(() => {
+    return isScenesSelected ? totalSceneCost : totalBuddyCost;
+  }, [isScenesSelected, totalSceneCost, totalBuddyCost]);
+
+  const shopButtonLabel = useMemo(() => {
+    const itemType = isScenesSelected ? "scenes" : "buddies";
+    return `Get all ${itemType} for ${shopTotalCost}`;
+  }, [isScenesSelected, shopTotalCost]);
+
+  // Function to buy all available items (buddies or scenes)
+  const handleBuyAllItems = useCallback(async () => {
+    if (userCoins < shopTotalCost) {
+      setShowCoinPurchase(true);
+      return;
+    }
+
+    if (isScenesSelected) {
+      // Buy all available scenes
+      const translatedScenes = getTranslatedSceneData(t);
+      const availableScenes = translatedScenes.filter(scene => 
+        !ownedBackgrounds?.includes(scene.id)
+      );
+
+      for (const scene of availableScenes) {
+        try {
+          // Convert Scene to ShopItem format for purchaseItem
+          const shopItem = {
+            id: scene.id,
+            emoji: "🎨", // Default emoji for scenes
+            name: scene.name,
+            price: scene.coin,
+            owned: scene.owned,
+            coin: scene.coin, // Add coin field for compatibility
+          };
+          await purchaseItem(shopItem, 'backgrounds');
+        } catch (error) {
+          console.error(`Failed to purchase ${scene.name}:`, error);
+          break; // Stop if any purchase fails
+        }
+      }
+    } else {
+      // Buy all available buddies
+      const translatedBuddies = getTranslatedBuddyData(t);
+      const genderSpecificBuddies = translatedBuddies.filter(buddy => 
+        buddy.id.endsWith(`-${sexKey}`) && !ownedBuddies?.includes(buddy.id)
+      );
+
+      for (const buddy of genderSpecificBuddies) {
+        try {
+          // Convert Buddy to ShopItem format for purchaseItem
+          const shopItem = {
+            id: buddy.id,
+            emoji: buddy.emoji,
+            name: buddy.name,
+            price: buddy.coin,
+            owned: buddy.owned,
+            coin: buddy.coin, // Add coin field for compatibility
+          };
+          await purchaseItem(shopItem, 'buddies');
+        } catch (error) {
+          console.error(`Failed to purchase ${buddy.name}:`, error);
+          break; // Stop if any purchase fails
+        }
+      }
+    }
+  }, [isScenesSelected, userCoins, shopTotalCost, ownedBackgrounds, ownedBuddies, sexKey, purchaseItem, setShowCoinPurchase, t]);
+
+  // Animate CTA buttons based on current view
+  useEffect(() => {
+    const animationDuration = 300;
+    
+    if (currentView === "home") {
+      // Animate home button in
+      Animated.parallel([
+        Animated.timing(homeButtonOpacity, {
+          toValue: 1,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(homeButtonTranslateY, {
+          toValue: 0,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+        // Animate shop button out
+        Animated.timing(shopButtonOpacity, {
+          toValue: 0,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shopButtonTranslateY, {
+          toValue: 50,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else if (currentView === "shop") {
+      // Animate shop button in
+      Animated.parallel([
+        Animated.timing(shopButtonOpacity, {
+          toValue: 1,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shopButtonTranslateY, {
+          toValue: 0,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+        // Animate home button out
+        Animated.timing(homeButtonOpacity, {
+          toValue: 0,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(homeButtonTranslateY, {
+          toValue: 50,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      // Hide both buttons for achievements view
+      Animated.parallel([
+        Animated.timing(homeButtonOpacity, {
+          toValue: 0,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(homeButtonTranslateY, {
+          toValue: 50,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shopButtonOpacity, {
+          toValue: 0,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shopButtonTranslateY, {
+          toValue: 50,
+          duration: animationDuration,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [currentView, homeButtonOpacity, shopButtonOpacity, homeButtonTranslateY, shopButtonTranslateY]);
 
   return (
     <View
@@ -366,14 +544,15 @@ const Home: React.FC<HomeProps> = ({
                 isScenesSelected={isScenesSelected}
                 setIsScenesSelected={handleSetIsScenesSelected}
                 onNavigateToShop={handleNavigateToShop}
+                onNavigateToBreathing={(skipInitialScreen) => onShowBreathingExercise(skipInitialScreen)}
               />
-              <CTAButton
+              {/* <CTAButton
                 label={t("home.cravingSOS", "Craving SOS")}
                 onPress={handleShowCravingSOS}
                 tone="danger"
                 rightIconName={null}
                 containerClassName="absolute bottom-0 left-0 right-0 z-[200]"
-              />
+              /> */}
             </Animated.ScrollView>
 
             {/* Shop Page */}
@@ -397,15 +576,48 @@ const Home: React.FC<HomeProps> = ({
             </Animated.ScrollView>
           </Animated.View>
 
-          {/* {currentView === "home" && (
+          {/* Animated Home CTA Button */}
+          <Animated.View
+            style={{
+              position: "absolute",
+              bottom: 8,
+              left: 0,
+              right: 0,
+              zIndex: 200,
+              opacity: homeButtonOpacity,
+              transform: [{ translateY: homeButtonTranslateY }],
+            }}
+            pointerEvents={currentView === "home" ? "auto" : "none"}
+          >
             <CTAButton
               label={t("home.cravingSOS", "Craving SOS")}
               onPress={handleShowCravingSOS}
               tone="danger"
               rightIconName={null}
-              containerClassName="absolute bottom-10 left-0 right-0 z-[200] px-6 pb-8"
+              containerClassName="px-6 pb-8"
             />
-          )} */}
+          </Animated.View>
+
+          {/* Animated Shop CTA Button */}
+          <Animated.View
+            style={{
+              position: "absolute",
+              bottom: 8,
+              left: 0,
+              right: 0,
+              zIndex: 200,
+              opacity: shopButtonOpacity,
+              transform: [{ translateY: shopButtonTranslateY }],
+            }}
+            pointerEvents={currentView === "shop" ? "auto" : "none"}
+          >
+            <CTAButton
+              label={shopButtonLabel}
+              onPress={handleBuyAllItems}
+              rightIconName={null}
+              containerClassName="px-6 pb-8"
+            />
+          </Animated.View>
         </View>
       </PanGestureHandler>
     </View>
