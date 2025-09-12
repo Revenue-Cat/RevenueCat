@@ -70,7 +70,7 @@ const HomeStats: React.FC = () => {
             <Text className="text-2xl font-semibold text-red-400">{slipsUsed}</Text>
             <Text className="text-sm font-bold text-white ml-1 opacity-50">/ {allowedSlips}</Text>
           </View>
-          <Text className="text-s font-medium text-white opacity-50">slips</Text>
+          <Text className="text-s font-medium text-white opacity-50">{t('home.stats.slips')}</Text>
         </View>
       </View>
     </>

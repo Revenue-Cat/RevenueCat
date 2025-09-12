@@ -330,7 +330,7 @@ const Home: React.FC<HomeProps> = ({
                 onPress={handleNavigateToProfile}
               >
                 <Pressable
-                  className="w-7 h-7 rounded-full bg-black/50 justify-center items-center overflow-hidden"
+                  className="w-8 h-8 rounded-full bg-black/50 justify-center items-center overflow-hidden"
                   onPress={handleNavigateToProfile}
                   style={{ position: "relative", transform: [{ translateY: -8 }] }}
                 >
@@ -358,7 +358,7 @@ const Home: React.FC<HomeProps> = ({
 
               {/* User Coins - Fixed */}
               <Pressable
-                className="flex-row items-center bg-black/50 w-[60px] h-7 rounded-3xl py-1 px-2 gap-1.5"
+                className="flex-row items-center justify-center bg-black/50 w-[70px] h-8 rounded-3xl py-1 px-2 gap-1.5"
                 onPress={handleCoinPurchase}
               >
                 <Text className="text-base font-semibold text-amber-500 leading-6">

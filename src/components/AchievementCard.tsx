@@ -52,11 +52,11 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
           <Text className="text-base font-bold text-orange-500">+{reward}</Text>
           <CoinIcon width={16} height={16} color="#FF6B35" />
         </View>
-        <Text className={`text-s ${isDark ? 'text-slate-400' : 'text-gray-500'} my-1`}>{timeLeft}</Text>
-        <Text className={`text-base font-bold mb-1 ${isDark ? 'text-slate-100' : 'text-black'}`}>{title}</Text>
-        <Text 
-          className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'} leading-5`} 
-          numberOfLines={1} 
+                  <Text className={`${isDark ? 'text-slate-300' : 'text-slate-600'} text-sm font-semibold my-1`}>{timeLeft}</Text>
+        <Text className={`text-xl font-bold mb-1 ${isDark ? 'text-slate-100' : 'text-black'}`}>{title}</Text>
+        <Text
+          className={`text-md ${isDark ? 'text-slate-400' : 'text-gray-500'} leading-5`}
+          numberOfLines={1}
           ellipsizeMode="tail"
         >
           {description}
