@@ -426,6 +426,11 @@
       "challenge": "Step slayer",
       "description": "When you feel the urge to smoke, walk 500 steps to clear your mind and reset your body. This helps distract you from cravings and feel in control.",
       "title": "Walk to reset"
+    },
+    "breatheDeep": {
+      "challenge": "Master of air",
+      "description": "Practice 5 deep breaths, three times a day for 10 days. Focus on your breathing, relax your body, and let cravings pass naturally.",
+      "title": "Breathe deep"
     }
   },
   "home": {

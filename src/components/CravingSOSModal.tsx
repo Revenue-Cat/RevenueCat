@@ -17,7 +17,7 @@ import SlideModal from "./SlideModal";
 import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../contexts/AppContext";
-import { strategies } from "../data/strategiesData";
+import { CHALLENGES_DATA } from "../data/challengesData";
 import HeartIcon from "../assets/strategies/heart.svg";
 import LockLight from "../assets/icons/lock.svg";
 import SmokeIcon from "../assets/icons/smoke.svg";
@@ -37,7 +37,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const { setStartDate } = useApp();
+  const { setStartDate, getChallengeStatus } = useApp();
   const isDark = theme === "dark";
   const { width } = Dimensions.get("window");
   const ITEM_WIDTH = width * 0.7; // center card width (~70%)
@@ -49,7 +49,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
   const flatListRef = useRef<Animated.FlatList>(null);
 
   // Use original data instead of tripling it for better performance
-  const data = useMemo(() => strategies, []);
+  const data = useMemo(() => CHALLENGES_DATA.filter(item => item.titleKey), []);
 
   const handleISmoked = () => {
     setShowDontGiveUpModal(true);
@@ -151,13 +151,15 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                   } rounded-2xl px-3 py-4`}
                   style={{ minHeight: 320, justifyContent: "space-between" }}
                 >
-                  {/* Heart Icon */}
-                  <View className="items-center mb-1">
-                    <HeartIcon
-                      width={40}
-                      height={40}
-                      color={isDark ? "#CBD5E1" : "#1e1b4b"}
-                    />
+                  {/* iconPreview Icon */}
+                  <View className="items-center mb-1 p-2 justify-center">
+                    <View className="bg-indigo-100 p-2 rounded-full">
+                      <item.iconPreview
+                        width={24}
+                        height={24}
+                        color={isDark ? "#CBD5E1" : "#1e1b4b"}
+                      />
+                    </View>
                   </View>
 
                   {/* Title */}
@@ -192,12 +194,12 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
 
                   {/* Challenge Box */}
                   <View
-                    className={`${item.bgColor} rounded-xl p-1 flex-row justify-between items-center relative`}
+                    className={`bg-indigo-100 rounded-xl p-1 flex-row justify-between items-center relative`}
                   >
                     {/* Lock Icon - Top Right Corner */}
-                    <View className="absolute top-1 right-1 z-10 bg-black/50 rounded-full p-1">
+                    {getChallengeStatus(item.id) === 'locked' && <View className="absolute top-2 right-2 z-10 bg-black/50 rounded-full p-1">
                       <LockLight width={12} height={12} color="white" />
-                    </View>
+                    </View>}
 
                     <View className="flex-1 p-3">
                       <Text
@@ -222,15 +224,23 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                           lineHeight: 16,
                         }}
                       >
-                        {t(item.daysKey)}
+                        {t(item.duration)} {t("challenges.challenge")}
                       </Text>
                     </View>
                     <View className="ml-3 mr-1">
-                      <item.icon
-                        width={48}
-                        height={48}
-                        color={isDark ? "#CBD5E1" : "#1e1b4b"}
-                      />
+                      {item.iconStrategy ? (
+                        <item.iconStrategy
+                          width={52}
+                          height={52}
+                          color={isDark ? "#CBD5E1" : "#1e1b4b"}
+                        />
+                      ) : (
+                        <HeartIcon
+                          width={52}
+                          height={52}
+                          color={isDark ? "#CBD5E1" : "#1e1b4b"}
+                        />
+                      )}
                     </View>
                   </View>
                 </View>
@@ -244,7 +254,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
       {/* Indicators */}
       <View className="flex-row justify-center">
         <View className="flex-row bg-indigo-50 h-4 rounded-full px-1 py-1 gap-1">
-          {strategies.map((_, i) => {
+          {data.map((_, i) => {
             const position = Animated.divide(scrollX, ITEM_WIDTH);
             const scale = position.interpolate({
               inputRange: [i - 1, i, i + 1],

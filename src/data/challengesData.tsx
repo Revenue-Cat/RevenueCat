@@ -28,6 +28,7 @@ import CraveCrusherIcon from '../assets/challenges/crave-crusher-icon.svg';
 import FlowMinute from '../assets/challenges/flow-minute.svg';
 import FlowMinuteIcon from '../assets/challenges/flow-minute-icon.svg';
 
+
 const AchievementMasterOfAirIcon = require("../assets/exclusive-achievements/achievement-master-of-air.png");
 const AchievementHydroWinIcon = require("../assets/exclusive-achievements/achievement-hydro-win.png");
 const AchievementStriderIcon = require("../assets/exclusive-achievements/achievement-strider.png");
@@ -38,8 +39,26 @@ const AchievementSplashIcon = require("../assets/exclusive-achievements/achievem
 const AchievementCraveCrusherIcon = require("../assets/exclusive-achievements/achievement-crave-crusher.png");
 const AchievementStretchedIcon = require("../assets/exclusive-achievements/achievement-stretched.png");
 
+import SipAndBreathe from '../assets/strategies/sip-and-breathe.svg';
+import WalkToReset from '../assets/strategies/walk-to-reset.svg';
+import SnackInstead from '../assets/strategies/snack-instead.svg';
+import MeditateAndListen from '../assets/strategies/meditate-listen.svg';
+import SplashAndRefresh from '../assets/strategies/splash-refresh.svg';
+import GripAndRelease from '../assets/strategies/grip-release.svg';
+import CrumpleCravings from '../assets/strategies/crumple-cravings.svg';
+import StretchAndRelax from '../assets/strategies/stretch-relax.svg';
+import BreatheDeep from '../assets/strategies/breatheDeep.svg';
 import React from 'react';
 
+import WindIcon from '../assets/strategies/icons/wind.svg';
+import GlassIcon from '../assets/strategies/icons/glass.svg';
+import StepIcon from '../assets/strategies/icons/walk.svg';
+import SnackIcon from '../assets/strategies/icons/apple.svg';
+import CalmIcon from '../assets/strategies/icons/calm.svg';
+import FistIcon from '../assets/strategies/icons/fist.svg';
+import DropIcon from '../assets/strategies/icons/drop.svg';
+import ArticleIcon from '../assets/strategies/icons/article.svg';
+import RelaxIcon from '../assets/strategies/icons/relax.svg';
 export interface ChallengeData {
   timeBasedProgress?: number;
   id: string;
@@ -61,6 +80,12 @@ export interface ChallengeData {
   icon?: any;
   achievementIcon?: any;
   unitWord: string; // Word to display for tracking (e.g., "Glasses", "Times", "Walks")
+  // Strategy-specific properties for CravingSOSModal
+  titleKey?: string;
+  descriptionKey?: string;
+  challengeKey?: string;
+  iconStrategy?: React.ComponentType<any>;
+  iconPreview?: React.ComponentType<any>;
 }
 
 export const CHALLENGES_DATA: ChallengeData[] = [
@@ -91,10 +116,16 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardIcon: <MasterOfAir />,
     icon: <MasterOfAirIcon />,
     achievementIcon: AchievementMasterOfAirIcon,
-    unitWord: 'Times'
+    unitWord: 'Times',
+    // Strategy properties for CravingSOSModal (fake data for now)
+    titleKey: 'cravingSOS.breatheDeep.title',
+    descriptionKey: 'cravingSOS.breatheDeep.description',
+    challengeKey: 'cravingSOS.breatheDeep.challenge',
+    iconStrategy: BreatheDeep,
+    iconPreview: WindIcon,
   },
   {
-    id: 'master-of-air-water',
+    id: 'master-of-air-water', // combined with 'sip-breathe' strategy
     title: 'Hydration boost',
     shortDescription: 'Drink water each craving.',
     longDescription: 'Drink a glass of water every time you feel a craving for 10 days.',
@@ -122,10 +153,16 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     icon: <MasterOfAirWaterIcon />,
     achievementIcon: AchievementHydroWinIcon,
     cardAdviceDescription: 'Replace the craving with a glass of water. Slowly drink the water, focusing on the taste and sensations. Take a few deep breaths and relax. If the craving returns — repeat the steps.',
-    unitWord: 'Glasses'
+    unitWord: 'Glasses',
+    // Strategy properties for CravingSOSModal
+    titleKey: 'cravingSOS.sipBreathe.title',
+    descriptionKey: 'cravingSOS.sipBreathe.description',
+    challengeKey: 'cravingSOS.sipBreathe.challenge',
+    iconStrategy: SipAndBreathe,
+    iconPreview: GlassIcon,
   },
   {
-    id: 'master-of-air-walk',
+    id: 'master-of-air-walk',  // id: 'walk-reset',
     title: 'Step slayer',
     shortDescription: 'Walk 500 steps to reset.',
     longDescription: 'Walk 500 steps each day to clear your mind and reset your body.',
@@ -153,10 +190,16 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardIcon: <MasterOfAirWalk />,
     icon: <MasterOfAirWalkIcon />,
     achievementIcon: AchievementStriderIcon,
-    unitWord: 'Walks'
+    unitWord: 'Walks',
+    // Strategy properties for CravingSOSModal
+    titleKey: 'cravingSOS.walkReset.title',
+    descriptionKey: 'cravingSOS.walkReset.description',
+    challengeKey: 'cravingSOS.walkReset.challenge',
+    iconStrategy: WalkToReset,
+    iconPreview: StepIcon,
   },
   {
-    id: 'snack-break',
+    id: 'snack-break',  // id: 'snack-instead',
     title: 'Snack break',
     shortDescription: 'Snack instead of smoking.',
     longDescription: 'Choose a healthy snack instead of lighting a cigarette.',
@@ -184,10 +227,16 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardIcon: <SnackBreak />,
     icon: <SnackBreakIcon />,
     achievementIcon: AchievementSnackIcon,
-    unitWord: 'Snacks'
+    unitWord: 'Snacks',
+    // Strategy properties for CravingSOSModal
+    titleKey: 'cravingSOS.snackInstead.title',
+    descriptionKey: 'cravingSOS.snackInstead.description',
+    challengeKey: 'cravingSOS.snackInstead.challenge',
+    iconStrategy: SnackInstead,
+    iconPreview: SnackIcon,
   },
   {
-    id: 'calm-power',
+    id: 'calm-power',  //id: 'meditate-listen',
     title: 'Calm power',
     shortDescription: 'Meditate 2 minutes.',
     longDescription: 'Do a 2-minute meditation every time you feel a craving to smoke.',
@@ -214,10 +263,16 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardIcon: <CalmPower />,
     icon: <CalmPowerIcon />,
     achievementIcon: AchievementZenIcon,
-    unitWord: 'Sessions'
+    unitWord: 'Sessions',
+    // Strategy properties for CravingSOSModal
+    titleKey: 'cravingSOS.meditateListen.title',
+    descriptionKey: 'cravingSOS.meditateListen.description',
+    challengeKey: 'cravingSOS.meditateListen.challenge',
+    iconStrategy: MeditateAndListen,
+    iconPreview: CalmIcon,
   },
   {
-    id: 'fist-flow',
+    id: 'fist-flow', // id: 'grip-release',
     title: 'Fist flow',
     shortDescription: 'Squeeze 20 times.',
     longDescription: 'Squeeze and release your fists 20 times to beat cravings.',
@@ -244,10 +299,16 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     icon: <FistFlowIcon />,
     cardIcon: <FistFlow />,
     achievementIcon: AchievementGrippedIcon,
-    unitWord: 'Squeezes'
+    unitWord: 'Squeezes',
+    // Strategy properties for CravingSOSModal
+    titleKey: 'cravingSOS.gripRelease.title',
+    descriptionKey: 'cravingSOS.gripRelease.description',
+    challengeKey: 'cravingSOS.gripRelease.challenge',
+    iconStrategy: GripAndRelease,
+    iconPreview: FistIcon,
   },
   {
-    id: 'refresh',
+    id: 'refresh', // id: 'splash-refresh',
     title: 'Refresh',
     shortDescription: 'Splash water to curb cravings.',
     longDescription: 'Splash cold water to curb cravings instantly.',
@@ -273,10 +334,16 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardIcon: <Refresh />,
     icon: <RefreshIcon />,
     achievementIcon: AchievementSplashIcon,
-    unitWord: 'Splashes'
+    unitWord: 'Splashes',
+    // Strategy properties for CravingSOSModal
+    titleKey: 'cravingSOS.splashRefresh.title',
+    descriptionKey: 'cravingSOS.splashRefresh.description',
+    challengeKey: 'cravingSOS.splashRefresh.challenge',
+    iconStrategy: SplashAndRefresh,
+    iconPreview: DropIcon,
   },
-  {
-    id: 'crave-crusher',
+  { 
+    id: 'crave-crusher', // id: 'crumple-cravings',
     title: 'Crave crusher',
     shortDescription: 'Crumple your craving.',
     longDescription: 'Draw or write down your craving, then crumple it to release the urge.',
@@ -304,10 +371,16 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardIcon: <CraveCrusher />,
     icon: <CraveCrusherIcon />,
     achievementIcon: AchievementCraveCrusherIcon,
-    unitWord: 'Crumples'
+    unitWord: 'Crumples',
+    // Strategy properties for CravingSOSModal
+    titleKey: 'cravingSOS.crumpleCravings.title',
+    descriptionKey: 'cravingSOS.crumpleCravings.description',
+    challengeKey: 'cravingSOS.crumpleCravings.challenge',
+    iconStrategy: CrumpleCravings,
+    iconPreview: ArticleIcon,
   },
   {
-    id: 'flow-minute',
+    id: 'flow-minute', // id: 'stretch-relax',
     title: 'Flow minute',
     shortDescription: 'Stretch to release tension.',
     longDescription: 'Gently stretch your neck, shoulders, and back for 2–3 minutes to release tension.',
@@ -335,7 +408,13 @@ export const CHALLENGES_DATA: ChallengeData[] = [
     cardIcon: <FlowMinute />,
     icon: <FlowMinuteIcon />,
     achievementIcon: AchievementStretchedIcon,
-    unitWord: 'Stretches'
+    unitWord: 'Stretches',
+    // Strategy properties for CravingSOSModal
+    titleKey: 'cravingSOS.stretchRelax.title',
+    descriptionKey: 'cravingSOS.stretchRelax.description',
+    challengeKey: 'cravingSOS.stretchRelax.challenge',
+    iconStrategy: StretchAndRelax,
+    iconPreview: RelaxIcon,
   }
 ];
 
