@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Your App",
+    "slug": "your-app",
+    "ios": {
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Allow QuitQly to securely store the user ID using face ID capability."
+      }
+    }
+  }
+}

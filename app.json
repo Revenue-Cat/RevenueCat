@@ -2,7 +2,7 @@
   "expo": {
     "name": "QuitQly",
     "slug": "QuitQly",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -18,7 +18,8 @@
       "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "com.quitqly",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSFaceIDUsageDescription": ""
       }
     },
     "android": {
@@ -53,6 +54,12 @@
               "SUPPORTED_PLATFORMS": "iphoneos iphonesimulator"
             }
           }
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "We use Face ID to provide secure and convenient storage for user id."
         }
       ]
     ]
