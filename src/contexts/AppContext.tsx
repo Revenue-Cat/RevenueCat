@@ -941,10 +941,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   // Achievement functions
-  const setStartDate = useCallback(async (startDate: Date) => {
-    setUserProgress((prev) => ({ ...prev, startDate }));
-    await achievementService.setStartDate(startDate);
-  }, []);
 
   const getProgressForAchievement = useCallback((achievementId: string) => {
     return achievementService.getProgressForAchievement(achievementId);
@@ -1042,6 +1038,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error;
     }
   }, [userProgress.startDate, buddyName, gender, selectedBuddyId, contextLanguage]);
+
+  // Achievement functions
+  const setStartDate = useCallback(async (startDate: Date) => {
+    setUserProgress((prev) => ({ ...prev, startDate }));
+    await achievementService.setStartDate(startDate);
+    
+    // Automatically reschedule notifications when start date changes
+    try {
+      await scheduleUserNotifications();
+      console.log('AppContext: Notifications rescheduled after start date change');
+    } catch (error) {
+      console.error('AppContext: Error rescheduling notifications after start date change:', error);
+    }
+  }, [scheduleUserNotifications]);
 
   const updateNotificationSettings = useCallback(async (settings: Partial<UserNotificationSettings>) => {
     try {
@@ -1171,18 +1181,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     // Always record the slip in history (optional—remove if you don't want to keep the last one)
     setSlipsDates((prev) => [nowIso, ...prev]);
 
-    if (newCount > allowed) {
+    if (newCount >= allowed) {
       // Exceeded allowance → reset current cycle
       setSlipsUsed(0);
       setSlipsDates([]); // clear the visible grid for the new cycle
-      setStartDate(new Date()); // reset smoke-free timer/streak start
+      // Note: Start date reset is handled by the calling component (SlipsLog)
       return "limit";
     }
 
     // Still within allowance → increment normally
     setSlipsUsed(newCount);
     return "ok";
-  }, [slipsUsed, getSlipsAllowed, setStartDate]);
+  }, [slipsUsed, getSlipsAllowed]);
 
   const purchaseExtraSlips = useCallback(
     async (costCoins: number = 1000): Promise<boolean> => {

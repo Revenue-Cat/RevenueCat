@@ -34,6 +34,8 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
     purchaseExtraSlips,
     userCoins,
     setShowCoinPurchase,
+    setStartDate,
+    userProgress
   } = useApp();
 
   const allowed = getSlipsAllowed();
@@ -52,17 +54,15 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
     setShowSlipConfirmationModal(true);
   };
 
-  const handleLogMySlip = () => {
+  const handleLogMySlip = async () => {
     setShowSlipConfirmationModal(false);
     const res = addSlip();
     if (res === "limit") {
-      Alert.alert(
-        t("slipsLog.limit.title", "Don't give up"),
-        t(
-          "slipsLog.limit.body",
-          "You've reached your slip limit. Protect your streak to add +5, or reset your timer."
-        )
-      );
+      // Reset start date to current date and time using userProgress.startDate
+      // Notifications will be automatically rescheduled by setStartDate
+      const newStartDate = new Date();
+      await setStartDate(newStartDate);
+      console.log('SlipsLog: Start date reset to current date and time, userProgress.startDate updated');
     }
   };
 
@@ -327,8 +327,8 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
         <Pressable
           className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[80%]"
            style={{ height: 48 }}
-          onPress={() => {
-            handleLogMySlip(); // Then navigate to breathing exercise
+          onPress={async () => {
+            await handleLogMySlip(); // Then navigate to breathing exercise
           }}
         >
           <Text className="text-white font-bold text-lg">{t("slipsLog.slipConfirmation.logButton")}</Text>
