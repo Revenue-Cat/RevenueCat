@@ -22,87 +22,17 @@ export interface Buddy {
   type: 'character';
 }
 
-export const PLACEHOLDER_BUDDY: Buddy[] = [
-   {
-    id: "bear",
-    emoji: "🦓",
-    name: "Bear",
-    description: "With my strength by your side, we'll conquer smoke stronger than ever before.",
-    coin: 250,
-    icon: Bear,
-    owned: false,
-    type: 'character'
-  },
-  {
-    id: "bunny",
-    emoji: "🐰",
-    name: "Bunny",
-    description: "Hop with me into a smoke-free life — we'll bounce away from cravings together.",
-    coin: 250,
-    icon: Bunny,
-    owned: false,
-    type: 'character'
-  },
-  {
-    id: "cat",
-    emoji: "🐱",
-    name: "Cat",
-    description: "My curiosity will guide us — together we'll explore a smoke-free world faster.",
-    coin: 250,
-    icon: Cat,
-    owned: false,
-    type: 'character'
-  },
-  {
-    id: "hedgehog",
-    emoji: "🦔",
-    name: "Hedgehog",
-    description: "With my protective nature, we'll shield ourselves from smoke and emerge victorious.",
-    coin: 250,
-    icon: Hedgehog,
-    owned: false,
-    type: 'character'
-  },
-  {
-    id: "monkey",
-    emoji: "🐒",
-    name: "Monkey",
-    description: "Swing with me through challenges — we'll conquer smoke with playful determination.",
-    coin: 250,
-    icon: Monkey,
-    owned: false,
-    type: 'character'
-  },
-  {
-    id: "owl",
-    emoji: "🦉",
-    name: "Owl",
-    description: "My wisdom lights the way — together we'll see through smoke to freedom.",
-    coin: 250,
-    icon: Owl,
-    owned: false,
-    type: 'character'
-  },
-  {
-    id: "penguin",
-    emoji: "🐧",
-    name: "Penguin",
-    description: "Waddle with me through the cold — we'll brave smoke and emerge stronger together.",
-    coin: 250,
-    icon: Penguin,
-    owned: false,
-    type: 'character'
-  },
-  {
-    id: "tiger",
-    emoji: "🐯",
-    name: "Tiger",
-    description: "Roar with me against smoke — our combined strength will defeat it faster than ever.",
-    coin: 250,
-    icon: Tiger,
-    owned: false,
-    type: 'character'
-  }
+export const PLACEHOLDER_BUDDY: Buddy = [
+  //  {
+  //   id: "zebra-m",
+  //   emoji: "🦓",
+  //   name: "ZebraBro",
+  //   description: "Run with me, and we'll leave smoke behind faster than it can catch us.",
+  //   coin: 250,
+  //   icon: ,
+  //   owned: false,
+  //   type: 'character'
+  // },
 ];
 
 export const BUDDIES_DATA: Buddy[] = [

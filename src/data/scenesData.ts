@@ -10,10 +10,10 @@ export interface Scene {
   id: string;
   name: string;
   description: string;
-  price?: number;
-  coin?: number;
-  owned?: boolean;
-  background?: any; // Image source
+  price: number;
+  coin: number;
+  owned: boolean;
+  background: any; // Image source
   parallaxSlices?: {
     slice1: any;
     slice2: any;
