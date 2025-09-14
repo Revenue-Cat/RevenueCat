@@ -29,8 +29,9 @@ class OneSignalService {
 
     try {
       // Initialize OneSignal with your App ID
+      // Note: OneSignal might automatically request permission on initialize
+      // We'll disable automatic prompts by initializing without requesting permission
       OneSignal.initialize(ONESIGNAL_APP_ID);
-      OneSignal.Notifications.requestPermission(true);
       
       // Set up notification handlers
       this.setupNotificationHandlers();
@@ -76,7 +77,7 @@ class OneSignalService {
       console.log('Requesting notification permission...');
       
       // Request permission using OneSignal
-      const permission = await OneSignal.Notifications.requestPermission(true);
+      const permission = await OneSignal.Notifications.requestPermission(true); 
       
       this.hasPermission = permission;
       console.log('Notification permission result:', permission);

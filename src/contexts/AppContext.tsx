@@ -423,7 +423,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       } catch (error) {
         console.error("Failed to load state:", error);
-        alert("Error loading data. Please try again.");
+        console.error("Error details:", {
+          message: error.message,
+          code: error.code,
+          stack: error.stack
+        });
+        // Don't show alert immediately - try to continue with default state
+        console.log("Continuing with default state due to error");
+        setIsLoading(false);
       } finally {
         setIsLoading(false);
       }
@@ -431,13 +438,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Helper function to save default state to Firestore
     const saveDefaultState = async (userDocRef: any) => {
-
       try {
         await setDoc(userDocRef, { appState: JSON.stringify(DEFAULT_STATE) });
         console.log("Default state saved to Firestore");
       } catch (error) {
         console.error("Failed to save default state:", error);
-        alert("Failed to initialize data. Please check your network.");
+        console.error("Save error details:", {
+          message: error.message,
+          code: error.code,
+          stack: error.stack
+        });
+        // Don't show alert - just log the error and continue
+        console.log("Continuing without saving to Firestore");
       }
     };
 
@@ -450,7 +462,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       await setDoc(userDocRef, { appState: JSON.stringify(stateToSave) });
     } catch (error) {
       console.error("Failed to save state:", error);
-      alert("Failed to save data. Please check your network or try again.");
+      console.error("Save state error details:", {
+        message: error.message,
+        code: error.code,
+        stack: error.stack
+      });
+      // Don't show alert - just log the error
+      console.log("Failed to save state to Firestore, continuing with local state");
     }
   };
 
