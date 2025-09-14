@@ -162,12 +162,16 @@ const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
 
       {/* Collapse/Expand Button */}
       <View className="items-center mt-2 mb-8">
-        <Pressable
-          className="flex-row items-center bg-black/50 px-2 py-2 rounded-full shadow-lg"
-          onPress={toggleCollapsed}
-        >
-          <Ionicons name={isCollapsed ? "arrow-down" : "arrow-up"} size={16} color="#ffffff" />
-        </Pressable>
+         <Pressable 
+            className="z-10 bg-black/50 rounded-full justify-center items-center px-2 py-2"
+            onPress={toggleCollapsed}
+          >
+            <Ionicons 
+              name={isCollapsed ? "arrow-down" : "arrow-up"} 
+              size={20} 
+              color="#ffffff"
+            />
+          </Pressable>
       </View>
     </View>
   ), [visibleChallenges, handleCheckIn, handleChallengePress, handleRestartChallenge, toggleCollapsed, isCollapsed]);

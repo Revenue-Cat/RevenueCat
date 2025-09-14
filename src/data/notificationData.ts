@@ -12,6 +12,17 @@ export interface NotificationMessage {
 
 export const NOTIFICATION_DATA: NotificationMessage[] = [
   {
+    id: 'welcome_home',
+    day: 0,
+    timeOfDay: 'day',
+    category: 'start',
+    messages: {
+      ua: '🎉 Вітаємо вдома! Ти зробив(ла) перший крок до свободи 🚭 {{buddy_name}} тут, щоб підтримати тебе!',
+      en: '🎉 Welcome home! You\'ve taken the first step to freedom 🚭 {{buddy_name}} is here to support you!',
+      es: '🎉 ¡Bienvenido a casa! ¡Has dado el primer paso hacia la libertad 🚭 {{buddy_name}} está aquí para apoyarte!'
+    }
+  },
+  {
     id: 'day_1_morning',
     day: 1,
     timeOfDay: 'morning',

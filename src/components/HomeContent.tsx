@@ -43,7 +43,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
   const gradientColors = parseGradient(selectedBackground.backgroundColor);
   
   return (
-    <View style={{ paddingHorizontal: 24, backgroundColor: gradientColors[0] }}>
+    <View style={{ paddingHorizontal: 24, backgroundColor: "transparent"  }}>
       {/* Conditional Content Based on View */}
       {currentView === 'home' && (
         <>

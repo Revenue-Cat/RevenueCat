@@ -282,8 +282,8 @@ const Achievements: React.FC<AchievementsProps> = ({
 
   return (
     <View
-      className={`flex-1 ${isDark ? "bg-dark-background" : ""}`}
-      style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}
+      className={`flex-1`}
+      style={{ backgroundColor: "transparent", paddingTop: 20 }}
     >
       {/* Background Parallax Layers */}
       <Animated.View
