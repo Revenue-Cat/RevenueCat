@@ -69,7 +69,7 @@ const Home: React.FC<HomeProps> = ({
 
   // Use custom hooks for navigation and scroll handling
   const { currentView, handleHeaderGesture, changeView, onHeaderGestureEvent, contentTranslateX } = useHomeNavigation();
-  const { width } = Dimensions.get("window");
+  const { width, height } = Dimensions.get("window");
   const {
     isAchievementsCollapsed,
     scrollY,
@@ -81,6 +81,9 @@ const Home: React.FC<HomeProps> = ({
     buddyTransform,
     isInitialized,
   } = useHomeScroll();
+
+  // Calculate scrollable content height (screen height minus header area)
+  const scrollableContentHeight = height - 360; // 360 is the top position
 
 
   const buddyAnimSource = useMemo(() => {
@@ -518,7 +521,7 @@ const Home: React.FC<HomeProps> = ({
               top: 360,
               left: 0,
               right: 0,
-              height: "55%",
+              height: scrollableContentHeight,
               zIndex: 100,
               width: width * 3,
               flexDirection: "row",
@@ -538,14 +541,16 @@ const Home: React.FC<HomeProps> = ({
               scrollEnabled={currentView === "achievements"}
               style={{ width }}
             >
-              <HomeContent
-                currentView={"achievements" as any}
-                isAchievementsCollapsed={isAchievementsCollapsed}
-                isExclusiveSelected={isExclusiveSelected}
-                isScenesSelected={isScenesSelected}
-                setIsScenesSelected={handleSetIsScenesSelected}
-                onNavigateToShop={handleNavigateToShop}
-              />
+              <View style={{ flex: 1 }}>
+                <HomeContent
+                  currentView={"achievements" as any}
+                  isAchievementsCollapsed={isAchievementsCollapsed}
+                  isExclusiveSelected={isExclusiveSelected}
+                  isScenesSelected={isScenesSelected}
+                  setIsScenesSelected={handleSetIsScenesSelected}
+                  onNavigateToShop={handleNavigateToShop}
+                />
+              </View>
             </Animated.ScrollView>
 
             {/* Home Page */}
@@ -558,21 +563,25 @@ const Home: React.FC<HomeProps> = ({
               scrollEnabled={currentView === "home"}
               style={{ width, marginTop: -60, }}
             >
-              <AchievementSection
-                isCollapsed={isAchievementsCollapsed}
-                onToggle={toggleAchievements}
-                onNavigateToProgressChallenges={handleNavigateToProgressChallenges}
-              />
+              <View style={{ flex: 1 }}>
+                <AchievementSection
+                  isCollapsed={isAchievementsCollapsed}
+                  onToggle={toggleAchievements}
+                  onNavigateToProgressChallenges={handleNavigateToProgressChallenges}
+                />
 
-              <HomeContent
-                currentView={"home" as any}
-                isAchievementsCollapsed={isAchievementsCollapsed}
-                isExclusiveSelected={isExclusiveSelected}
-                isScenesSelected={isScenesSelected}
-                setIsScenesSelected={handleSetIsScenesSelected}
-                onNavigateToShop={handleNavigateToShop}
-                onNavigateToBreathing={(skipInitialScreen) => onShowBreathingExercise(skipInitialScreen)}
-              />
+                <View style={{ flex: 1 }}>
+                  <HomeContent
+                    currentView={"home" as any}
+                    isAchievementsCollapsed={isAchievementsCollapsed}
+                    isExclusiveSelected={isExclusiveSelected}
+                    isScenesSelected={isScenesSelected}
+                    setIsScenesSelected={handleSetIsScenesSelected}
+                    onNavigateToShop={handleNavigateToShop}
+                    onNavigateToBreathing={(skipInitialScreen) => onShowBreathingExercise(skipInitialScreen)}
+                  />
+                </View>
+              </View>
               {/* <CTAButton
                 label={t("home.cravingSOS", "Craving SOS")}
                 onPress={handleShowCravingSOS}
@@ -592,14 +601,16 @@ const Home: React.FC<HomeProps> = ({
               scrollEnabled={currentView === "shop"}
               style={{ width }}
             >
-              <HomeContent
-                currentView={"shop" as any}
-                isAchievementsCollapsed={isAchievementsCollapsed}
-                isExclusiveSelected={isExclusiveSelected}
-                isScenesSelected={isScenesSelected}
-                setIsScenesSelected={handleSetIsScenesSelected}
-                onNavigateToShop={handleNavigateToShop}
-              />
+              <View style={{ flex: 1 }}>
+                <HomeContent
+                  currentView={"shop" as any}
+                  isAchievementsCollapsed={isAchievementsCollapsed}
+                  isExclusiveSelected={isExclusiveSelected}
+                  isScenesSelected={isScenesSelected}
+                  setIsScenesSelected={handleSetIsScenesSelected}
+                  onNavigateToShop={handleNavigateToShop}
+                />
+              </View>
             </Animated.ScrollView>
           </Animated.View>
 
