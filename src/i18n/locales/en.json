@@ -771,6 +771,11 @@
       "body": "Use coins to get extra slips so your smoke-free timer won’t reset.",
       "title": "Protect your streak"
     },
+    "slipConfirmation": {
+      "description": "Had a slip? No worries. Take a breath and keep moving forward.",
+      "logButton": "Log my slip",
+      "title": "Don't give up"
+    },
     "smokedButton": "I smoked",
     "summary": "You have {{remaining}} slips allowed. If you reach the limit, your smoke-free timer resets — and you can start fresh",
     "title": "Slips log"

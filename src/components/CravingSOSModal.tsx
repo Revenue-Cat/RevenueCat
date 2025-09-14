@@ -21,7 +21,6 @@ import { CHALLENGES_DATA } from "../data/challengesData";
 import HeartIcon from "../assets/strategies/heart.svg";
 import LockLight from "../assets/icons/lock.svg";
 import SmokeIcon from "../assets/icons/smoke.svg";
-
 interface CravingSOSModalProps {
   visible: boolean;
   onClose: () => void;
@@ -317,7 +316,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
           <Text className="text-white font-bold text-lg">{t('breathing.controls.takeBreaths', { count: 5 })}</Text>
         </Pressable>
 
-        {/* NEW: Smoke icon button — 48x48, rounded-2xl, white 24x24 icon */}
+        {/* I smoked button — 48x48, rounded-2xl, white 24x24 icon */}
         <Pressable
           onPress={onOpenSlipsLog}
           className="bg-red-500 rounded-2xl justify-center items-center"

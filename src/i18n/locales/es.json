@@ -771,6 +771,11 @@
       "body": "Usa monedas para obtener recaídas extra y que tu contador no se reinicie.",
       "title": "Protege tu racha"
     },
+    "slipConfirmation": {
+      "description": "¿Tuviste una recaída? No te preocupes. Toma aire y sigue adelante.",
+      "logButton": "Registrar mi recaída",
+      "title": "No te rindas"
+    },
     "smokedButton": "Fumé",
     "summary": "Te quedan {{remaining}} recaídas permitidas. Si alcanzas el límite, tu contador sin fumar se reinicia — y puedes empezar de nuevo",
     "title": "Registro de recaídas"
