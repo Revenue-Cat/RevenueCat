@@ -6,7 +6,6 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { useTranslation } from "react-i18next";
 import {
   achievementService,
   Achievement,
@@ -637,7 +636,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const price = (item as any).coin || 0;
 
       if (userCoins < price) {
-        alert(t("alerts.notEnoughCoins"));
+        alert("Not enough of coins");
         return false;
       }
 
@@ -1032,7 +1031,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error;
     }
   }, []);
-
 
   const scheduleUserNotifications = useCallback(async () => {
     try {

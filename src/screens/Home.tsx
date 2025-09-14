@@ -1,7 +1,13 @@
-import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import { View, Animated, Pressable, Text, Dimensions } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
 import LottieView from "lottie-react-native";
 import { Ionicons } from "@expo/vector-icons";
 import CoinIcon from "../assets/icons/coins.svg";
@@ -68,7 +74,13 @@ const Home: React.FC<HomeProps> = ({
   const shopButtonTranslateY = useRef(new Animated.Value(50)).current;
 
   // Use custom hooks for navigation and scroll handling
-  const { currentView, handleHeaderGesture, changeView, onHeaderGestureEvent, contentTranslateX } = useHomeNavigation();
+  const {
+    currentView,
+    handleHeaderGesture,
+    changeView,
+    onHeaderGestureEvent,
+    contentTranslateX,
+  } = useHomeNavigation();
   const { width, height } = Dimensions.get("window");
   const {
     isAchievementsCollapsed,
@@ -84,7 +96,6 @@ const Home: React.FC<HomeProps> = ({
 
   // Calculate scrollable content height (screen height minus header area)
   const scrollableContentHeight = height - 360; // 360 is the top position
-
 
   const buddyAnimSource = useMemo(() => {
     const id = selectedBuddyId as string;
@@ -145,17 +156,21 @@ const Home: React.FC<HomeProps> = ({
   // Calculate total cost of all available buddies for current gender
   const totalBuddyCost = useMemo(() => {
     const translatedBuddies = getTranslatedBuddyData(t);
-    const genderSpecificBuddies = translatedBuddies.filter(buddy => 
-      buddy.id.endsWith(`-${sexKey}`) && !ownedBuddies?.includes(buddy.id)
+    const genderSpecificBuddies = translatedBuddies.filter(
+      (buddy) =>
+        buddy.id.endsWith(`-${sexKey}`) && !ownedBuddies?.includes(buddy.id)
     );
-    return genderSpecificBuddies.reduce((total, buddy) => total + buddy.coin, 0);
+    return genderSpecificBuddies.reduce(
+      (total, buddy) => total + buddy.coin,
+      0
+    );
   }, [sexKey, ownedBuddies, t]);
 
   // Calculate total cost of all available scenes
   const totalSceneCost = useMemo(() => {
     const translatedScenes = getTranslatedSceneData(t);
-    const availableScenes = translatedScenes.filter(scene => 
-      !ownedBackgrounds?.includes(scene.id)
+    const availableScenes = translatedScenes.filter(
+      (scene) => !ownedBackgrounds?.includes(scene.id)
     );
     return availableScenes.reduce((total, scene) => total + scene.coin, 0);
   }, [ownedBackgrounds, t]);
@@ -180,8 +195,8 @@ const Home: React.FC<HomeProps> = ({
     if (isScenesSelected) {
       // Buy all available scenes
       const translatedScenes = getTranslatedSceneData(t);
-      const availableScenes = translatedScenes.filter(scene => 
-        !ownedBackgrounds?.includes(scene.id)
+      const availableScenes = translatedScenes.filter(
+        (scene) => !ownedBackgrounds?.includes(scene.id)
       );
 
       for (const scene of availableScenes) {
@@ -195,7 +210,7 @@ const Home: React.FC<HomeProps> = ({
             owned: scene.owned,
             coin: scene.coin, // Add coin field for compatibility
           };
-          await purchaseItem(shopItem, 'backgrounds');
+          await purchaseItem(shopItem, "backgrounds");
         } catch (error) {
           console.error(`Failed to purchase ${scene.name}:`, error);
           break; // Stop if any purchase fails
@@ -204,8 +219,9 @@ const Home: React.FC<HomeProps> = ({
     } else {
       // Buy all available buddies
       const translatedBuddies = getTranslatedBuddyData(t);
-      const genderSpecificBuddies = translatedBuddies.filter(buddy => 
-        buddy.id.endsWith(`-${sexKey}`) && !ownedBuddies?.includes(buddy.id)
+      const genderSpecificBuddies = translatedBuddies.filter(
+        (buddy) =>
+          buddy.id.endsWith(`-${sexKey}`) && !ownedBuddies?.includes(buddy.id)
       );
 
       for (const buddy of genderSpecificBuddies) {
@@ -219,20 +235,29 @@ const Home: React.FC<HomeProps> = ({
             owned: buddy.owned,
             coin: buddy.coin, // Add coin field for compatibility
           };
-          await purchaseItem(shopItem, 'buddies');
+          await purchaseItem(shopItem, "buddies");
         } catch (error) {
           console.error(`Failed to purchase ${buddy.name}:`, error);
           break; // Stop if any purchase fails
         }
       }
     }
-  }, [isScenesSelected, userCoins, shopTotalCost, ownedBackgrounds, ownedBuddies, sexKey, purchaseItem, setShowCoinPurchase, t]);
-
+  }, [
+    isScenesSelected,
+    userCoins,
+    shopTotalCost,
+    ownedBackgrounds,
+    ownedBuddies,
+    sexKey,
+    purchaseItem,
+    setShowCoinPurchase,
+    t,
+  ]);
 
   // Animate CTA buttons based on current view
   useEffect(() => {
     const animationDuration = 300;
-    
+
     if (currentView === "home") {
       // Animate home button in
       Animated.parallel([
@@ -308,7 +333,13 @@ const Home: React.FC<HomeProps> = ({
         }),
       ]).start();
     }
-  }, [currentView, homeButtonOpacity, shopButtonOpacity, homeButtonTranslateY, shopButtonTranslateY]);
+  }, [
+    currentView,
+    homeButtonOpacity,
+    shopButtonOpacity,
+    homeButtonTranslateY,
+    shopButtonTranslateY,
+  ]);
 
   return (
     <View
@@ -318,16 +349,22 @@ const Home: React.FC<HomeProps> = ({
       <CoinPurchaseModal></CoinPurchaseModal>
 
       {/* Horizontal pan for view switching */}
-      <PanGestureHandler 
-        onGestureEvent={onHeaderGestureEvent} 
+      <PanGestureHandler
+        onGestureEvent={onHeaderGestureEvent}
         onHandlerStateChange={handleHeaderGesture}
         activeOffsetX={[-20, 20]}
         activeOffsetY={[-10, 10]}
         shouldCancelWhenOutside={true}
       >
-        <View className="absolute top-0 left-0 right-0 bottom-0 z-[50]" pointerEvents="box-none">
+        <View
+          className="absolute top-0 left-0 right-0 bottom-0 z-[50]"
+          pointerEvents="box-none"
+        >
           {/* Fixed Buddy Icon and User Coins - outside of swipe animation */}
-          <View className="absolute top-20 left-0 right-0 p-6 z-[60]" pointerEvents="box-none">
+          <View
+            className="absolute top-20 left-0 right-0 p-6 z-[60]"
+            pointerEvents="box-none"
+          >
             <View className="flex-row justify-between items-start">
               {/* Buddy Icon - Fixed */}
               <Pressable
@@ -337,7 +374,10 @@ const Home: React.FC<HomeProps> = ({
                 <Pressable
                   className="w-8 h-8 rounded-full bg-black/50 justify-center items-center overflow-hidden"
                   onPress={handleNavigateToProfile}
-                  style={{ position: "relative", transform: [{ translateY: -8 }] }}
+                  style={{
+                    position: "relative",
+                    transform: [{ translateY: -8 }],
+                  }}
                 >
                   {buddyAnimSource ? (
                     <LottieView
@@ -376,7 +416,7 @@ const Home: React.FC<HomeProps> = ({
 
           <Animated.View
             style={{
-              height: backgroundHeight
+              height: backgroundHeight,
             }}
             pointerEvents="none"
           >
@@ -384,7 +424,10 @@ const Home: React.FC<HomeProps> = ({
           </Animated.View>
 
           {/* Fixed Navigation Dots - positioned after HomeHeader, before buddy */}
-          <View className="absolute top-[130px] left-0 right-0 z-[20]" pointerEvents="box-none">
+          <View
+            className="absolute top-[130px] left-0 right-0 z-[20]"
+            pointerEvents="box-none"
+          >
             <View className="flex-row justify-center">
               <View className="flex-row bg-black/30 rounded-full px-2 py-1 gap-1">
                 <Pressable
@@ -453,7 +496,6 @@ const Home: React.FC<HomeProps> = ({
                 onViewChange={changeView}
                 scrollY={scrollY}
               />
-             
             </View>
 
             {/* Home Page - Header only */}
@@ -476,10 +518,9 @@ const Home: React.FC<HomeProps> = ({
                 onViewChange={changeView}
                 scrollY={scrollY}
               />
-             
             </View>
           </Animated.View>
-           {/* Toggles Container - 3 horizontal pages */}
+          {/* Toggles Container - 3 horizontal pages */}
           <Animated.View
             style={{
               position: "absolute",
@@ -503,10 +544,9 @@ const Home: React.FC<HomeProps> = ({
 
             {/* Home Page - Header only */}
             <View style={{ width }} />
-              
+
             {/* Shop Page - Header + Toggle */}
             <View style={{ width }}>
-          
               <ShopToggle
                 scrollY={scrollY}
                 isScenesSelected={isScenesSelected}
@@ -562,13 +602,15 @@ const Home: React.FC<HomeProps> = ({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ flexGrow: 1 }}
               scrollEnabled={currentView === "home"}
-              style={{ width, marginTop: -55, }}
+              style={{ width, marginTop: -55 }}
             >
               <View style={{ flex: 1 }}>
                 <AchievementSection
                   isCollapsed={isAchievementsCollapsed}
                   onToggle={toggleAchievements}
-                  onNavigateToProgressChallenges={handleNavigateToProgressChallenges}
+                  onNavigateToProgressChallenges={
+                    handleNavigateToProgressChallenges
+                  }
                 />
 
                 <View style={{ flex: 1 }}>
@@ -630,7 +672,7 @@ const Home: React.FC<HomeProps> = ({
           >
             {/* LinearGradient Button */}
             <LinearGradient
-              colors={['transparent', 'rgba(0, 0, 0, 0.9)']}
+              colors={["transparent", "rgba(0, 0, 0, 0.9)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               style={{
@@ -662,8 +704,8 @@ const Home: React.FC<HomeProps> = ({
             }}
             pointerEvents={currentView === "shop" ? "auto" : "none"}
           >
-             <LinearGradient
-              colors={['transparent', 'rgba(0, 0, 0, 0.9)']}
+            <LinearGradient
+              colors={["transparent", "rgba(0, 0, 0, 0.9)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               style={{
@@ -678,8 +720,8 @@ const Home: React.FC<HomeProps> = ({
                 rightIconName={null}
                 icon={<CoinIcon width={20} height={20} />}
                 containerClassName="px-6 pb-8 bg-transparent"
-                />
-              </LinearGradient>
+              />
+            </LinearGradient>
           </Animated.View>
         </View>
       </PanGestureHandler>
