@@ -7,8 +7,8 @@ import { Ionicons } from "@expo/vector-icons";
 import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from "../contexts/AppContext";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
-import { BUDDIES_DATA, getTranslatedBuddyData } from "../data/buddiesData";
-import { SCENES_DATA, getTranslatedSceneData } from "../data/scenesData";
+import { getTranslatedBuddyData } from "../data/buddiesData";
+import { getTranslatedSceneData } from "../data/scenesData";
 import ParallaxBackground from "../components/ParallaxBackground";
 import HomeHeader from "../components/HomeHeader";
 import HomeContent from "../components/HomeContent";
@@ -23,7 +23,7 @@ import { t } from "i18next";
 
 interface HomeProps {
   onShowCravingSOS: () => void;
-  onShowBreathingExercise: (skipInitialScreen?: boolean) => void;
+  onShowBreathingExercise: () => void;
   onShowChatAssistance: () => void;
   onNavigateToProfile: () => void;
   onNavigateToAchievements: () => void;
@@ -228,6 +228,7 @@ const Home: React.FC<HomeProps> = ({
     }
   }, [isScenesSelected, userCoins, shopTotalCost, ownedBackgrounds, ownedBuddies, sexKey, purchaseItem, setShowCoinPurchase, t]);
 
+
   // Animate CTA buttons based on current view
   useEffect(() => {
     const animationDuration = 300;
@@ -326,7 +327,7 @@ const Home: React.FC<HomeProps> = ({
       >
         <View className="absolute top-0 left-0 right-0 bottom-0 z-[50]" pointerEvents="box-none">
           {/* Fixed Buddy Icon and User Coins - outside of swipe animation */}
-          <View className="absolute top-10 left-0 right-0 p-6 z-[60]" pointerEvents="box-none">
+          <View className="absolute top-20 left-0 right-0 p-6 z-[60]" pointerEvents="box-none">
             <View className="flex-row justify-between items-start">
               {/* Buddy Icon - Fixed */}
               <Pressable
@@ -410,7 +411,7 @@ const Home: React.FC<HomeProps> = ({
 
           {/* Buddy Lottie on top of background */}
           <Animated.View
-            className="absolute top-0 left-0 right-0 items-center justify-end"
+            className="absolute top-5 left-0 right-0 items-center justify-end"
             style={{ height: 360, zIndex: 30 }}
             pointerEvents="none"
           >
@@ -419,8 +420,8 @@ const Home: React.FC<HomeProps> = ({
                 <LottieView
                   key={`home-buddy-play`}
                   source={buddyAnimSource}
-                  autoPlay={currentView === "home"}
-                  loop={currentView === "home"}
+                  autoPlay={true}
+                  loop={true}
                   {...(currentView === "home" ? {} : ({ progress: 0 } as any))}
                   style={{ width: 160, height: 240 }}
                   resizeMode="contain"
@@ -561,7 +562,7 @@ const Home: React.FC<HomeProps> = ({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ flexGrow: 1 }}
               scrollEnabled={currentView === "home"}
-              style={{ width, marginTop: -60, }}
+              style={{ width, marginTop: -55, }}
             >
               <View style={{ flex: 1 }}>
                 <AchievementSection
@@ -578,7 +579,7 @@ const Home: React.FC<HomeProps> = ({
                     isScenesSelected={isScenesSelected}
                     setIsScenesSelected={handleSetIsScenesSelected}
                     onNavigateToShop={handleNavigateToShop}
-                    onNavigateToBreathing={(skipInitialScreen) => onShowBreathingExercise(skipInitialScreen)}
+                    onNavigateToBreathing={onShowBreathingExercise}
                   />
                 </View>
               </View>
@@ -675,6 +676,7 @@ const Home: React.FC<HomeProps> = ({
                 label={shopButtonLabel}
                 onPress={handleBuyAllItems}
                 rightIconName={null}
+                icon={<CoinIcon width={20} height={20} />}
                 containerClassName="px-6 pb-8 bg-transparent"
                 />
               </LinearGradient>

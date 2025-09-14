@@ -604,25 +604,49 @@
   },
   "scenes": {
     "bg1": {
-      "name": "Sunset"
+      "name": "Emerald Silence"
     },
     "bg2": {
-      "name": "Ocean"
+      "name": "Silent Japan"
     },
     "bg3": {
-      "name": "Forest"
+      "name": "Sandy Horizon"
     },
     "bg4": {
-      "name": "Mountain"
+      "name": "Golden City"
     },
     "bg5": {
-      "name": "Desert"
+      "name": "Green Awakening"
     },
     "bg6": {
-      "name": "City"
+      "name": "Violet Evening"
     },
     "bg7": {
-      "name": "Space"
+      "name": "Misty Forest"
+    },
+    "bg8": {
+      "name": "Pink Horizon"
+    },
+    "bg9": {
+      "name": "Tropical Symphony"
+    },
+    "bg10": {
+      "name": "Halloween Night"
+    },
+    "bg11": {
+      "name": "Flower Valley"
+    },
+    "bg12": {
+      "name": "City & Park"
+    },
+    "bg13": {
+      "name": "Dawn Bridge"
+    },
+    "bg14": {
+      "name": "Dream Sky"
+    },
+    "bg15": {
+      "name": "Evening City"
     }
   },
   "setup": {

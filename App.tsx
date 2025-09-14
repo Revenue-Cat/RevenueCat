@@ -48,7 +48,6 @@ const AppContent: React.FC = () => {
   const [showChatAssistance, setShowChatAssistance] = useState(false);
   const [isScenesSelected, setIsScenesSelected] = useState(false);
   const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
-  const [breathingSkipInitial, setBreathingSkipInitial] = useState(false);
   const { theme } = useTheme();
 
   const navigateTo = useCallback((screen: Screen) => {
@@ -63,8 +62,7 @@ const AppContent: React.FC = () => {
     setShowCravingSOS(false);
   }, []);
 
-  const handleShowBreathingExercise = useCallback((skipInitialScreen: boolean = false) => {
-    setBreathingSkipInitial(skipInitialScreen);
+  const handleShowBreathingExercise = useCallback(() => {
     navigateTo("breathing-exercise");
   }, [navigateTo]);
 
@@ -206,7 +204,6 @@ const AppContent: React.FC = () => {
         <BreathingExercise
           onClose={() => navigateTo("home")}
           onBack={() => navigateTo("home")}
-          skipInitialScreen={breathingSkipInitial}
         />
       )}
 

@@ -49,7 +49,7 @@ const HomeStats: React.FC = () => {
   };
 
   return (
-    <>
+    <View className="flex-1">
       <View className="flex-row gap-1 mb-1">
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
           <Text className="text-2xl font-bold text-white">{savings.itemsAvoided}</Text>
@@ -73,7 +73,7 @@ const HomeStats: React.FC = () => {
           <Text className="text-s font-medium text-white opacity-50">{t('home.stats.slips')}</Text>
         </View>
       </View>
-    </>
+    </View>
   );
 };
 

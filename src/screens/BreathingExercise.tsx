@@ -22,10 +22,9 @@ const BreathingBg = require('../assets/breathing/breathing_bg.png');
 interface BreathingExerciseProps {
   onClose: () => void;
   onBack: () => void;
-  skipInitialScreen?: boolean;
 }
 
-const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack, skipInitialScreen = false }) => {
+const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { t } = useTranslation();
@@ -79,47 +78,6 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack, 
   // Ref to track cycle count for completion check
   const cycleCountRef = useRef(1);
 
-  // Skip initial screen if skipInitialScreen is true
-  useEffect(() => {
-    if (skipInitialScreen) {
-      // Fade out BuddyIcon smoothly
-      Animated.timing(buddyIconOpacity, {
-        toValue: 0,
-        duration: 10,
-        useNativeDriver: true,
-      }).start();
-
-      // Animate text transition to countdown
-      Animated.parallel([
-        Animated.timing(textOpacity, {
-          toValue: 0,
-          duration: 10,
-          useNativeDriver: true,
-        }),
-        Animated.timing(textScale, {
-          toValue: 0.8,
-          duration: 10,
-          useNativeDriver: true,
-        })
-      ]).start(() => {
-        setCountdown(3); // Start countdown from 3
-        // Fade in new text
-        Animated.parallel([
-          Animated.timing(textOpacity, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-          Animated.timing(textScale, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-          })
-        ]).start();
-      });
-    
-    }
-  }, [skipInitialScreen]);
 
   // Countdown effect
   useEffect(() => {
@@ -559,17 +517,6 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack, 
   };
 
   const goBack = () => {
-    if (skipInitialScreen) { 
-        const currentProgress = getChallengeProgress("master-of-air-breathing");
-        const newCheckIns = currentProgress.checkIns + completedSessionsCount;
-        updateChallengeProgress("master-of-air-breathing", 0, currentProgress.streak, newCheckIns);
-         // Also record the daily check-in for the History section
-        const today = new Date();
-        const dateKey = today.toISOString().split('T')[0]; // Format: "2024-09-04"
-        const dailyCheckInsData = getDailyCheckIns("master-of-air-breathing");
-        const todayCheckIns = dailyCheckInsData[dateKey] || 0;
-        addDailyCheckIn("master-of-air-breathing", dateKey, todayCheckIns + 1);
-    }
     onBack();
   };
 
