@@ -40,7 +40,7 @@ const AchievementsToggle: React.FC<AchievementsToggleProps> = ({
   return (
     <Animated.View style={{ 
       position: 'absolute',
-      top: 300,
+      top: 305,
       left: 0,
       right: 0,
       zIndex: 9999,

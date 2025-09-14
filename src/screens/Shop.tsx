@@ -132,14 +132,14 @@ const Shop: React.FC<ShopProps> = ({
   const translatedScenes = useMemo(() => getTranslatedSceneData(t), [t]);
   const scenes = translatedScenes;
 
-  // ⬇️ Filter buddies by gender suffix: '-m' or '-w'
+
   const genderBuddies = useMemo(
     () => translatedBuddies.filter((b) => b.id.endsWith(`-${sexKey}`)),
     [translatedBuddies, sexKey]
   );
 
   const renderBuddiesGrid = () => (
-    <View className="w-full -mx-1 -my-1 flex-row flex-wrap">
+    <View className="w-full flex-row flex-wrap">
       {genderBuddies.map((item) => {
         const isOwned = ownedBuddies?.includes(item.id) || false;
         const isSelected = selectedBuddyId === item.id;
@@ -197,7 +197,7 @@ const Shop: React.FC<ShopProps> = ({
   );
 
   const renderScenesGrid = () => (
-    <View className="w-full -mx-1 -my-1 flex-row flex-wrap">
+    <View className="w-full flex-row flex-wrap">
       {scenes.map((item) => {
         const isOwned = ownedBackgrounds.includes(item.id);
         const isSelected = selectedBackground.id === item.id;
@@ -252,8 +252,8 @@ const Shop: React.FC<ShopProps> = ({
 
   return (
     <View
-      className={`flex-1 ${isDark ? "bg-dark-background" : ""}`}
-      style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}
+      className={`flex-1 `}
+      // style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}
     >
       <Animated.View
         style={{

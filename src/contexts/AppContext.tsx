@@ -1033,6 +1033,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+
   const scheduleUserNotifications = useCallback(async () => {
     try {
       if (!userProgress.startDate) {

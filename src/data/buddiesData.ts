@@ -12,6 +12,19 @@ export interface Buddy {
   type: 'character';
 }
 
+export const PLACEHOLDER_BUDDY: Buddy = [
+  //  {
+  //   id: "zebra-m",
+  //   emoji: "🦓",
+  //   name: "ZebraBro",
+  //   description: "Run with me, and we'll leave smoke behind faster than it can catch us.",
+  //   coin: 250,
+  //   icon: ,
+  //   owned: false,
+  //   type: 'character'
+  // },
+];
+
 export const BUDDIES_DATA: Buddy[] = [
   {
     id: "zebra-m",

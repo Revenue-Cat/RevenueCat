@@ -14,7 +14,7 @@ interface HomeContentProps {
   isScenesSelected: boolean;
   setIsScenesSelected: (isScenes: boolean) => void;
   onNavigateToShop: () => void;
-  onNavigateToBreathing?: (skipInitialScreen?: boolean) => void;
+  onNavigateToBreathing?: () => void;
 }
 
 const HomeContent: React.FC<HomeContentProps> = ({
@@ -43,13 +43,13 @@ const HomeContent: React.FC<HomeContentProps> = ({
   const gradientColors = parseGradient(selectedBackground.backgroundColor);
   
   return (
-    <View style={{ paddingHorizontal: 24, backgroundColor: gradientColors[0] }}>
+    <View style={{ paddingHorizontal: 24, backgroundColor: "transparent"  }}>
       {/* Conditional Content Based on View */}
       {currentView === 'home' && (
         <>
           {/* Stats */}
           <HomeStats />
-          <Challenges onNavigateToBreathing={(skipInitialScreen) => onNavigateToBreathing?.(skipInitialScreen)} />
+          <Challenges onNavigateToBreathing={onNavigateToBreathing} />
         </>
       )}
 

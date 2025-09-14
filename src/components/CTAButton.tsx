@@ -22,6 +22,7 @@ type Props = {
   /** testID to help with E2E */
   testID?: string;
   tone?: Tone;
+  icon?: any;
 };
 
 const CTAButton: React.FC<Props> = ({
@@ -35,6 +36,7 @@ const CTAButton: React.FC<Props> = ({
   className = "",
   testID,
   tone = "primary",
+  icon,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -63,6 +65,8 @@ const CTAButton: React.FC<Props> = ({
           <ActivityIndicator size="small" color="#ffffff" />
         ) : rightIconName ? (
           <Ionicons name={rightIconName} size={24} color="#ffffff" />
+        ) : icon ? (
+          icon
         ) : null}
       </Pressable>
     </View>

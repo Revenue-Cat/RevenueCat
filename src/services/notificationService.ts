@@ -133,6 +133,7 @@ class NotificationService {
     }
   }
 
+
   /**
    * Schedule all notifications for a user based on their start date and preferences
    */
@@ -147,10 +148,11 @@ class NotificationService {
       // Clear existing scheduled notifications for this user
       await this.clearScheduledNotifications(userSettings.userId);
 
+
       // Schedule notifications for the next 365 days or until we reach the end of our data
       const maxDays = Math.min(365, Math.max(...NOTIFICATION_DATA.map(n => n.day)));
-      
-      for (let day = Math.max(1, daysSinceStart + 1); day <= maxDays; day++) {
+
+      for (let day = Math.max(0, daysSinceStart); day <= maxDays; day++) {
         const notificationsForDay = getNotificationsForDay(day);
         
         for (const notification of notificationsForDay) {
@@ -192,18 +194,23 @@ class NotificationService {
    * Calculate the exact time when a notification should be sent
    */
   private calculateScheduledTime(
-    startDate: Date, 
-    day: number, 
+    startDate: Date,
+    day: number,
     timeOfDay: 'morning' | 'evening' | 'day',
     userSettings: UserNotificationSettings
   ): Date {
     const targetDate = new Date(startDate);
-    targetDate.setDate(targetDate.getDate() + day - 1);
 
-    const [hours, minutes] = this.getTimeForDay(timeOfDay, userSettings);
-    
-    targetDate.setHours(hours, minutes, 0, 0);
-    
+    if (day === 0) {
+      // For day 0 (welcome) notifications, schedule 1 hour after start
+      targetDate.setHours(targetDate.getHours() + 1);
+    } else {
+      // For other days, use the normal logic
+      targetDate.setDate(targetDate.getDate() + day);
+      const [hours, minutes] = this.getTimeForDay(timeOfDay, userSettings);
+      targetDate.setHours(hours, minutes, 0, 0);
+    }
+
     return targetDate;
   }
 
