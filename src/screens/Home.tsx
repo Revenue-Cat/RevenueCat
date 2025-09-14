@@ -253,6 +253,7 @@ const Home: React.FC<HomeProps> = ({
   ]);
 
 
+
   // Animate CTA buttons based on current view
   useEffect(() => {
     const animationDuration = 300;
@@ -712,6 +713,7 @@ const Home: React.FC<HomeProps> = ({
                 label={shopButtonLabel}
                 onPress={handleBuyAllItems}
                 rightIconName={null}
+                icon={<CoinIcon width={20} height={20} />}
                 containerClassName="px-6 pb-8 bg-transparent"
                 />
               </LinearGradient>
