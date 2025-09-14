@@ -90,6 +90,10 @@ const Home: React.FC<HomeProps> = ({
 
   // Calculate scrollable content height (screen height minus header area)
   const scrollableContentHeight = height - 360; // 360 is the top position
+<<<<<<< HEAD
+=======
+
+>>>>>>> d79c8b8 (Cards (#28))
 
   const buddyAnimSource = useMemo(() => {
     const id = selectedBuddyId as string;
