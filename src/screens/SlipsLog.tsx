@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { View, Text, Pressable, ScrollView, Alert, Image } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../contexts/AppContext";
@@ -9,6 +9,8 @@ import SmokingDog from "../assets/smoking-dog.png";
 import ProtectDog from "../assets/protect-dog.png";
 import { SLIPS_CONFIG } from "../config/subscriptions";
 import CoinPurchaseModal from "../components/CoinPurchaseModal";
+import SlideModal from "../components/SlideModal";
+import SupportIcon from "../assets/buddies/support.svg";
 
 type Props = { onBack: () => void };
 
@@ -21,6 +23,7 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { t } = useTranslation();
+  const [showSlipConfirmationModal, setShowSlipConfirmationModal] = useState(false);
 
   const {
     slipsUsed,
@@ -31,6 +34,8 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
     purchaseExtraSlips,
     userCoins,
     setShowCoinPurchase,
+    setStartDate,
+    userProgress
   } = useApp();
 
   const allowed = getSlipsAllowed();
@@ -46,16 +51,23 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
   }, [slipsDates, allowed]);
 
   const onPressISmoked = () => {
+    setShowSlipConfirmationModal(true);
+  };
+
+  const handleLogMySlip = async () => {
+    setShowSlipConfirmationModal(false);
     const res = addSlip();
     if (res === "limit") {
-      Alert.alert(
-        t("slipsLog.limit.title", "Don't give up"),
-        t(
-          "slipsLog.limit.body",
-          "You've reached your slip limit. Protect your streak to add +5, or reset your timer."
-        )
-      );
+      // Reset start date to current date and time using userProgress.startDate
+      // Notifications will be automatically rescheduled by setStartDate
+      const newStartDate = new Date();
+      await setStartDate(newStartDate);
+      console.log('SlipsLog: Start date reset to current date and time, userProgress.startDate updated');
     }
+  };
+
+  const handleCloseSlipConfirmation = () => {
+    setShowSlipConfirmationModal(false);
   };
 
   const onBuy = async () => {
@@ -263,6 +275,68 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
           <SmokeIcon width={24} height={24} color="#ffffff" />
         </Pressable>
       </View>
+
+      {/* Slip Confirmation Modal */}
+      <SlideModal
+        visible={showSlipConfirmationModal}
+        onClose={handleCloseSlipConfirmation}
+        showCloseButton={false}
+      >
+        <View className="py-6">
+          <View className="items-center mb-4">
+            <SupportIcon width={"100%"} height={126} color={isDark ? "#CBD5E1" : "#1e1b4b"} />
+          </View>
+          <Text
+            className={`text-2xl font-bold text-center mb-4 ${
+              isDark ? "text-indigo-950" : "text-indigo-950"
+            }`}
+          >
+            {t("slipsLog.slipConfirmation.title")}
+          </Text>
+          <Text
+            className={`text-base text-center mb-6 leading-6 ${
+              isDark ? "text-slate-300" : "text-slate-900"
+            }`}
+          >
+            {t("slipsLog.slipConfirmation.description")}
+          </Text>
+
+
+           <View className="flex-row items-center gap-2 justify-center mt-4 w-full">
+
+            <Pressable
+          onPress={handleCloseSlipConfirmation}
+          accessibilityRole="button"
+          accessibilityLabel={t("common.close")}
+          className={`${
+            isDark ? "bg-slate-700" : "bg-indigo-50"
+          } rounded-2xl justify-center items-center`}
+          style={{ width: 48, height: 48 }}
+        >
+          <Text
+            className={`${
+              isDark ? "text-slate-50" : "text-indigo-900"
+            } font-bold`}
+            style={{ fontSize: 20, lineHeight: 20 }}
+          >
+            ✕
+          </Text>
+        </Pressable>
+
+      {/* Take 5 breaths Button */}
+        <Pressable
+          className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[80%]"
+           style={{ height: 48 }}
+          onPress={async () => {
+            await handleLogMySlip(); // Then navigate to breathing exercise
+          }}
+        >
+          <Text className="text-white font-bold text-lg">{t("slipsLog.slipConfirmation.logButton")}</Text>
+        </Pressable>
+      </View>
+
+        </View>
+      </SlideModal>
     </View>
   );
 };

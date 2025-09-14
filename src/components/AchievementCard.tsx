@@ -48,7 +48,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
       className={`${isDark ? 'bg-slate-700' : 'bg-white'} rounded-2xl p-4 mb-3 flex-row items-center shadow-xs ${containerClassName}`}
     >
       <View className="flex-1 mr-4">
-        <View className="flex-row items-center border border-orange-500 px-1 py-0 rounded-full self-start mb-1 gap-1">
+          <View className="flex-row items-center border border-orange-500 pl-2 pr-1.5 py-0 rounded-full self-start mb-1 gap-0.5 text-center">
           <Text className="text-base font-bold text-orange-500">+{reward}</Text>
           <CoinIcon width={16} height={16} color="#FF6B35" />
         </View>

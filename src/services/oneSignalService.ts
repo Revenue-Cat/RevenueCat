@@ -29,8 +29,9 @@ class OneSignalService {
 
     try {
       // Initialize OneSignal with your App ID
+      // Note: OneSignal might automatically request permission on initialize
+      // We'll disable automatic prompts by initializing without requesting permission
       OneSignal.initialize(ONESIGNAL_APP_ID);
-      OneSignal.Notifications.requestPermission(true);
       
       // Set up notification handlers
       this.setupNotificationHandlers();
@@ -76,7 +77,7 @@ class OneSignalService {
       console.log('Requesting notification permission...');
       
       // Request permission using OneSignal
-      const permission = await OneSignal.Notifications.requestPermission(true);
+      const permission = await OneSignal.Notifications.requestPermission(true); 
       
       this.hasPermission = permission;
       console.log('Notification permission result:', permission);
@@ -147,6 +148,95 @@ class OneSignalService {
 
   public isOneSignalAvailable(): boolean {
     return this.isAvailable;
+  }
+
+  /**
+   * Schedule a notification for a specific time
+   */
+  public async scheduleNotification(
+    message: string,
+    scheduledTime: Date,
+    additionalData?: Record<string, any>
+  ): Promise<void> {
+    if (!this.isAvailable) {
+      console.log('OneSignal not available for scheduling notification');
+      return;
+    }
+
+    try {
+      // OneSignal doesn't support scheduled notifications in the same way as local notifications
+      // Instead, we'll use OneSignal's REST API or webhooks for scheduled delivery
+      // For now, we'll store the notification in Firebase and send it at the scheduled time
+      
+      const notificationData = {
+        message,
+        scheduledTime: scheduledTime.toISOString(),
+        additionalData: additionalData || {},
+        createdAt: new Date().toISOString()
+      };
+
+      console.log('OneSignal: Notification scheduled for:', scheduledTime.toISOString());
+      console.log('OneSignal: Message:', message);
+      console.log('OneSignal: Additional data:', additionalData);
+      
+      // TODO: Implement actual OneSignal scheduling via REST API
+      // This would require server-side implementation or OneSignal's scheduled notifications feature
+      
+    } catch (error) {
+      console.error('Error scheduling notification:', error);
+    }
+  }
+
+  /**
+   * Send a notification immediately via OneSignal
+   */
+  public async sendNotification(
+    message: string,
+    additionalData?: Record<string, any>
+  ): Promise<void> {
+    if (!this.isAvailable) {
+      console.log('OneSignal not available for sending notification');
+      return;
+    }
+
+    try {
+      // Send notification via OneSignal's REST API or local notification
+      console.log('OneSignal: Sending notification:', message);
+      console.log('OneSignal: Additional data:', additionalData);
+      
+      // For immediate notifications, we can use OneSignal's local notification feature
+      // or trigger a remote notification via their API
+      
+      // TODO: Implement actual OneSignal notification sending
+      // This could be done via:
+      // 1. OneSignal REST API (server-side)
+      // 2. OneSignal's local notification feature
+      // 3. OneSignal's in-app messaging
+      
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  }
+
+  /**
+   * Set user properties for targeting and segmentation
+   */
+  public async setUserProperties(properties: Record<string, string>): Promise<void> {
+    if (!this.isAvailable) {
+      console.log('OneSignal not available for setting user properties');
+      return;
+    }
+
+    try {
+      // Set multiple tags at once
+      for (const [key, value] of Object.entries(properties)) {
+        await this.addTag(key, value);
+      }
+      
+      console.log('OneSignal: User properties set:', properties);
+    } catch (error) {
+      console.error('Error setting user properties:', error);
+    }
   }
 
   // Method to reset permission for testing
