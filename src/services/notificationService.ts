@@ -133,44 +133,6 @@ class NotificationService {
     }
   }
 
-  /**
-   * Schedule the welcome notification for first-time users (public method)
-   */
-  public async scheduleWelcomeNotification(userSettings: UserNotificationSettings): Promise<void> {
-    try {
-      const welcomeNotification = NOTIFICATION_DATA.find(n => n.id === 'welcome_home');
-      if (!welcomeNotification) {
-        console.log('NotificationService: Welcome notification not found');
-        return;
-      }
-
-      // Schedule welcome notification for 1 hour from now (when user opens home screen)
-      const scheduledTime = new Date();
-      scheduledTime.setHours(scheduledTime.getHours() + 1);
-
-      const message = this.prepareMessage(welcomeNotification, userSettings);
-
-      const scheduledNotification: ScheduledNotification = {
-        id: `${userSettings.userId}_welcome_home`,
-        userId: userSettings.userId,
-        notificationId: welcomeNotification.id,
-        day: 0,
-        timeOfDay: welcomeNotification.timeOfDay,
-        scheduledTime: scheduledTime,
-        message: message,
-        category: welcomeNotification.category,
-        isSent: false,
-        createdAt: new Date()
-      };
-
-      await this.saveScheduledNotification(scheduledNotification);
-      await this.scheduleWithOneSignal(scheduledNotification, userSettings);
-
-      console.log(`NotificationService: Welcome notification scheduled for ${scheduledTime.toISOString()}`);
-    } catch (error) {
-      console.error('NotificationService: Error scheduling welcome notification:', error);
-    }
-  }
 
   /**
    * Schedule all notifications for a user based on their start date and preferences
@@ -186,10 +148,6 @@ class NotificationService {
       // Clear existing scheduled notifications for this user
       await this.clearScheduledNotifications(userSettings.userId);
 
-      // Schedule the welcome notification (day 0) if it's the user's first time
-      if (daysSinceStart === 0) {
-        await this.scheduleWelcomeNotification(userSettings);
-      }
 
       // Schedule notifications for the next 365 days or until we reach the end of our data
       const maxDays = Math.min(365, Math.max(...NOTIFICATION_DATA.map(n => n.day)));

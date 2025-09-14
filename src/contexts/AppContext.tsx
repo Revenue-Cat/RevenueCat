@@ -172,7 +172,6 @@ interface AppState {
   // Notification system
   initializeNotifications: () => Promise<void>;
   scheduleUserNotifications: () => Promise<void>;
-  scheduleWelcomeNotification: () => Promise<void>;
   updateNotificationSettings: (settings: Partial<UserNotificationSettings>) => Promise<void>;
   sendTestNotification: () => Promise<void>;
   getNotificationStats: () => Promise<{
@@ -1007,37 +1006,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  const scheduleWelcomeNotification = useCallback(async () => {
-    try {
-      if (!userProgress.startDate) {
-        console.log('AppContext: No startDate set, skipping welcome notification');
-        return;
-      }
-
-      // Get the actual buddy name from the buddy data
-      const selectedBuddy = getBuddyById(selectedBuddyId);
-      const actualBuddyName = selectedBuddy?.name || buddyName || 'Your Buddy';
-
-      const userSettings: UserNotificationSettings = {
-        userId: await getOrCreatePersistentUserId(),
-        language: getNotificationLanguage(),
-        buddyName: actualBuddyName,
-        selectedBuddyId: selectedBuddyId,
-        gender: gender,
-        startDate: userProgress.startDate,
-        isEnabled: true,
-        morningTime: '08:00',
-        eveningTime: '20:00',
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      };
-
-      await notificationService.scheduleWelcomeNotification(userSettings);
-
-      console.log('AppContext: Welcome notification scheduled');
-    } catch (error) {
-      console.error('AppContext: Error scheduling welcome notification:', error as Error);
-    }
-  }, [userProgress.startDate, buddyName, gender, selectedBuddyId, contextLanguage]);
 
   const scheduleUserNotifications = useCallback(async () => {
     try {
@@ -1354,7 +1322,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       // Notification system
       initializeNotifications,
       scheduleUserNotifications,
-      scheduleWelcomeNotification,
       updateNotificationSettings,
       sendTestNotification,
       getNotificationStats,
@@ -1411,7 +1378,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       purchaseExtraSlips,
       initializeNotifications,
       scheduleUserNotifications,
-      scheduleWelcomeNotification,
       updateNotificationSettings,
       sendTestNotification,
       getNotificationStats,

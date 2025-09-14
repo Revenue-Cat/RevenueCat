@@ -14,7 +14,7 @@ interface HomeContentProps {
   isScenesSelected: boolean;
   setIsScenesSelected: (isScenes: boolean) => void;
   onNavigateToShop: () => void;
-  onNavigateToBreathing?: (skipInitialScreen?: boolean) => void;
+  onNavigateToBreathing?: () => void;
 }
 
 const HomeContent: React.FC<HomeContentProps> = ({
@@ -49,7 +49,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
         <>
           {/* Stats */}
           <HomeStats />
-          <Challenges onNavigateToBreathing={(skipInitialScreen) => onNavigateToBreathing?.(skipInitialScreen)} />
+          <Challenges onNavigateToBreathing={onNavigateToBreathing} />
         </>
       )}
 

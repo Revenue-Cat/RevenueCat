@@ -210,7 +210,7 @@ const Achievements: React.FC<AchievementsProps> = ({
     return (
       <View
         className={`flex-1 ${isDark ? "bg-dark-background" : ""}`}
-        style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}
+        style={{ backgroundColor: "transparent" }}
       >
         {/* Background Parallax Layers */}
         <Animated.View
@@ -369,7 +369,7 @@ const Achievements: React.FC<AchievementsProps> = ({
             return (
               <View
                 key={`${achievement.id}-${index}`}
-                className="items-center w-[25%] mb-8"
+                className="items-center w-[25%] mb-4"
               >
                 <Pressable
                   className="w-[70px] h-[70px] rounded-full relative justify-center items-center"
@@ -497,7 +497,7 @@ const Achievements: React.FC<AchievementsProps> = ({
                   </View>
                 </Pressable>
                 <Text
-                  className={`text-xs mt-2 text-center font-medium ${
+                  className={`text-sm mt-2 text-center font-medium ${
                     achievement.unlocked
                       ? isDark
                         ? "text-slate-100"

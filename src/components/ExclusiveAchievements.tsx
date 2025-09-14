@@ -142,14 +142,13 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
 
   return (
     <View
-      className={`flex-1 ${isDark ? "bg-dark-background" : ""}`}
-      style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}
+      className={`flex-1`}
     >
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
-          paddingTop: 20,
           paddingBottom: 20,
+          paddingTop: 30,
         }}
         bounces={false}
         overScrollMode="never"
@@ -167,7 +166,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
             return (
               <View
                 key={`${challenge.id}-${index}`}
-                className="items-center w-[25%] mb-8"
+                className="items-center w-[25%] mb-4"
               >
                 <Pressable
                   className="w-[70px] h-[70px] rounded-full relative justify-center items-center"
@@ -225,7 +224,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
 
                   {/* Challenge Title */}
                   <Text
-                    className={`text-xs mt-2 text-center font-medium ${
+                    className={`text-sm mt-2 text-center font-medium ${
                       isCompleted || isInProgress
                         ? isDark
                           ? "text-slate-100"
@@ -234,6 +233,11 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                         ? "text-slate-400"
                         : "text-white/50"
                     }`}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{
+                      maxWidth: 80, // Match the icon width to prevent overflow
+                    }}
                   >
                     {challenge.title}
                   </Text>

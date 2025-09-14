@@ -23,7 +23,7 @@ import { t } from "i18next";
 
 interface HomeProps {
   onShowCravingSOS: () => void;
-  onShowBreathingExercise: (skipInitialScreen?: boolean) => void;
+  onShowBreathingExercise: () => void;
   onShowChatAssistance: () => void;
   onNavigateToProfile: () => void;
   onNavigateToAchievements: () => void;
@@ -51,7 +51,6 @@ const Home: React.FC<HomeProps> = ({
     ownedBuddies,
     ownedBackgrounds,
     purchaseItem,
-    scheduleWelcomeNotification,
   } = useApp();
 
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
@@ -229,21 +228,6 @@ const Home: React.FC<HomeProps> = ({
     }
   }, [isScenesSelected, userCoins, shopTotalCost, ownedBackgrounds, ownedBuddies, sexKey, purchaseItem, setShowCoinPurchase, t]);
 
-  // Schedule welcome notification for first-time users
-  useEffect(() => {
-    const scheduleWelcome = async () => {
-      try {
-        await scheduleWelcomeNotification();
-      } catch (error) {
-        console.error('Home: Error scheduling welcome notification:', error);
-      }
-    };
-
-    // Only schedule if user has completed onboarding (has startDate)
-    if (startDate) {
-      scheduleWelcome();
-    }
-  }, [startDate, scheduleWelcomeNotification]);
 
   // Animate CTA buttons based on current view
   useEffect(() => {
@@ -595,7 +579,7 @@ const Home: React.FC<HomeProps> = ({
                     isScenesSelected={isScenesSelected}
                     setIsScenesSelected={handleSetIsScenesSelected}
                     onNavigateToShop={handleNavigateToShop}
-                    onNavigateToBreathing={(skipInitialScreen) => onShowBreathingExercise(skipInitialScreen)}
+                    onNavigateToBreathing={onShowBreathingExercise}
                   />
                 </View>
               </View>

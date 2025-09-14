@@ -11,7 +11,7 @@ export interface NotificationMessage {
 }
 
 export const NOTIFICATION_DATA: NotificationMessage[] = [
-  {
+    {
     id: 'welcome_home',
     day: 0,
     timeOfDay: 'day',

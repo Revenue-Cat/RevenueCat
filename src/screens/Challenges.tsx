@@ -8,7 +8,7 @@ import { CHALLENGES_DATA, convertToChallengeCardProps } from '../data/challenges
 import { useApp } from '../contexts/AppContext';
 
 interface ChallengesProps {
-  onNavigateToBreathing?: (skipInitialScreen?: boolean) => void;
+  onNavigateToBreathing?: () => void;
 }
 
 const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
