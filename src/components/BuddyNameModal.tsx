@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import SlideModal from "./SlideModal";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   visible: boolean;
@@ -26,6 +27,7 @@ const BuddyNameModal: React.FC<Props> = ({
   onConfirm,
 }) => {
   const [name, setName] = useState(initialName);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setName(initialName);
@@ -42,7 +44,7 @@ const BuddyNameModal: React.FC<Props> = ({
     <SlideModal
       visible={visible}
       onClose={onClose}
-      title="Buddy name"
+      title={t('buddy.nameModal.title')}
       onConfirm={handleConfirm}
       confirmText="✓"
     >
@@ -59,7 +61,7 @@ const BuddyNameModal: React.FC<Props> = ({
           <TextInput
             value={name}
             onChangeText={setName}
-            placeholder="Type a name"
+            placeholder={t('buddy.nameModal.placeholder')}
             placeholderTextColor="#94A3B8"
             className={`h-12 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
             style={{ fontSize: 16 }}

@@ -28,13 +28,13 @@ const SupportSlide: React.FC<Props> = ({ visible, onClose }) => {
       key: "tg",
       Icon: TelegramIcon,
       label: t("support.telegram", "Message us on Telegram"),
-      onPress: () => Alert.alert("Telegram", "Mock: open Telegram chat"),
+      onPress: () => Alert.alert(t("alerts.telegram"), t("alerts.mockTelegram")),
     },
     {
       key: "email",
       Icon: EmailIcon,
       label: t("support.email", "Write to us by email"),
-      onPress: () => Alert.alert("Email", "Mock: open email composer"),
+      onPress: () => Alert.alert(t("alerts.email"), t("alerts.mockEmail")),
     },
   ] as const;
 

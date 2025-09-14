@@ -7,6 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -16,37 +17,38 @@ interface CravingSOSProps {
 
 const CravingSOS: React.FC<CravingSOSProps> = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const { t } = useTranslation();
 
   const steps = [
     {
-      title: "Take a Deep Breath",
-      description: "Inhale slowly for 4 counts, hold for 4, exhale for 4",
+      title: t("cravingSOS.steps.breathe.title"),
+      description: t("cravingSOS.steps.breathe.description"),
       icon: "leaf-outline",
-      action: "I'm breathing",
+      action: t("cravingSOS.steps.breathe.action"),
     },
     {
-      title: "Drink Some Water",
-      description: "Stay hydrated and give your mouth something to do",
+      title: t("cravingSOS.steps.water.title"),
+      description: t("cravingSOS.steps.water.description"),
       icon: "water-outline",
-      action: "I'm drinking water",
+      action: t("cravingSOS.steps.water.action"),
     },
     {
-      title: "Take a Walk",
-      description: "Get moving and change your environment",
+      title: t("cravingSOS.steps.walk.title"),
+      description: t("cravingSOS.steps.walk.description"),
       icon: "walk-outline",
-      action: "I'm going for a walk",
+      action: t("cravingSOS.steps.walk.action"),
     },
     {
-      title: "Call a Friend",
-      description: "Reach out to someone who supports your journey",
+      title: t("cravingSOS.steps.friend.title"),
+      description: t("cravingSOS.steps.friend.description"),
       icon: "call-outline",
-      action: "I'm calling someone",
+      action: t("cravingSOS.steps.friend.action"),
     },
     {
-      title: "You're Doing Great!",
-      description: "The craving will pass. You're stronger than this urge.",
+      title: t("cravingSOS.steps.encourage.title"),
+      description: t("cravingSOS.steps.encourage.description"),
       icon: "heart-outline",
-      action: "I'm staying strong",
+      action: t("cravingSOS.steps.encourage.action"),
     },
   ];
 

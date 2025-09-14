@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
+import { useTranslation } from "react-i18next";
 import {
   achievementService,
   Achievement,
@@ -179,6 +180,7 @@ export const useApp = () => {
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { t } = useTranslation();
   // Shop/state
   const [userCoins, setUserCoinsState] = useState(0);
   const [selectedBuddy, setSelectedBuddyState] =
@@ -568,7 +570,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const price = (item as any).coin || 0;
 
       if (userCoins < price) {
-        alert("Not enough of coins");
+        alert(t("alerts.notEnoughCoins"));
         return false;
       }
 

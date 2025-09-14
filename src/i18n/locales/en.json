@@ -805,5 +805,97 @@
     "subtitle": "Your journey to a smoke-free life starts here",
     "title": "Welcome to Zero Poofs",
     "willYouQuit": "Will you... quit?"
+  },
+  "auth": {
+    "welcome": "Welcome to RevenueCat",
+    "signInSubtitle": "Please sign in to continue",
+    "createAccount": "Create Account",
+    "joinToday": "Join RevenueCat today",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "continueWithGoogle": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "or": "OR",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "errors": {
+      "fillAllFields": "Please fill in all fields",
+      "passwordsDontMatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters long",
+      "accountCreated": "Account created successfully!",
+      "ok": "OK",
+      "loginError": "Login Error",
+      "registrationError": "Registration Error",
+      "googleSignInError": "Google Sign-In Error",
+      "logoutError": "Logout Error"
+    }
+  },
+  "chat": {
+    "title": "Chat Assistant",
+    "welcomeMessage": "Hello! I'm here to help you on your quitting journey. How are you feeling today?",
+    "quickReplies": "Quick replies:",
+    "placeholder": "Type your message...",
+    "quickReplyOptions": {
+      "stressed": "I'm feeling stressed",
+      "craving": "I have a strong craving",
+      "motivation": "I need motivation",
+      "celebrate": "I want to celebrate my progress"
+    },
+    "responses": {
+      "stressed": "I understand stress can be challenging. Remember, smoking won't solve the problem. Try taking a few deep breaths or going for a short walk. What's causing you stress right now?",
+      "craving": "Cravings are temporary and will pass. Try the 4-4-4 breathing technique: inhale for 4 seconds, hold for 4, exhale for 4. You're stronger than this urge!",
+      "motivation": "You're doing amazing! Every smoke-free moment is a victory. Think about why you started this journey. Your health, your family, your future self - they're all cheering you on!",
+      "celebrate": "That's fantastic! Celebrating your progress is so important. What milestone are you celebrating? Remember, every day smoke-free is a huge achievement!",
+      "default": "Thank you for sharing that with me. I'm here to support you through every step of your quitting journey. How can I help you today?"
+    }
+  },
+  "cravingSOS": {
+    "steps": {
+      "breathe": {
+        "title": "Take a Deep Breath",
+        "description": "Inhale slowly for 4 counts, hold for 4, exhale for 4",
+        "action": "I'm breathing"
+      },
+      "water": {
+        "title": "Drink Some Water",
+        "description": "Stay hydrated and give your mouth something to do",
+        "action": "I'm drinking water"
+      },
+      "walk": {
+        "title": "Take a Walk",
+        "description": "Get moving and change your environment",
+        "action": "I'm going for a walk"
+      },
+      "friend": {
+        "title": "Call a Friend",
+        "description": "Reach out to someone who supports your journey",
+        "action": "I'm calling someone"
+      },
+      "encourage": {
+        "title": "You're Doing Great!",
+        "description": "The craving will pass. You're stronger than this urge.",
+        "action": "I'm staying strong"
+      }
+    }
+  },
+  "buddy": {
+    "nameModal": {
+      "title": "Buddy name",
+      "placeholder": "Type a name"
+    }
+  },
+  "alerts": {
+    "notEnoughCoins": "Not enough of coins",
+    "shareFailed": "Share failed: {{error}}",
+    "telegram": "Telegram",
+    "email": "Email",
+    "mockTelegram": "Mock: open Telegram chat",
+    "mockEmail": "Mock: open email composer"
+  },
+  "support": {
+    "telegram": "Telegram",
+    "email": "Email"
   }
 }

@@ -805,5 +805,97 @@
     "subtitle": "Tu viaje hacia una vida sin humo comienza aquí",
     "title": "Bienvenido a Zero Poofs",
     "willYouQuit": "¿Vas a... dejar de fumar?"
+  },
+  "auth": {
+    "welcome": "Bienvenido a RevenueCat",
+    "signInSubtitle": "Por favor inicia sesión para continuar",
+    "createAccount": "Crear Cuenta",
+    "joinToday": "Únete a RevenueCat hoy",
+    "signIn": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "continueWithGoogle": "Continuar con Google",
+    "noAccount": "¿No tienes una cuenta?",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "or": "O",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "errors": {
+      "fillAllFields": "Por favor completa todos los campos",
+      "passwordsDontMatch": "Las contraseñas no coinciden",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "accountCreated": "¡Cuenta creada exitosamente!",
+      "ok": "OK",
+      "loginError": "Error de Inicio de Sesión",
+      "registrationError": "Error de Registro",
+      "googleSignInError": "Error de Inicio de Sesión con Google",
+      "logoutError": "Error de Cierre de Sesión"
+    }
+  },
+  "chat": {
+    "title": "Asistente de Chat",
+    "welcomeMessage": "¡Hola! Estoy aquí para ayudarte en tu viaje para dejar de fumar. ¿Cómo te sientes hoy?",
+    "quickReplies": "Respuestas rápidas:",
+    "placeholder": "Escribe tu mensaje...",
+    "quickReplyOptions": {
+      "stressed": "Me siento estresado",
+      "craving": "Tengo una fuerte ansiedad",
+      "motivation": "Necesito motivación",
+      "celebrate": "Quiero celebrar mi progreso"
+    },
+    "responses": {
+      "stressed": "Entiendo que el estrés puede ser desafiante. Recuerda, fumar no resolverá el problema. Intenta tomar algunas respiraciones profundas o dar un paseo corto. ¿Qué te está causando estrés ahora mismo?",
+      "craving": "Los antojos son temporales y pasarán. Prueba la técnica de respiración 4-4-4: inhala por 4 segundos, mantén por 4, exhala por 4. ¡Eres más fuerte que este impulso!",
+      "motivation": "¡Lo estás haciendo increíble! Cada momento libre de humo es una victoria. Piensa en por qué comenzaste este viaje. Tu salud, tu familia, tu yo futuro - todos te están animando.",
+      "celebrate": "¡Eso es fantástico! Celebrar tu progreso es muy importante. ¿Qué hito estás celebrando? Recuerda, cada día libre de humo es un gran logro.",
+      "default": "Gracias por compartir eso conmigo. Estoy aquí para apoyarte en cada paso de tu viaje para dejar de fumar. ¿Cómo puedo ayudarte hoy?"
+    }
+  },
+  "cravingSOS": {
+    "steps": {
+      "breathe": {
+        "title": "Respira Profundamente",
+        "description": "Inhala lentamente por 4 tiempos, mantén por 4, exhala por 4",
+        "action": "Estoy respirando"
+      },
+      "water": {
+        "title": "Bebe Agua",
+        "description": "Mantente hidratado y dale algo que hacer a tu boca",
+        "action": "Estoy bebiendo agua"
+      },
+      "walk": {
+        "title": "Sal a Caminar",
+        "description": "Muévete y cambia tu entorno",
+        "action": "Voy a caminar"
+      },
+      "friend": {
+        "title": "Llama a un Amigo",
+        "description": "Contacta a alguien que apoye tu viaje",
+        "action": "Voy a llamar a alguien"
+      },
+      "encourage": {
+        "title": "¡Lo Estás Haciendo Genial!",
+        "description": "El antojo pasará. Eres más fuerte que este impulso.",
+        "action": "Me mantengo fuerte"
+      }
+    }
+  },
+  "buddy": {
+    "nameModal": {
+      "title": "Nombre del compañero",
+      "placeholder": "Escribe un nombre"
+    }
+  },
+  "alerts": {
+    "notEnoughCoins": "No hay suficientes monedas",
+    "shareFailed": "Error al compartir: {{error}}",
+    "telegram": "Telegram",
+    "email": "Correo electrónico",
+    "mockTelegram": "Simulación: abrir chat de Telegram",
+    "mockEmail": "Simulación: abrir compositor de correo"
+  },
+  "support": {
+    "telegram": "Telegram",
+    "email": "Correo electrónico"
   }
 }
