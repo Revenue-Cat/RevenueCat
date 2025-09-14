@@ -74,13 +74,7 @@ const Home: React.FC<HomeProps> = ({
   const shopButtonTranslateY = useRef(new Animated.Value(50)).current;
 
   // Use custom hooks for navigation and scroll handling
-  const {
-    currentView,
-    handleHeaderGesture,
-    changeView,
-    onHeaderGestureEvent,
-    contentTranslateX,
-  } = useHomeNavigation();
+  const { currentView, handleHeaderGesture, changeView, onHeaderGestureEvent, contentTranslateX } = useHomeNavigation();
   const { width, height } = Dimensions.get("window");
   const {
     isAchievementsCollapsed,
@@ -608,9 +602,7 @@ const Home: React.FC<HomeProps> = ({
                 <AchievementSection
                   isCollapsed={isAchievementsCollapsed}
                   onToggle={toggleAchievements}
-                  onNavigateToProgressChallenges={
-                    handleNavigateToProgressChallenges
-                  }
+                  onNavigateToProgressChallenges={handleNavigateToProgressChallenges}
                 />
 
                 <View style={{ flex: 1 }}>
@@ -621,7 +613,7 @@ const Home: React.FC<HomeProps> = ({
                     isScenesSelected={isScenesSelected}
                     setIsScenesSelected={handleSetIsScenesSelected}
                     onNavigateToShop={handleNavigateToShop}
-                    onNavigateToBreathing={onShowBreathingExercise}
+                    onNavigateToBreathing={(skipInitialScreen) => onShowBreathingExercise(skipInitialScreen)}
                   />
                 </View>
               </View>
