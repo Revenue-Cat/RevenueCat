@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
+import { useTranslation } from "react-i18next";
 import {
   achievementService,
   Achievement,
@@ -198,6 +199,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   // Language context
   const { language: contextLanguage } = useLanguage();
+  const { t } = useTranslation();
   
   // Helper function to map language context to notification language
   const getNotificationLanguage = (): 'ua' | 'en' | 'es' => {
@@ -616,7 +618,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const price = (item as any).coin || 0;
 
       if (userCoins < price) {
-        alert("Not enough of coins");
+        alert(t("alerts.notEnoughCoins"));
         return false;
       }
 

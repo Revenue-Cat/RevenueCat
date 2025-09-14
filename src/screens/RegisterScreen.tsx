@@ -13,6 +13,7 @@ import {
 import { registerWithEmail } from "../config/firebase";
 import { useGoogleAuth } from "../services/googleAuth";
 import LottieView from "lottie-react-native";
+import { useTranslation } from "react-i18next";
 
 interface RegisterScreenProps {
   navigation: any;
@@ -24,31 +25,32 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signInWithGoogleAsync } = useGoogleAuth();
+  const { t } = useTranslation();
 
   const handleRegister = async () => {
     if (!email || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert(t("auth.errors.loginError"), t("auth.errors.fillAllFields"));
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      Alert.alert(t("auth.errors.loginError"), t("auth.errors.passwordsDontMatch"));
       return;
     }
 
     if (password.length < 6) {
-      Alert.alert("Error", "Password must be at least 6 characters long");
+      Alert.alert(t("auth.errors.loginError"), t("auth.errors.passwordTooShort"));
       return;
     }
 
     setLoading(true);
     try {
       await registerWithEmail(email, password);
-      Alert.alert("Success", "Account created successfully!", [
-        { text: "OK", onPress: () => navigation.navigate("Login") },
+      Alert.alert(t("auth.errors.loginError"), t("auth.errors.accountCreated"), [
+        { text: t("auth.errors.ok"), onPress: () => navigation.navigate("Login") },
       ]);
     } catch (error: any) {
-      Alert.alert("Registration Error", error.message);
+      Alert.alert(t("auth.errors.registrationError"), error.message);
     } finally {
       setLoading(false);
     }
@@ -59,10 +61,10 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
     try {
       const result = await signInWithGoogleAsync();
       if (!result.success) {
-        Alert.alert("Google Sign-In Error", result.error);
+        Alert.alert(t("auth.errors.googleSignInError"), result.error);
       }
     } catch (error: any) {
-      Alert.alert("Google Sign-In Error", error.message);
+      Alert.alert(t("auth.errors.googleSignInError"), error.message);
     } finally {
       setLoading(false);
     }
@@ -82,12 +84,12 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
           }}
         />
       </View>
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Join RevenueCat today</Text>
+      <Text style={styles.title}>{t("auth.createAccount")}</Text>
+      <Text style={styles.subtitle}>{t("auth.joinToday")}</Text>
       <View style={styles.form}>
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder={t("auth.email")}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -97,7 +99,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
 
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder={t("auth.password")}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -107,7 +109,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
 
         <TextInput
           style={styles.input}
-          placeholder="Confirm Password"
+          placeholder={t("auth.confirmPassword")}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
@@ -123,13 +125,13 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Create Account</Text>
+            <Text style={styles.buttonText}>{t("auth.createAccount")}</Text>
           )}
         </TouchableOpacity>
 
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>OR</Text>
+          <Text style={styles.dividerText}>{t("auth.or")}</Text>
           <View style={styles.dividerLine} />
         </View>
 
@@ -141,14 +143,14 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
           {loading ? (
             <ActivityIndicator color="#333" />
           ) : (
-            <Text style={styles.googleButtonText}>Continue with Google</Text>
+            <Text style={styles.googleButtonText}>{t("auth.continueWithGoogle")}</Text>
           )}
         </TouchableOpacity>
 
         <View style={styles.loginLink}>
-          <Text style={styles.loginText}>Already have an account? </Text>
+          <Text style={styles.loginText}>{t("auth.hasAccount")} </Text>
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={styles.loginLinkText}>Sign In</Text>
+            <Text style={styles.loginLinkText}>{t("auth.signIn")}</Text>
           </TouchableOpacity>
         </View>
       </View>
