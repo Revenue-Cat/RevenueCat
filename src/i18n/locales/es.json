@@ -604,25 +604,49 @@
   },
   "scenes": {
     "bg1": {
-      "name": "Atardecer"
+      "name": "Silencio Esmeralda"
     },
     "bg2": {
-      "name": "Océano"
+      "name": "Japón Silencioso"
     },
     "bg3": {
-      "name": "Bosque"
+      "name": "Horizonte Arenoso"
     },
     "bg4": {
-      "name": "Montaña"
+      "name": "Ciudad Dorada"
     },
     "bg5": {
-      "name": "Desierto"
+      "name": "Despertar Verde"
     },
     "bg6": {
-      "name": "Ciudad"
+      "name": "Atardecer Violeta"
     },
     "bg7": {
-      "name": "Espacio"
+      "name": "Bosque Brumoso"
+    },
+    "bg8": {
+      "name": "Horizonte Rosa"
+    },
+    "bg9": {
+      "name": "Sinfonía Tropical"
+    },
+    "bg10": {
+      "name": "Noche de Halloween"
+    },
+    "bg11": {
+      "name": "Valle de Flores"
+    },
+    "bg12": {
+      "name": "Ciudad y Parque"
+    },
+    "bg13": {
+      "name": "Puente del Amanecer"
+    },
+    "bg14": {
+      "name": "Cielo de Ensueño"
+    },
+    "bg15": {
+      "name": "Ciudad Vespertina"
     }
   },
   "setup": {
