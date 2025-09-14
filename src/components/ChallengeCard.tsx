@@ -6,7 +6,7 @@ import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
 import LockLight from "../assets/icons/lock.svg";
-
+import BreatheIcon from "../assets/icons/breathe.svg";
 export type ChallengeStatus = "active" | "locked" | "inprogress" | "completed";
 
 export interface ChallengeCardProps {
@@ -22,6 +22,7 @@ export interface ChallengeCardProps {
   onCheckIn?: () => void;
   onPress?: () => void;
   onNavigateToBreathing?: (skipInitialScreen?: boolean) => void;
+  onRestartChallenge?: (challengeId: string) => void;
   cardIcon?: any;
   icon?: any;
   achievementIcon?: any;
@@ -48,6 +49,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   onCheckIn,
   onPress,
   onNavigateToBreathing,
+  onRestartChallenge,
   id: challengeId,
   totalDurations,
   isExclusive
@@ -93,10 +95,12 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
       <View className="flex-row justify-between items-start mb-3">
         {/* Left: points badge + duration + title + description */}
         <View className="flex-1 mr-3">
-          <View className="flex-row items-center border border-orange-500 px-1 py-0.5 rounded-full self-start mb-1 gap-1">
-          <Text className="text-base font-bold text-orange-500">+{points}</Text>
-          <CoinIcon width={16} height={16} color="#FF6B35" />
-        </View>
+          {isLocked && (
+            <View className="flex-row items-center border border-orange-500 pl-2 pr-1.5 py-0 rounded-full self-start mb-1 gap-0.5 text-center">
+              <Text className="text-lg font-semibold text-orange-500">{points}</Text>
+              <CoinIcon width={16} height={16} color="#FF6B35" />
+            </View>
+          )}
           <Text className={`${isDark ? 'text-slate-300' : 'text-slate-600'} text-sm font-semibold my-1`}>
             {duration} {t("challenges.challenge")}
           </Text>
@@ -138,41 +142,39 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
         </View>
       </View>
 
-      {/* Actions */}
-      {isInProgress && !isCompletedStatus && (
-        <View>
-          {/* Progress and Check In for active in-progress challenges */}
-          <>
-            {/* Progress */}
-            {showProgress && (
-              <View className="mb-3">
-                <View className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-600' : 'bg-gray-200'}`}>
-                  <View
-                    style={{ width: `${timeBasedProgress}%` }}
-                    className="h-full bg-green-500"
-                  />
-                </View>
-              </View>
-            )}
-
-            {/* Check In Button */}
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={isExclusive ? () => onNavigateToBreathing?.(true) : onCheckIn}
-              className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
-            >
-              <Ionicons name="checkmark" size={20} color="#ffffff"  />
-              <Text className="text-white font-semibold text-base ml-2">
-                {isExclusive ? "Take 5 breathe" : t("challenges.checkIn")}
-              </Text>
-              {typeof checkIns === "number" && (
-                <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
-                  <Text className="text-white text-s font-semibold">{checkIns}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </>
+      {/* Progress - only show for in-progress challenges that are not completed */}
+      {isInProgress && !isCompleted && showProgress && (
+        <View className="mb-3">
+          <View className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-600' : 'bg-gray-200'}`}>
+            <View
+              style={{ width: `${timeBasedProgress}%` }}
+              className="h-full bg-green-500"
+            />
+          </View>
         </View>
+      )}
+
+      {/* Check In Button - show for all in-progress challenges */}
+      {isInProgress && (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={isCompleted ? () => challengeId && onRestartChallenge?.(challengeId) : (isExclusive ? () => onNavigateToBreathing?.(true) : onCheckIn)}
+          className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
+        >
+          {isCompleted || completionCount > 0 ? (
+            isExclusive ? <BreatheIcon width={16} height={16} color="#ffffff" /> : <Ionicons name="refresh" size={20} color="#ffffff" />
+          ) : (
+            <Ionicons name="checkmark" size={20} color="#ffffff" />
+          )}
+          <Text className="text-white font-semibold text-base ml-2">
+            {isCompleted ? t('challenges.modal.restartChallenge') : (isExclusive ? "Take 5 breathe" : t("challenges.checkIn"))}
+          </Text>
+          {!isCompleted && typeof checkIns === "number" && (
+            <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
+              <Text className="text-white text-s font-semibold">{checkIns}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
       )}
 
     </View>

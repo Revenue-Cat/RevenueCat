@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import { View, Animated, Pressable, Text, Dimensions } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
+import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from "lottie-react-native";
 import { Ionicons } from "@expo/vector-icons";
 import CoinIcon from "../assets/icons/coins.svg";
@@ -370,13 +371,39 @@ const Home: React.FC<HomeProps> = ({
           </View>
 
           <Animated.View
-            style={{ 
+            style={{
               height: backgroundHeight
             }}
             pointerEvents="none"
           >
             <ParallaxBackground scrollY={scrollY} height={330} />
           </Animated.View>
+
+          {/* Fixed Navigation Dots - positioned after HomeHeader, before buddy */}
+          <View className="absolute top-[130px] left-0 right-0 z-[20]" pointerEvents="box-none">
+            <View className="flex-row justify-center">
+              <View className="flex-row bg-black/30 rounded-full px-2 py-1 gap-1">
+                <Pressable
+                  className={`w-2 h-2 rounded-full ${
+                    currentView === "achievements" ? "bg-white" : "bg-black/30"
+                  }`}
+                  onPress={() => changeView("achievements")}
+                />
+                <Pressable
+                  className={`w-2 h-2 rounded-full ${
+                    currentView === "home" ? "bg-white" : "bg-black/30"
+                  }`}
+                  onPress={() => changeView("home")}
+                />
+                <Pressable
+                  className={`w-2 h-2 rounded-full ${
+                    currentView === "shop" ? "bg-white" : "bg-black/30"
+                  }`}
+                  onPress={() => changeView("shop")}
+                />
+              </View>
+            </View>
+          </View>
 
           {/* Buddy Lottie on top of background */}
           <Animated.View
@@ -580,7 +607,7 @@ const Home: React.FC<HomeProps> = ({
           <Animated.View
             style={{
               position: "absolute",
-              bottom: 8,
+              bottom: 0,
               left: 0,
               right: 0,
               zIndex: 200,
@@ -589,20 +616,32 @@ const Home: React.FC<HomeProps> = ({
             }}
             pointerEvents={currentView === "home" ? "auto" : "none"}
           >
-            <CTAButton
-              label={t("home.cravingSOS", "Craving SOS")}
-              onPress={handleShowCravingSOS}
-              tone="danger"
-              rightIconName={null}
-              containerClassName="px-6 pb-8"
-            />
+            {/* LinearGradient Button */}
+            <LinearGradient
+              colors={['transparent', 'rgba(0, 0, 0, 0.9)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={{
+                borderRadius: 8, // Match the button's border radius
+                paddingHorizontal: 0, // Match container padding
+                paddingTop: 16, // Match container padding
+              }}
+            >
+              <CTAButton
+                label={t("home.cravingSOS", "Craving SOS")}
+                onPress={handleShowCravingSOS}
+                tone="danger"
+                rightIconName={null}
+                containerClassName="px-6 pb-8 bg-transparent"
+              />
+            </LinearGradient>
           </Animated.View>
 
           {/* Animated Shop CTA Button */}
           <Animated.View
             style={{
               position: "absolute",
-              bottom: 8,
+              bottom: 0,
               left: 0,
               right: 0,
               zIndex: 200,
@@ -611,12 +650,23 @@ const Home: React.FC<HomeProps> = ({
             }}
             pointerEvents={currentView === "shop" ? "auto" : "none"}
           >
-            <CTAButton
-              label={shopButtonLabel}
-              onPress={handleBuyAllItems}
-              rightIconName={null}
-              containerClassName="px-6 pb-8"
-            />
+             <LinearGradient
+              colors={['transparent', 'rgba(0, 0, 0, 0.9)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={{
+                borderRadius: 8, // Match the button's border radius
+                paddingHorizontal: 0, // Match container padding
+                paddingTop: 16, // Match container padding
+              }}
+            >
+              <CTAButton
+                label={shopButtonLabel}
+                onPress={handleBuyAllItems}
+                rightIconName={null}
+                containerClassName="px-6 pb-8 bg-transparent"
+                />
+              </LinearGradient>
           </Animated.View>
         </View>
       </PanGestureHandler>

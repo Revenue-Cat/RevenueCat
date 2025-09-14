@@ -365,7 +365,7 @@ const Achievements: React.FC<AchievementsProps> = ({
           {filteredAchievements.map((achievement, index) => {
             const progress = getProgressForAchievement(achievement.id);
             const progressPercentage = progress.percentage;
-
+            console.log("progressPercentage", progressPercentage, achievement.id)
             return (
               <View
                 key={`${achievement.id}-${index}`}
@@ -389,7 +389,7 @@ const Achievements: React.FC<AchievementsProps> = ({
                         achievement.id,
                         filteredAchievements,
                         getProgressForAchievement
-                      ) || progressPercentage === 100
+                      ) || progressPercentage >= 100
                         ? "#22C55E"
                         : "transparent"
                     }
@@ -405,7 +405,7 @@ const Achievements: React.FC<AchievementsProps> = ({
                           achievement.id,
                           filteredAchievements,
                           getProgressForAchievement
-                        ) || progressPercentage === 100 ? (
+                        ) || progressPercentage >= 100 ? (
                           // First 3 achievements OR 100% progress: show achievement icon and green progress
                           <>
                             {achievement.icon ? (
@@ -422,13 +422,11 @@ const Achievements: React.FC<AchievementsProps> = ({
                               />
                             )}
                             {/* Check icon for 100% progress */}
-                            {progressPercentage === 100 && (
-                                <View className="absolute -top-2 -right-2 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
-                                <Ionicons
-                                  name="checkmark"
-                                  size={12}
-                                  color="white"
-                                />
+                            {progressPercentage >= 100 && (
+                              <View className="absolute -top-2 -right-1 bg-green-500 rounded-full w-5 h-5 justify-center items-center">
+                                <Text className="text-white text-xs font-bold">
+                                   <Ionicons name="checkmark" size={16} color="white" />
+                                </Text>
                               </View>
                             )}
                             {/* Time icon for progress > 0 but < 100% */}

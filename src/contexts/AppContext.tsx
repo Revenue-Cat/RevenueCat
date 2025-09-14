@@ -16,16 +16,27 @@ import { Scene, SCENES_DATA } from "../data/scenesData";
 import Purchases from "react-native-purchases";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { signInAnonymously } from "firebase/auth";
-import {db, auth} from "../../firebaseConfig"
-import {getOrCreatePersistentUserId} from "../utils/keychain"
-import { DEFAULT_BACKGROUND, DEFAULT_CHARACTER, DEFAULT_STATE, ShopItem } from "../data/state";
+import { db, auth } from "../../firebaseConfig";
+import { getOrCreatePersistentUserId } from "../utils/keychain";
+import {
+  DEFAULT_BACKGROUND,
+  DEFAULT_CHARACTER,
+  DEFAULT_STATE,
+  ShopItem,
+} from "../data/state";
+import { getBuddyById } from "../data/buddiesData";
+import { useLanguage } from "./LanguageContext";
+import notificationService, {
+  UserNotificationSettings,
+} from "../services/notificationService";
+import oneSignalScheduler from "../services/oneSignalScheduler";
 
 type ShopTab = "buddies" | "backgrounds";
 export type UserGender = "man" | "lady" | "any";
 
 interface AppState {
   isLoading: boolean;
-  
+
   // User data
   userCoins: number;
   selectedBuddy: ShopItem;
@@ -165,6 +176,21 @@ interface AppState {
   shouldOfferProtectStreak: () => boolean; // show buy card when on 9/14/19...
   addSlip: () => "ok" | "limit"; // returns 'limit' if crossed current cap
   purchaseExtraSlips: (costCoins?: number) => Promise<boolean>; // +5 slips
+
+  // Notification system
+  initializeNotifications: () => Promise<void>;
+  scheduleUserNotifications: () => Promise<void>;
+  updateNotificationSettings: (
+    settings: Partial<UserNotificationSettings>
+  ) => Promise<void>;
+  sendTestNotification: () => Promise<void>;
+  getNotificationStats: () => Promise<{
+    totalScheduled: number;
+    sent: number;
+    pending: number;
+    nextNotification?: Date;
+  }>;
+  areNotificationsEnabled: () => Promise<boolean>;
 }
 
 const AppContext = createContext<AppState | undefined>(undefined);
@@ -180,7 +206,22 @@ export const useApp = () => {
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { t } = useTranslation();
+  // Language context
+  const { language: contextLanguage } = useLanguage();
+
+  // Helper function to map language context to notification language
+  const getNotificationLanguage = (): "ua" | "en" | "es" => {
+    switch (contextLanguage) {
+      case "uk":
+        return "ua";
+      case "es":
+        return "es";
+      case "en":
+      default:
+        return "en";
+    }
+  };
+
   // Shop/state
   const [userCoins, setUserCoinsState] = useState(0);
   const [selectedBuddy, setSelectedBuddyState] =
@@ -277,10 +318,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Load from Firebase on mount
   useEffect(() => {
-
     const loadState = async () => {
       try {
-        const userId = await getOrCreatePersistentUserId()
+        const userId = await getOrCreatePersistentUserId();
 
         setIsLoading(true);
         if (!auth.currentUser) {
@@ -304,7 +344,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
           if (savedState) {
             if (typeof savedState !== "string") {
-              console.warn("appState is not a string, initializing with defaults");
+              console.warn(
+                "appState is not a string, initializing with defaults"
+              );
               await saveDefaultState(userDocRef);
               return;
             }
@@ -313,7 +355,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
               // Only update state if parsed data is valid
               if (parsed && typeof parsed === "object") {
                 setUserCoinsState(parsed.userCoins ?? 0);
-                setSelectedBuddyState(parsed.selectedBuddy ?? DEFAULT_CHARACTER);
+                setSelectedBuddyState(
+                  parsed.selectedBuddy ?? DEFAULT_CHARACTER
+                );
                 setSelectedBackgroundState(
                   parsed.selectedBackground ?? DEFAULT_BACKGROUND
                 );
@@ -393,13 +437,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                 > = {};
 
                 Object.keys(challengeCompletions).forEach((challengeId) => {
-                  convertedChallengeCompletions[challengeId] = challengeCompletions[
-                    challengeId
-                  ].map((completion: any) => ({
-                    ...completion,
-                    startDate: new Date(completion.startDate),
-                    endDate: new Date(completion.endDate),
-                  }));
+                  convertedChallengeCompletions[challengeId] =
+                    challengeCompletions[challengeId].map(
+                      (completion: any) => ({
+                        ...completion,
+                        startDate: new Date(completion.startDate),
+                        endDate: new Date(completion.endDate),
+                      })
+                    );
                 });
 
                 setChallengeCompletions(convertedChallengeCompletions);
@@ -420,12 +465,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             await saveDefaultState(userDocRef);
           }
         } else {
-          console.log("Firestore document does not exist, creating with defaults");
+          console.log(
+            "Firestore document does not exist, creating with defaults"
+          );
           await saveDefaultState(userDocRef);
         }
       } catch (error) {
         console.error("Failed to load state:", error);
-        alert("Error loading data. Please try again.");
+        console.error("Error details:", {
+          message: (error as Error).message,
+          code: (error as any).code,
+          stack: (error as Error).stack,
+        });
+        // Don't show alert immediately - try to continue with default state
+        console.log("Continuing with default state due to error");
+        setIsLoading(false);
       } finally {
         setIsLoading(false);
       }
@@ -433,26 +487,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Helper function to save default state to Firestore
     const saveDefaultState = async (userDocRef: any) => {
-
       try {
         await setDoc(userDocRef, { appState: JSON.stringify(DEFAULT_STATE) });
         console.log("Default state saved to Firestore");
       } catch (error) {
         console.error("Failed to save default state:", error);
-        alert("Failed to initialize data. Please check your network.");
+        console.error("Save error details:", {
+          message: (error as Error).message,
+          code: (error as any).code,
+          stack: (error as Error).stack,
+        });
+        // Don't show alert - just log the error and continue
+        console.log("Continuing without saving to Firestore");
       }
     };
 
     loadState();
   }, []);
 
-  const saveState = async(stateToSave: any, userId: string) => {
+  const saveState = async (stateToSave: any, userId: string) => {
     const userDocRef = doc(db, "users", userId);
     try {
       await setDoc(userDocRef, { appState: JSON.stringify(stateToSave) });
     } catch (error) {
       console.error("Failed to save state:", error);
-      alert("Failed to save data. Please check your network or try again.");
+      console.error("Save state error details:", {
+        message: (error as Error).message,
+        code: (error as any).code,
+        stack: (error as Error).stack,
+      });
+      // Don't show alert - just log the error
+      console.log(
+        "Failed to save state to Firestore, continuing with local state"
+      );
     }
   };
 
@@ -486,7 +553,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       extraSlipPacks,
     };
 
-    if(!isLoading) {
+    if (!isLoading) {
       saveState(stateToSave, appUserId);
     }
   }, [
@@ -895,10 +962,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   // Achievement functions
-  const setStartDate = useCallback(async (startDate: Date) => {
-    setUserProgress((prev) => ({ ...prev, startDate }));
-    await achievementService.setStartDate(startDate);
-  }, []);
 
   const getProgressForAchievement = useCallback((achievementId: string) => {
     return achievementService.getProgressForAchievement(achievementId);
@@ -943,6 +1006,196 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     );
     setUserProgress((prev) => ({ ...prev, startDate }));
     await achievementService.setStartDate(startDate);
+
+    // Initialize and schedule notifications after onboarding completion
+    try {
+      await initializeNotifications();
+      await scheduleUserNotifications();
+    } catch (error) {
+      console.error(
+        "Error setting up notifications after onboarding:",
+        error as Error
+      );
+    }
+  }, []);
+
+  // Notification system functions
+  const initializeNotifications = useCallback(async () => {
+    try {
+      await notificationService.initialize();
+      console.log("AppContext: Notifications initialized");
+    } catch (error) {
+      console.error(
+        "AppContext: Error initializing notifications:",
+        error as Error
+      );
+      throw error;
+    }
+  }, []);
+
+  const scheduleUserNotifications = useCallback(async () => {
+    try {
+      if (!userProgress.startDate) {
+        console.log(
+          "AppContext: No startDate set, skipping notification scheduling"
+        );
+        return;
+      }
+
+      // Get the actual buddy name from the buddy data
+      const selectedBuddy = getBuddyById(selectedBuddyId);
+      const actualBuddyName = selectedBuddy?.name || buddyName || "Your Buddy";
+
+      const userSettings: UserNotificationSettings = {
+        userId: await getOrCreatePersistentUserId(),
+        language: getNotificationLanguage(),
+        buddyName: actualBuddyName,
+        selectedBuddyId: selectedBuddyId,
+        gender: gender,
+        startDate: userProgress.startDate,
+        isEnabled: true,
+        morningTime: "08:00",
+        eveningTime: "20:00",
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      };
+
+      await notificationService.scheduleUserNotifications(userSettings);
+
+      console.log("AppContext: User notifications scheduled");
+    } catch (error) {
+      console.error(
+        "AppContext: Error scheduling user notifications:",
+        error as Error
+      );
+      throw error;
+    }
+  }, [
+    userProgress.startDate,
+    buddyName,
+    gender,
+    selectedBuddyId,
+    contextLanguage,
+  ]);
+
+  // Achievement functions
+  const setStartDate = useCallback(
+    async (startDate: Date) => {
+      setUserProgress((prev) => ({ ...prev, startDate }));
+      await achievementService.setStartDate(startDate);
+
+      // Automatically reschedule notifications when start date changes
+      try {
+        await scheduleUserNotifications();
+        console.log(
+          "AppContext: Notifications rescheduled after start date change"
+        );
+      } catch (error) {
+        console.error(
+          "AppContext: Error rescheduling notifications after start date change:",
+          error
+        );
+      }
+    },
+    [scheduleUserNotifications]
+  );
+
+  const updateNotificationSettings = useCallback(
+    async (settings: Partial<UserNotificationSettings>) => {
+      try {
+        const userId = await getOrCreatePersistentUserId();
+        const currentSettings = await notificationService.getUserSettings(
+          userId
+        );
+
+        if (!currentSettings) {
+          console.log("AppContext: No existing notification settings found");
+          return;
+        }
+
+        const updatedSettings = { ...currentSettings, ...settings };
+        await notificationService.updateUserSettings(updatedSettings);
+
+        console.log("AppContext: Notification settings updated");
+      } catch (error) {
+        console.error(
+          "AppContext: Error updating notification settings:",
+          error as Error
+        );
+        throw error;
+      }
+    },
+    []
+  );
+
+  const sendTestNotification = useCallback(async () => {
+    try {
+      // Get the actual buddy name from the buddy data
+      const selectedBuddy = getBuddyById(selectedBuddyId);
+      const actualBuddyName = selectedBuddy?.name || buddyName || "Your Buddy";
+
+      const userSettings: UserNotificationSettings = {
+        userId: await getOrCreatePersistentUserId(),
+        language: getNotificationLanguage(),
+        buddyName: actualBuddyName,
+        selectedBuddyId: selectedBuddyId,
+        gender: gender,
+        startDate: userProgress.startDate || new Date(),
+        isEnabled: true,
+        morningTime: "08:00",
+        eveningTime: "20:00",
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      };
+
+      await notificationService.sendTestNotification(userSettings);
+
+      console.log("AppContext: Test notification sent");
+    } catch (error) {
+      console.error(
+        "AppContext: Error sending test notification:",
+        error as Error
+      );
+      throw error;
+    }
+  }, [
+    userProgress.startDate,
+    buddyName,
+    gender,
+    selectedBuddyId,
+    contextLanguage,
+  ]);
+
+  const getNotificationStats = useCallback(async () => {
+    try {
+      const userId = await getOrCreatePersistentUserId();
+      const firebaseStats = await notificationService.getUserNotificationStats(
+        userId
+      );
+      const oneSignalStats = oneSignalScheduler.getNotificationStats();
+
+      return {
+        ...firebaseStats,
+        oneSignal: oneSignalStats,
+      };
+    } catch (error) {
+      console.error(
+        "AppContext: Error getting notification stats:",
+        error as Error
+      );
+      throw error;
+    }
+  }, []);
+
+  const areNotificationsEnabled = useCallback(async () => {
+    try {
+      // Check OneSignal permission status instead
+      return await notificationService.areNotificationsEnabled();
+    } catch (error) {
+      console.error(
+        "AppContext: Error checking notification permissions:",
+        error as Error
+      );
+      return false;
+    }
   }, []);
 
   // Set up achievement completion callback to add coins
@@ -999,18 +1252,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     // Always record the slip in history (optional—remove if you don't want to keep the last one)
     setSlipsDates((prev) => [nowIso, ...prev]);
 
-    if (newCount > allowed) {
+    if (newCount >= allowed) {
       // Exceeded allowance → reset current cycle
       setSlipsUsed(0);
       setSlipsDates([]); // clear the visible grid for the new cycle
-      setStartDate(new Date()); // reset smoke-free timer/streak start
+      // Note: Start date reset is handled by the calling component (SlipsLog)
       return "limit";
     }
 
     // Still within allowance → increment normally
     setSlipsUsed(newCount);
     return "ok";
-  }, [slipsUsed, getSlipsAllowed, setStartDate]);
+  }, [slipsUsed, getSlipsAllowed]);
 
   const purchaseExtraSlips = useCallback(
     async (costCoins: number = 1000): Promise<boolean> => {
@@ -1135,6 +1388,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       shouldOfferProtectStreak,
       addSlip,
       purchaseExtraSlips,
+
+      // Notification system
+      initializeNotifications,
+      scheduleUserNotifications,
+      updateNotificationSettings,
+      sendTestNotification,
+      getNotificationStats,
+      areNotificationsEnabled,
     }),
     [
       isLoading,
@@ -1185,11 +1446,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       shouldOfferProtectStreak,
       addSlip,
       purchaseExtraSlips,
+      initializeNotifications,
+      scheduleUserNotifications,
+      updateNotificationSettings,
+      sendTestNotification,
+      getNotificationStats,
+      areNotificationsEnabled,
     ]
   );
 
   if (isLoading) {
-    console.log("----------- Loading")
+    console.log("----------- Loading");
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

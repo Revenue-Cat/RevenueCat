@@ -426,6 +426,11 @@
       "challenge": "Asesino de pasos",
       "description": "Cuando sientas el impulso de fumar, camina 500 pasos para despejar tu mente y reiniciar tu cuerpo. Esto ayuda a distraerte de los antojos y sentir control.",
       "title": "Caminar para reiniciar"
+    },
+    "breatheDeep": {
+      "challenge": "Maestro del aire",
+      "description": "Practica 5 respiraciones profundas, tres veces al día durante 10 días. Enfócate en tu respiración, relaja tu cuerpo y deja que los antojos pasen naturalmente.",
+      "title": "Respira profundo"
     }
   },
   "home": {
@@ -765,6 +770,11 @@
     "protect": {
       "body": "Usa monedas para obtener recaídas extra y que tu contador no se reinicie.",
       "title": "Protege tu racha"
+    },
+    "slipConfirmation": {
+      "description": "¿Tuviste una recaída? No te preocupes. Toma aire y sigue adelante.",
+      "logButton": "Registrar mi recaída",
+      "title": "No te rindas"
     },
     "smokedButton": "Fumé",
     "summary": "Te quedan {{remaining}} recaídas permitidas. Si alcanzas el límite, tu contador sin fumar se reinicia — y puedes empezar de nuevo",

@@ -5,8 +5,6 @@ import {
   Pressable,
   Dimensions,
   ScrollView,
-  Alert,
-  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -29,7 +27,6 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({
   const isDark = theme === "dark";
   const [isRequestingPermission, setIsRequestingPermission] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
-  const [showPermissionModal, setShowPermissionModal] = useState(false);
 
   // Get current time for timestamp
   const now = new Date();
@@ -39,8 +36,10 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({
     hour12: true,
   });
 
-  // Check permission status on component mount
+  // Initialize OneSignal and check permission status on component mount
   useEffect(() => {
+    // Initialize OneSignal when user reaches this screen
+    oneSignalService.initialize();
     checkPermissionStatus();
   }, []);
 
@@ -55,11 +54,6 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({
   };
 
   const handleRequestPermission = async () => {
-    setShowPermissionModal(true);
-  };
-
-  const handleAllowPermission = async () => {
-    setShowPermissionModal(false);
     setIsRequestingPermission(true);
 
     try {
@@ -75,12 +69,6 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({
     } finally {
       setIsRequestingPermission(false);
     }
-  };
-
-  const handleDenyPermission = () => {
-    setShowPermissionModal(false);
-    // User denied permission, continue without notifications
-    onNext();
   };
 
   return (
@@ -165,96 +153,16 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({
       {/* Next Button - Fixed at bottom */}
       <View className="px-6 pb-8 items-center">
         <Pressable
-          className={`rounded-2xl px-6 py-4 items-center justify-center flex-row ${
-            hasPermission ? "bg-green-600" : "bg-indigo-600"
-          } ${isRequestingPermission ? "opacity-50" : ""}`}
-          onPress={hasPermission ? onNext : handleRequestPermission}
+          className={`rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600 ${isRequestingPermission ? "opacity-50" : ""}`}
+          onPress={handleRequestPermission}
           disabled={isRequestingPermission}
         >
           <Text className="font-semibold text-xl mr-2 text-white">
             {t("notificationPermission.actionButton")}
           </Text>
-          {!isRequestingPermission && (
-            <Ionicons
-              name={hasPermission ? "checkmark" : "arrow-forward"}
-              size={24}
-              color="#ffffff"
-            />
-          )}
         </Pressable>
 
-        {hasPermission && (
-          <Text
-            className={`text-sm mt-3 text-center ${
-              isDark ? "text-slate-300" : "text-slate-500"
-            }`}
-          >
-            {t(
-              "notificationPermission.permissionGranted",
-              "✅ Notifications enabled!"
-            )}
-          </Text>
-        )}
-
       </View>
-
-      {/* Custom Permission Modal */}
-      <Modal
-        visible={showPermissionModal}
-        transparent={true}
-        animationType="fade"
-      >
-        <View className="flex-1 justify-center items-center bg-black/50">
-          <View
-            className={`mx-6 px-6 pt-6 rounded-2xl ${
-              isDark ? "bg-slate-800" : "bg-white"
-            } shadow-xl`}
-          >
-            {/* Title */}
-            <Text
-              className={`text-xl font-bold text-center mb-3 ${
-                isDark ? "text-slate-100" : "text-gray-900"
-              }`}
-            >
-              Quitqly Would Like To Send You Notifications
-            </Text>
-
-            {/* Description */}
-            <Text
-              className={`text-base text-center mb-6 leading-5 ${
-                isDark ? "text-slate-300" : "text-gray-600"
-              }`}
-            >
-              Notifications may include alerts, sounds, and icon badges.
-            </Text>
-
-            {/* Buttons */}
-            <View className="border-t border-gray-200 -mx-6">
-              <View className="flex-row">
-                {/* Don't Allow Button */}
-                <Pressable
-                  className={`flex-1 p-5 border-r border-gray-200`}
-                  onPress={handleDenyPermission}
-                >
-                  <Text className={`text-center font-semibold text-indigo-600`}>
-                    Don't Allow
-                  </Text>
-                </Pressable>
-
-                {/* Allow Button */}
-                <Pressable
-                  className="flex-1 p-5"
-                  onPress={handleAllowPermission}
-                >
-                  <Text className="text-center font-semibold text-indigo-600">
-                    Allow
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };

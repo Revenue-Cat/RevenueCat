@@ -13,6 +13,8 @@ import TimeIcon from "../assets/challenges/time.svg";
 import CoinsIcon from "../assets/challenges/coins.svg";
 import ProgressRing from './ProgressRing';
 import ClapIcon from "../assets/icons/clap.svg";
+import BreatheIcon from "../assets/icons/breathe.svg";
+
 interface ChallengeModalProps {
   visible: boolean;
   challenge: ChallengeCardProps | null;
@@ -47,13 +49,24 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
     };
     return mapping[challengeId] || challengeId;
   };
-  const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns, getChallengeCompletions, setChallengeCompletionsForId, addDailyCheckIn } = useApp();
+  const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns, getChallengeCompletions, setChallengeCompletionsForId, addDailyCheckIn, userCoins, setShowCoinPurchase } = useApp();
 
   const handleStartChallenge = () => {
-    if (challengeId) {
-      startChallenge(challengeId);
+    if (!challengeId) return;
+
+    const challengeStatus = getChallengeStatus(challengeId);
+    const isLocked = challengeStatus === 'locked';
+
+    // If challenge is locked and user doesn't have enough coins, show purchase modal
+    if (isLocked && challenge && challenge.points > userCoins) {
+      setShowCoinPurchase(true);
       onClose();
+      return;
     }
+
+    // Otherwise, start the challenge normally
+    startChallenge(challengeId);
+    onClose();
   };
 
   const handleCheckIn = () => {
@@ -146,7 +159,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   // Calculate previous days data
   const previousDaysData = useMemo(() => {
     if (!challengeId || !progressData.startDate) return [];
-    console.log("TEST previousDaysData", challengeId, progressData.startDate)
+
     const dailyCheckInsData = getDailyCheckIns(challengeId);
     const startDate = new Date(progressData.startDate);
     const today = new Date();
@@ -199,16 +212,18 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
     >
       <View className="px-2">
         {/* Header: Coins on left, Duration on right */}
-        <View className="flex-row justify-between items-center mb-2">
+        <View className={`flex-row ${!isLocked ? 'justify-center' : 'justify-between' } items-center mb-2`}>
           {/* Coins */}
-          <View className="flex-row items-center border border-orange-500 px-3 py-0.5 rounded-full self-start mb-1 gap-1">
-            <Text className="text-base font-bold text-orange-500">+{challenge.points}</Text>
-            <CoinIcon width={12} height={12} color="#FF6B35" />
-          </View>
+          {isLocked && (
+            <View className="flex-row items-center border border-orange-500 pl-2 pr-1.5 py-0 rounded-full self-start mb-1 gap-0.5 text-center">
+              <Text className="text-lg font-semibold text-orange-500">{challenge.points}</Text>
+              <CoinIcon width={16} height={16} color="#FF6B35" />
+            </View>
+          )}
 
           {/* Duration */}
           <View className="flex-row items-center pr-2">
-            <Text className={`font-semibold text-base ml-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+            <Text className={`text-lg ml-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
               {challenge.duration} {t("challenges.challenge")}
             </Text>
           </View>
@@ -530,7 +545,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           onPress={isCompleted ? handleRestartChallenge : (isInProgress ? (challenge?.isExclusive ? () => onNavigateToBreathing?.(true) : handleCheckIn) : (previousCompletions.length > 0 ? handleRestartChallenge : handleStartChallenge))}
           >      
           {isInProgress ? (
-              <Ionicons name="checkmark" size={18} color="#ffffff" />
+              challenge?.isExclusive ? <BreatheIcon width={16} height={16} color="#ffffff" /> : <Ionicons name="checkmark" size={18} color="#ffffff" />
             ) : (isCompleted || previousCompletions.length > 0) ? (
               <Ionicons name="refresh" size={18} color="#ffffff" />
             ) : (

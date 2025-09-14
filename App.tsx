@@ -98,8 +98,8 @@ const AppContent: React.FC = () => {
       });
     }
 
-    // Initialize OneSignal
-    oneSignalService.initialize();
+    // Don't initialize OneSignal here - let it initialize when user reaches NotificationPermission screen
+    // oneSignalService.initialize();
   }, []);
 
   useEffect(() => {

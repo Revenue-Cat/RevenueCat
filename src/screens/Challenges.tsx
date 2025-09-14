@@ -13,7 +13,7 @@ interface ChallengesProps {
 
 const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
   const { t } = useTranslation();
-  const { getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, challengeProgress, addDailyCheckIn, getDailyCheckIns } = useApp();
+  const { getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, challengeProgress, addDailyCheckIn, getDailyCheckIns, startChallenge } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState<ChallengeCardProps | null>(null);
@@ -109,6 +109,13 @@ const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
     addDailyCheckIn(challengeId, dateKey, todayCheckIns + 1);
   }, [getChallengeProgress, updateChallengeProgress, addDailyCheckIn, getDailyCheckIns]);
 
+  const handleRestartChallenge = useCallback((challengeId: string) => {
+    // Reset the challenge progress and start fresh
+    updateChallengeProgress(challengeId, 0, 0, 0);
+    // Start the challenge again with a new start date
+    startChallenge(challengeId);
+  }, [updateChallengeProgress, startChallenge]);
+
   // Memoize the challenge press callback
   const handleChallengePress = useCallback((challenge: ChallengeCardProps, challengeId: string) => {
     setSelectedChallenge(challenge);
@@ -148,6 +155,7 @@ const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
             onCheckIn={() => handleCheckIn(ch.id!)}
             onPress={() => handleChallengePress(ch, ch.id!)}
             onNavigateToBreathing={onNavigateToBreathing}
+            onRestartChallenge={handleRestartChallenge}
           />
         );
       })}
@@ -162,7 +170,7 @@ const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
         </Pressable>
       </View>
     </View>
-  ), [visibleChallenges, handleCheckIn, handleChallengePress, toggleCollapsed, isCollapsed]);
+  ), [visibleChallenges, handleCheckIn, handleChallengePress, handleRestartChallenge, toggleCollapsed, isCollapsed]);
 
   // Memoize the title
   const title = useMemo(() => (
