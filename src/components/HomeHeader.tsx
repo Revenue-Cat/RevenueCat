@@ -34,7 +34,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     selectedBuddyId,
     ownedBuddies,
     ownedBackgrounds,
-    fetchCoins,
+    refreshCoinsBalance,
   } = useApp();
 
   // Get the selected buddy data
@@ -44,7 +44,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   const { userCoins, setUserCoins } = useApp();
 
   useEffect(() => {
-    fetchCoins();
+    refreshCoinsBalance();
   }, []);
 
   // Use the same transform as the ShopToggle for scroll animation
@@ -89,7 +89,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
 
   const handleCoinPurchase = async () => {
     onCoinPurchase();
-    fetchCoins();
+    refreshCoinsBalance();
   };
 
   return (

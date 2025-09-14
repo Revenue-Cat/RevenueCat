@@ -176,46 +176,6 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
           </Text>
         </View>
 
-        {/* Grid */}
-        <View className="mt-4 flex-row flex-wrap justify-center">
-          {grid.map((isoOrNull, i) => {
-            const isUsed = !!isoOrNull;
-            return (
-              <View
-                key={i}
-                style={{
-                  width: 82,
-                  height: 76,
-                  marginRight: 8,
-                  marginBottom: 8,
-                }}
-              >
-                <View
-                  className={`rounded-xl items-center justify-center ${
-                    isUsed ? tileActiveBg : tileInactiveBg
-                  }`}
-                  style={{ width: 82, height: 76 }}
-                >
-                  <SmokeIcon
-                    width={24}
-                    height={24}
-                    color={isUsed ? tileActiveFg : "#94a3b8"}
-                  />
-                  <Text
-                    className={`mt-2 text-m font-medium ${
-                      isUsed ? "text-red-500" : tileInactiveText
-                    }`}
-                  >
-                    {isUsed
-                      ? formatDateShort(isoOrNull as string)
-                      : t("slipsLog.freeSlip", "Free Slip")}
-                  </Text>
-                </View>
-              </View>
-            );
-          })}
-        </View>
-
         {/* Protect your streak card */}
         {shouldOfferProtectStreak() && (
           <View className={`${cardBg} rounded-3xl p-6 mt-6`}>
@@ -261,6 +221,47 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
             </Pressable>
           </View>
         )}
+
+        {/* Grid */}
+        <View className="mt-4 flex-row flex-wrap justify-center">
+          {grid.map((isoOrNull, i) => {
+            const isUsed = !!isoOrNull;
+            return (
+              <View
+                key={i}
+                style={{
+                  width: 82,
+                  height: 76,
+                  marginRight: 8,
+                  marginBottom: 8,
+                }}
+              >
+                <View
+                  className={`rounded-xl items-center justify-center ${
+                    isUsed ? tileActiveBg : tileInactiveBg
+                  }`}
+                  style={{ width: 82, height: 76 }}
+                >
+                  <SmokeIcon
+                    width={24}
+                    height={24}
+                    color={isUsed ? tileActiveFg : "#94a3b8"}
+                  />
+                  <Text
+                    className={`mt-2 text-m font-medium ${
+                      isUsed ? "text-red-500" : tileInactiveText
+                    }`}
+                  >
+                    {isUsed
+                      ? formatDateShort(isoOrNull as string)
+                      : t("slipsLog.freeSlip", "Free Slip")}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+
       </ScrollView>
 
       {/* Bottom “I smoked” bar */}

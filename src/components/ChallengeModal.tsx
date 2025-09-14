@@ -153,8 +153,6 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
     if (!challengeId) return [];
     return getChallengeCompletions(challengeId);
   }, [challengeId, getChallengeCompletions]);
-
-  console.log("previousCompletions", previousCompletions);
   
   // Calculate previous days data
   const previousDaysData = useMemo(() => {

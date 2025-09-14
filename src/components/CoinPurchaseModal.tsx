@@ -10,7 +10,7 @@ import { COIN_PACKS, CoinPack } from "../config/subscriptions";
 import Purchases from "react-native-purchases";
 
 const CoinPurchaseModal: React.FC = () => {
-  const { showCoinPurchase, setShowCoinPurchase, userCoins, setUserCoins } =
+  const { showCoinPurchase, setShowCoinPurchase, userCoins, addTransaction, refreshCoinsBalance } =
     useApp();
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -32,23 +32,20 @@ const CoinPurchaseModal: React.FC = () => {
     try {
       const offerings = await Purchases.getOfferings();
       const currentOffering = offerings.current;
-      console.log("-----------", offerings)
       if (!currentOffering) {
         throw new Error("No current offering available");
       }
-      console.log("-----------", currentOffering.availablePackages)
       const rcPackage = currentOffering.availablePackages.find(
         (p) => p.identifier === pack.id
       );
       if (!rcPackage) {
         throw new Error(`No package found with identifier ${pack.id}`);
       }
+      console.log("--------------", rcPackage, currentOffering.availablePackages)
       const { customerInfo } = await Purchases.purchasePackage(rcPackage);
+      addTransaction(0, `Coins purchase ${rcPackage?.product?.identifier}, ${rcPackage?.product?.priceString},  ${rcPackage?.product?.description}`)
       // Purchase successful, update virtual currency balance
-      await Purchases.invalidateVirtualCurrenciesCache();
-      const virtualCurrencies = await Purchases.getVirtualCurrencies();
-      const coinsBalance = virtualCurrencies.all["QUITQLY"]?.balance ?? 0;
-      setUserCoins(coinsBalance);
+      await refreshCoinsBalance()
       setShowCoinPurchase(false);
     } catch (error: any) {
       console.log("-----------error", error)
