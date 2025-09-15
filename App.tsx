@@ -1,11 +1,12 @@
 import "./global.css";
 import React, { useState, useEffect, useCallback } from "react";
-import { SafeAreaView, Modal, Dimensions } from "react-native";
+import { Modal, Dimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AppProvider, useApp } from "./src/contexts/AppContext";
 import { ThemeProvider, useTheme } from "./src/contexts/ThemeContext";
 import { LanguageProvider } from "./src/contexts/LanguageContext";
 import "./src/i18n"; // Import i18n configuration
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Welcome from "./src/screens/Welcome";
 import Setup from "./src/screens/Setup";
 import BuddySelection from "./src/screens/BuddySelection";
@@ -48,6 +49,7 @@ const AppContent: React.FC = () => {
   const [showChatAssistance, setShowChatAssistance] = useState(false);
   const [isScenesSelected, setIsScenesSelected] = useState(false);
   const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
+  const [breathingSkipInitial, setBreathingSkipInitial] = useState(false);
   const { theme } = useTheme();
 
   const navigateTo = useCallback((screen: Screen) => {
@@ -62,9 +64,13 @@ const AppContent: React.FC = () => {
     setShowCravingSOS(false);
   }, []);
 
-  const handleShowBreathingExercise = useCallback(() => {
-    navigateTo("breathing-exercise");
-  }, [navigateTo]);
+  const handleShowBreathingExercise = useCallback(
+    (skipInitialScreen: boolean = false) => {
+      setBreathingSkipInitial(skipInitialScreen);
+      navigateTo("breathing-exercise");
+    },
+    [navigateTo]
+  );
 
   const handleShowChatAssistance = useCallback(() => {
     setShowChatAssistance(true);
@@ -92,15 +98,16 @@ const AppContent: React.FC = () => {
       });
     }
 
-    // Don't initialize OneSignal here - let it initialize when user reaches NotificationPermission screen
-    // oneSignalService.initialize();
+    // Initialize OneSignal
+    oneSignalService.initialize();
   }, []);
 
   useEffect(() => {
     if (isOnboardingDone && currentScreen == "welcome") setCurrentScreen("home");
   }, [isOnboardingDone]);
 
-  return isLoading ? <SafeAreaView
+  return isLoading ? (
+    <SafeAreaView
       className={`flex-1 justify-center items-center ${
         theme === "dark" ? "bg-dark-background" : "bg-light-background"
       }`}
@@ -115,7 +122,8 @@ const AppContent: React.FC = () => {
           alignSelf: "center",
         }}
       />
-    </SafeAreaView> : (
+    </SafeAreaView>
+  ) : (
     <SafeAreaView
       className={`flex-1 ${
         theme === "dark" ? "bg-dark-background" : "bg-light-background"
@@ -204,6 +212,7 @@ const AppContent: React.FC = () => {
         <BreathingExercise
           onClose={() => navigateTo("home")}
           onBack={() => navigateTo("home")}
+          skipInitialScreen={breathingSkipInitial}
         />
       )}
 
@@ -218,7 +227,6 @@ const AppContent: React.FC = () => {
         onStartBreathing={handleShowBreathingExercise}
         onOpenSlipsLog={handleOpenSlipsLog}
       />
-
 
       <Modal
         visible={showChatAssistance}
@@ -243,13 +251,15 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider>
-        <LanguageProvider>
-          <AppProvider>
-            <AppContent />
-          </AppProvider>
-        </LanguageProvider>
-      </ThemeProvider>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <AppProvider>
+              <AppContent />
+            </AppProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 };

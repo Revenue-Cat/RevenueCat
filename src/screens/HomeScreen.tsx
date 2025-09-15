@@ -9,10 +9,12 @@ import {
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { logout } from '../config/firebase';
+import { useTranslation } from 'react-i18next';
 
 const HomeScreen: React.FC = () => {
   const { user } = useAuth();
   const [loading, setLoading] = React.useState(false);
+  const { t } = useTranslation();
 
   const handleLogout = async () => {
     Alert.alert(
@@ -31,7 +33,7 @@ const HomeScreen: React.FC = () => {
             try {
               await logout();
             } catch (error: any) {
-              Alert.alert('Logout Error', error.message);
+              Alert.alert(t('auth.errors.logoutError'), error.message);
             } finally {
               setLoading(false);
             }

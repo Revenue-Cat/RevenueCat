@@ -13,6 +13,7 @@ import { loginWithEmail } from "../config/firebase";
 import { useGoogleAuth } from "../services/googleAuth";
 import LottieView from "lottie-react-native";
 import { Dimensions } from "react-native";
+import { useTranslation } from "react-i18next";
 
 interface LoginScreenProps {
   navigation: any;
@@ -23,10 +24,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signInWithGoogleAsync } = useGoogleAuth();
+  const { t } = useTranslation();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert(t("auth.errors.loginError"), t("auth.errors.fillAllFields"));
       return;
     }
 
@@ -34,7 +36,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     try {
       await loginWithEmail(email, password);
     } catch (error: any) {
-      Alert.alert("Login Error", error.message);
+      Alert.alert(t("auth.errors.loginError"), error.message);
     } finally {
       setLoading(false);
     }
@@ -45,10 +47,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     try {
       const result = await signInWithGoogleAsync();
       if (!result.success) {
-        Alert.alert("Google Sign-In Error", result.error);
+        Alert.alert(t("auth.errors.googleSignInError"), result.error);
       }
     } catch (error: any) {
-      Alert.alert("Google Sign-In Error", error.message);
+      Alert.alert(t("auth.errors.googleSignInError"), error.message);
     } finally {
       setLoading(false);
     }
@@ -69,13 +71,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         />
       </View>
 
-      <Text style={styles.title}>Welcome to RevenueCat</Text>
-      <Text style={styles.subtitle}>Please sign in to continue</Text>
+      <Text style={styles.title}>{t("auth.welcome")}</Text>
+      <Text style={styles.subtitle}>{t("auth.signInSubtitle")}</Text>
 
       <View style={styles.form}>
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder={t("auth.email")}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -85,7 +87,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder={t("auth.password")}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -101,13 +103,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Sign In</Text>
+            <Text style={styles.buttonText}>{t("auth.signIn")}</Text>
           )}
         </TouchableOpacity>
 
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>OR</Text>
+          <Text style={styles.dividerText}>{t("auth.or")}</Text>
           <View style={styles.dividerLine} />
         </View>
 
@@ -119,14 +121,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           {loading ? (
             <ActivityIndicator color="#333" />
           ) : (
-            <Text style={styles.googleButtonText}>Continue with Google</Text>
+            <Text style={styles.googleButtonText}>{t("auth.continueWithGoogle")}</Text>
           )}
         </TouchableOpacity>
 
         <View style={styles.registerLink}>
-          <Text style={styles.registerText}>Don't have an account? </Text>
+          <Text style={styles.registerText}>{t("auth.noAccount")} </Text>
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-            <Text style={styles.registerLinkText}>Sign Up</Text>
+            <Text style={styles.registerLinkText}>{t("auth.signUp")}</Text>
           </TouchableOpacity>
         </View>
       </View>

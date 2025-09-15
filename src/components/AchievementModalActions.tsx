@@ -32,7 +32,7 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
       
     } catch (error) {
       console.error('Error sharing achievement:', error);
-      alert('Share failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      alert(t('alerts.shareFailed', { error: error instanceof Error ? error.message : 'Unknown error' }));
     }
   };
 

@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -25,10 +26,11 @@ interface Message {
 }
 
 const ChatAssistance: React.FC<ChatAssistanceProps> = ({ onClose, onBack }) => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! I\'m here to help you on your quitting journey. How are you feeling today?',
+      text: t('chat.welcomeMessage'),
       isUser: false,
       timestamp: new Date(),
     },
@@ -36,10 +38,10 @@ const ChatAssistance: React.FC<ChatAssistanceProps> = ({ onClose, onBack }) => {
   const [inputText, setInputText] = useState('');
 
   const quickReplies = [
-    'I\'m feeling stressed',
-    'I have a strong craving',
-    'I need motivation',
-    'I want to celebrate my progress',
+    t('chat.quickReplyOptions.stressed'),
+    t('chat.quickReplyOptions.craving'),
+    t('chat.quickReplyOptions.motivation'),
+    t('chat.quickReplyOptions.celebrate'),
   ];
 
   const handleSendMessage = (text: string) => {
@@ -71,15 +73,15 @@ const ChatAssistance: React.FC<ChatAssistanceProps> = ({ onClose, onBack }) => {
     const lowerMessage = userMessage.toLowerCase();
     
     if (lowerMessage.includes('stressed') || lowerMessage.includes('stress')) {
-      return 'I understand stress can be challenging. Remember, smoking won\'t solve the problem. Try taking a few deep breaths or going for a short walk. What\'s causing you stress right now?';
+      return t('chat.responses.stressed');
     } else if (lowerMessage.includes('craving') || lowerMessage.includes('urge')) {
-      return 'Cravings are temporary and will pass. Try the 4-4-4 breathing technique: inhale for 4 seconds, hold for 4, exhale for 4. You\'re stronger than this urge!';
+      return t('chat.responses.craving');
     } else if (lowerMessage.includes('motivation') || lowerMessage.includes('motivated')) {
-      return 'You\'re doing amazing! Every smoke-free moment is a victory. Think about why you started this journey. Your health, your family, your future self - they\'re all cheering you on!';
+      return t('chat.responses.motivation');
     } else if (lowerMessage.includes('celebrate') || lowerMessage.includes('progress')) {
-      return 'That\'s fantastic! Celebrating your progress is so important. What milestone are you celebrating? Remember, every day smoke-free is a huge achievement!';
+      return t('chat.responses.celebrate');
     } else {
-      return 'Thank you for sharing that with me. I\'m here to support you through every step of your quitting journey. How can I help you today?';
+      return t('chat.responses.default');
     }
   };
 
@@ -90,7 +92,7 @@ const ChatAssistance: React.FC<ChatAssistanceProps> = ({ onClose, onBack }) => {
         <Pressable style={styles.backButton} onPress={onBack}>
           <Ionicons name="arrow-back" size={24} color="#000000" />
         </Pressable>
-        <Text style={styles.title}>Chat Assistant</Text>
+        <Text style={styles.title}>{t('chat.title')}</Text>
         <Pressable style={styles.closeButton} onPress={onClose}>
           <Ionicons name="close" size={24} color="#000000" />
         </Pressable>
@@ -122,7 +124,7 @@ const ChatAssistance: React.FC<ChatAssistanceProps> = ({ onClose, onBack }) => {
       {/* Quick Replies */}
       {messages.length === 1 && (
         <View style={styles.quickRepliesContainer}>
-          <Text style={styles.quickRepliesTitle}>Quick replies:</Text>
+          <Text style={styles.quickRepliesTitle}>{t('chat.quickReplies')}</Text>
           <View style={styles.quickReplies}>
             {quickReplies.map((reply, index) => (
               <Pressable
@@ -143,7 +145,7 @@ const ChatAssistance: React.FC<ChatAssistanceProps> = ({ onClose, onBack }) => {
           style={styles.textInput}
           value={inputText}
           onChangeText={setInputText}
-          placeholder="Type your message..."
+          placeholder={t('chat.placeholder')}
           multiline
           maxLength={500}
         />
