@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Dimensions } from "react-native";
 import SlideModal from "./SlideModal";
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -8,10 +8,12 @@ import CoinIcon from "../assets/icons/coins.svg";
 import CoinPackCard from "./CoinPackCard";
 import { COIN_PACKS, CoinPack } from "../config/subscriptions";
 import Purchases from "react-native-purchases";
+import LottieView from "lottie-react-native";
 
 const CoinPurchaseModal: React.FC = () => {
   const { showCoinPurchase, setShowCoinPurchase, userCoins, addTransaction, refreshCoinsBalance } =
     useApp();
+  const [isLoading, setIsLoading] = useState(false)
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { t } = useTranslation();
@@ -30,6 +32,7 @@ const CoinPurchaseModal: React.FC = () => {
 
   const handleBuy = async (pack: CoinPack) => {
     try {
+      setIsLoading(true)
       const offerings = await Purchases.getOfferings();
       const currentOffering = offerings.current;
       if (!currentOffering) {
@@ -55,6 +58,8 @@ const CoinPurchaseModal: React.FC = () => {
         console.error("Error during purchase:", error);
         // Optionally, show an error message to the user
       }
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -63,40 +68,59 @@ const CoinPurchaseModal: React.FC = () => {
       visible={showCoinPurchase}
       onClose={() => setShowCoinPurchase(false)}
     >
-      {/* Balance pill (centered) */}
-      <View className="items-center mt-1 mb-2">
-        <View className="flex-row items-center rounded-full px-3.5 py-1.5 border border-amber-400">
-          <Text className="mr-2 font-bold text-amber-500">
-            {t("coinModal.balance", "Balance")} {userCoins}
-          </Text>
-          <CoinIcon width={16} height={16} />
-        </View>
-      </View>
+      {isLoading ? (
+          <View
+            className={`flex-1 justify-center items-center ${
+              theme === "dark" ? "bg-dark-background" : "bg-light-background"
+            }`}
+          >
+            <LottieView
+              source={require("../../src/assets/Loadercat.json")}
+              autoPlay
+              loop
+              style={{
+                width: Dimensions.get("window").width * 0.8,
+                height: 200,
+                alignSelf: "center",
+              }}
+            />
+          </View>
+        ) : (
+          <>
+            <View className="items-center mt-1 mb-2">
+              <View className="flex-row items-center rounded-full px-3.5 py-1.5 border border-amber-400">
+                <Text className="mr-2 font-bold text-amber-500">
+                  {t("coinModal.balance", "Balance")} {userCoins}
+                </Text>
+                <CoinIcon width={16} height={16} />
+              </View>
+            </View>
 
-      {/* Title + subtitle */}
-      <View className="items-center mt-1 mb-4">
-        <Text
-          className={`font-extrabold text-[20px] ${
-            isDark ? "text-slate-100" : "text-indigo-950"
-          }`}
-        >
-          {t("coinModal.title", "Get More Coins")}
-        </Text>
-        <Text
-          className={`mt-1 text-sm font-medium ${
-            isDark ? "text-slate-400" : "text-slate-500"
-          }`}
-        >
-          {t("coinModal.subtitle", "Choose your pack and keep going!")}
-        </Text>
-      </View>
+            <View className="items-center mt-1 mb-4">
+              <Text
+                className={`font-extrabold text-[20px] ${
+                  isDark ? "text-slate-100" : "text-indigo-950"
+                }`}
+              >
+                {t("coinModal.title", "Get More Coins")}
+              </Text>
+              <Text
+                className={`mt-1 text-sm font-medium ${
+                  isDark ? "text-slate-400" : "text-slate-500"
+                }`}
+              >
+                {t("coinModal.subtitle", "Choose your pack and keep going!")}
+              </Text>
+            </View>
 
-      {/* Pack cards */}
-      <View className="px-2">
-        {packs.map((p) => (
-          <CoinPackCard key={p.id} pack={p} onPress={handleBuy} />
-        ))}
-      </View>
+            <View className="px-2">
+              {packs.map((p) => (
+                <CoinPackCard key={p.id} pack={p} onPress={handleBuy} />
+              ))}
+            </View>
+          </>
+        )
+      }
     </SlideModal>
   );
 };
