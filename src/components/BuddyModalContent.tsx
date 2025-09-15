@@ -8,7 +8,8 @@ import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
-
+import { PLACEHOLDER_BUDDY } from "../data/buddiesData";
+import LockLight from "../assets/icons/lock.svg";
 interface BuddyModalContentProps {
   buddy: any; // expects { id, name, description, icon, coin }
   userCoins: number;
@@ -48,9 +49,12 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
 
   const lottieSource = resolveLottieSource();
   const isImageIcon = typeof buddy?.icon === "number"; // PNGs are numbers in RN
+  const isPlaceholderBuddy = PLACEHOLDER_BUDDY.some(pb => pb.id === buddy?.id); // Check if this is a PLACEHOLDER_BUDDY
+
 
   const renderBuddyVisual = () => {
-    if (lottieSource) {
+
+    if (lottieSource && !isPlaceholderBuddy) {
       return (
         <View className="w-32 h-32 relative justify-center items-center">
           <LottieView
@@ -76,10 +80,34 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
       );
     }
 
-    if (isImageIcon) {
+    if (!isPlaceholderBuddy && isImageIcon) {
       return (
         <View className="w-32 h-32 relative justify-center items-center">
           <Image source={buddy?.icon} className="w-36 h-36" resizeMode="contain" />
+          {isSelected && (
+            <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
+              <Ionicons name="checkmark" size={16} color="white" />
+            </View>
+          )}
+          {isOwned && !isSelected && (
+            <View className="absolute -top-1 -right-1 bg-blue-500 rounded-full w-8 h-8 justify-center items-center">
+              <Ionicons name="checkmark-circle" size={16} color="white" />
+            </View>
+          )}
+        </View>
+      );
+    }
+
+    // Handle PLACEHOLDER_BUDDY SVG components
+    if (isPlaceholderBuddy) {
+      console.log('PLACEHOLDER_BUDDY detected:', buddy?.icon);
+      const IconComponent = buddy?.icon;
+      return (
+        <View className="w-32 h-32 relative justify-center items-center">
+          <View className="w-36 h-36 items-center justify-center">
+             {buddy?.icon && <IconComponent width={120} height={120} color={isDark ? "#020a16" : "#CBD5E1"}/>}
+          </View>
+           
           {isSelected && (
             <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
               <Ionicons name="checkmark" size={16} color="white" />
@@ -102,7 +130,7 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
     <>
       {/* Price/Status banner */}
       <View className="items-center my-2">
-        <View className="flex-row items-center px-4 py-2 rounded-3xl border-2 border-amber-500">
+        {!isPlaceholderBuddy && <View className="flex-row items-center px-4 py-2 rounded-3xl border-2 border-amber-500">
           <Text className="text-amber-500 font-bold text-base mr-2 text-xl">
             {isOwned
               ? isSelected
@@ -111,7 +139,7 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
               : t("shop.balance", { coins: userCoins || 0 })}
           </Text>
           {!isOwned && <CoinIcon width={18} height={18} />}
-        </View>
+        </View>}
       </View>
 
       {/* Name + description */}
@@ -135,11 +163,14 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
 
       {/* Card */}
       <View
-        className={`gap-4 rounded-3xl p-8 justify-center items-center ${
+        className={`gap-4 rounded-3xl p-8 justify-center items-center relative ${
           isDark ? "bg-slate-700/50" : "bg-indigo-50/50"
         }`}
       >
         <View className="items-center my-8 py-8">{renderBuddyVisual()}</View>
+         <View className="absolute top-3 right-3 z-10 rounded-3xl bg-black/40 p-1.5">
+            <LockLight width={12} height={12} color="white"  />
+        </View>
       </View>
     </>
   );

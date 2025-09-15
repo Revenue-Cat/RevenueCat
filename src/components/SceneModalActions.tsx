@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
-
+import { PLACEHOLDER_SCENE } from '../data/scenesData';
 interface SceneModalActionsProps {
   scene: any;
   userCoins: number;
@@ -25,6 +25,7 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
   const isOwned = ownedBackgrounds?.includes(scene.id) || false;
   const isSelected = selectedBackground.id === scene.id;
   const canAfford = userCoins >= (scene.coin || 0);
+  const isPlaceholderScene = PLACEHOLDER_SCENE.some(ps => ps.id === scene.id);
 
   const handleSelect = () => {
     if (isOwned) {
@@ -60,7 +61,7 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
       )}
 
       {/* Purchase Button - Only show if not owned */}
-      {!isOwned && (
+      {!isOwned && !isPlaceholderScene && (
         <Pressable 
           className={`flex-1 rounded-2xl justify-center items-center ${canAfford ? 'bg-indigo-600' : 'bg-gray-400'}`}
           onPress={handlePurchase}

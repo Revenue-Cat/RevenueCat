@@ -14,12 +14,13 @@ import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { buddyAssets, SexKey } from "../assets/buddies";
-import { getTranslatedBuddyData } from "../data/buddiesData";
-import { getTranslatedSceneData } from "../data/scenesData";
+import { getTranslatedBuddyData, PLACEHOLDER_BUDDY } from "../data/buddiesData";
+import { getTranslatedSceneData, PLACEHOLDER_SCENE } from "../data/scenesData";
 import BuddyModal from "../components/BuddyModal";
 import SceneModal from "../components/SceneModal";
 import CoinIcon from "../assets/icons/coins.svg";
 import LottieView from "lottie-react-native";
+import LockLight from "../assets/icons/lock.svg";
 
 interface ShopProps {
   onBack: () => void;
@@ -56,6 +57,7 @@ const Shop: React.FC<ShopProps> = ({
 
   const [selectedBuddyForModal, setSelectedBuddyForModal] = useState<any>(null);
   const [showBuddyModal, setShowBuddyModal] = useState(false);
+  const [hidePurchaseButton, setHidePurchaseButton] = useState(false);
   const [selectedSceneForModal, setSelectedSceneForModal] = useState<any>(null);
   const [showSceneModal, setShowSceneModal] = useState(false);
   
@@ -113,6 +115,9 @@ const Shop: React.FC<ShopProps> = ({
       setSelectedBuddyId(buddy.id);
     } else {
       setSelectedBuddyForModal(buddy);
+      // Check if this is a PLACEHOLDER_BUDDY item
+      const isPlaceholderBuddy = PLACEHOLDER_BUDDY.some(pb => pb.id === buddy.id);
+      setHidePurchaseButton(isPlaceholderBuddy);
       setShowBuddyModal(true);
     }
   };
@@ -193,6 +198,62 @@ const Shop: React.FC<ShopProps> = ({
           </Pressable>
         );
       })}
+      {PLACEHOLDER_BUDDY.map((item) => {
+        const isOwned = ownedBuddies?.includes(item.id) || false;
+        const isSelected = selectedBuddyId === item.id;
+
+        return (
+          <Pressable
+            key={item.id}
+            className="w-1/4 px-1 py-1"
+            onPress={() => handleBuddySelect(item)}
+          >
+            <View
+              className={`items-center rounded-xl relative ${
+                isDark ? "bg-slate-700/50" : "bg-white/10"
+              }`}
+            >
+              <View className="w-[80px] h-[80px] overflow-hidden relative">
+                {/* PLACEHOLDER_BUDDY.icon is an SVG component, so render directly */}
+                {/* Show only half of the icon by using 110px height in 80px container */}
+                <View
+                  style={{
+                    width: 80,
+                    height: 110,        // Icon full height
+                    marginTop: -5,     // Negative margin to show bottom hal0
+                    alignItems: 'center',
+                    justifyContent: 'flex-end'  // Align to bottom to show lower half
+                  }}
+                >
+                  {React.createElement(item.icon, {
+                    width: 95,
+                    height: 95,        // Full icon height
+                    color: isSelected ? "#22C55E" : (isDark ? "#94A3B8" : "#FFFFFF33"),
+                    opacity: 0.2
+                  })}
+                </View>
+
+                {!isOwned && (
+                  <View className="absolute top-1 right-1 z-10 rounded-3xl bg-black/40 p-1.5">
+                      <LockLight width={12} height={12} color="white" opacity={0.5} />
+                  </View>
+                )}
+              </View>
+
+              {isSelected && (
+                <View className="absolute top-1 right-1">
+                  <Ionicons
+                    className="bg-green-500 rounded-full p-0.5 bold"
+                    name="checkmark"
+                    size={18}
+                    color="white"
+                  />
+                </View>
+              )}
+            </View>
+          </Pressable>
+        );
+      })}
     </View>
   );
 
@@ -245,10 +306,64 @@ const Shop: React.FC<ShopProps> = ({
           </Pressable>
         );
       })}
+      {PLACEHOLDER_SCENE.map((item) => {
+        const isOwned = ownedBackgrounds.includes(item.id) || false;
+        const isSelected = selectedBackground.id === item.id;
+
+        return (
+          <Pressable
+            key={item.id}
+            className="w-1/4 px-1 py-1"
+            onPress={() => handleSceneSelect(item)}
+          >
+            <View
+              className={`items-center rounded-xl relative ${
+                isDark ? "bg-slate-700/50" : "bg-white/10"
+              }`}
+            >
+              <View className="w-[80px] h-[80px] overflow-hidden relative">
+                {/* PLACEHOLDER_SCENE.icon is an SVG component, so render directly */}
+                <View
+                  style={{
+                    width: 80,
+                    height: 80,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {React.createElement(item.icon, {
+                    width: 80,
+                    height: 80,
+                     color: isSelected ? "#22C55E" : (isDark ? "#94A3B8" : "#FFFFFF33"),
+                    // opacity: 0.5
+                  })}
+                </View>
+
+                {!isOwned && (
+                  <View className="absolute top-1 right-1 z-10 rounded-3xl bg-black/40 p-1.5">
+                    <LockLight width={12} height={12} color="white" opacity={0.5} />
+                  </View>
+                )}
+              </View>
+
+              {isSelected && (
+                <View className="absolute top-1 right-1">
+                  <Ionicons
+                    className="bg-green-500 rounded-full p-0.5 bold"
+                    name="checkmark"
+                    size={18}
+                    color="white"
+                  />
+                </View>
+              )}
+            </View>
+          </Pressable>
+        );
+      })}
     </View>
   );
 
-  const gradientColors = parseGradient(selectedBackground.backgroundColor);
+  const gradientColors = parseGradient(selectedBackground.backgroundColor || "linear-gradient(179.97deg, #1F1943 48.52%, #4E3EA9 99.97%)");
 
   return (
     <View
@@ -282,7 +397,9 @@ const Shop: React.FC<ShopProps> = ({
         onClose={() => {
           setShowBuddyModal(false);
           setSelectedBuddyForModal(null);
+          setHidePurchaseButton(false);
         }}
+        hidePurchaseButton={hidePurchaseButton}
       />
 
       <SceneModal
