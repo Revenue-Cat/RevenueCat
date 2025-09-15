@@ -104,8 +104,8 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
       const IconComponent = buddy?.icon;
       return (
         <View className="w-32 h-32 relative justify-center items-center">
-          <View className="w-36 h-36 items-center justify-center">
-             {buddy?.icon && <IconComponent width={120} height={120} color={isDark ? "#020a16" : "#CBD5E1"}/>}
+          <View className="items-center justify-center mt-14">
+             {buddy?.icon && <IconComponent height={230} color={isDark ? "#020a16" : "#CBD5E1"} />}
           </View>
            
           {isSelected && (

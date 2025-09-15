@@ -34,8 +34,7 @@ const SceneModalContent: React.FC<SceneModalContentProps> = ({
           // Render SVG icon for PLACEHOLDER_SCENE
           <View className="w-full h-full justify-center items-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800">
             {React.createElement(scene.icon, {
-              width: 120,
-              height: 120,
+              height: 220,
               color: (isDark ? "#94A3B8" : "#CBD5E1")
             })}
           </View>
