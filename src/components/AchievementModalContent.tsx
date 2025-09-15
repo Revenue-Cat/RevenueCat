@@ -55,7 +55,7 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { t } = useTranslation();
-
+  console.log("progress", progress, achievement)
   if (!achievement || !getProgressForAchievement) return null;
   const borderColor = isDark ? "#475569" : "#d7d9df";
   // Helper function to render achievement icon and badges
@@ -72,12 +72,12 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
               isFirstThreeAchievement(
                 achievement.id,
                 getProgressForAchievement
-              ) || (progress?.percentage || 0) === 100
+              ) || (progress?.percentage || 0) >= 100
                 ? "#22C55E"
                 : "transparent"
             }
             borderColor={
-              (progress?.percentage || 0) === 100 ? "#22C55E" : borderColor
+              (progress?.percentage || 0) >= 100 ? "#22C55E" : borderColor
             }
           />
         )}
@@ -90,7 +90,7 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
               {isFirstThreeAchievement(
                 achievement.id,
                 getProgressForAchievement
-              ) || (progress?.percentage || 0) === 100 ? (
+              ) || (progress?.percentage || 0) >= 100 ? (
                 // First 3 achievements OR 100% progress: show achievement icon
                 <>
                   {achievement.icon ? (
@@ -140,7 +140,7 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
             // Regular achievement badges
             <>
               {/* Check icon for 100% progress */}
-              {(progress?.percentage || 0) === 100 && (
+              {(progress?.percentage || 0) >= 100 && (
                 <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
                   <Ionicons name="checkmark" size={16} color="white" />
                 </View>

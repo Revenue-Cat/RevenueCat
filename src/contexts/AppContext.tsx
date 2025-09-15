@@ -824,13 +824,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         challengeCompletions[challengeId] &&
         challengeCompletions[challengeId].length > 0;
 
-      // Priority: inprogress > completed > active > locked
-      if (inProgress) {
-        return "inprogress"; // Challenge is being worked on
+      // Priority: completed > inprogress > active > locked
+      if (hasCompletions) {
+        return "completed"; // Challenge has been completed before (highest priority)
       }
 
-      if (hasCompletions) {
-        return "completed"; // Challenge has been completed before
+      if (inProgress) {
+        return "inprogress"; // Challenge is being worked on
       }
 
       if (active) {
