@@ -5,6 +5,8 @@ import CoinIcon from "../assets/icons/coins.svg";
 import { useApp } from '../contexts/AppContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { PLACEHOLDER_SCENE } from '../data/scenesData';
+import LockLight from "../assets/icons/lock.svg";
 
 interface SceneModalContentProps {
   scene: any;
@@ -21,16 +23,31 @@ const SceneModalContent: React.FC<SceneModalContentProps> = ({
   const isOwned = ownedBackgrounds?.includes(scene.id) || false;
   const isSelected = selectedBackground.id === scene.id;
 
+  // Check if this is a PLACEHOLDER_SCENE
+  const isPlaceholderScene = PLACEHOLDER_SCENE.some(ps => ps.id === scene.id);
+
   // Helper function to render scene preview
   const renderScenePreview = () => {
     return (
       <View className="w-full h-full relative rounded-2xl overflow-hidden">
-        <Image 
-          source={scene.background}
-          className='w-full h-full'
-          resizeMode="stretch"
-        />
-        
+        {isPlaceholderScene ? (
+          // Render SVG icon for PLACEHOLDER_SCENE
+          <View className="w-full h-full justify-center items-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800">
+            {React.createElement(scene.icon, {
+              width: 120,
+              height: 120,
+              color: (isDark ? "#94A3B8" : "#CBD5E1")
+            })}
+          </View>
+        ) : (
+          // Render background image for regular scenes
+          <Image
+            source={scene.background}
+            className='w-full h-full'
+            resizeMode="stretch"
+          />
+        )}
+
         {/* Status Badges */}
         {isSelected && (
           <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
@@ -48,15 +65,17 @@ const SceneModalContent: React.FC<SceneModalContentProps> = ({
 
   return (
     <>
-      {/* Price Banner */}
-      <View className="items-center my-2">
-        <View className="flex-row items-center px-4 py-2 rounded-3xl border-2 border-amber-500">
-          <Text className="text-amber-500 font-bold text-base mr-2 text-xl">
-            {isOwned ? (isSelected ? t('shop.selected') : t('shop.owned')) : t('shop.balance', { coins: userCoins || 0 })}
-          </Text>
-          {!isOwned && <CoinIcon width={18} height={18} />}
+      {/* Price Banner - Hidden for PLACEHOLDER_SCENE */}
+      {!isPlaceholderScene && (
+        <View className="items-center my-2">
+          <View className="flex-row items-center px-4 py-2 rounded-3xl border-2 border-amber-500">
+            <Text className="text-amber-500 font-bold text-base mr-2 text-xl">
+              {isOwned ? (isSelected ? t('shop.selected') : t('shop.owned')) : t('shop.balance', { coins: userCoins || 0 })}
+            </Text>
+            {!isOwned && <CoinIcon width={18} height={18} />}
+          </View>
         </View>
-      </View>
+      )}
       <View className="items-center my-4">
         {/* Scene Title */}
         <Text className={`text-2xl font-bold text-center ${isDark ? 'text-slate-100' : 'text-indigo-950'}`}>
@@ -69,10 +88,13 @@ const SceneModalContent: React.FC<SceneModalContentProps> = ({
         </Text>
       </View>
       {/* Card Content */}
-      <View className={`h-64 my-4 rounded-3xl justify-center items-center overflow-hidden ${isDark ? 'bg-slate-700/50' : 'bg-indigo-50/50'}`}>
+      <View className={`h-64 my-4 rounded-3xl justify-center items-center overflow-hidden relative ${isDark ? 'bg-slate-700/50' : 'bg-indigo-50/50'}`}>
       
         {/* Scene Preview */}
-          {renderScenePreview()}
+        {renderScenePreview()}
+         <View className="absolute top-3 right-3 z-10 rounded-3xl bg-black/40 p-1.5">
+            <LockLight width={12} height={12} color="white"  />
+        </View>
       </View>
     </>
   );

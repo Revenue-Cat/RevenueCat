@@ -10,6 +10,7 @@ interface BuddyModalActionsProps {
   userCoins: number;
   onPurchase: () => void;
   onClose: () => void;
+  hidePurchaseButton?: boolean;
 }
 
 const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
@@ -17,6 +18,7 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
   userCoins,
   onPurchase,
   onClose,
+  hidePurchaseButton = false,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -75,8 +77,8 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
         </Pressable>
       )}
 
-      {/* Purchase Button - Only if not owned */}
-      {!isOwned && (
+      {/* Purchase Button - Only if not owned and not hidden */}
+      {!isOwned && !hidePurchaseButton && (
         <Pressable
           className={`flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row ${
             canAfford ? "bg-indigo-600" : "bg-gray-400"
