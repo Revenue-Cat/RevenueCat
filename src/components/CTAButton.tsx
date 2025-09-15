@@ -2,6 +2,7 @@
 import React from "react";
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../contexts/ThemeContext";
 
 type Tone = "primary" | "danger";
 
@@ -35,9 +36,11 @@ const CTAButton: React.FC<Props> = ({
   testID,
   tone = "primary",
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const isBlocked = disabled || loading;
 
-  const bgClass = tone === "danger" ? "bg-red-500" : "bg-indigo-600";
+  const bgClass = tone === "danger" ? "bg-red-500" : (isDark ? "bg-indigo-500" : "bg-indigo-600");
 
   return (
     <View className={`px-6 pb-8 ${containerClassName}`}>

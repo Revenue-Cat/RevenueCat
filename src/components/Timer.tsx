@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import { useApp } from "../contexts/AppContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 const Timer: React.FC = () => {
   const { startDate } = useApp();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   console.log("startDate", startDate);
   const [timeElapsed, setTimeElapsed] = useState({
     days: 0,
@@ -51,30 +54,30 @@ const Timer: React.FC = () => {
     <View className="flex-row gap-1">
       {/* Days */}
       <View className="items-center">
-        <Text className="text-3xl font-semibold text-indigo-950 text-center">
+        <Text className={`text-3xl font-semibold text-center ${isDark ? 'text-indigo-200' : 'text-indigo-950'}`}>
           {timeElapsed.days.toString().padStart(2, "0")}
         </Text>
-        <Text className="text-s font-medium text-indigo-950/50 text-center">
+        <Text className={`text-s font-medium text-center ${isDark ? 'text-indigo-300/70' : 'text-indigo-950/50'}`}>
           Days
         </Text>
       </View>
 
       {/* Hours */}
       <View className="items-center">
-        <Text className="text-3xl font-semibold text-indigo-950 text-center">
+        <Text className={`text-3xl font-semibold text-center ${isDark ? 'text-indigo-200' : 'text-indigo-950'}`}>
           {timeElapsed.hours.toString().padStart(2, "0")}
         </Text>
-        <Text className="text-s font-medium text-indigo-950/50 text-center">
+        <Text className={`text-s font-medium text-center ${isDark ? 'text-indigo-300/70' : 'text-indigo-950/50'}`}>
           Hours
         </Text>
       </View>
 
       {/* Minutes */}
       <View className="items-center">
-        <Text className="text-3xl font-semibold text-indigo-950 text-center">
+        <Text className={`text-3xl font-semibold text-center ${isDark ? 'text-indigo-200' : 'text-indigo-950'}`}>
           {timeElapsed.minutes.toString().padStart(2, "0")}
         </Text>
-        <Text className="text-s font-medium text-indigo-950/50 text-center">
+        <Text className={`text-s font-medium text-center ${isDark ? 'text-indigo-300/70' : 'text-indigo-950/50'}`}>
           Minutes
         </Text>
       </View>

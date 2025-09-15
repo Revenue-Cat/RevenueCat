@@ -14,6 +14,7 @@ import { useGoogleAuth } from "../services/googleAuth";
 import LottieView from "lottie-react-native";
 import { Dimensions } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "../contexts/ThemeContext";
 
 interface LoginScreenProps {
   navigation: any;
@@ -25,6 +26,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const { signInWithGoogleAsync } = useGoogleAuth();
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -57,7 +60,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, isDark && styles.containerDark]}>
       <View style={{ height: 220 }}>
         <LottieView
           source={require("../assets/CuteDoggie.json")}
@@ -71,13 +74,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         />
       </View>
 
-      <Text style={styles.title}>{t("auth.welcome")}</Text>
-      <Text style={styles.subtitle}>{t("auth.signInSubtitle")}</Text>
+      <Text style={[styles.title, isDark && styles.titleDark]}>{t("auth.welcome")}</Text>
+      <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>{t("auth.signInSubtitle")}</Text>
 
       <View style={styles.form}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, isDark && styles.inputDark]}
           placeholder={t("auth.email")}
+          placeholderTextColor={isDark ? "#94A3B8" : "#666"}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -86,8 +90,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         />
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, isDark && styles.inputDark]}
           placeholder={t("auth.password")}
+          placeholderTextColor={isDark ? "#94A3B8" : "#666"}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -108,25 +113,25 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         </TouchableOpacity>
 
         <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>{t("auth.or")}</Text>
-          <View style={styles.dividerLine} />
+          <View style={[styles.dividerLine, isDark && styles.dividerLineDark]} />
+          <Text style={[styles.dividerText, isDark && styles.dividerTextDark]}>{t("auth.or")}</Text>
+          <View style={[styles.dividerLine, isDark && styles.dividerLineDark]} />
         </View>
 
         <TouchableOpacity
-          style={[styles.googleButton, loading && styles.buttonDisabled]}
+          style={[styles.googleButton, isDark && styles.googleButtonDark, loading && styles.buttonDisabled]}
           onPress={handleGoogleSignIn}
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#333" />
+            <ActivityIndicator color={isDark ? "#fff" : "#333"} />
           ) : (
-            <Text style={styles.googleButtonText}>{t("auth.continueWithGoogle")}</Text>
+            <Text style={[styles.googleButtonText, isDark && styles.googleButtonTextDark]}>{t("auth.continueWithGoogle")}</Text>
           )}
         </TouchableOpacity>
 
         <View style={styles.registerLink}>
-          <Text style={styles.registerText}>{t("auth.noAccount")} </Text>
+          <Text style={[styles.registerText, isDark && styles.registerTextDark]}>{t("auth.noAccount")} </Text>
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
             <Text style={styles.registerLinkText}>{t("auth.signUp")}</Text>
           </TouchableOpacity>
@@ -143,6 +148,9 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
+  containerDark: {
+    backgroundColor: "#0F172A",
+  },
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -150,11 +158,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "#333",
   },
+  titleDark: {
+    color: "#F8FAFC",
+  },
   subtitle: {
     fontSize: 16,
     textAlign: "center",
     marginBottom: 40,
     color: "#666",
+  },
+  subtitleDark: {
+    color: "#94A3B8",
   },
   form: {
     width: "100%",
@@ -167,6 +181,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#ddd",
+    color: "#333",
+  },
+  inputDark: {
+    backgroundColor: "#1E293B",
+    borderColor: "#475569",
+    color: "#F8FAFC",
   },
   button: {
     backgroundColor: "#007AFF",
@@ -193,10 +213,16 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#ddd",
   },
+  dividerLineDark: {
+    backgroundColor: "#475569",
+  },
   dividerText: {
     marginHorizontal: 15,
     color: "#666",
     fontSize: 14,
+  },
+  dividerTextDark: {
+    color: "#94A3B8",
   },
   googleButton: {
     backgroundColor: "#fff",
@@ -206,10 +232,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
   },
+  googleButtonDark: {
+    backgroundColor: "#1E293B",
+    borderColor: "#475569",
+  },
   googleButtonText: {
     color: "#333",
     fontSize: 16,
     fontWeight: "600",
+  },
+  googleButtonTextDark: {
+    color: "#F8FAFC",
   },
   registerLink: {
     flexDirection: "row",
@@ -219,6 +252,9 @@ const styles = StyleSheet.create({
   registerText: {
     color: "#666",
     fontSize: 14,
+  },
+  registerTextDark: {
+    color: "#94A3B8",
   },
   registerLinkText: {
     color: "#007AFF",
