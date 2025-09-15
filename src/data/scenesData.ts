@@ -1,20 +1,72 @@
+import Cactus from "../assets/backgrounds/placeholders/Cactus.svg";
+import Forest from "../assets/backgrounds/placeholders/Forest.svg";
+import Mountain from "../assets/backgrounds/placeholders/Mountain.svg";
+import NightSky from "../assets/backgrounds/placeholders/NightSky.svg";
+import Palm from "../assets/backgrounds/placeholders/Palm.svg";
+import Park from "../assets/backgrounds/placeholders/Park.svg";
+import Sunset from "../assets/backgrounds/placeholders/Sunset.svg";
+
 export interface Scene {
   id: string;
   name: string;
   description: string;
-  price: number;
-  coin: number;
-  owned: boolean;
-  background: any; // Image source
+  price?: number;
+  coin?: number;
+  owned?: boolean;
+  background?: any; // Image source
   parallaxSlices?: {
     slice1: any;
     slice2: any;
     slice3: any;
     slice4: any;
   };
-  backgroundColor: string;
+  backgroundColor?: string;
+  icon?: any;
 }
-
+export const PLACEHOLDER_SCENE: Scene[] = [
+  {
+    id: "bg01",
+    name: "Desert Oasis",
+    description: "Cactus landscape with warm sands. A serene desert retreat.",
+    icon: Cactus
+  },
+  {
+    id: "bg02",
+    name: "Mountain Peak",
+    description: "Majestic mountains reaching the sky. A place of strength and tranquility.",
+    icon: Mountain
+  },
+  {
+    id: "bg03",
+    name: "Ancient Forest",
+    description: "Dense forest with towering trees. A natural sanctuary of peace.",
+    icon: Forest
+  },
+  {
+    id: "bg04",
+    name: "Starlit Night",
+    description: "Night sky filled with stars. A peaceful moment under the cosmos.",
+    icon: NightSky
+  },
+  {
+    id: "bg05",
+    name: "Tropical Paradise",
+    description: "Palm trees swaying in the breeze. Island serenity and calm.",
+    icon: Palm
+  },
+  {
+    id: "bg06",
+    name: "Urban Garden",
+    description: "Green park in the city. Nature's touch in urban surroundings.",
+    icon: Park
+  },
+  {
+    id: "bg07",
+    name: "Golden Sunset",
+    description: "Beautiful sunset painting the sky. A moment of reflection and beauty.",
+    icon: Sunset
+  },
+]
 export const SCENES_DATA: Scene[] = [
   {
     id: "bg1",

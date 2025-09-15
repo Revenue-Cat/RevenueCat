@@ -9,19 +9,21 @@ interface BuddyModalProps {
   visible: boolean;
   buddy: any | null;
   onClose: () => void;
+  hidePurchaseButton?: boolean;
 }
 
 const BuddyModal: React.FC<BuddyModalProps> = ({
   visible,
   buddy,
   onClose,
+  hidePurchaseButton = false,
 }) => {
   const { t } = useTranslation();
   const { userCoins, purchaseItem } = useApp();
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     if (buddy) {
-      const success = purchaseItem(buddy, 'buddies');
+      const success = await purchaseItem(buddy, 'buddies');
       if (success) {
         // Show success feedback
         console.log(`Successfully purchased ${buddy.name} for ${buddy.coin} coins!`);
@@ -53,6 +55,7 @@ const BuddyModal: React.FC<BuddyModalProps> = ({
         userCoins={userCoins}
         onPurchase={handlePurchase}
         onClose={onClose}
+        hidePurchaseButton={hidePurchaseButton}
       />
     </SlideModal>
   );
