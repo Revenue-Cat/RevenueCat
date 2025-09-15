@@ -43,7 +43,7 @@ type Screen =
   | "slips-log";
 
 const AppContent: React.FC = () => {
-  const { goal, isLoading } = useApp();
+  const { isOnboardingDone, isLoading } = useApp();
   const [showCravingSOS, setShowCravingSOS] = useState(false);
   const [showChatAssistance, setShowChatAssistance] = useState(false);
   const [isScenesSelected, setIsScenesSelected] = useState(false);
@@ -97,8 +97,8 @@ const AppContent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (goal && currentScreen == "welcome") setCurrentScreen("home");
-  }, [goal]);
+    if (isOnboardingDone && currentScreen == "welcome") setCurrentScreen("home");
+  }, [isOnboardingDone]);
 
   return isLoading ? <SafeAreaView
       className={`flex-1 justify-center items-center ${
@@ -121,7 +121,7 @@ const AppContent: React.FC = () => {
         theme === "dark" ? "bg-dark-background" : "bg-light-background"
       }`}
     >
-      {currentScreen === "welcome" && !goal && (
+      {currentScreen === "welcome" && !isOnboardingDone && (
         <Welcome onNext={() => navigateTo("setup")} />
       )}
 

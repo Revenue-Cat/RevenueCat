@@ -4,7 +4,6 @@ import { useApp } from "../contexts/AppContext";
 
 const Timer: React.FC = () => {
   const { startDate } = useApp();
-  console.log("startDate", startDate);
   const [timeElapsed, setTimeElapsed] = useState({
     days: 0,
     hours: 0,

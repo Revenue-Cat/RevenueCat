@@ -3,8 +3,6 @@ import 'react-native-get-random-values';
 import Keychain from 'react-native-keychain';
 import { v4 as uuidv4 } from 'uuid';
 
-const USER_ID_KEY = 'persistent_user_id';
-
 export async function getOrCreatePersistentUserId() {
   try {
     // Check for existing ID in Keychain
@@ -13,13 +11,11 @@ export async function getOrCreatePersistentUserId() {
     });
 
     if (credentials && credentials.password) {
-      console.log('Retrieved existing ID:', credentials.password);
       return credentials.password; // Return stored ID
     }
 
     // No ID found: Generate new UUID
     const newUserId = uuidv4();
-    console.log('Generated new ID:', newUserId);
 
     // Store new ID in Keychain
     await Keychain.setGenericPassword('user_id', newUserId, {

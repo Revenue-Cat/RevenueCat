@@ -22,9 +22,17 @@ import { getBuddyById } from "../data/buddiesData";
 import { useLanguage } from "./LanguageContext";
 import notificationService, { UserNotificationSettings } from "../services/notificationService";
 import oneSignalScheduler from "../services/oneSignalScheduler";
+import { adjustCoinsBalance, fetchCoins, Transaction } from "../utils/revenueCat";
 
 type ShopTab = "buddies" | "backgrounds";
 export type UserGender = "man" | "lady" | "any";
+
+const getCoinsFromAchievements = (achievements : Achievement[]):number => {
+  return achievements.reduce((a:number,b:Achievement) => {
+    console.log(b?.unlocked,b?.coins )
+    return a + (b?.completedDate ? (b?.coins || 0) : 0)
+  },0)
+}
 
 interface AppState {
   isLoading: boolean;
@@ -36,6 +44,9 @@ interface AppState {
   ownedBuddies: string[];
   ownedBackgrounds: string[];
   ownedAccessories: string[];
+  completedAchievements: string[];
+  transactions: Transaction[];
+  isOnboardingDone: boolean;
 
   // Buddy/User selections
   gender: UserGender; // user's gender (m/w/any)
@@ -89,8 +100,11 @@ interface AppState {
   extraSlipPacks: number; // each pack adds +5 to allowed limit
 
   // Actions
-  fetchCoins: () => void;
+  addTransaction: (amount:number, description: string) => void;
+  refreshCoinsBalance: () => void;
   setUserCoins: (coins: number) => void;
+  setCompletedAchievements: (items: string[]) => void;
+  setTransactions: (transactions: Transaction[]) => void;
   setSelectedBuddy: (buddy: ShopItem) => void;
   setSelectedBackground: (background: Scene) => void;
   purchaseItem: (item: ShopItem, category: ShopTab) => Promise<boolean>;
@@ -211,6 +225,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   
   // Shop/state
   const [userCoins, setUserCoinsState] = useState(0);
+  const [isOnboardingDone, setIsOnboardingDoneState] = useState<boolean>(false);
+  const [transactions, setTransactionsState] = useState<Transaction[]>([]);
+  const [completedAchievements, setCompletedAchievementsState] = useState<string[]>([]);
   const [selectedBuddy, setSelectedBuddyState] =
     useState<ShopItem>(DEFAULT_CHARACTER);
   const [selectedBackground, setSelectedBackgroundState] =
@@ -365,6 +382,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                 setPackPriceState(parsed.packPrice ?? "");
                 setPackPriceCurrencyState(parsed.packPriceCurrency ?? "$");
                 setGoalState(parsed.goal ?? "");
+                setTransactionsState(parsed.transactions ?? [])
+                setIsOnboardingDoneState(parsed.isOnboardingDone ?? false)
 
                 // Fix: Convert userProgress startDate to Date (was missing in original code)
                 const userProgressData = parsed.userProgress ?? {
@@ -470,7 +489,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     const saveDefaultState = async (userDocRef: any) => {
       try {
         await setDoc(userDocRef, { appState: JSON.stringify(DEFAULT_STATE) });
-        console.log("Default state saved to Firestore");
       } catch (error) {
         console.error("Failed to save default state:", error);
         console.error("Save error details:", {
@@ -530,6 +548,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       slipsUsed,
       slipsDates,
       extraSlipPacks,
+      transactions,
+      isOnboardingDone
     };
 
     if(!isLoading) {
@@ -560,6 +580,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     slipsUsed,
     slipsDates,
     extraSlipPacks,
+    transactions,
+    isOnboardingDone
   ]);
 
   // Sync with achievement service
@@ -590,6 +612,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     (coins: number) => setUserCoinsState(coins),
     []
   );
+  const setTransactions = useCallback(
+    (transactions: Transaction[]) => setTransactionsState(transactions),
+    []
+  );
   const setSelectedBuddy = useCallback(
     (buddy: ShopItem) => setSelectedBuddyState(buddy),
     []
@@ -599,16 +625,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     []
   );
 
-  const fetchCoins = async () => {
+  const refreshCoinsBalance = useCallback(async() => {
     try {
-      await Purchases.invalidateVirtualCurrenciesCache();
-      const virtualCurrencies = await Purchases.getVirtualCurrencies();
-      const coinsBalance = virtualCurrencies.all["QUITQLY"]?.balance ?? 0;
-      setUserCoins(coinsBalance);
-    } catch (error) {
-      console.error("Error fetching virtual currencies:", error);
+      const coins = await fetchCoins()
+      setUserCoins(coins)
+    } catch(e) {
+      console.error("Error fetching virtual currencies:", e);
     }
-  };
+  }, [])
+
+  const addTransaction = useCallback(async(amount:number, description: string) => {
+    const transaction = Transaction.create(amount, description)
+    setTransactions([...transactions, transaction])
+  },[transactions])
+
 
   const purchaseItem = useCallback(
     async (item: ShopItem | Scene, category: ShopTab): Promise<boolean> => {
@@ -620,40 +650,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         return false;
       }
 
-      const customerInfo = await Purchases.getCustomerInfo();
-      console.log("----- customer", customerInfo);
-      const appUserId = customerInfo.originalAppUserId;
-
-      const API_KEY = process.env.REVENUECAT_API_KEY; // Use environment variable (configure with react-native-dotenv or similar)
-      const PROJECT_ID = "2ea2fbba"; // Replace with your RevenueCat project ID
-
-      if (!API_KEY) {
-        console.error("RevenueCat API key is missing");
-        return false;
-      }
-
-      const response = await fetch(
-        `https://api.revenuecat.com/v2/projects/${PROJECT_ID}/customers/${appUserId}/virtual_currencies/transactions`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${API_KEY}`,
-          },
-          body: JSON.stringify({
-            adjustments: {
-              QUITQLY: -price,
-            },
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to debit coins: ${response.statusText}`);
-      }
-
+      await adjustCoinsBalance(-price)
+      addTransaction(-price, `Purchase ${item.name} from ${category}`)
       setUserCoinsState((prev) => prev - price);
-
       switch (category) {
         case "buddies":
           setOwnedBuddies((prev) => [...prev, item.id]);
@@ -662,8 +661,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           setOwnedBackgrounds((prev) => [...prev, item.id]);
           break;
       }
-
-      fetchCoins();
+      refreshCoinsBalance();
       return true;
     },
     [userCoins]
@@ -682,6 +680,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const setBuddyName = useCallback(
     (name: string) => setBuddyNameState(name),
+    []
+  );
+  const setCompletedAchievements = useCallback(
+    (items: string[]) => setCompletedAchievementsState(items),
     []
   );
 
@@ -985,9 +987,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     );
     setUserProgress((prev) => ({ ...prev, startDate }));
     await achievementService.setStartDate(startDate);
+    setIsOnboardingDoneState(true)
     
     // Initialize and schedule notifications after onboarding completion
     try {
+      await adjustCoinsBalance(100);
+      addTransaction(100, `Completed onboarding`)
+      await refreshCoinsBalance()
+      
       await initializeNotifications();
       await scheduleUserNotifications();
     } catch (error) {
@@ -1143,19 +1150,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Calculate initial coins based on onboarding bonus and completed achievements
   useEffect(() => {
-    const completedAchievements = achievements.filter(
-      (achievement) =>
-        achievement.completedDate && achievement.coins && achievement.coins > 0
-    );
-    const totalRewardCoins = completedAchievements.reduce(
-      (total, achievement) => total + (achievement.coins || 0),
-      0
-    );
-
-    // Set initial coins to 100 (onboarding bonus) + rewards from completed achievements
-    const initialCoins = 100 + totalRewardCoins;
-    setUserCoinsState(initialCoins);
-  }, [achievements]);
+    const init = async() => {
+      let updated = false;
+      let coins = 0
+      const ids:string[] = [] 
+      console.log(achievements)
+      achievements.forEach((item: Achievement) => {
+        if(item.completedDate && item.coins && !completedAchievements.includes(item.id)) {
+          coins += item.coins;
+          ids.push(item.id)
+          updated = true
+        }
+      })
+      if(updated) {
+        await adjustCoinsBalance(coins)
+        addTransaction(coins, `Achievements done: ${ids.join(",")}`)
+        setCompletedAchievements([...completedAchievements, ...ids])
+        console.log("hohoho -------------", [...completedAchievements, ...ids])
+      }
+      await refreshCoinsBalance()
+    }
+    init()
+  }, [achievements, completedAchievements]);
 
   // --- SLIPS HELPERS & ACTIONS (place after other handlers like purchaseItem/openShopWithTab) ---
   const getSlipsAllowed = useCallback(
@@ -1200,32 +1216,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       if (userCoins < costCoins) return false;
 
       try {
-        const customerInfo = await Purchases.getCustomerInfo();
-        const appUserId = customerInfo.originalAppUserId;
-        const API_KEY = process.env.REVENUECAT_API_KEY; // Use environment variable (configure with react-native-dotenv or similar)
-        const PROJECT_ID = "2ea2fbba";
-
-        if (!API_KEY) {
-          console.error("RevenueCat API key is missing");
-          return false;
-        }
-
-        const res = await fetch(
-          `https://api.revenuecat.com/v2/projects/${PROJECT_ID}/customers/${appUserId}/virtual_currencies/transactions`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${API_KEY}`,
-            },
-            body: JSON.stringify({ adjustments: { QUITQLY: -costCoins } }),
-          }
-        );
-        if (!res.ok) throw new Error("Coins debit failed");
-
+        await adjustCoinsBalance(-costCoins)
+        addTransaction(-costCoins, `Purchase extra slips`)
         setUserCoinsState((prev) => prev - costCoins);
         setExtraSlipPacks((prev) => prev + 1);
-        fetchCoins();
+        refreshCoinsBalance();
         return true;
       } catch (e) {
         console.error("purchaseExtraSlips error", e);
@@ -1234,6 +1229,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     },
     [userCoins]
   );
+
 
   // Memoize the context value to prevent unnecessary re-renders
   const value: AppState = useMemo(
@@ -1245,6 +1241,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       ownedBuddies,
       ownedBackgrounds,
       ownedAccessories,
+      transactions,
+      isOnboardingDone,
+      completedAchievements,
 
       gender,
       selectedBuddyId,
@@ -1273,7 +1272,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       showCoinPurchase,
       selectedShopTab,
 
-      fetchCoins,
+      addTransaction,
+      refreshCoinsBalance,
       setUserCoins,
       setSelectedBuddy,
       setSelectedBackground,
@@ -1282,6 +1282,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       setShowCoinPurchase,
       setSelectedShopTab,
       openShopWithTab,
+      setTransactions,
+      setCompletedAchievements,
 
       // Achievement actions
       setStartDate,
@@ -1328,6 +1330,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       areNotificationsEnabled,
     }),
     [
+      completedAchievements,
       isLoading,
       userCoins,
       selectedBuddy,
@@ -1384,10 +1387,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       areNotificationsEnabled,
     ]
   );
-
-  if (isLoading) {
-    console.log("----------- Loading")
-  }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

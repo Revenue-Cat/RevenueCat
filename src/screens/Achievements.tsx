@@ -365,7 +365,6 @@ const Achievements: React.FC<AchievementsProps> = ({
           {filteredAchievements.map((achievement, index) => {
             const progress = getProgressForAchievement(achievement.id);
             const progressPercentage = progress.percentage;
-            console.log("progressPercentage", progressPercentage, achievement.id)
             return (
               <View
                 key={`${achievement.id}-${index}`}

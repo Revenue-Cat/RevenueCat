@@ -15,6 +15,7 @@ import * as BreathingData from '../data/breathingData';
 import CoinsIcon from "../assets/icons/coins.svg";
 import PauseIcon from "../assets/icons/pause.svg";
 import { useTranslation } from 'react-i18next';
+import { adjustCoinsBalance } from '../utils/revenueCat';
 // import PlayIcon from "../assets/icons/play.svg";
 
 const BreathingBg = require('../assets/breathing/breathing_bg.png');
@@ -45,6 +46,8 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
     updateChallengeProgress,
     getDailyCheckIns,
     addDailyCheckIn,
+    addTransaction,
+    refreshCoinsBalance
   } = useApp();
   
   // Get breathing assets for the selected buddy
@@ -159,6 +162,9 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
               if (cycleCountRef.current > 4) {
                 // Complete the breathing exercise
                 setCompletedSessionsCount(prevCount => prevCount + 1);
+                adjustCoinsBalance(5)
+                addTransaction(5, "Breath session done")
+                refreshCoinsBalance()
                 buddyIconOpacity.setValue(1);
                 completionOpacity.setValue(1);
                 setIsCompleted(true);
