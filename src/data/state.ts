@@ -25,6 +25,7 @@ export const DEFAULT_STATE = {
     selectedBackground: DEFAULT_BACKGROUND,
     ownedBuddies: ["llama-m", "llama-w", "zebra-m", "zebra-w", "dog-m", "dog-w"],
     ownedBackgrounds: ["bg1", "bg3"],
+    ownedChallenges: [],
     ownedAccessories: [],
     gender: "man",
     selectedBuddyId: "llama-m",

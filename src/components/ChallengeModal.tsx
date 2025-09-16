@@ -49,22 +49,56 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
     };
     return mapping[challengeId] || challengeId;
   };
-  const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns, getChallengeCompletions, setChallengeCompletionsForId, addDailyCheckIn, userCoins, setShowCoinPurchase } = useApp();
+  const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns, getChallengeCompletions, setChallengeCompletionsForId, addDailyCheckIn, userCoins, setShowCoinPurchase, purchaseItem } = useApp();
 
-  const handleStartChallenge = () => {
+  const handleStartChallenge = async () => {
     if (!challengeId) return;
 
     const challengeStatus = getChallengeStatus(challengeId);
     const isLocked = challengeStatus === 'locked';
 
-    // If challenge is locked and user doesn't have enough coins, show purchase modal
-    if (isLocked && challenge && challenge.points > userCoins) {
-      setShowCoinPurchase(true);
-      onClose();
+    // If challenge is locked
+    if (isLocked && challenge) {
+      // If user doesn't have enough coins, show purchase modal
+      if (challenge.points > userCoins) {
+        setShowCoinPurchase(true);
+        onClose();
+        return;
+      }
+
+      // If user has enough coins, purchase the challenge
+      try {
+        const shopItem = {
+          id: challengeId,
+          emoji: '🏆',
+          name: challenge.title,
+          price: challenge.points,
+          owned: false,
+          coin: challenge.points
+        };
+
+        const success = await purchaseItem(shopItem, 'challenges');
+        if (success) {
+          console.log(`Successfully purchased challenge ${challenge.title}`);
+          // Now start the challenge
+          startChallenge(challengeId);
+          // Don't close modal when starting challenge - let user see progress
+        } else {
+          console.log('Challenge purchase failed');
+          // Show coin purchase modal if purchase failed (might be due to coins being spent elsewhere)
+          setShowCoinPurchase(true);
+          onClose();
+        }
+      } catch (error) {
+        console.error('Error purchasing challenge:', error);
+        // Show coin purchase modal on error
+        setShowCoinPurchase(true);
+        onClose();
+      }
       return;
     }
 
-    // Otherwise, start the challenge normally
+    // If challenge is not locked, start it normally
     startChallenge(challengeId);
     // Don't close modal when starting challenge - let user see progress
   };

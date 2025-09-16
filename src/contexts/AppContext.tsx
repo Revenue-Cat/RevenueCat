@@ -25,7 +25,7 @@ import notificationService, { UserNotificationSettings } from "../services/notif
 import oneSignalScheduler from "../services/oneSignalScheduler";
 import { adjustCoinsBalance, fetchCoins, Transaction } from "../utils/revenueCat";
 
-type ShopTab = "buddies" | "backgrounds";
+type ShopTab = "buddies" | "backgrounds" | "challenges";
 export type UserGender = "man" | "lady" | "any";
 
 const getCoinsFromAchievements = (achievements : Achievement[]):number => {
@@ -44,6 +44,7 @@ interface AppState {
   selectedBackground: Scene;
   ownedBuddies: string[];
   ownedBackgrounds: string[];
+  ownedChallenges: string[];
   ownedAccessories: string[];
   completedAchievements: string[];
   transactions: Transaction[];
@@ -247,6 +248,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     "bg3",
   ]);
 
+  const [ownedChallenges, setOwnedChallenges] = useState<string[]>([]);
+
   const [slipsUsed, setSlipsUsed] = useState(0);
   const [slipsDates, setSlipsDates] = useState<string[]>([]);
   const [extraSlipPacks, setExtraSlipPacks] = useState(0);
@@ -375,6 +378,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                   ]
                 );
                 setOwnedBackgrounds(parsed.ownedBackgrounds ?? ["bg1", "bg3"]);
+                setOwnedChallenges(parsed.ownedChallenges ?? []);
                 setOwnedAccessories(parsed.ownedAccessories ?? []);
                 setGenderState(parsed.gender ?? "man");
                 setSelectedBuddyIdState(parsed.selectedBuddyId ?? "llama-m");
@@ -532,6 +536,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       selectedBackground,
       ownedBuddies,
       ownedBackgrounds,
+      ownedChallenges,
       ownedAccessories,
       gender,
       selectedBuddyId,
@@ -564,6 +569,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     selectedBackground,
     ownedBuddies,
     ownedBackgrounds,
+    ownedChallenges,
     ownedAccessories,
     gender,
     selectedBuddyId,
@@ -648,7 +654,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const price = (item as any).coin || 0;
 
       if (userCoins < price) {
-        alert(t("alerts.notEnoughCoins"));
         return false;
       }
 
@@ -661,6 +666,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           break;
         case "backgrounds":
           setOwnedBackgrounds((prev) => [...prev, item.id]);
+          break;
+        case "challenges":
+          setOwnedChallenges((prev) => [...prev, item.id]);
           break;
       }
       refreshCoinsBalance();
@@ -843,11 +851,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const inProgress = inProgressChallenges.includes(challengeId);
       const active = activeChallenges.includes(challengeId);
+      const purchased = ownedChallenges.includes(challengeId);
       const hasCompletions =
         challengeCompletions[challengeId] &&
         challengeCompletions[challengeId].length > 0;
 
-      // Priority: completed > inprogress > active > locked
+      // Priority: completed > inprogress > purchased/active > locked
       if (hasCompletions) {
         return "completed"; // Challenge has been completed before (highest priority)
       }
@@ -856,13 +865,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         return "inprogress"; // Challenge is being worked on
       }
 
-      if (active) {
-        return "active"; // Challenge can be started
+      if (purchased || active) {
+        return "active"; // Challenge has been purchased or is active
       }
 
       return "locked"; // Challenge not started
     },
-    [activeChallenges, inProgressChallenges, challengeCompletions]
+    [activeChallenges, inProgressChallenges, challengeCompletions, ownedChallenges]
   );
 
   const getChallengeProgress = useCallback(
@@ -1028,11 +1037,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await notificationService.initialize();
       console.log('AppContext: Notifications initialized');
+
+      // Send installation notification if user has permissions and start date is set
+      if (userProgress.startDate && (await notificationService.areNotificationsEnabled())) {
+        const userId = await getOrCreatePersistentUserId();
+
+        // Check if installation notification was already sent
+        const userSettingsFromFirebase = await notificationService.getUserSettings(userId);
+        if (!userSettingsFromFirebase?.lastNotificationSent) {
+          // Only send if no notifications have been sent yet (indicating first install)
+          const selectedBuddy = getBuddyById(selectedBuddyId);
+          const actualBuddyName = selectedBuddy?.name || buddyName || 'Your Buddy';
+
+          const userSettings: UserNotificationSettings = {
+            userId,
+            language: getNotificationLanguage(),
+            buddyName: actualBuddyName,
+            selectedBuddyId: selectedBuddyId,
+            gender: gender,
+            startDate: userProgress.startDate,
+            isEnabled: true,
+            morningTime: '08:00',
+            eveningTime: '20:00',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            lastNotificationSent: new Date() // Mark that notifications have started
+          };
+
+          // Save settings and send installation notification
+          await notificationService.saveUserSettings(userSettings);
+          await notificationService.sendInstallationNotification(userSettings);
+        }
+      }
     } catch (error) {
       console.error('AppContext: Error initializing notifications:', error as Error);
       throw error;
     }
-  }, []);
+  }, [userProgress.startDate, selectedBuddyId, buddyName, gender]);
 
 
   const scheduleUserNotifications = useCallback(async () => {
@@ -1265,6 +1305,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       selectedBackground,
       ownedBuddies,
       ownedBackgrounds,
+      ownedChallenges,
       ownedAccessories,
       transactions,
       isOnboardingDone,

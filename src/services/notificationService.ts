@@ -75,18 +75,57 @@ class NotificationService {
 
     try {
       console.log('NotificationService: Initializing...');
-      
+
       // Initialize OneSignal service
       await oneSignalService.initialize();
-      
+
       // Initialize OneSignal scheduler
       await oneSignalScheduler.initialize();
-      
+
       this.isInitialized = true;
       console.log('NotificationService: Initialized successfully with OneSignal and scheduler');
     } catch (error) {
       console.error('NotificationService: Error initializing:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Send installation notification immediately after app installation
+   */
+  public async sendInstallationNotification(userSettings: UserNotificationSettings): Promise<void> {
+    try {
+      if (!oneSignalService.isOneSignalAvailable()) {
+        console.log('NotificationService: OneSignal not available for installation notification');
+        return;
+      }
+
+      // Find the installation notification (day: -1)
+      const installationNotification = NOTIFICATION_DATA.find(n => n.id === 'app_installed');
+      if (!installationNotification) {
+        console.log('NotificationService: Installation notification not found');
+        return;
+      }
+
+      // Prepare the message with user-specific data
+      const message = this.prepareMessage(installationNotification, userSettings);
+
+      console.log('NotificationService: Sending installation notification');
+
+      // Send the notification immediately
+      await oneSignalService.sendNotification(message, {
+        day: '-1',
+        category: installationNotification.category,
+        timeOfDay: installationNotification.timeOfDay,
+        notificationId: installationNotification.id,
+        userId: userSettings.userId,
+        isInstallation: 'true'
+      });
+
+      console.log('NotificationService: Installation notification sent successfully');
+    } catch (error) {
+      console.error('NotificationService: Error sending installation notification:', error);
+      // Don't throw error for installation notification - it's not critical
     }
   }
 
@@ -151,8 +190,10 @@ class NotificationService {
 
       // Schedule notifications for the next 365 days or until we reach the end of our data
       const maxDays = Math.min(365, Math.max(...NOTIFICATION_DATA.map(n => n.day)));
+      const minDays = Math.min(...NOTIFICATION_DATA.map(n => n.day));
 
-      for (let day = Math.max(0, daysSinceStart); day <= maxDays; day++) {
+      // Start from the minimum day (could be -1 for installation notifications) or current day, whichever is greater
+      for (let day = Math.max(minDays, daysSinceStart); day <= maxDays; day++) {
         const notificationsForDay = getNotificationsForDay(day);
         
         for (const notification of notificationsForDay) {
@@ -201,7 +242,10 @@ class NotificationService {
   ): Date {
     const targetDate = new Date(startDate);
 
-    if (day === 0) {
+    if (day === -1) {
+      // For day -1 (installation) notifications, schedule immediately (or 5 minutes after start)
+      targetDate.setMinutes(targetDate.getMinutes() + 5);
+    } else if (day === 0) {
       // For day 0 (welcome) notifications, schedule 1 hour after start
       targetDate.setHours(targetDate.getHours() + 1);
     } else {

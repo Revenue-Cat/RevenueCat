@@ -78,11 +78,8 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
       {/* Purchase Button - Only if not owned and not hidden */}
       {!isOwned && !hidePurchaseButton && (
         <Pressable
-          className={`flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row ${
-            canAfford ? "bg-indigo-600" : "bg-gray-400"
-          }`}
+          className={`flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600`}
           onPress={handlePurchase}
-          disabled={!canAfford}
           accessibilityRole="button"
           accessibilityLabel={
             canAfford
@@ -91,9 +88,7 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
           }
         >
           <Text
-            className={`font-semibold text-xl ${
-              canAfford ? "text-white" : "text-gray-200"
-            }`}
+            className={`font-semibold text-xl text-white`}
           >
             {canAfford
               ? t("shop.buyFor", { coins: buddy.coin })
