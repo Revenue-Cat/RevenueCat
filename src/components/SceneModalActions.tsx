@@ -35,10 +35,8 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
   };
 
   const handlePurchase = () => {
-    if (canAfford && !isOwned) {
       onPurchase();
-      // Don't close immediately, let the parent handle it
-    }
+ 
   };
 
   return (

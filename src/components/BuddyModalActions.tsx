@@ -30,10 +30,8 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
   const canAfford = userCoins >= (buddy.coin || 0);
 
   const handleSelect = () => {
-    if (isOwned) {
       setSelectedBuddyId(buddy.id);
       onClose();
-    }
   };
 
   const handlePurchase = () => {

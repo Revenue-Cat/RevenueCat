@@ -365,6 +365,48 @@ const Shop: React.FC<ShopProps> = ({
 
   const gradientColors = parseGradient(selectedBackground.backgroundColor || "linear-gradient(179.97deg, #1F1943 48.52%, #4E3EA9 99.97%)");
 
+  // Handle individual buddy purchase
+  const handleBuyBuddy = useCallback(async (buddy: any) => {
+    try {
+      const success = await purchaseItem(buddy, 'buddies');
+      if (success) {
+        console.log(`Successfully purchased buddy ${buddy.name}`);
+        setShowBuddyModal(false);
+        setSelectedBuddyForModal(null);
+        setHidePurchaseButton(false);
+      } else {
+        console.log('Buddy purchase failed - not enough coins');
+        // Show coin purchase modal and close current modal
+        setShowCoinPurchase(true);
+        setShowBuddyModal(false);
+        setSelectedBuddyForModal(null);
+        setHidePurchaseButton(false);
+      }
+    } catch (error) {
+      console.error('Error purchasing buddy:', error);
+    }
+  }, [purchaseItem, setShowCoinPurchase]);
+
+  // Handle individual scene purchase
+  const handleBuyScene = useCallback(async (scene: any) => {
+    try {
+      const success = await purchaseItem(scene, 'backgrounds');
+      if (success) {
+        console.log(`Successfully purchased scene ${scene.name}`);
+        setShowSceneModal(false);
+        setSelectedSceneForModal(null);
+      } else {
+        console.log('Scene purchase failed - not enough coins');
+        // Show coin purchase modal and close current modal
+        setShowCoinPurchase(true);
+        setShowSceneModal(false);
+        setSelectedSceneForModal(null);
+      }
+    } catch (error) {
+      console.error('Error purchasing scene:', error);
+    }
+  }, [purchaseItem, setShowCoinPurchase]);
+
   return (
     <View
       className={`flex-1 `}
@@ -399,6 +441,7 @@ const Shop: React.FC<ShopProps> = ({
           setSelectedBuddyForModal(null);
           setHidePurchaseButton(false);
         }}
+        onPurchase={handleBuyBuddy}
         hidePurchaseButton={hidePurchaseButton}
       />
 
@@ -409,6 +452,7 @@ const Shop: React.FC<ShopProps> = ({
           setShowSceneModal(false);
           setSelectedSceneForModal(null);
         }}
+        onPurchase={handleBuyScene}
       />
     </View>
   );
