@@ -376,11 +376,8 @@ const Shop: React.FC<ShopProps> = ({
         setHidePurchaseButton(false);
       } else {
         console.log('Buddy purchase failed - not enough coins');
-        // Show coin purchase modal and close current modal
+        // Show coin purchase modal (BuddyModal is already closed by BuddyModalActions)
         setShowCoinPurchase(true);
-        setShowBuddyModal(false);
-        setSelectedBuddyForModal(null);
-        setHidePurchaseButton(false);
       }
     } catch (error) {
       console.error('Error purchasing buddy:', error);
@@ -397,10 +394,8 @@ const Shop: React.FC<ShopProps> = ({
         setSelectedSceneForModal(null);
       } else {
         console.log('Scene purchase failed - not enough coins');
-        // Show coin purchase modal and close current modal
+        // Show coin purchase modal (SceneModal is already closed by SceneModalActions)
         setShowCoinPurchase(true);
-        setShowSceneModal(false);
-        setSelectedSceneForModal(null);
       }
     } catch (error) {
       console.error('Error purchasing scene:', error);

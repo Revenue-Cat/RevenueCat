@@ -35,10 +35,10 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
   };
 
   const handlePurchase = () => {
-    
-      onPurchase();
+      // Close BuddyModal first to prevent blink
       onClose();
-      // Parent decides whether to close
+      // Then trigger purchase (which may open coin purchase modal)
+      onPurchase();
   };
 
   return (
