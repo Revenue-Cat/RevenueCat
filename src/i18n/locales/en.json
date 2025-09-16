@@ -88,7 +88,8 @@
     "actionButton": "Continue",
     "profileTitle": "My quit buddy",
     "subtitle": "Pick a companion for your journey",
-    "title": "Choose your buddy"
+    "title": "Choose your buddy",
+    "lockedMessage": "This buddy is locked. Unlock it in the shop soon."
   },
   "challenges": {
     "calmPower": {
@@ -432,6 +433,33 @@
       "challenge": "Master of air",
       "description": "Practice 5 deep breaths, three times a day for 10 days. Focus on your breathing, relax your body, and let cravings pass naturally.",
       "title": "Breathe deep"
+    },
+    "steps": {
+      "breathe": {
+        "title": "Take a Deep Breath",
+        "description": "Inhale slowly for 4 counts, hold for 4, exhale for 4",
+        "action": "I'm breathing"
+      },
+      "water": {
+        "title": "Drink Some Water",
+        "description": "Stay hydrated and give your mouth something to do",
+        "action": "I'm drinking water"
+      },
+      "walk": {
+        "title": "Take a Walk",
+        "description": "Get moving and change your environment",
+        "action": "I'm going for a walk"
+      },
+      "friend": {
+        "title": "Call a Friend",
+        "description": "Reach out to someone who supports your journey",
+        "action": "I'm calling someone"
+      },
+      "encourage": {
+        "title": "You're Doing Great!",
+        "description": "The craving will pass. You're stronger than this urge.",
+        "action": "I'm staying strong"
+      }
     }
   },
   "home": {
@@ -886,35 +914,6 @@
       "default": "Thank you for sharing that with me. I'm here to support you through every step of your quitting journey. How can I help you today?"
     }
   },
-  "cravingSOS": {
-    "steps": {
-      "breathe": {
-        "title": "Take a Deep Breath",
-        "description": "Inhale slowly for 4 counts, hold for 4, exhale for 4",
-        "action": "I'm breathing"
-      },
-      "water": {
-        "title": "Drink Some Water",
-        "description": "Stay hydrated and give your mouth something to do",
-        "action": "I'm drinking water"
-      },
-      "walk": {
-        "title": "Take a Walk",
-        "description": "Get moving and change your environment",
-        "action": "I'm going for a walk"
-      },
-      "friend": {
-        "title": "Call a Friend",
-        "description": "Reach out to someone who supports your journey",
-        "action": "I'm calling someone"
-      },
-      "encourage": {
-        "title": "You're Doing Great!",
-        "description": "The craving will pass. You're stronger than this urge.",
-        "action": "I'm staying strong"
-      }
-    }
-  },
   "buddy": {
     "nameModal": {
       "title": "Buddy name",
@@ -932,5 +931,21 @@
   "support": {
     "telegram": "Telegram",
     "email": "Email"
+  },
+  "homeScreen": {
+    "title": "RevenueCat Dashboard",
+    "subtitle": "Welcome back!",
+    "userInfoTitle": "User Information",
+    "email": "Email:",
+    "userId": "User ID:",
+    "emailVerified": "Email Verified:",
+    "revenueDataTitle": "Your Revenue Data",
+    "logoutButtonText": "Logout",
+    "revenueDataDescription": "This is where your revenue analytics and subscription data would be displayed.",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "loading": {
+    "text": "Loading..."
   }
 }

@@ -479,7 +479,7 @@ const BuddySelection: React.FC<Props> = ({
                 isDark ? "text-slate-400" : "text-slate-500"
               }`}
             >
-              This buddy is locked. Unlock it in the shop soon.
+              {t("buddySelection.lockedMessage")}
             </Text>
           )}
         </View>
