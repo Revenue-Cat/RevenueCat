@@ -36,7 +36,7 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
 
   const handlePurchase = () => {
       onPurchase();
- 
+      onClose();
   };
 
   return (

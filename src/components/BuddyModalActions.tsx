@@ -35,10 +35,10 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
   };
 
   const handlePurchase = () => {
-    if (canAfford && !isOwned) {
+    
       onPurchase();
+      onClose();
       // Parent decides whether to close
-    }
   };
 
   return (
