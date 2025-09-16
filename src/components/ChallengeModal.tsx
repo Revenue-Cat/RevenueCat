@@ -61,8 +61,10 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
     if (isLocked && challenge) {
       // If user doesn't have enough coins, show purchase modal
       if (challenge.points > userCoins) {
-        setShowCoinPurchase(true);
+        // Close ChallengeModal first to prevent blink
         onClose();
+        // Then show coin purchase modal
+        setTimeout(() => setShowCoinPurchase(true), 100);
         return;
       }
 
@@ -85,15 +87,17 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           // Don't close modal when starting challenge - let user see progress
         } else {
           console.log('Challenge purchase failed');
-          // Show coin purchase modal if purchase failed (might be due to coins being spent elsewhere)
-          setShowCoinPurchase(true);
+          // Close ChallengeModal first to prevent blink
           onClose();
+          // Then show coin purchase modal
+          setTimeout(() => setShowCoinPurchase(true), 100);
         }
       } catch (error) {
         console.error('Error purchasing challenge:', error);
-        // Show coin purchase modal on error
-        setShowCoinPurchase(true);
+        // Close ChallengeModal first to prevent blink
         onClose();
+        // Then show coin purchase modal
+        setTimeout(() => setShowCoinPurchase(true), 100);
       }
       return;
     }

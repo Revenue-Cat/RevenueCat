@@ -35,8 +35,10 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
   };
 
   const handlePurchase = () => {
-      onPurchase();
+      // Close SceneModal first to prevent blink
       onClose();
+      // Then trigger purchase (which may open coin purchase modal)
+      onPurchase();
   };
 
   return (
