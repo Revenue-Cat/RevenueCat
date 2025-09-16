@@ -46,7 +46,7 @@ interface AppState {
   ownedBackgrounds: string[];
   ownedChallenges: string[];
   ownedAccessories: string[];
-  completedAchievements: string[];
+  completedAchievements: string[] | undefined;
   transactions: Transaction[];
   isOnboardingDone: boolean;
 
@@ -229,8 +229,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // Shop/state
   const [userCoins, setUserCoinsState] = useState(0);
   const [isOnboardingDone, setIsOnboardingDoneState] = useState<boolean>(false);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [transactions, setTransactionsState] = useState<Transaction[]>([]);
-  const [completedAchievements, setCompletedAchievementsState] = useState<string[]>([]);
+  const [completedAchievements, setCompletedAchievementsState] = useState<string[] | undefined>(undefined);
   const [selectedBuddy, setSelectedBuddyState] =
     useState<ShopItem>(DEFAULT_CHARACTER);
   const [selectedBackground, setSelectedBackgroundState] =
@@ -460,6 +461,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                 setSlipsUsed(parsed.slipsUsed ?? 0);
                 setSlipsDates(parsed.slipsDates ?? []);
                 setExtraSlipPacks(parsed.extraSlipPacks ?? 0);
+                setCompletedAchievementsState(parsed.completedAchievements ?? [])
+                setIsLoaded(true)
               } else {
                 console.warn("Parsed data is invalid, using defaults");
                 await saveDefaultState(userDocRef);
@@ -556,7 +559,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       slipsDates,
       extraSlipPacks,
       transactions,
-      isOnboardingDone
+      isOnboardingDone,
+      completedAchievements
     };
 
     if(!isLoading) {
@@ -589,7 +593,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     slipsDates,
     extraSlipPacks,
     transactions,
-    isOnboardingDone
+    isOnboardingDone,
+    completedAchievements
   ]);
 
   // Sync with achievement service
@@ -1201,7 +1206,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     achievementService.setOnAchievementCompleted((achievement) => {
       const coins = achievement.coins || 0;
       if (coins > 0) {
-        setUserCoinsState((prev) => prev + coins);
+        //setUserCoinsState((prev) => prev + coins);
         console.log(
           `Achievement completed: ${achievement.name}, added ${coins} coins`
         );
@@ -1212,27 +1217,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // Calculate initial coins based on onboarding bonus and completed achievements
   useEffect(() => {
     const init = async() => {
-      let updated = false;
-      let coins = 0
-      const ids:string[] = [] 
-      console.log(achievements)
-      achievements.forEach((item: Achievement) => {
-        if(item.completedDate && item.coins && !completedAchievements.includes(item.id)) {
-          coins += item.coins;
-          ids.push(item.id)
-          updated = true
+      if(completedAchievements) {
+        let updated = false;
+        let coins = 0
+        const ids:string[] = [] 
+        achievements.forEach((item: Achievement) => {
+          if(item.completedDate && item.coins && !completedAchievements.includes(item.id)) {
+            console.log(item.id, item)
+            coins += item.coins;
+            ids.push(item.id)
+            updated = true
+          }
+        })
+        if(updated) {
+          await adjustCoinsBalance(coins)
+          addTransaction(coins, `Achievements done: ${ids.join(",")}`)
+          setCompletedAchievements([...completedAchievements, ...ids])
         }
-      })
-      if(updated) {
-        await adjustCoinsBalance(coins)
-        addTransaction(coins, `Achievements done: ${ids.join(",")}`)
-        setCompletedAchievements([...completedAchievements, ...ids])
-        console.log("hohoho -------------", [...completedAchievements, ...ids])
       }
       await refreshCoinsBalance()
     }
-    init()
-  }, [achievements, completedAchievements]);
+    if(isLoaded){
+      init()
+    }
+  }, [achievements, completedAchievements, isLoading]);
 
   // --- SLIPS HELPERS & ACTIONS (place after other handlers like purchaseItem/openShopWithTab) ---
   const getSlipsAllowed = useCallback(
