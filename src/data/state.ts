@@ -43,7 +43,7 @@ export const DEFAULT_STATE = {
         challengesCompleted: 0,
         purchasesMade: 0,
     },
-    activeChallenges: [],
+    activeChallenges: ["master-of-air-breathing"],
     inProgressChallenges: [],
     challengeProgress: {},
     challengeCompletions: {},

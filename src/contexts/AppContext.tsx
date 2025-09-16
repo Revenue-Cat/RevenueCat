@@ -822,6 +822,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getChallengeStatus = useCallback(
     (challengeId: string): "active" | "locked" | "inprogress" | "completed" => {
+      // Special case: master-of-air-breathing should always be unlocked
+      if (challengeId === 'master-of-air-breathing') {
+        const hasCompletions =
+          challengeCompletions[challengeId] &&
+          challengeCompletions[challengeId].length > 0;
+
+        const inProgress = inProgressChallenges.includes(challengeId);
+
+        if (hasCompletions) {
+          return "completed";
+        }
+
+        if (inProgress) {
+          return "inprogress";
+        }
+
+        return "active"; // Always active for master-of-air-breathing
+      }
+
       const inProgress = inProgressChallenges.includes(challengeId);
       const active = activeChallenges.includes(challengeId);
       const hasCompletions =
@@ -1215,7 +1234,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const purchaseExtraSlips = useCallback(
     async (costCoins: number = 1000): Promise<boolean> => {
-      if (userCoins < costCoins) return false;
+      if (userCoins < costCoins) {
+        // Show coin purchase modal instead of just returning false
+        setShowCoinPurchase(true);
+        return false;
+      }
 
       try {
         await adjustCoinsBalance(-costCoins)
@@ -1229,7 +1252,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         return false;
       }
     },
-    [userCoins]
+    [userCoins, setShowCoinPurchase]
   );
 
 

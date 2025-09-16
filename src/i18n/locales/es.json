@@ -322,6 +322,7 @@
       "restartChallenge": "Reiniciar desafío",
       "share": "Compartir",
       "startNow": "Comenzar ahora",
+      "startNowWithPoints": "Comenzar ahora por {{points}}",
       "today": "Hoy"
     },
     "refresh": {

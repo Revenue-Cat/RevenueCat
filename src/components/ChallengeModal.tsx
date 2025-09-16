@@ -66,7 +66,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
 
     // Otherwise, start the challenge normally
     startChallenge(challengeId);
-    onClose();
+    // Don't close modal when starting challenge - let user see progress
   };
 
   const handleCheckIn = () => {
@@ -519,7 +519,6 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
               <Text className={`text-center text-md font-semibold mx-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>
                 {t('challenges.modal.cancelChallenge')}
               </Text>
-              <CoinsIcon width={24} height={24} color={isDark ? "#e55b0b" : "#94a3b8"} />
 
             </Pressable>
           </View>
@@ -550,7 +549,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
               ""
             )}     
             <Text className="text-white font-bold text-lg ml-2 mr-2">
-              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : t('challenges.modal.startNow')))}
+              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : (isLocked ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 }) : t('challenges.modal.startNow'))))}
             </Text>
             {isInProgress && !isCompleted && previousCompletions.length === 0 && (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">

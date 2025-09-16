@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { View, Text, Pressable, ScrollView, Alert, Image } from "react-native";
+import { View, Text, Pressable, ScrollView, Image } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -70,16 +70,19 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
     setShowSlipConfirmationModal(false);
   };
 
-  const onBuy = async () => {
-    const cost = SLIPS_CONFIG.extraPack.coins;
-    const ok = await purchaseExtraSlips(cost);
-    if (!ok) {
-      Alert.alert(
-        t("slipsLog.buy.notEnough.title"),
-        t("slipsLog.buy.notEnough.body", { coins: cost })
-      );
+  const onBuy = useCallback(async () => {
+    try {
+      const cost = SLIPS_CONFIG.extraPack.coins;
+      const success = await purchaseExtraSlips(cost);
+      if (success) {
+        console.log('Successfully purchased extra slips pack');
+      } else {
+        console.log('Extra slips purchase failed - coin purchase modal should be shown');
+      }
+    } catch (error) {
+      console.error('Error purchasing extra slips:', error);
     }
-  };
+  }, [purchaseExtraSlips]);
 
   const handleCoinPurchase = useCallback(() => {
     setShowCoinPurchase(true);
