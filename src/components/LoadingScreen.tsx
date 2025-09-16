@@ -1,11 +1,14 @@
 import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const LoadingScreen: React.FC = () => {
+  const { t } = useTranslation();
+  
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color="#007AFF" />
-      <Text style={styles.text}>Loading...</Text>
+      <Text style={styles.text}>{t("loading.text")}</Text>
     </View>
   );
 };

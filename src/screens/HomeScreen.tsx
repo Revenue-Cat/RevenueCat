@@ -46,32 +46,32 @@ const HomeScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>RevenueCat Dashboard</Text>
-        <Text style={styles.subtitle}>Welcome back!</Text>
+        <Text style={styles.title}>{t("homeScreen.title")}</Text>
+        <Text style={styles.subtitle}>{t("homeScreen.subtitle")}</Text>
       </View>
 
       <View style={styles.userInfo}>
-        <Text style={styles.userInfoTitle}>User Information</Text>
+        <Text style={styles.userInfoTitle}>{t("homeScreen.userInfoTitle")}</Text>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Email:</Text>
+          <Text style={styles.infoLabel}>{t("homeScreen.email")}</Text>
           <Text style={styles.infoValue}>{user?.email}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>User ID:</Text>
+          <Text style={styles.infoLabel}>{t("homeScreen.userId")}</Text>
           <Text style={styles.infoValue}>{user?.uid}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Email Verified:</Text>
+          <Text style={styles.infoLabel}>{t("homeScreen.emailVerified")}</Text>
           <Text style={styles.infoValue}>
-            {user?.emailVerified ? 'Yes' : 'No'}
+            {user?.emailVerified ? t("homeScreen.yes") : t("homeScreen.no")}
           </Text>
         </View>
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.contentTitle}>Your Revenue Data</Text>
+        <Text style={styles.contentTitle}>{t("homeScreen.revenueDataTitle")}</Text>
         <Text style={styles.contentText}>
-          This is where your revenue analytics and subscription data would be displayed.
+          {t("homeScreen.revenueDataDescription")}
         </Text>
       </View>
 
@@ -83,7 +83,7 @@ const HomeScreen: React.FC = () => {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.logoutButtonText}>Logout</Text>
+          <Text style={styles.logoutButtonText}>{t("homeScreen.logoutButtonText")}</Text>
         )}
       </TouchableOpacity>
     </View>

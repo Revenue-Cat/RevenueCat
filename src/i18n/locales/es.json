@@ -88,7 +88,8 @@
     "actionButton": "Continuar",
     "profileTitle": "Mi compañero",
     "subtitle": "Elige un compañero para tu viaje",
-    "title": "Elige tu compañero"
+    "title": "Elige tu compañero",
+    "lockedMessage": "Este compañero está bloqueado. Desbloquealo en la tienda pronto."
   },
   "challenges": {
     "calmPower": {
@@ -432,6 +433,33 @@
       "challenge": "Maestro del aire",
       "description": "Practica 5 respiraciones profundas, tres veces al día durante 10 días. Enfócate en tu respiración, relaja tu cuerpo y deja que los antojos pasen naturalmente.",
       "title": "Respira profundo"
+    },
+    "steps": {
+      "breathe": {
+        "title": "Respira Profundamente",
+        "description": "Inhala lentamente por 4 tiempos, mantén por 4, exhala por 4",
+        "action": "Estoy respirando"
+      },
+      "water": {
+        "title": "Bebe Agua",
+        "description": "Mantente hidratado y dale a tu boca algo que hacer",
+        "action": "Estoy bebiendo agua"
+      },
+      "walk": {
+        "title": "Sal a Caminar",
+        "description": "Muévete y cambia tu entorno",
+        "action": "Voy a caminar"
+      },
+      "friend": {
+        "title": "Llama a un Amigo",
+        "description": "Contacta a alguien que apoye tu viaje",
+        "action": "Estoy llamando a alguien"
+      },
+      "encourage": {
+        "title": "¡Lo Estás Haciendo Genial!",
+        "description": "El antojo pasará. Eres más fuerte que este impulso.",
+        "action": "Me mantengo fuerte"
+      }
     }
   },
   "home": {
@@ -932,5 +960,21 @@
   "support": {
     "telegram": "Telegram",
     "email": "Correo electrónico"
+  },
+  "homeScreen": {
+    "title": "Panel de RevenueCat",
+    "subtitle": "¡Bienvenido de vuelta!",
+    "userInfoTitle": "Información del Usuario",
+    "email": "Correo:",
+    "userId": "ID de Usuario:",
+    "emailVerified": "Correo Verificado:",
+    "revenueDataTitle": "Tus Datos de Ingresos",
+    "logoutButtonText": "Cerrar Sesión",
+    "revenueDataDescription": "Aquí es donde se mostrarían tus análisis de ingresos y datos de suscripción.",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "loading": {
+    "text": "Cargando..."
   }
 }
