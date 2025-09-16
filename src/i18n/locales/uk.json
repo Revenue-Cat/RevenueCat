@@ -171,6 +171,7 @@
       "buddyAdvice": "Поради друга",
       "cancelChallenge": "Скасувати виклик",
       "startNow": "Почати зараз",
+      "startNowWithPoints": "Почати зараз за {{points}}",
       "restartChallenge": "Перезапустити виклик",
       "share": "Поділитися",
       "cancelAlert": {

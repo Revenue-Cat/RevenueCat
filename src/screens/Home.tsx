@@ -380,7 +380,7 @@ const Home: React.FC<HomeProps> = ({
             }}
             pointerEvents="none"
           >
-            <ParallaxBackground scrollY={scrollY} height={330} />
+            <ParallaxBackground scrollY={scrollY} height={390} />
           </Animated.View>
 
           {/* Fixed Navigation Dots - positioned after HomeHeader, before buddy */}

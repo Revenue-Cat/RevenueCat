@@ -12,6 +12,17 @@ export interface NotificationMessage {
 
 export const NOTIFICATION_DATA: NotificationMessage[] = [
     {
+    id: 'app_installed',
+    day: -1,
+    timeOfDay: 'day',
+    category: 'start',
+    messages: {
+      ua: '🎊 Вітаємо в QuitQly! 🚭 Ти встановив(ла) додаток, який допоможе кинути палити. {{buddy_name}} вже чекає на тебе!',
+      en: '🎊 Welcome to QuitQly! 🚭 You\'ve installed the app that will help you quit smoking. {{buddy_name}} is already waiting for you!',
+      es: '🎊 ¡Bienvenido a QuitQly! 🚭 ¡Has instalado la aplicación que te ayudará a dejar de fumar! {{buddy_name}} ya te está esperando!'
+    }
+  },
+    {
     id: 'welcome_home',
     day: 0,
     timeOfDay: 'day',

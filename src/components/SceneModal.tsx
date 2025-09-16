@@ -9,22 +9,29 @@ interface SceneModalProps {
   visible: boolean;
   scene: any;
   onClose: () => void;
+  onPurchase?: (scene: any) => Promise<void>;
 }
 
-const SceneModal: React.FC<SceneModalProps> = ({ visible, scene, onClose }) => {
+const SceneModal: React.FC<SceneModalProps> = ({ visible, scene, onClose, onPurchase }) => {
   const { t } = useTranslation();
   const { userCoins, purchaseItem } = useApp();
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     if (scene) {
-      const success = purchaseItem(scene, 'backgrounds');
-      if (success) {
-        // Show success feedback
-        console.log(`Successfully purchased ${scene.name} for ${scene.coin} coins!`);
-        onClose();
+      if (onPurchase) {
+        // Use the custom purchase function if provided
+        await onPurchase(scene);
       } else {
-        // Show error feedback
-        console.log('Purchase failed - not enough coins');
+        // Fallback to internal purchase logic
+        const success = await purchaseItem(scene, 'backgrounds');
+        if (success) {
+          // Show success feedback
+          console.log(`Successfully purchased ${scene.name} for ${scene.coin} coins!`);
+          onClose();
+        } else {
+          // Show error feedback
+          console.log('Purchase failed - not enough coins');
+        }
       }
     }
   };

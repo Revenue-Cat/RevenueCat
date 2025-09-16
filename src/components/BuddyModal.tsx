@@ -9,6 +9,7 @@ interface BuddyModalProps {
   visible: boolean;
   buddy: any | null;
   onClose: () => void;
+  onPurchase?: (buddy: any) => Promise<void>;
   hidePurchaseButton?: boolean;
 }
 
@@ -16,6 +17,7 @@ const BuddyModal: React.FC<BuddyModalProps> = ({
   visible,
   buddy,
   onClose,
+  onPurchase,
   hidePurchaseButton = false,
 }) => {
   const { t } = useTranslation();
@@ -23,14 +25,20 @@ const BuddyModal: React.FC<BuddyModalProps> = ({
 
   const handlePurchase = async () => {
     if (buddy) {
-      const success = await purchaseItem(buddy, 'buddies');
-      if (success) {
-        // Show success feedback
-        console.log(`Successfully purchased ${buddy.name} for ${buddy.coin} coins!`);
-        onClose();
+      if (onPurchase) {
+        // Use the custom purchase function if provided
+        await onPurchase(buddy);
       } else {
-        // Show error feedback
-        console.log('Purchase failed - not enough coins');
+        // Fallback to internal purchase logic
+        const success = await purchaseItem(buddy, 'buddies');
+        if (success) {
+          // Show success feedback
+          console.log(`Successfully purchased ${buddy.name} for ${buddy.coin} coins!`);
+          onClose();
+        } else {
+          // Show error feedback
+          console.log('Purchase failed - not enough coins');
+        }
       }
     }
   };

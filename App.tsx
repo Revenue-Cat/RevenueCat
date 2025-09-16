@@ -240,7 +240,7 @@ const AppContent: React.FC = () => {
       </Modal>
 
       {/* Coin Purchase Modal */}
-      {/* <CoinPurchaseModal /> */}
+      <CoinPurchaseModal />
 
       {/* Shop Modal */}
       {/* <ShopModal /> */}
