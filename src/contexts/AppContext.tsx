@@ -97,6 +97,13 @@ interface AppState {
   showCoinPurchase: boolean;
   selectedShopTab: ShopTab;
 
+  // Notification preferences (local storage)
+  notificationsEnabled: boolean;
+  notificationSoundEnabled: boolean;
+  morningNotificationTime: string;
+  eveningNotificationTime: string;
+  lastNotificationCheck: Date | null;
+
   slipsUsed: number; // total slips recorded
   slipsDates: string[]; // ISO dates of slips (latest first)
   extraSlipPacks: number; // each pack adds +5 to allowed limit
@@ -186,6 +193,11 @@ interface AppState {
   purchaseExtraSlips: (costCoins?: number) => Promise<boolean>; // +5 slips
 
   // Notification system
+  setNotificationsEnabled: (enabled: boolean) => void;
+  setNotificationSoundEnabled: (enabled: boolean) => void;
+  setMorningNotificationTime: (time: string) => void;
+  setEveningNotificationTime: (time: string) => void;
+  setLastNotificationCheck: (date: Date | null) => void;
   initializeNotifications: () => Promise<void>;
   scheduleUserNotifications: () => Promise<void>;
   updateNotificationSettings: (settings: Partial<UserNotificationSettings>) => Promise<void>;
@@ -256,6 +268,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const [extraSlipPacks, setExtraSlipPacks] = useState(0);
 
   const [ownedAccessories, setOwnedAccessories] = useState<string[]>([]);
+
+  // Notification preferences (local storage)
+  const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(true);
+  const [notificationSoundEnabled, setNotificationSoundEnabled] = useState<boolean>(true);
+  const [morningNotificationTime, setMorningNotificationTime] = useState<string>("08:00");
+  const [eveningNotificationTime, setEveningNotificationTime] = useState<string>("20:00");
+  const [lastNotificationCheck, setLastNotificationCheck] = useState<Date | null>(null);
 
   // Buddy/User selections
   const [gender, setGenderState] = useState<UserGender>("man");
@@ -462,6 +481,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                 setSlipsDates(parsed.slipsDates ?? []);
                 setExtraSlipPacks(parsed.extraSlipPacks ?? 0);
                 setCompletedAchievementsState(parsed.completedAchievements ?? [])
+
+                // Load notification preferences
+                setNotificationsEnabled(parsed.notificationsEnabled ?? true);
+                setNotificationSoundEnabled(parsed.notificationSoundEnabled ?? true);
+                setMorningNotificationTime(parsed.morningNotificationTime ?? "08:00");
+                setEveningNotificationTime(parsed.eveningNotificationTime ?? "20:00");
+                setLastNotificationCheck(parsed.lastNotificationCheck ? new Date(parsed.lastNotificationCheck) : null);
+
                 setIsLoaded(true)
               } else {
                 console.warn("Parsed data is invalid, using defaults");
@@ -560,7 +587,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       extraSlipPacks,
       transactions,
       isOnboardingDone,
-      completedAchievements
+      completedAchievements,
+      // Notification preferences
+      notificationsEnabled,
+      notificationSoundEnabled,
+      morningNotificationTime,
+      eveningNotificationTime,
+      lastNotificationCheck
     };
 
     if(!isLoading) {
@@ -594,7 +627,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     extraSlipPacks,
     transactions,
     isOnboardingDone,
-    completedAchievements
+    completedAchievements,
+    // Notification preferences
+    notificationsEnabled,
+    notificationSoundEnabled,
+    morningNotificationTime,
+    eveningNotificationTime,
+    lastNotificationCheck
   ]);
 
   // Sync with achievement service
@@ -1453,6 +1492,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       shouldOfferProtectStreak,
       addSlip,
       purchaseExtraSlips,
+      // Notification preferences
+      notificationsEnabled,
+      notificationSoundEnabled,
+      morningNotificationTime,
+      eveningNotificationTime,
+      lastNotificationCheck,
+      setNotificationsEnabled,
+      setNotificationSoundEnabled,
+      setMorningNotificationTime,
+      setEveningNotificationTime,
+      setLastNotificationCheck,
       initializeNotifications,
       scheduleUserNotifications,
       updateNotificationSettings,

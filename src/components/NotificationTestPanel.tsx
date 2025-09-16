@@ -25,6 +25,11 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
     getNotificationStats,
     areNotificationsEnabled,
     updateNotificationSettings,
+    // Notification preferences
+    notificationsEnabled,
+    setNotificationsEnabled,
+    morningNotificationTime,
+    setMorningNotificationTime,
   } = useApp();
 
   const [stats, setStats] = useState<{
@@ -267,6 +272,21 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
         >
           <Text className={`text-center font-semibold ${isDark ? 'text-slate-100' : 'text-purple-950'}`}>
             Refresh Stats
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => {
+            // Toggle notification preferences to trigger saveState
+            setNotificationsEnabled(!notificationsEnabled);
+            setMorningNotificationTime(morningNotificationTime === '08:00' ? '09:00' : '08:00');
+            Alert.alert('Success', `Notification preferences updated!\n\nThis will create/update data in Firebase:\n• users/{userId}/appState (with notification preferences)\n\nCheck Firebase console after a few seconds!`);
+          }}
+          disabled={loading}
+          className={`py-4 px-6 rounded-lg ${loading ? 'opacity-50' : ''} ${isDark ? 'bg-green-600' : 'bg-green-300'}`}
+        >
+          <Text className={`text-center font-semibold ${isDark ? 'text-slate-100' : 'text-green-900'}`}>
+            💾 Save Notification Settings to Firebase
           </Text>
         </Pressable>
       </View>
