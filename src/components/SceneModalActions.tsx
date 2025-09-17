@@ -44,30 +44,54 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
   return (
     <View className="my-6 flex-row justify-center gap-4">
       {/* Close Button */}
-       <Pressable 
-        className={`w-15 h-15 rounded-2xl justify-center items-center ${isDark ? 'bg-slate-700' : 'bg-indigo-50'}`}
+      <Pressable
+        className={`w-15 h-15 rounded-2xl justify-center items-center ${
+          isDark ? "bg-slate-700" : "bg-indigo-50"
+        }`}
         onPress={onClose}
+        accessibilityRole="button"
+        accessibilityLabel={t("common.close", "Close")}
       >
-        <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-100 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
-      </Pressable>
-      {/* Select Button - Only show if owned and not selected */}
-      {isOwned && !isSelected && (
-        <Pressable 
-          className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
-          onPress={handleSelect}
+        <Text
+          className={`text-2xl rounded-2xl px-4 py-2 font-bold ${
+            isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
+          }`}
         >
-          <Text className="text-2xl font-bold text-white px-4 py-2">{t('shop.select')}</Text>
+          ✕
+        </Text>
+      </Pressable>
+      {/* Select Button - Only if owned and not already selected */}
+      {isOwned && !isSelected && (
+        <Pressable
+          className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
+          onPress={handleSelect}
+          accessibilityRole="button"
+          accessibilityLabel={t("shop.select", "Select")}
+        >
+          <Text className="font-semibold text-xl text-white">
+            {t("shop.select", "Select")}
+          </Text>
         </Pressable>
       )}
 
-      {/* Purchase Button - Only show if not owned */}
+      {/* Purchase Button - Only if not owned and not hidden */}
       {!isOwned && !isPlaceholderScene && (
-        <Pressable 
-          className={`flex-1 rounded-2xl justify-center items-center bg-indigo-600`}
+        <Pressable
+          className={`flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600`}
           onPress={handlePurchase}
+          accessibilityRole="button"
+          accessibilityLabel={
+            canAfford
+              ? t("shop.buyFor", { coins: scene.coin })
+              : t("shop.purchase", "Purchase")
+          }
         >
-          <Text className={`text-2xl font-bold px-4 py-2 text-white`}>
-            {canAfford ? t('shop.buyFor', { coins: scene.coin }) : t('shop.purchase')}
+          <Text
+            className={`font-semibold text-xl text-white`}
+          >
+            {canAfford
+              ? t("shop.buyFor", { coins: scene.coin })
+              : t("shop.purchase", "Purchase")}
           </Text>
         </Pressable>
       )}

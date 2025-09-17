@@ -169,7 +169,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
           <Text className="text-white font-semibold text-base ml-2">
             {isCompleted ? t('challenges.modal.restartChallenge') : (isExclusive ? "Take 5 breathe" : t("challenges.checkIn"))}
           </Text>
-          {!isCompleted && typeof checkIns === "number" && (
+          {checkIns && !isCompleted && typeof checkIns === "number" && (
             <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
               <Text className="text-white text-s font-semibold">{checkIns}</Text>
             </View>

@@ -42,16 +42,26 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
 
   return (
     <View className="my-6 flex-row justify-center gap-4">
-      <Pressable 
-        className={`w-15 h-15 rounded-2xl justify-center items-center ${isDark ? 'bg-slate-700' : 'bg-indigo-50'}`}
+      <Pressable
+        className={`w-15 h-15 rounded-2xl justify-center items-center ${
+          isDark ? "bg-slate-700" : "bg-indigo-50"
+        }`}
         onPress={onClose}
+        accessibilityRole="button"
+        accessibilityLabel={t("common.close", "Close")}
       >
-        <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-100 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
+        <Text
+          className={`text-2xl rounded-2xl px-4 py-2 font-bold ${
+            isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
+          }`}
+        >
+          ✕
+        </Text>
       </Pressable>
 
       {(isRegularAchievement(achievement.id) && (progress?.percentage || 0) !== 100) ? null : (
-        <Pressable 
-          className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
+        <Pressable
+          className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
           onPress={() => {
             if (achievement.unlocked && (progress?.percentage || 0) === 100) {
               handleShare();
@@ -63,14 +73,16 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
               handleUpdate();
             }
           }}
-          style={({ pressed }) => [
-            {
-              opacity: pressed ? 0.7 : 1,
-              backgroundColor: pressed ? '#4F46E5' : '#4F46E5'
-            }
-          ]}
+          accessibilityRole="button"
+          accessibilityLabel={
+            achievement.unlocked && (progress?.percentage || 0) === 100 
+              ? t('achievements.share', "Share")
+              : (isRegularAchievement(achievement.id) 
+                  ? t('achievements.close', "Close")
+                  : t('achievements.update', "Update"))
+          }
         >
-          <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">
+          <Text className="font-semibold text-xl text-white">
             {achievement.unlocked && (progress?.percentage || 0) === 100 ? t('achievements.share') : (isRegularAchievement(achievement.id) ? t('achievements.close') : t('achievements.update'))}
           </Text>
         </Pressable>

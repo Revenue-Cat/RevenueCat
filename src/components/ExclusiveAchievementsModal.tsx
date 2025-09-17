@@ -53,7 +53,7 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
       <View className="w-32 h-32 relative">
         {/* Progress Ring */}
          <ProgressRing
-            progress={isCompleted ? 100 : challenge.timeBasedProgress+1}
+            progress={isCompleted ? 100 : challenge.timeBasedProgress}
             size={112}
             strokeWidth={3}
             color={

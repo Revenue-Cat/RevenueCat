@@ -174,7 +174,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                 >
                   {/* Progress Ring */}
                   <ProgressRing
-                    progress={isCompleted ? 100 : challenge.timeBasedProgress+1}
+                    progress={isCompleted ? 100 : challenge.timeBasedProgress}
                     size={80}
                     strokeWidth={3}
                     color={
