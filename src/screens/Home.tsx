@@ -23,7 +23,7 @@ import { t } from "i18next";
 
 interface HomeProps {
   onShowCravingSOS: () => void;
-  onShowBreathingExercise: () => void;
+  onShowBreathingExercise: (skipInitialScreen?: boolean) => void;
   onShowChatAssistance: () => void;
   onNavigateToProfile: () => void;
   onNavigateToAchievements: () => void;

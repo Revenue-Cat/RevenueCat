@@ -110,20 +110,15 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   const handleCheckIn = () => {
     if (challengeId) {
       const currentProgress = getChallengeProgress(challengeId);
-
-      const newCheckIns = currentProgress.checkIns + 1;
       const newStreak = currentProgress.streak + 1;
       
-      // Progress is calculated based on time elapsed, so we don't need to set it manually
-      updateChallengeProgress(challengeId, 0, newStreak, newCheckIns);
+      // Update streak in challengeProgress (but not checkIns since we use dailyCheckIns now)
+      updateChallengeProgress(challengeId, 0, newStreak, 0);
       
-      // Also record the daily check-in for the History section
+      // Record the daily check-in (this is the single source of truth for check-ins)
       const today = new Date();
       const dateKey = today.toISOString().split('T')[0]; // Format: "2024-09-04"
-      const dailyCheckInsData = getDailyCheckIns(challengeId);
-      const todayCheckIns = dailyCheckInsData[dateKey] || 0;
-      addDailyCheckIn(challengeId, dateKey, todayCheckIns + 1);
-      
+      addDailyCheckIn(challengeId, dateKey, 1);
     }
   };
 

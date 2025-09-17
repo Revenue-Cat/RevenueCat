@@ -23,9 +23,10 @@ const BreathingBg = require('../assets/breathing/breathing_bg.png');
 interface BreathingExerciseProps {
   onClose: () => void;
   onBack: () => void;
+  skipInitialScreen?: boolean;
 }
 
-const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }) => {
+const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack, skipInitialScreen = false }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { t } = useTranslation();
@@ -523,6 +524,12 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack }
   };
 
   const goBack = () => {
+    // Add check-in if exercise was completed and this is from a challenge
+    if (isCompleted && skipInitialScreen) {
+      const today = new Date().toISOString().split('T')[0];
+      const challengeId = "master-of-air-breathing";
+      addDailyCheckIn(challengeId, today, 1);
+    }
     onBack();
   };
 

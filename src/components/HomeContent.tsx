@@ -14,7 +14,7 @@ interface HomeContentProps {
   isScenesSelected: boolean;
   setIsScenesSelected: (isScenes: boolean) => void;
   onNavigateToShop: () => void;
-  onNavigateToBreathing?: () => void;
+  onNavigateToBreathing?: (skipInitialScreen?: boolean) => void;
 }
 
 const HomeContent: React.FC<HomeContentProps> = ({
