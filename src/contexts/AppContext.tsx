@@ -212,6 +212,7 @@ interface AppState {
   initializeNotifications: () => Promise<void>;
   scheduleUserNotifications: () => Promise<void>;
   updateNotificationSettings: (settings: Partial<UserNotificationSettings>) => Promise<void>;
+  ensureNotificationSettingsExist: () => Promise<void>;
   sendTestNotification: () => Promise<void>;
   getNotificationStats: () => Promise<{
     totalScheduled: number;
@@ -601,6 +602,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     const userDocRef = doc(db, "users", userId);
     try {
       await setDoc(userDocRef, { appState: JSON.stringify(stateToSave) });
+      
+      // Also save notification settings with current app state
+      try {
+        const selectedBuddy = getBuddyById(selectedBuddyId);
+        const actualBuddyName = selectedBuddy?.name || buddyName || 'Your Buddy';
+        
+        const notificationSettings: UserNotificationSettings = {
+          userId: userId,
+          language: getNotificationLanguage(),
+          buddyName: actualBuddyName,
+          selectedBuddyId: selectedBuddyId,
+          gender: gender,
+          startDate: userProgress.startDate || new Date(),
+          isEnabled: notificationsEnabled,
+          morningTime: morningNotificationTime,
+          eveningTime: eveningNotificationTime,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        };
+        
+        await notificationService.saveUserSettings(notificationSettings);
+        console.log('AppContext: Notification settings saved with app state');
+        
+        // Also reschedule notifications with current app state
+        await scheduleUserNotifications();
+        console.log('AppContext: Notifications rescheduled with app state');
+      } catch (notificationError) {
+        console.error('AppContext: Error saving notification settings:', notificationError);
+        // Don't fail the main saveState if notification save fails
+      }
     } catch (error) {
       console.error("Failed to save state:", error);
       console.error("Save state error details:", {
@@ -690,7 +720,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     notificationSoundEnabled,
     morningNotificationTime,
     eveningNotificationTime,
-    lastNotificationCheck
+    lastNotificationCheck,
+    // Add notification service dependencies
+    notificationService,
+    contextLanguage
   ]);
 
   // Sync with achievement service
@@ -1126,8 +1159,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       addTransaction(100, `Completed onboarding`)
       await refreshCoinsBalance()
       
-      await initializeNotifications();
-      await scheduleUserNotifications();
+        await initializeNotifications();
+        await scheduleUserNotifications();
+        await ensureNotificationSettingsExist();
+        
     } catch (error) {
       console.error('Error setting up notifications after onboarding:', error as Error);
     }
@@ -1242,7 +1277,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const currentSettings = safeResult.settings;
       
       if (!currentSettings) {
-        console.log('AppContext: No existing notification settings found');
+        console.log('AppContext: No existing notification settings found, creating new ones');
+        // Create new settings with the provided values
+        const newSettings: UserNotificationSettings = {
+          userId: userId,
+          language: getNotificationLanguage(),
+          buddyName: settings.buddyName || buddyName || 'Your Buddy',
+          selectedBuddyId: settings.selectedBuddyId || selectedBuddyId || 'llama-m',
+          gender: settings.gender || gender || 'man',
+          startDate: userProgress.startDate || new Date(),
+          isEnabled: true,
+          morningTime: '08:00',
+          eveningTime: '20:00',
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          ...settings
+        };
+        
+        await notificationService.saveUserSettings(newSettings);
+        console.log('AppContext: New notification settings created');
         return;
       }
 
@@ -1254,7 +1306,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error('AppContext: Error updating notification settings:', error as Error);
       throw error;
     }
-  }, []);
+  }, [buddyName, selectedBuddyId, gender, userProgress.startDate, contextLanguage]);
+
+  // Ensure notification settings exist with current app state
+  const ensureNotificationSettingsExist = useCallback(async () => {
+    try {
+      const userId = await getOrCreatePersistentUserId();
+      const safeResult = await notificationService.safeGetUserSettings(userId);
+      
+      if (!safeResult.success || !safeResult.settings) {
+        console.log('AppContext: Creating initial notification settings with current app state');
+        
+        const selectedBuddy = getBuddyById(selectedBuddyId);
+        const actualBuddyName = selectedBuddy?.name || buddyName || 'Your Buddy';
+        
+        const initialSettings: UserNotificationSettings = {
+          userId: userId,
+          language: getNotificationLanguage(),
+          buddyName: actualBuddyName,
+          selectedBuddyId: selectedBuddyId,
+          gender: gender,
+          startDate: userProgress.startDate || new Date(),
+          isEnabled: true,
+          morningTime: '08:00',
+          eveningTime: '20:00',
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        };
+        
+        await notificationService.saveUserSettings(initialSettings);
+        console.log('AppContext: Initial notification settings created');
+      }
+    } catch (error) {
+      console.error('AppContext: Error ensuring notification settings exist:', error);
+    }
+  }, [selectedBuddyId, buddyName, gender, userProgress.startDate, contextLanguage]);
+
+
 
   const sendTestNotification = useCallback(async () => {
     try {
@@ -1722,6 +1809,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       initializeNotifications,
       scheduleUserNotifications,
       updateNotificationSettings,
+      ensureNotificationSettingsExist,
       sendTestNotification,
       getNotificationStats,
       areNotificationsEnabled,
@@ -1807,6 +1895,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       initializeNotifications,
       scheduleUserNotifications,
       updateNotificationSettings,
+      ensureNotificationSettingsExist,
       sendTestNotification,
       getNotificationStats,
       areNotificationsEnabled,
