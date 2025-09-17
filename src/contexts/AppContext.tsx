@@ -1371,7 +1371,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [userProgress.startDate, buddyName, gender, selectedBuddyId, contextLanguage]);
 
-
   /**
    * Safely save notification settings to Firebase (similar to saveState pattern)
    */
