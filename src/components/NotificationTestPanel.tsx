@@ -5,6 +5,7 @@ import { useApp } from '../contexts/AppContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getBuddyById } from '../data/buddiesData';
 import oneSignalScheduler from '../services/oneSignalScheduler';
+import { getOrCreatePersistentUserId } from '../utils/keychain';
 
 interface NotificationTestPanelProps {
   onClose: () => void;
@@ -25,6 +26,7 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
     getNotificationStats,
     areNotificationsEnabled,
     updateNotificationSettings,
+    forceProcessPendingNotifications,
     // Notification preferences
     notificationsEnabled,
     setNotificationsEnabled,
@@ -127,6 +129,70 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
     } catch (error) {
       Alert.alert('Error', 'Failed to update notification settings');
       console.error('Error updating notification settings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForceProcess = async () => {
+    setLoading(true);
+    try {
+      const result = await forceProcessPendingNotifications();
+      Alert.alert(
+        'Force Processing Complete',
+        `Processed: ${result.processed} notifications\nErrors: ${result.errors}`
+      );
+      await loadStats();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to force process notifications');
+      console.error('Error force processing notifications:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTestNotificationFlow = async () => {
+    setLoading(true);
+    try {
+      // Create a test notification in Firebase that's due immediately
+      const testNotification = {
+        id: `test_${Date.now()}`,
+        userId: await getOrCreatePersistentUserId(),
+        notificationId: 'test_flow',
+        day: 0,
+        timeOfDay: 'day' as const,
+        scheduledTime: new Date(Date.now() - 1000), // 1 second ago (already due)
+        message: '🔔 Test Notification Flow - If you see this, the system is working!',
+        category: 'test' as const,
+        isSent: false,
+        createdAt: new Date()
+      };
+
+      console.log('TestPanel: Creating test notification for flow testing...');
+
+      // Save test notification to Firebase
+      const saveResult = await safeSaveScheduledNotification(testNotification);
+      if (!saveResult.success) {
+        throw new Error(`Failed to save test notification: ${saveResult.error}`);
+      }
+
+      console.log('TestPanel: Test notification saved, now force processing...');
+
+      // Force process to trigger the notification
+      const processResult = await forceProcessPendingNotifications();
+
+      Alert.alert(
+        'Test Notification Flow',
+        `✅ Test notification created and processed!\n\n` +
+        `📱 Check your device for the test notification\n` +
+        `📊 Processing Result: ${processResult.processed} processed, ${processResult.errors} errors\n\n` +
+        `🔍 Check console logs for detailed flow information`
+      );
+
+      await loadStats();
+    } catch (error) {
+      Alert.alert('Test Failed', `Error testing notification flow: ${error.message}`);
+      console.error('Error testing notification flow:', error);
     } finally {
       setLoading(false);
     }
@@ -262,6 +328,26 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
         >
           <Text className={`text-center font-semibold ${isDark ? 'text-slate-100' : 'text-blue-950'}`}>
             Update Settings (9AM/9PM)
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={handleForceProcess}
+          disabled={loading}
+          className={`py-4 px-6 rounded-lg ${loading ? 'opacity-50' : ''} ${isDark ? 'bg-red-700' : 'bg-red-200'}`}
+        >
+          <Text className={`text-center font-semibold ${isDark ? 'text-slate-100' : 'text-red-950'}`}>
+            🔄 Force Process Pending Notifications
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={handleTestNotificationFlow}
+          disabled={loading}
+          className={`py-4 px-6 rounded-lg ${loading ? 'opacity-50' : ''} ${isDark ? 'bg-purple-700' : 'bg-purple-200'}`}
+        >
+          <Text className={`text-center font-semibold ${isDark ? 'text-slate-100' : 'text-purple-950'}`}>
+            🔔 Test Full Notification Flow
           </Text>
         </Pressable>
 
