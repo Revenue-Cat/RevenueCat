@@ -213,7 +213,6 @@ interface AppState {
   scheduleUserNotifications: () => Promise<void>;
   updateNotificationSettings: (settings: Partial<UserNotificationSettings>) => Promise<void>;
   ensureNotificationSettingsExist: () => Promise<void>;
-  checkFirstNotification: () => void;
   sendTestNotification: () => Promise<void>;
   getNotificationStats: () => Promise<{
     totalScheduled: number;
@@ -1164,8 +1163,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         await scheduleUserNotifications();
         await ensureNotificationSettingsExist();
         
-        // Make checkFirstNotification available globally for testing
-        (globalThis as any).checkFirstNotification = checkFirstNotification;
     } catch (error) {
       console.error('Error setting up notifications after onboarding:', error as Error);
     }
@@ -1344,95 +1341,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [selectedBuddyId, buddyName, gender, userProgress.startDate, contextLanguage]);
 
-  // Check when the first notification will appear
-  const checkFirstNotification = useCallback(() => {
-    try {
-      if (!userProgress.startDate) {
-        console.log('📅 No start date set yet - notifications will start after onboarding');
-        return;
-      }
 
-      const startDate = userProgress.startDate;
-      const currentDate = new Date();
-      const daysSinceStart = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      
-      console.log('📅 Notification Schedule Check:');
-      console.log(`   Start Date: ${startDate.toLocaleString()}`);
-      console.log(`   Current Date: ${currentDate.toLocaleString()}`);
-      console.log(`   Days Since Start: ${daysSinceStart}`);
-      
-      // Check for installation notification (day -1)
-      if (daysSinceStart >= -1) {
-        const installationTime = new Date(startDate);
-        installationTime.setMinutes(installationTime.getMinutes() + 5);
-        console.log(`   📱 Installation notification: ${installationTime.toLocaleString()}`);
-      }
-      
-      // Check for welcome notification (day 0)
-      if (daysSinceStart >= 0) {
-        const welcomeTime = new Date(startDate);
-        welcomeTime.setHours(welcomeTime.getHours() + 1);
-        console.log(`   🎉 Welcome notification: ${welcomeTime.toLocaleString()}`);
-      }
-      
-      // Check for first day notifications (day 1)
-      if (daysSinceStart >= 1) {
-        const firstDayMorning = new Date(startDate);
-        firstDayMorning.setDate(firstDayMorning.getDate() + 1);
-        const [morningHours, morningMinutes] = morningNotificationTime.split(':').map(Number);
-        firstDayMorning.setHours(morningHours, morningMinutes, 0, 0);
-        console.log(`   🌅 Day 1 Morning (${morningNotificationTime}): ${firstDayMorning.toLocaleString()}`);
-        
-        const firstDayEvening = new Date(startDate);
-        firstDayEvening.setDate(firstDayEvening.getDate() + 1);
-        const [eveningHours, eveningMinutes] = eveningNotificationTime.split(':').map(Number);
-        firstDayEvening.setHours(eveningHours, eveningMinutes, 0, 0);
-        console.log(`   🌙 Day 1 Evening (${eveningNotificationTime}): ${firstDayEvening.toLocaleString()}`);
-      }
-      
-      // Show next upcoming notification
-      const now = new Date();
-      let nextNotification = null;
-      
-      if (daysSinceStart < -1) {
-        // Installation notification
-        const installationTime = new Date(startDate);
-        installationTime.setMinutes(installationTime.getMinutes() + 5);
-        nextNotification = installationTime;
-      } else if (daysSinceStart < 0) {
-        // Welcome notification
-        const welcomeTime = new Date(startDate);
-        welcomeTime.setHours(welcomeTime.getHours() + 1);
-        nextNotification = welcomeTime;
-      } else if (daysSinceStart < 1) {
-        // First day morning
-        const firstDayMorning = new Date(startDate);
-        firstDayMorning.setDate(firstDayMorning.getDate() + 1);
-        const [morningHours, morningMinutes] = morningNotificationTime.split(':').map(Number);
-        firstDayMorning.setHours(morningHours, morningMinutes, 0, 0);
-        nextNotification = firstDayMorning;
-      } else {
-        // Next day's morning notification
-        const nextDayMorning = new Date(startDate);
-        nextDayMorning.setDate(nextDayMorning.getDate() + daysSinceStart + 1);
-        const [morningHours, morningMinutes] = morningNotificationTime.split(':').map(Number);
-        nextDayMorning.setHours(morningHours, morningMinutes, 0, 0);
-        nextNotification = nextDayMorning;
-      }
-      
-      if (nextNotification) {
-        const timeUntilNext = nextNotification.getTime() - now.getTime();
-        const hoursUntil = Math.floor(timeUntilNext / (1000 * 60 * 60));
-        const minutesUntil = Math.floor((timeUntilNext % (1000 * 60 * 60)) / (1000 * 60));
-        
-        console.log(`   ⏰ Next notification: ${nextNotification.toLocaleString()}`);
-        console.log(`   ⏱️  Time until next: ${hoursUntil}h ${minutesUntil}m`);
-      }
-      
-    } catch (error) {
-      console.error('Error checking first notification:', error);
-    }
-  }, [userProgress.startDate, morningNotificationTime, eveningNotificationTime]);
 
   const sendTestNotification = useCallback(async () => {
     try {
@@ -1902,7 +1811,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       scheduleUserNotifications,
       updateNotificationSettings,
       ensureNotificationSettingsExist,
-      checkFirstNotification,
       sendTestNotification,
       getNotificationStats,
       areNotificationsEnabled,
@@ -1989,7 +1897,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       scheduleUserNotifications,
       updateNotificationSettings,
       ensureNotificationSettingsExist,
-      checkFirstNotification,
       sendTestNotification,
       getNotificationStats,
       areNotificationsEnabled,

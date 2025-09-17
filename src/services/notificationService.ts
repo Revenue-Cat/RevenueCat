@@ -382,8 +382,11 @@ class NotificationService {
     if (day === -1) {
       // For day -1 (installation) notifications, schedule immediately (or 5 minutes after start)
       targetDate.setMinutes(targetDate.getMinutes() + 5);
+      targetDate.setMinutes(targetDate.getMinutes() + 15);
+      targetDate.setHours(targetDate.getHours() + 1);
     } else if (day === 0) {
       // For day 0 (welcome) notifications, schedule 1 hour after start
+      targetDate.setMinutes(targetDate.getMinutes() + 5);
       targetDate.setHours(targetDate.getHours() + 1);
     } else {
       // For other days, use the normal logic
