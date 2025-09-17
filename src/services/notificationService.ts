@@ -79,14 +79,97 @@ class NotificationService {
       // Initialize OneSignal service
       await oneSignalService.initialize();
 
-      // Initialize OneSignal scheduler
+      // Initialize OneSignal scheduler for background processing
       await oneSignalScheduler.initialize();
+
+      // Start background notification processing
+      this.startBackgroundProcessing();
 
       this.isInitialized = true;
       console.log('NotificationService: Initialized successfully with OneSignal and scheduler');
     } catch (error) {
       console.error('NotificationService: Error initializing:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Start background notification processing
+   */
+  private startBackgroundProcessing(): void {
+    console.log('NotificationService: Starting background notification processing');
+
+    // Process any notifications that might have been missed when app was closed
+    this.processDueNotifications().catch(error => {
+      console.error('NotificationService: Error in initial background processing:', error);
+    });
+
+    // Set up periodic processing as backup (in case OneSignal scheduler fails)
+    setInterval(() => {
+      this.processDueNotifications().catch(error => {
+        console.error('NotificationService: Error in periodic background processing:', error);
+      });
+    }, 5 * 60 * 1000); // Every 5 minutes as backup
+
+    console.log('NotificationService: Background processing started');
+  }
+
+  /**
+   * Force process all pending notifications (useful for testing and recovery)
+   */
+  public async forceProcessPendingNotifications(): Promise<{
+    processed: number;
+    errors: number;
+  }> {
+    try {
+      console.log('NotificationService: Force processing all pending notifications');
+
+      const currentTime = new Date();
+      const q = query(
+        collection(db, 'scheduledNotifications'),
+        where('isSent', '==', false),
+        orderBy('scheduledTime'),
+        limit(100) // Process up to 100 at a time
+      );
+
+      const querySnapshot = await getDocs(q);
+      console.log(`NotificationService: Found ${querySnapshot.docs.length} pending notifications to force process`);
+
+      let processed = 0;
+      let errors = 0;
+
+      for (const docSnap of querySnapshot.docs) {
+        try {
+          const notification = docSnap.data() as ScheduledNotification;
+
+          // Only process notifications that are past due or very close to due time
+          const timeDiff = currentTime.getTime() - notification.scheduledTime.getTime();
+          const isPastDue = timeDiff > 0;
+          const isVeryClose = timeDiff > -5 * 60 * 1000; // Within 5 minutes
+
+          if (isPastDue || isVeryClose) {
+            console.log(`NotificationService: Force processing notification: ${notification.id}`);
+            await this.sendNotification(notification);
+
+            // Mark as sent
+            await updateDoc(docSnap.ref, {
+              isSent: true,
+              sentAt: Timestamp.now()
+            });
+
+            processed++;
+          }
+        } catch (error) {
+          console.error('NotificationService: Error force processing notification:', error);
+          errors++;
+        }
+      }
+
+      console.log(`NotificationService: Force processing completed. Processed: ${processed}, Errors: ${errors}`);
+      return { processed, errors };
+    } catch (error) {
+      console.error('NotificationService: Error in force processing:', error);
+      return { processed: 0, errors: 1 };
     }
   }
 
@@ -149,7 +232,61 @@ class NotificationService {
   }
 
   /**
-   * Get user notification settings from Firebase
+   * Safely get user notification settings from Firebase with error handling
+   */
+  public async safeGetUserSettings(userId: string): Promise<{
+    settings: UserNotificationSettings | null;
+    success: boolean;
+    error?: string;
+  }> {
+    try {
+      console.log(`NotificationService: Safely loading user notification settings for ${userId}`);
+
+      const userRef = doc(db, 'userNotificationSettings', userId);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        console.log('NotificationService: Found existing user notification settings');
+
+        try {
+          const settings: UserNotificationSettings = {
+            ...data,
+            startDate: data.startDate.toDate(),
+            lastNotificationSent: data.lastNotificationSent?.toDate(),
+          } as UserNotificationSettings;
+
+          return {
+            settings,
+            success: true
+          };
+        } catch (parseError) {
+          console.error('NotificationService: Error parsing user settings data:', parseError);
+          return {
+            settings: null,
+            success: false,
+            error: 'Failed to parse notification settings data'
+          };
+        }
+      } else {
+        console.log('NotificationService: No user notification settings found');
+        return {
+          settings: null,
+          success: true // This is not an error, just no data exists yet
+        };
+      }
+    } catch (error) {
+      console.error('NotificationService: Error safely getting user settings:', error);
+      return {
+        settings: null,
+        success: false,
+        error: `Failed to load user notification settings: ${(error as Error).message}`
+      };
+    }
+  }
+
+  /**
+   * Get user notification settings from Firebase (legacy method)
    */
   public async getUserSettings(userId: string): Promise<UserNotificationSettings | null> {
     try {
@@ -181,11 +318,11 @@ class NotificationService {
       const startDate = userSettings.startDate;
       const currentDate = new Date();
       const daysSinceStart = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      
-      console.log(`NotificationService: Scheduling notifications for user ${userSettings.userId}, day ${daysSinceStart}`);
+
+      console.log(`NotificationService: Scheduling notifications for user ${userSettings.userId}, day ${daysSinceStart}, start date: ${startDate.toISOString()}`);
 
       // Clear existing scheduled notifications for this user
-      await this.clearScheduledNotifications(userSettings.userId);
+      await this.safeClearScheduledNotifications(userSettings.userId);
 
 
       // Schedule notifications for the next 365 days or until we reach the end of our data
@@ -363,16 +500,39 @@ class NotificationService {
       const querySnapshot = await getDocs(q);
       console.log(`NotificationService: Found ${querySnapshot.docs.length} due notifications`);
 
+      if (querySnapshot.docs.length === 0) {
+        console.log('NotificationService: No due notifications found - system is idle');
+        return;
+      }
+
+      console.log('NotificationService: Processing due notifications...');
+
       for (const docSnap of querySnapshot.docs) {
         const notification = docSnap.data() as ScheduledNotification;
-        await this.sendNotification(notification);
-        
-        // Mark as sent
-        await updateDoc(docSnap.ref, {
-          isSent: true,
-          sentAt: Timestamp.now()
-        });
+        console.log(`NotificationService: Processing notification ${notification.id} for day ${notification.day}`);
+
+        try {
+          await this.sendNotification(notification);
+
+          // Mark as sent
+          await updateDoc(docSnap.ref, {
+            isSent: true,
+            sentAt: Timestamp.now()
+          });
+
+          console.log(`NotificationService: ✅ Successfully processed notification ${notification.id}`);
+        } catch (error) {
+          console.error(`NotificationService: ❌ Failed to process notification ${notification.id}:`, error);
+
+          // Mark as failed but don't remove - allow retry
+          await updateDoc(docSnap.ref, {
+            lastError: error.message,
+            lastAttemptAt: Timestamp.now()
+          });
+        }
       }
+
+      console.log(`NotificationService: ✅ Completed processing ${querySnapshot.docs.length} notifications`);
     } catch (error) {
       console.error('NotificationService: Error processing due notifications:', error);
       throw error;
@@ -462,8 +622,9 @@ class NotificationService {
     }
   }
 
+
   /**
-   * Get notification statistics for a user
+   * Get notification statistics for a user (legacy method)
    */
   public async getUserNotificationStats(userId: string): Promise<{
     totalScheduled: number;
@@ -495,6 +656,202 @@ class NotificationService {
     } catch (error) {
       console.error('NotificationService: Error getting user stats:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Safely get user scheduled notifications from Firebase with error handling
+   */
+  public async safeGetScheduledNotifications(userId: string): Promise<{
+    notifications: ScheduledNotification[];
+    success: boolean;
+    error?: string;
+  }> {
+    try {
+      console.log(`NotificationService: Safely loading scheduled notifications for ${userId}`);
+
+      const q = query(
+        collection(db, 'scheduledNotifications'),
+        where('userId', '==', userId)
+      );
+
+      const querySnapshot = await getDocs(q);
+      console.log(`NotificationService: Found ${querySnapshot.docs.length} scheduled notifications`);
+
+      const notifications: ScheduledNotification[] = [];
+
+      for (const docSnap of querySnapshot.docs) {
+        try {
+          const data = docSnap.data();
+          const notification: ScheduledNotification = {
+            ...data,
+            scheduledTime: data.scheduledTime.toDate(),
+            sentAt: data.sentAt?.toDate(),
+            createdAt: data.createdAt.toDate(),
+          } as ScheduledNotification;
+          notifications.push(notification);
+        } catch (parseError) {
+          console.error('NotificationService: Error parsing scheduled notification:', parseError);
+          // Continue processing other notifications
+        }
+      }
+
+      return {
+        notifications,
+        success: true
+      };
+    } catch (error) {
+      console.error('NotificationService: Error safely getting scheduled notifications:', error);
+      return {
+        notifications: [],
+        success: false,
+        error: `Failed to load scheduled notifications: ${(error as Error).message}`
+      };
+    }
+  }
+
+  /**
+   * Safely save scheduled notification to Firebase with error handling
+   */
+  public async safeSaveScheduledNotification(notification: ScheduledNotification): Promise<{
+    success: boolean;
+    error?: string;
+    notificationId?: string;
+  }> {
+    try {
+      console.log(`NotificationService: Safely saving scheduled notification ${notification.id}`);
+
+      const notificationRef = doc(db, 'scheduledNotifications', notification.id);
+      await setDoc(notificationRef, {
+        ...notification,
+        scheduledTime: Timestamp.fromDate(notification.scheduledTime),
+        sentAt: notification.sentAt ? Timestamp.fromDate(notification.sentAt) : null,
+        createdAt: Timestamp.fromDate(notification.createdAt)
+      });
+
+      console.log('NotificationService: Scheduled notification saved successfully');
+      return {
+        success: true,
+        notificationId: notification.id
+      };
+    } catch (error) {
+      console.error('NotificationService: Error safely saving scheduled notification:', error);
+      return {
+        success: false,
+        error: `Failed to save scheduled notification: ${(error as Error).message}`
+      };
+    }
+  }
+
+  /**
+   * Safely clear scheduled notifications for a user with error handling
+   */
+  public async safeClearScheduledNotifications(userId: string): Promise<{
+    success: boolean;
+    error?: string;
+    deletedCount?: number;
+  }> {
+    try {
+      console.log(`NotificationService: Safely clearing scheduled notifications for ${userId}`);
+
+      const q = query(
+        collection(db, 'scheduledNotifications'),
+        where('userId', '==', userId)
+      );
+
+      const querySnapshot = await getDocs(q);
+      const batch = querySnapshot.docs.map(doc => doc.ref);
+
+      // Delete notifications one by one with error handling
+      let deletedCount = 0;
+      for (const docRef of batch) {
+        try {
+          await deleteDoc(docRef);
+          deletedCount++;
+        } catch (deleteError) {
+          console.error('NotificationService: Error deleting notification:', deleteError);
+          // Continue deleting other notifications
+        }
+      }
+
+      // Clear from OneSignal scheduler
+      try {
+        oneSignalScheduler.clearUserNotifications(userId);
+      } catch (schedulerError) {
+        console.error('NotificationService: Error clearing OneSignal scheduler:', schedulerError);
+        // Don't fail the whole operation for scheduler errors
+      }
+
+      console.log(`NotificationService: Safely cleared ${deletedCount} scheduled notifications for user ${userId}`);
+      return {
+        success: true,
+        deletedCount
+      };
+    } catch (error) {
+      console.error('NotificationService: Error safely clearing scheduled notifications:', error);
+      return {
+        success: false,
+        error: `Failed to clear scheduled notifications: ${(error as Error).message}`
+      };
+    }
+  }
+
+  /**
+   * Safely get notification statistics with error handling
+   */
+  public async safeGetUserNotificationStats(userId: string): Promise<{
+    stats: {
+      totalScheduled: number;
+      sent: number;
+      pending: number;
+      nextNotification?: Date;
+    };
+    success: boolean;
+    error?: string;
+  }> {
+    try {
+      console.log(`NotificationService: Safely getting notification stats for ${userId}`);
+
+      const result = await this.safeGetScheduledNotifications(userId);
+      if (!result.success) {
+        return {
+          stats: {
+            totalScheduled: 0,
+            sent: 0,
+            pending: 0
+          },
+          success: false,
+          error: result.error
+        };
+      }
+
+      const notifications = result.notifications;
+      const sent = notifications.filter(n => n.isSent).length;
+      const pending = notifications.filter(n => !n.isSent).length;
+      const nextNotification = pending > 0
+        ? notifications.filter(n => !n.isSent).sort((a, b) => a.scheduledTime.getTime() - b.scheduledTime.getTime())[0].scheduledTime
+        : undefined;
+
+      return {
+        stats: {
+          totalScheduled: notifications.length,
+          sent,
+          pending,
+          nextNotification
+        },
+        success: true
+      };
+    } catch (error) {
+      console.error('NotificationService: Error safely getting user stats:', error);
+      return {
+        stats: {
+          totalScheduled: 0,
+          sent: 0,
+          pending: 0
+        },
+        success: false,
+        error: `Failed to get notification stats: ${(error as Error).message}`
+      };
     }
   }
 

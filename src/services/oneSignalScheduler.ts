@@ -33,19 +33,23 @@ class OneSignalScheduler {
    */
   public async initialize(): Promise<void> {
     if (this.isRunning) {
+      console.log('OneSignalScheduler: Already running, skipping initialization');
       return;
     }
 
     try {
+      console.log('OneSignalScheduler: 🚀 Starting initialization...');
+
       // Start checking for due notifications every minute
       this.checkInterval = setInterval(() => {
         this.checkAndSendDueNotifications();
       }, 60000); // Check every minute
 
       this.isRunning = true;
-      console.log('OneSignalScheduler: Initialized');
+      console.log('OneSignalScheduler: ✅ Initialized successfully');
+      console.log('OneSignalScheduler: ⏰ Will check for due notifications every 60 seconds');
     } catch (error) {
-      console.error('OneSignalScheduler: Error initializing:', error);
+      console.error('OneSignalScheduler: ❌ Error initializing:', error);
     }
   }
 
@@ -97,24 +101,14 @@ class OneSignalScheduler {
    */
   private async checkAndSendDueNotifications(): Promise<void> {
     try {
-      const now = new Date();
-      const dueNotifications: OneSignalScheduledNotification[] = [];
+      console.log('OneSignalScheduler: Checking for due notifications...');
 
-      // Find notifications that are due
-      for (const [id, notification] of Array.from(this.scheduledNotifications.entries())) {
-        if (!notification.isSent && notification.scheduledTime <= now) {
-          dueNotifications.push(notification);
-        }
-      }
+      // Call the NotificationService to process due notifications from Firebase
+      // This is the main fix - we need to actually call the Firebase-based processing
+      const notificationService = (await import('./notificationService')).default;
+      await notificationService.processDueNotifications();
 
-      // Send due notifications
-      for (const notification of dueNotifications) {
-        await this.sendNotification(notification);
-      }
-
-      if (dueNotifications.length > 0) {
-        console.log(`OneSignalScheduler: Sent ${dueNotifications.length} due notifications`);
-      }
+      console.log('OneSignalScheduler: Notification check completed');
     } catch (error) {
       console.error('OneSignalScheduler: Error checking due notifications:', error);
     }

@@ -21,7 +21,7 @@ import {getOrCreatePersistentUserId} from "../utils/keychain"
 import { DEFAULT_BACKGROUND, DEFAULT_CHARACTER, DEFAULT_STATE, ShopItem } from "../data/state";
 import { getBuddyById } from "../data/buddiesData";
 import { useLanguage } from "./LanguageContext";
-import notificationService, { UserNotificationSettings } from "../services/notificationService";
+import notificationService, { UserNotificationSettings, ScheduledNotification } from "../services/notificationService";
 import oneSignalScheduler from "../services/oneSignalScheduler";
 import { adjustCoinsBalance, fetchCoins, Transaction } from "../utils/revenueCat";
 
@@ -103,6 +103,17 @@ interface AppState {
   morningNotificationTime: string;
   eveningNotificationTime: string;
   lastNotificationCheck: Date | null;
+
+  // Safe notification loading states
+  isNotificationsLoaded: boolean;
+  isLoadingNotifications: boolean;
+  notificationSettings: UserNotificationSettings | null;
+  notificationStats: {
+    totalScheduled: number;
+    sent: number;
+    pending: number;
+    nextNotification?: Date;
+  } | null;
 
   slipsUsed: number; // total slips recorded
   slipsDates: string[]; // ISO dates of slips (latest first)
@@ -209,6 +220,41 @@ interface AppState {
     nextNotification?: Date;
   }>;
   areNotificationsEnabled: () => Promise<boolean>;
+
+  // Safe notification loading functions
+  safeLoadNotificationSettings: () => Promise<{
+    settings: UserNotificationSettings | null;
+    success: boolean;
+    error?: string;
+  }>;
+  safeLoadNotificationStats: () => Promise<{
+    stats: {
+      totalScheduled: number;
+      sent: number;
+      pending: number;
+      nextNotification?: Date;
+    } | null;
+    success: boolean;
+    error?: string;
+  }>;
+  safeLoadAllNotifications: () => Promise<{
+    settings: {
+      settings: UserNotificationSettings | null;
+      success: boolean;
+      error?: string;
+    };
+    stats: {
+      stats: {
+        totalScheduled: number;
+        sent: number;
+        pending: number;
+        nextNotification?: Date;
+      } | null;
+      success: boolean;
+      error?: string;
+    };
+    overallSuccess: boolean;
+  }>;
 }
 
 const AppContext = createContext<AppState | undefined>(undefined);
@@ -275,6 +321,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const [morningNotificationTime, setMorningNotificationTime] = useState<string>("08:00");
   const [eveningNotificationTime, setEveningNotificationTime] = useState<string>("20:00");
   const [lastNotificationCheck, setLastNotificationCheck] = useState<Date | null>(null);
+
+  // Notification loading states
+  const [isNotificationsLoaded, setIsNotificationsLoaded] = useState<boolean>(false);
+  const [isLoadingNotifications, setIsLoadingNotifications] = useState<boolean>(false);
+  const [notificationSettings, setNotificationSettings] = useState<UserNotificationSettings | null>(null);
+  const [notificationStats, setNotificationStats] = useState<{
+    totalScheduled: number;
+    sent: number;
+    pending: number;
+    nextNotification?: Date;
+  } | null>(null);
 
   // Buddy/User selections
   const [gender, setGenderState] = useState<UserGender>("man");
@@ -1086,8 +1143,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       if (userProgress.startDate && (await notificationService.areNotificationsEnabled())) {
         const userId = await getOrCreatePersistentUserId();
 
-        // Check if installation notification was already sent
-        const userSettingsFromFirebase = await notificationService.getUserSettings(userId);
+        // Check if installation notification was already sent using safe loading
+        const safeResult = await notificationService.safeGetUserSettings(userId);
+        if (!safeResult.success) {
+          console.warn('AppContext: Failed to load user notification settings safely:', safeResult.error);
+          // Continue with notification sending even if we can't check existing settings
+        }
+
+        const userSettingsFromFirebase = safeResult.settings;
         if (!userSettingsFromFirebase?.lastNotificationSent) {
           // Only send if no notifications have been sent yet (indicating first install)
           const selectedBuddy = getBuddyById(selectedBuddyId);
@@ -1169,7 +1232,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const updateNotificationSettings = useCallback(async (settings: Partial<UserNotificationSettings>) => {
     try {
       const userId = await getOrCreatePersistentUserId();
-      const currentSettings = await notificationService.getUserSettings(userId);
+      const safeResult = await notificationService.safeGetUserSettings(userId);
+
+      if (!safeResult.success) {
+        console.warn('AppContext: Failed to load current notification settings safely:', safeResult.error);
+        // Continue with update even if we can't get current settings
+      }
+
+      const currentSettings = safeResult.settings;
       
       if (!currentSettings) {
         console.log('AppContext: No existing notification settings found');
@@ -1213,6 +1283,219 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error;
     }
   }, [userProgress.startDate, buddyName, gender, selectedBuddyId, contextLanguage]);
+
+  /**
+   * Safely save notification settings to Firebase (similar to saveState pattern)
+   */
+  const safeSaveNotificationSettings = useCallback(async (settings: UserNotificationSettings) => {
+    try {
+      console.log('AppContext: Safely saving notification settings for user:', settings.userId);
+
+      const result = await notificationService.saveUserSettings(settings);
+
+      console.log('AppContext: Notification settings saved successfully');
+      return {
+        success: true
+      };
+    } catch (error) {
+      console.error('AppContext: Error safely saving notification settings:', error);
+      return {
+        success: false,
+        error: `Failed to save notification settings: ${(error as Error).message}`
+      };
+    }
+  }, []);
+
+  /**
+   * Safely save scheduled notification to Firebase
+   */
+  const safeSaveScheduledNotification = useCallback(async (notification: ScheduledNotification) => {
+    try {
+      console.log('AppContext: Safely saving scheduled notification:', notification.id);
+
+      const result = await notificationService.safeSaveScheduledNotification(notification);
+
+      if (result.success) {
+        console.log('AppContext: Scheduled notification saved successfully');
+      } else {
+        console.error('AppContext: Failed to save scheduled notification:', result.error);
+      }
+
+      return result;
+    } catch (error) {
+      console.error('AppContext: Error in safeSaveScheduledNotification:', error);
+      return {
+        success: false,
+        error: `Unexpected error: ${(error as Error).message}`
+      };
+    }
+  }, []);
+
+  /**
+   * Safely clear all scheduled notifications for current user
+   */
+  const safeClearScheduledNotifications = useCallback(async () => {
+    try {
+      const userId = await getOrCreatePersistentUserId();
+      console.log('AppContext: Safely clearing scheduled notifications for user:', userId);
+
+      const result = await notificationService.safeClearScheduledNotifications(userId);
+
+      if (result.success) {
+        console.log('AppContext: Scheduled notifications cleared successfully, deleted:', result.deletedCount);
+        // Refresh notification stats after clearing
+        await safeLoadNotificationStats();
+      } else {
+        console.error('AppContext: Failed to clear scheduled notifications:', result.error);
+      }
+
+      return result;
+    } catch (error) {
+      console.error('AppContext: Error in safeClearScheduledNotifications:', error);
+      return {
+        success: false,
+        error: `Unexpected error: ${(error as Error).message}`
+      };
+    }
+  }, []);
+
+  /**
+   * Force process all pending notifications (for testing and recovery)
+   */
+  const forceProcessPendingNotifications = useCallback(async () => {
+    try {
+      console.log('AppContext: Force processing pending notifications');
+
+      const result = await notificationService.forceProcessPendingNotifications();
+
+      if (result.processed > 0) {
+        console.log(`AppContext: Force processed ${result.processed} notifications`);
+        // Refresh notification stats after processing
+        await safeLoadNotificationStats();
+      }
+
+      if (result.errors > 0) {
+        console.warn(`AppContext: ${result.errors} errors occurred during force processing`);
+      }
+
+      return result;
+    } catch (error) {
+      console.error('AppContext: Error in force processing:', error);
+      return {
+        processed: 0,
+        errors: 1
+      };
+    }
+  }, []);
+
+  /**
+   * Safely load notification settings from Firebase
+   */
+  const safeLoadNotificationSettings = useCallback(async () => {
+    try {
+      setIsLoadingNotifications(true);
+      console.log('AppContext: Starting safe load of notification settings');
+
+      const userId = await getOrCreatePersistentUserId();
+      const result = await notificationService.safeGetUserSettings(userId);
+
+      if (result.success) {
+        setNotificationSettings(result.settings);
+        console.log('AppContext: Successfully loaded notification settings:', result.settings ? 'Found' : 'None');
+      } else {
+        console.error('AppContext: Failed to load notification settings:', result.error);
+        setNotificationSettings(null);
+      }
+
+      return result;
+    } catch (error) {
+      console.error('AppContext: Error in safeLoadNotificationSettings:', error);
+      setNotificationSettings(null);
+      return {
+        settings: null,
+        success: false,
+        error: `Unexpected error: ${(error as Error).message}`
+      };
+    } finally {
+      setIsLoadingNotifications(false);
+    }
+  }, []);
+
+  /**
+   * Safely load notification statistics from Firebase
+   */
+  const safeLoadNotificationStats = useCallback(async () => {
+    try {
+      console.log('AppContext: Starting safe load of notification stats');
+
+      const userId = await getOrCreatePersistentUserId();
+      const result = await notificationService.safeGetUserNotificationStats(userId);
+
+      if (result.success) {
+        setNotificationStats(result.stats);
+        console.log('AppContext: Successfully loaded notification stats:', result.stats);
+      } else {
+        console.error('AppContext: Failed to load notification stats:', result.error);
+        setNotificationStats(null);
+      }
+
+      return result;
+    } catch (error) {
+      console.error('AppContext: Error in safeLoadNotificationStats:', error);
+      setNotificationStats(null);
+      return {
+        stats: null,
+        success: false,
+        error: `Unexpected error: ${(error as Error).message}`
+      };
+    }
+  }, []);
+
+  /**
+   * Safely load all notification data from Firebase
+   */
+  const safeLoadAllNotifications = useCallback(async () => {
+    try {
+      setIsLoadingNotifications(true);
+      setIsNotificationsLoaded(false);
+
+      console.log('AppContext: Starting safe load of all notification data');
+
+      // Load notification settings
+      const settingsResult = await safeLoadNotificationSettings();
+
+      // Load notification stats
+      const statsResult = await safeLoadNotificationStats();
+
+      const allSuccessful = settingsResult.success && statsResult.success;
+
+      if (allSuccessful) {
+        setIsNotificationsLoaded(true);
+        console.log('AppContext: Successfully loaded all notification data');
+      } else {
+        console.warn('AppContext: Some notification data failed to load');
+        console.warn('Settings result:', settingsResult);
+        console.warn('Stats result:', statsResult);
+      }
+
+      return {
+        settings: settingsResult,
+        stats: statsResult,
+        overallSuccess: allSuccessful
+      };
+    } catch (error) {
+      console.error('AppContext: Error in safeLoadAllNotifications:', error);
+      setNotificationSettings(null);
+      setNotificationStats(null);
+      return {
+        settings: { settings: null, success: false, error: (error as Error).message },
+        stats: { stats: null, success: false, error: (error as Error).message },
+        overallSuccess: false
+      };
+    } finally {
+      setIsLoadingNotifications(false);
+    }
+  }, [safeLoadNotificationSettings, safeLoadNotificationStats]);
 
   const getNotificationStats = useCallback(async () => {
     try {
@@ -1344,7 +1627,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
 
   // Memoize the context value to prevent unnecessary re-renders
-  const value: AppState = useMemo(
+  const value = useMemo(
     () => ({
       isLoading,
       userCoins,
@@ -1373,6 +1656,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       userProgress,
       daysSmokeFree,
       startDate: userProgress.startDate,
+
 
       // Challenge system
       activeChallenges,
@@ -1441,6 +1725,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       sendTestNotification,
       getNotificationStats,
       areNotificationsEnabled,
+
+      // Safe notification loading
+      safeLoadNotificationSettings,
+      safeLoadNotificationStats,
+      safeLoadAllNotifications,
+      isNotificationsLoaded,
+      isLoadingNotifications,
+      notificationSettings,
+      notificationStats,
     }),
     [
       completedAchievements,
@@ -1498,6 +1791,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       morningNotificationTime,
       eveningNotificationTime,
       lastNotificationCheck,
+
+      // Safe notification loading states
+      isNotificationsLoaded,
+      isLoadingNotifications,
+      notificationSettings,
+      notificationStats,
+
+      // Notification setters
       setNotificationsEnabled,
       setNotificationSoundEnabled,
       setMorningNotificationTime,
@@ -1509,6 +1810,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       sendTestNotification,
       getNotificationStats,
       areNotificationsEnabled,
+
+      // Safe notification loading
+      safeLoadNotificationSettings,
+      safeLoadNotificationStats,
+      safeLoadAllNotifications,
+
+      // Safe notification saving
+      safeSaveNotificationSettings,
+      safeSaveScheduledNotification,
+      safeClearScheduledNotifications,
+      forceProcessPendingNotifications,
     ]
   );
 
