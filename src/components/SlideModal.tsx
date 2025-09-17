@@ -140,8 +140,10 @@ const SlideModal: React.FC<SlideModalProps> = ({
                       hasConfirm && showCloseButton ? "" : "self-center"
                     } bg-indigo-600`}
                     onPress={onConfirm}
+                    accessibilityRole="button"
+                    accessibilityLabel="Confirm"
                   >
-                    <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">
+                    <Text className="text-2xl font-bold text-white px-4 py-2">
                       {confirmText}
                     </Text>
                   </Pressable>
@@ -152,11 +154,13 @@ const SlideModal: React.FC<SlideModalProps> = ({
                       hasConfirm && showCloseButton ? "" : "self-center"
                     } ${isDark ? "bg-slate-700" : "bg-indigo-50"}`}
                     onPress={onClose}
+                    accessibilityRole="button"
+                    accessibilityLabel="Close"
                   >
                     <Text
                       className={`text-2xl rounded-2xl px-4 py-2 font-bold ${
                         isDark
-                          ? "text-slate-50 bg-slate-700"
+                          ? "text-slate-100 bg-slate-700"
                           : "text-indigo-900 bg-indigo-50"
                       }`}
                     >

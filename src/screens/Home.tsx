@@ -23,7 +23,7 @@ import { t } from "i18next";
 
 interface HomeProps {
   onShowCravingSOS: () => void;
-  onShowBreathingExercise: () => void;
+  onShowBreathingExercise: (skipInitialScreen?: boolean) => void;
   onShowChatAssistance: () => void;
   onNavigateToProfile: () => void;
   onNavigateToAchievements: () => void;
@@ -649,38 +649,40 @@ const Home: React.FC<HomeProps> = ({
             </LinearGradient>
           </Animated.View>
 
-          {/* Animated Shop CTA Button */}
-          <Animated.View
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              zIndex: 200,
-              opacity: shopButtonOpacity,
-              transform: [{ translateY: shopButtonTranslateY }],
-            }}
-            pointerEvents={currentView === "shop" ? "auto" : "none"}
-          >
-             <LinearGradient
-              colors={['transparent', 'rgba(0, 0, 0, 0.9)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
+          {/* Animated Shop CTA Button - Only show if there are items to buy */}
+          {shopTotalCost > 0 && (
+            <Animated.View
               style={{
-                borderRadius: 8, // Match the button's border radius
-                paddingHorizontal: 0, // Match container padding
-                paddingTop: 16, // Match container padding
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 200,
+                opacity: shopButtonOpacity,
+                transform: [{ translateY: shopButtonTranslateY }],
               }}
+              pointerEvents={currentView === "shop" ? "auto" : "none"}
             >
-              <CTAButton
-                label={shopButtonLabel}
-                onPress={handleBuyAllItems}
-                rightIconName={null}
-                icon={<CoinIcon width={20} height={20} />}
-                containerClassName="px-6 pb-8 bg-transparent"
-                />
-              </LinearGradient>
-          </Animated.View>
+               <LinearGradient
+                colors={['transparent', 'rgba(0, 0, 0, 0.9)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={{
+                  borderRadius: 8, // Match the button's border radius
+                  paddingHorizontal: 0, // Match container padding
+                  paddingTop: 16, // Match container padding
+                }}
+              >
+                <CTAButton
+                  label={shopButtonLabel}
+                  onPress={handleBuyAllItems}
+                  rightIconName={null}
+                  icon={<CoinIcon width={20} height={20} />}
+                  containerClassName="px-6 pb-8 bg-transparent"
+                  />
+                </LinearGradient>
+            </Animated.View>
+          )}
         </View>
       </PanGestureHandler>
     </View>

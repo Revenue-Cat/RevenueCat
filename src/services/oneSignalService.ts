@@ -146,7 +146,6 @@ class OneSignalService {
 
     try {
       OneSignal.User.addTag(key, value);
-      console.log('Tag added:', key, value);
     } catch (error) {
       console.error('Error adding tag:', error);
     }
@@ -181,9 +180,9 @@ class OneSignalService {
         createdAt: new Date().toISOString()
       };
 
-      console.log('OneSignal: Notification scheduled for:', scheduledTime.toISOString());
-      console.log('OneSignal: Message:', message);
-      console.log('OneSignal: Additional data:', additionalData);
+      // console.log('OneSignal: Notification scheduled for:', scheduledTime.toISOString());
+      // console.log('OneSignal: Message:', message);
+      // console.log('OneSignal: Additional data:', additionalData);
       
       // TODO: Implement actual OneSignal scheduling via REST API
       // This would require server-side implementation or OneSignal's scheduled notifications feature

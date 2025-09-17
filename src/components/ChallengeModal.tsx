@@ -110,20 +110,15 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   const handleCheckIn = () => {
     if (challengeId) {
       const currentProgress = getChallengeProgress(challengeId);
-
-      const newCheckIns = currentProgress.checkIns + 1;
       const newStreak = currentProgress.streak + 1;
       
-      // Progress is calculated based on time elapsed, so we don't need to set it manually
-      updateChallengeProgress(challengeId, 0, newStreak, newCheckIns);
+      // Update streak in challengeProgress (but not checkIns since we use dailyCheckIns now)
+      updateChallengeProgress(challengeId, 0, newStreak, 0);
       
-      // Also record the daily check-in for the History section
+      // Record the daily check-in (this is the single source of truth for check-ins)
       const today = new Date();
       const dateKey = today.toISOString().split('T')[0]; // Format: "2024-09-04"
-      const dailyCheckInsData = getDailyCheckIns(challengeId);
-      const todayCheckIns = dailyCheckInsData[dateKey] || 0;
-      addDailyCheckIn(challengeId, dateKey, todayCheckIns + 1);
-      
+      addDailyCheckIn(challengeId, dateKey, 1);
     }
   };
 
@@ -562,23 +557,43 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           </View>
         )}
         </ScrollView>
-
-        <View className="flex-row items-center gap-5 justify-center mt-4 w-full">
+        {/* Action Buttons Container */}
+        <View className="my-6 flex-row justify-center gap-4">
         {/* Close Button */}
-        <Pressable 
-          className={`w-15 h-15 rounded-2xl justify-center items-center іelf-center ${
-            isDark ? 'bg-slate-700' : 'bg-indigo-50'
-          }`} 
+        <Pressable
+          className={`w-15 h-15 rounded-2xl justify-center items-center ${
+            isDark ? "bg-slate-700" : "bg-indigo-50"
+          }`}
           onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel={t("common.close", "Close")}
         >
-          <Text className={`text-2xl rounded-2xl px-4 py-2 font-bold ${isDark ? 'text-slate-50 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
+          <Text
+            className={`text-2xl rounded-2xl px-4 py-2 font-bold ${
+              isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
+            }`}
+          >
+            ✕
+          </Text>
         </Pressable>
 
       {/* Action Button - Start now, Check In, or Restart challenge */}
-        <Pressable 
-          className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[70%] flex-row"
+        <Pressable
+          className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
           onPress={isCompleted ? handleRestartChallenge : (isInProgress ? (challenge?.isExclusive ? () => onNavigateToBreathing?.(true) : handleCheckIn) : (previousCompletions.length > 0 ? handleRestartChallenge : handleStartChallenge))}
-          >      
+          accessibilityRole="button"
+          accessibilityLabel={
+            isCompleted 
+              ? t('challenges.modal.restartChallenge', "Restart Challenge")
+              : isInProgress 
+                ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn', "Check In"))
+                : (previousCompletions.length > 0 
+                    ? t('challenges.modal.restartChallenge', "Restart Challenge")
+                    : (isLocked 
+                        ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 })
+                        : t('challenges.modal.startNow', "Start Now")))
+          }
+        >      
           {isInProgress ? (
               challenge?.isExclusive ? <BreatheIcon width={16} height={16} color="#ffffff" /> : <Ionicons name="checkmark" size={18} color="#ffffff" />
             ) : (isCompleted || previousCompletions.length > 0) ? (
@@ -586,10 +601,10 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             ) : (
               ""
             )}     
-            <Text className="text-white font-bold text-lg ml-2 mr-2">
+            <Text className="font-semibold text-xl text-white ml-2 mr-2">
               {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : (isLocked ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 }) : t('challenges.modal.startNow'))))}
             </Text>
-            {isInProgress && !isCompleted && previousCompletions.length === 0 && (
+            {progressData.checkIns && isInProgress && !isCompleted && previousCompletions.length === 0 && (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
                   <Text className="text-white text-s font-bold">{progressData.checkIns}</Text>
                 </View>

@@ -1010,17 +1010,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getChallengeProgress = useCallback(
     (challengeId: string) => {
-      return (
-        challengeProgress[challengeId] || {
-          progress: 0,
-          streak: 0,
-          checkIns: 0,
-          startDate: null,
-          isCancelled: false,
-        }
-      );
+      const baseProgress = challengeProgress[challengeId] || {
+        progress: 0,
+        streak: 0,
+        checkIns: 0,
+        startDate: null,
+        isCancelled: false,
+      };
+      
+      // Calculate total check-ins from dailyCheckIns
+      const dailyCheckInsData = dailyCheckIns[challengeId] || {};
+      const totalCheckIns = Object.values(dailyCheckInsData).reduce((sum, count) => sum + count, 0);
+      
+      return {
+        ...baseProgress,
+        checkIns: totalCheckIns,
+      };
     },
-    [challengeProgress]
+    [challengeProgress, dailyCheckIns]
   );
 
   const getChallengeCompletions = useCallback(
@@ -1099,7 +1106,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         ...prev,
         [challengeId]: {
           ...prev[challengeId],
-          [date]: count,
+          [date]: (prev[challengeId]?.[date] || 0) + count,
         },
       }));
     },
