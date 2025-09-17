@@ -214,6 +214,7 @@ interface AppState {
   updateNotificationSettings: (settings: Partial<UserNotificationSettings>) => Promise<void>;
   ensureNotificationSettingsExist: () => Promise<void>;
   sendTestNotification: () => Promise<void>;
+  sendDirectPushNotification: (message: string) => Promise<void>;
   getNotificationStats: () => Promise<{
     totalScheduled: number;
     sent: number;
@@ -1378,6 +1379,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [userProgress.startDate, buddyName, gender, selectedBuddyId, contextLanguage]);
 
+
+  // Direct push notification function
+  const sendDirectPushNotification = useCallback(async (message: string) => {
+    try {
+      console.log('AppContext: 📱 Sending direct push notification:', message);
+      
+      // Import OneSignal service directly
+      const oneSignalService = (await import('../services/oneSignalService')).default;
+      
+      // Send notification with additional data
+      await oneSignalService.sendNotification(message, {
+        type: 'direct',
+        timestamp: new Date().toISOString(),
+        source: 'app'
+      });
+      
+      console.log('AppContext: ✅ Direct push notification sent successfully');
+    } catch (error) {
+      console.error('AppContext: ❌ Failed to send direct push notification:', error);
+      throw error;
+    }
+  }, []);
+
   /**
    * Safely save notification settings to Firebase (similar to saveState pattern)
    */
@@ -1763,6 +1787,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       showCoinPurchase,
       selectedShopTab,
 
+      // Notification preferences
+      notificationsEnabled,
+      notificationSoundEnabled,
+      morningNotificationTime,
+      eveningNotificationTime,
+      lastNotificationCheck,
+
+      // Safe notification loading states
+      isNotificationsLoaded,
+      isLoadingNotifications,
+      notificationSettings,
+      notificationStats,
+
       addTransaction,
       refreshCoinsBalance,
       setUserCoins,
@@ -1773,6 +1810,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       setShowCoinPurchase,
       setSelectedShopTab,
       openShopWithTab,
+
+      // Notification setters
+      setNotificationsEnabled,
+      setNotificationSoundEnabled,
+      setMorningNotificationTime,
+      setEveningNotificationTime,
+      setLastNotificationCheck,
+
       setTransactions,
       setCompletedAchievements,
 
@@ -1818,6 +1863,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       updateNotificationSettings,
       ensureNotificationSettingsExist,
       sendTestNotification,
+      sendDirectPushNotification,
       getNotificationStats,
       areNotificationsEnabled,
 
@@ -1825,10 +1871,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       safeLoadNotificationSettings,
       safeLoadNotificationStats,
       safeLoadAllNotifications,
-      isNotificationsLoaded,
-      isLoadingNotifications,
-      notificationSettings,
-      notificationStats,
     }),
     [
       completedAchievements,
@@ -1904,6 +1946,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       updateNotificationSettings,
       ensureNotificationSettingsExist,
       sendTestNotification,
+      sendDirectPushNotification,
       getNotificationStats,
       areNotificationsEnabled,
 

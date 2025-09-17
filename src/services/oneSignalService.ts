@@ -1,9 +1,7 @@
 import { Platform } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
 import { getOrCreatePersistentUserId } from '../utils/keychain';
-
-// OneSignal App ID
-const ONESIGNAL_APP_ID = '7b5c7621-a7f6-4b26-99cb-92ddd23db156';
+import secureConfig from '../config/secureConfig';
 
 class OneSignalService {
   private static instance: OneSignalService;
@@ -32,10 +30,14 @@ class OneSignalService {
     try {
       console.log('OneSignal: Starting initialization...');
 
-      // Initialize OneSignal with your App ID
+      // Get secure configuration from Firebase
+      const config = await secureConfig.getOneSignalConfig();
+      console.log('OneSignal: ✅ Configuration loaded from Firebase');
+
+      // Initialize OneSignal with secure App ID
       // Note: OneSignal might automatically request permission on initialize
       // We'll disable automatic prompts by initializing without requesting permission
-      OneSignal.initialize(ONESIGNAL_APP_ID);
+      OneSignal.initialize(config.appId);
 
       // Set up notification handlers
       this.setupNotificationHandlers();
@@ -43,7 +45,7 @@ class OneSignalService {
       this.isInitialized = true;
       this.isAvailable = true;
       console.log('OneSignal: ✅ Initialization completed successfully');
-      console.log('OneSignal: 📱 App ID:', ONESIGNAL_APP_ID);
+      console.log('OneSignal: 📱 App ID:', config.appId.substring(0, 8) + '...');
     } catch (error) {
       console.error('OneSignal: ❌ Initialization failed:', error);
       this.isAvailable = false;
@@ -208,44 +210,68 @@ class OneSignalService {
       console.log('OneSignal: Sending notification:', message);
       console.log('OneSignal: Additional data:', additionalData);
 
-      // Method 1: Try to send via OneSignal's API to current user
-      try {
-        // Use OneSignal's login to set external user ID first
-        const userId = await getOrCreatePersistentUserId();
-        OneSignal.login(userId);
+      // Set external user ID for targeting
+      const userId = await getOrCreatePersistentUserId();
+      OneSignal.login(userId);
 
-        // Create immediate notification
-        const notificationData = {
-          contents: {
-            en: message,
-          },
-          data: additionalData || {},
-          // Send immediately
-          send_after: new Date().toISOString(),
-        };
-
-        console.log('OneSignal: Sending notification with data:', notificationData);
-
-        // For React Native, we'll use the local notification approach
-        // since OneSignal's postNotification may not be available in all versions
-        await this.sendLocalNotification(message, additionalData);
-        console.log('OneSignal: Notification sent via local notification');
-        return;
-      } catch (apiError) {
-        console.warn('OneSignal: API method failed, trying local notification:', apiError);
-      }
-
-      // Method 2: Fallback to local notification
-      try {
-        console.log('OneSignal: Using local notification fallback');
-        await this.sendLocalNotification(message, additionalData);
-      } catch (localError) {
-        console.error('OneSignal: Local notification fallback failed:', localError);
-        throw localError;
-      }
+      // Send notification using OneSignal's REST API
+      await this.sendNotificationViaAPI(message, additionalData);
+      
+      console.log('OneSignal: ✅ Notification sent successfully');
     } catch (error) {
-      console.error('OneSignal: All notification methods failed:', error);
+      console.error('OneSignal: ❌ Failed to send notification:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Send notification via OneSignal REST API
+   */
+  private async sendNotificationViaAPI(message: string, additionalData?: Record<string, any>): Promise<void> {
+    try {
+      const userId = await getOrCreatePersistentUserId();
+      
+      // Get secure configuration from Firebase
+      const config = await secureConfig.getOneSignalConfig();
+      
+      // OneSignal REST API endpoint
+      const url = 'https://onesignal.com/api/v1/notifications';
+      
+      console.log('OneSignal: ✅ Using secure configuration from Firebase');
+      console.log('OneSignal: Sending notification with key:', config.restApiKey.substring(0, 20) + '...');
+      
+      const notificationData = {
+        app_id: config.appId,
+        include_external_user_ids: [userId],
+        contents: {
+          en: message
+        },
+        data: additionalData || {},
+        send_after: new Date().toISOString()
+      };
+
+      console.log('OneSignal: Sending via REST API:', notificationData);
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${config.restApiKey}`
+        },
+        body: JSON.stringify(notificationData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`OneSignal API error: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('OneSignal: API response:', result);
+      
+    } catch (error) {
+      console.error('OneSignal: Error sending via API:', error);
+      // Fallback to local notification if API fails
+      await this.sendLocalNotification(message, additionalData);
     }
   }
 
@@ -294,6 +320,18 @@ class OneSignalService {
   // Method to reset permission for testing
   public resetPermission(): void {
     this.hasPermission = false;
+  }
+
+  /**
+   * Test function to send a simple notification
+   */
+  public async sendTestNotification(): Promise<void> {
+    const testMessage = "🧪 Test notification from your app!";
+    console.log('OneSignal: Sending test notification...');
+    await this.sendNotification(testMessage, {
+      test: true,
+      timestamp: new Date().toISOString()
+    });
   }
 }
 
