@@ -7,6 +7,8 @@ import {
   Animated,
   Easing,
   Dimensions,
+  Keyboard,
+  Platform,
 } from "react-native";
 import { useTheme } from "../contexts/ThemeContext";
 
@@ -36,6 +38,7 @@ const SlideModal: React.FC<SlideModalProps> = ({
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [modalVisible, setModalVisible] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const easeOut = Easing.bezier(0, 0, 0.2, 1);
   const easeIn = Easing.bezier(0.4, 0, 1, 1);
 
@@ -44,6 +47,28 @@ const SlideModal: React.FC<SlideModalProps> = ({
       setModalVisible(true);
     }
   }, [visible, modalVisible]);
+
+  // Keyboard handling
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+      }
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        setKeyboardHeight(0);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (modalVisible && visible) {
@@ -85,6 +110,19 @@ const SlideModal: React.FC<SlideModalProps> = ({
     }
   }, [modalVisible, visible, slideAnim, fadeAnim, screenHeight]);
 
+  // Update modal position when keyboard height changes
+  useEffect(() => {
+    if (modalVisible && visible) {
+      // If keyboard appears/disappears while modal is visible, adjust position
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 150,
+        easing: easeOut,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [keyboardHeight, modalVisible, visible, slideAnim, easeOut]);
+
   return (
     <Modal
       visible={modalVisible}
@@ -102,8 +140,9 @@ const SlideModal: React.FC<SlideModalProps> = ({
 
       {/* Modal Content - Slides from bottom with smooth animation */}
       <Animated.View
-        className="absolute bottom-0 left-0 right-0"
+        className="absolute left-0 right-0"
         style={{
+          bottom: keyboardHeight,
           transform: [{ translateY: slideAnim }],
         }}
       >

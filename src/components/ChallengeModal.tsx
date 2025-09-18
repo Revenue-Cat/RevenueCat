@@ -278,11 +278,12 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                     width: '100%', 
                     height: '100%',
                     aspectRatio: 1,
-                  }} className="rounded-2xl overflow-hidden">
+                  }} className="rounded-2xl overflow-hidden bg-cover">
                     {React.cloneElement(challenge.cardIcon, {
                       width: '100%',
                       height: '100%',
                       preserveAspectRatio: 'xMidYMid meet',
+                      
                     })}
                   </View>
                   {/* Lock overlay for locked challenges */}

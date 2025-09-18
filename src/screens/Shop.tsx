@@ -178,7 +178,7 @@ const Shop: React.FC<ShopProps> = ({
                       <Text className="text-s font-bold text-amber-500 gap-2">
                         {item.coin}
                       </Text>
-                      <CoinIcon width={18} height={18} className="ml-1" />
+                      <CoinIcon width={16} height={16} className="ml-1" />
                     </View>
                   </View>
                 )}
@@ -229,7 +229,7 @@ const Shop: React.FC<ShopProps> = ({
                     width: 95,
                     height: 95,        // Full icon height
                     color: isSelected ? "#22C55E" : (isDark ? "#94A3B8" : "#FFFFFF33"),
-                    opacity: 0.2
+                    // opacity: 0.2
                   })}
                 </View>
 
@@ -286,7 +286,7 @@ const Shop: React.FC<ShopProps> = ({
                       <Text className="text-s font-bold text-amber-500 gap-2">
                         {item.coin}
                       </Text>
-                      <CoinIcon width={18} height={18} className="ml-1" />
+                      <CoinIcon width={16} height={16} className="ml-1" />
                     </View>
                   </View>
                 )}

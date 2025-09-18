@@ -158,7 +158,7 @@ const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
       })}
 
       {/* Collapse/Expand Button */}
-      <View className="items-center mt-2 mb-8">
+      <View className="items-center -mt-1">
          <Pressable 
             className="z-10 bg-black/50 rounded-full justify-center items-center px-2 py-2"
             onPress={toggleCollapsed}
@@ -175,7 +175,7 @@ const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
 
   // Memoize the title
   const title = useMemo(() => (
-    <Text className="text-white text-center text-2xl font-bold mb-6">{t('challenges.title')}</Text>
+    <Text className="text-white text-center text-2xl font-bold mb-3">{t('challenges.title')}</Text>
   ), [t]);
 
   return (

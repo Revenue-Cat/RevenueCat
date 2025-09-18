@@ -257,22 +257,13 @@ const BuddySelection: React.FC<Props> = ({
       {fromProfile && onBack && (
         <View className="flex-row items-center justify-between px-6 pt-4 pb-1">
           <Pressable
-            className={`w-10 h-10 rounded-full justify-center items-center p-1 ${
-              isDark ? "bg-slate-700" : "bg-slate-50"
-            }`}
+            className={`w-10 h-10 rounded-full justify-center items-center p-1`}
             onPress={onBack}
-            hitSlop={10}
-            style={({ hovered }) => [
-              isDark
-                ? { backgroundColor: hovered ? "#475569" : "#334155" }
-                : { backgroundColor: hovered ? "#e0e7ff" : "#f8fafc" },
-              isDark ? { elevation: 2 } : null,
-            ]}
           >
-            <PrevIcon
-              width={18}
-              height={18}
-              color={isDark ? "#FFFFFF" : "#1e1b4b"}
+             <Ionicons 
+              name="arrow-back" 
+              size={20} 
+              color={isDark ? "#f1f5f9" : "#1e1b4b"}
             />
           </Pressable>
           <View style={{ width: 40, height: 40 }} />
@@ -282,7 +273,7 @@ const BuddySelection: React.FC<Props> = ({
       {/* Header */}
       <View
         className={`${
-          fromProfile ? "items-center mt-2" : "items-center pt-16"
+          fromProfile ? "items-center mb-10" : "items-center pt-16"
         } px-6 mb-2`}
       >
         <Text
@@ -341,7 +332,7 @@ const BuddySelection: React.FC<Props> = ({
       <Text
         className={`${
           isDark ? "text-slate-100" : "text-indigo-950"
-        } text-center mt-8`}
+        } text-center mt-12`}
         style={{
           fontFamily: "Inter",
           fontWeight: "700",
@@ -352,7 +343,7 @@ const BuddySelection: React.FC<Props> = ({
         {buddyName}
       </Text>
       <Text
-        className="text-slate-500 text-center mt-[10px] px-8"
+        className="text-slate-500 text-center mt-[10px] px-10"
         style={{
           fontFamily: "Inter",
           fontWeight: "500",
@@ -360,7 +351,7 @@ const BuddySelection: React.FC<Props> = ({
           lineHeight: 20,
         }}
       >
-        {buddies[activeIndex]?.description}
+      {buddies[activeIndex]?.description}
       </Text>
 
       {/* Dots */}

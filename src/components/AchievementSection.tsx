@@ -113,7 +113,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
 
   // Memoize the achievement cards rendering with Reanimated animations
   const achievementCardsContent = useMemo(() => (
-    <View className="mb-1 pb-8 relative">
+    <View className="mb-4 pb-8 relative">
       {firstThreeAchievements.map((achievement, index) => {
         const progress = getProgressForAchievement(achievement.id);
         const timeLeft = progress.percentage === 100
@@ -278,10 +278,10 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
   }, [firstThreeAchievements, getProgressForAchievement, isDark, t]);
 
   return (
-    <View className="relative px-5">
+    <View className="relative px-5 mb-2">
       {/* Toggle Arrow Button */}
       <Pressable 
-        className="absolute bottom-2 right-1/2 left-1/2 z-10 bg-black/50 rounded-full justify-center items-center px-1 py-2"
+        className={`absolute ${isCollapsed ? 'bottom-5' : 'bottom-2'} right-1/2 left-1/2 z-10 bg-black/50 rounded-full justify-center items-center px-1 py-2`}
         onPress={onToggle}
       >
         <Ionicons 

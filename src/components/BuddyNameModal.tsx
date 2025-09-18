@@ -3,15 +3,11 @@ import {
   View,
   Text,
   Pressable,
-  KeyboardAvoidingView,
-  Platform,
   TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import SlideModal from "./SlideModal";
 import { useTranslation } from "react-i18next";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 type Props = {
   visible: boolean;
   isDark: boolean;
@@ -29,7 +25,6 @@ const BuddyNameModal: React.FC<Props> = ({
 }) => {
   const [name, setName] = useState(initialName);
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     setName(initialName);
@@ -42,7 +37,6 @@ const BuddyNameModal: React.FC<Props> = ({
     onConfirm(finalName);
   };
 
-  const keyboardOffset = (insets.top || 0) + 56;
 
   return (
     <SlideModal
@@ -52,11 +46,7 @@ const BuddyNameModal: React.FC<Props> = ({
       onConfirm={handleConfirm}
       confirmText="✓"
     >
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? keyboardOffset : 0}
-      >
+      <View style={{ flex: 1 }}>
         <View
           className={`rounded-2xl px-3 py-2 ${
             isDark
@@ -78,7 +68,7 @@ const BuddyNameModal: React.FC<Props> = ({
         </View>
 
         {/* Footer handled by SlideModal via onConfirm/showCloseButton */}
-      </KeyboardAvoidingView>
+      </View>
     </SlideModal>
   );
 };
