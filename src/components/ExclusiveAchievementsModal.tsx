@@ -66,7 +66,7 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
 
         {/* Challenge Icon Background */}
         <View className="absolute inset-0 bg-gradient-to-br from-green-400 to-yellow-400 rounded-full justify-center items-center">
-          {challenge.achievementIcon && !isLocked ? (
+          {challenge.achievementIcon && !isLocked && isCompleted ? (
             <Image
               source={challenge.achievementIcon}
               className="w-36 h-36"

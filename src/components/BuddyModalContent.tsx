@@ -53,77 +53,51 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
 
 
   const renderBuddyVisual = () => {
-
-    if (lottieSource && !isPlaceholderBuddy) {
-      return (
-        <View className="w-32 h-32 relative justify-center items-center">
-          <LottieView
-            source={lottieSource}
-            autoPlay
-            loop
-            style={{ width: 144, height: 144, transform: [{ scale: 2 }] }}
-            resizeMode="contain"
-            enableMergePathsAndroidForKitKatAndAbove
-          />
-
-          {isSelected && (
-            <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
-              <Ionicons name="checkmark" size={16} color="white" />
-            </View>
-          )}
-          {isOwned && !isSelected && (
-            <View className="absolute -top-1 -right-1 bg-blue-500 rounded-full w-8 h-8 justify-center items-center">
-              <Ionicons name="checkmark-circle" size={16} color="white" />
-            </View>
-          )}
-        </View>
-      );
-    }
-
-    if (!isPlaceholderBuddy && isImageIcon) {
-      return (
-        <View className="w-32 h-32 relative justify-center items-center">
-          <Image source={buddy?.icon} className="w-36 h-36" resizeMode="contain" />
-          {isSelected && (
-            <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
-              <Ionicons name="checkmark" size={16} color="white" />
-            </View>
-          )}
-          {isOwned && !isSelected && (
-            <View className="absolute -top-1 -right-1 bg-blue-500 rounded-full w-8 h-8 justify-center items-center">
-              <Ionicons name="checkmark-circle" size={16} color="white" />
-            </View>
-          )}
-        </View>
-      );
-    }
-
-    // Handle PLACEHOLDER_BUDDY SVG components
-    if (isPlaceholderBuddy) {
-      console.log('PLACEHOLDER_BUDDY detected:', buddy?.icon);
-      const IconComponent = buddy?.icon;
-      return (
-        <View className="w-32 h-32 relative justify-center items-center">
-          <View className="items-center justify-center mt-14">
-             {buddy?.icon && <IconComponent height={230} color={isDark ? "#020a16" : "#CBD5E1"} />}
+    return (
+      <View className="w-full h-full relative rounded-2xl overflow-hidden justify-center items-center">
+        {isPlaceholderBuddy ? (
+          // Render SVG icon for PLACEHOLDER_BUDDY
+          <View className="w-full h-full justify-center items-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800">
+            {buddy?.icon && React.createElement(buddy.icon, {
+              height: 220,
+              color: (isDark ? "#94A3B8" : "#CBD5E1")
+            })}
           </View>
-           
-          {isSelected && (
-            <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
-              <Ionicons name="checkmark" size={16} color="white" />
-            </View>
-          )}
-          {isOwned && !isSelected && (
-            <View className="absolute -top-1 -right-1 bg-blue-500 rounded-full w-8 h-8 justify-center items-center">
-              <Ionicons name="checkmark-circle" size={16} color="white" />
-            </View>
-          )}
-        </View>
-      );
-    }
+        ) : lottieSource ? (
+          // Render Lottie animation
+          <View className="w-full h-full justify-center items-center">
+            <LottieView
+              source={lottieSource}
+              autoPlay
+              loop
+              style={{ width: 160, height: 160 }}
+              resizeMode="contain"
+              enableMergePathsAndroidForKitKatAndAbove
+            />
+          </View>
+        ) : isImageIcon ? (
+          // Render PNG image
+          <View className="w-full h-full justify-center items-center">
+            <Image source={buddy?.icon} className="w-40 h-40" resizeMode="contain" />
+          </View>
+        ) : (
+          // Fallback empty view
+          <View className="w-full h-full justify-center items-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800" />
+        )}
 
-    // Nothing resolvable: render empty spacer
-    return <View className="w-32 h-32" />;
+        {/* Status Badges */}
+        {isSelected && (
+          <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-8 h-8 justify-center items-center">
+            <Ionicons name="checkmark" size={16} color="white" />
+          </View>
+        )}
+        {isOwned && !isSelected && (
+          <View className="absolute -top-1 -right-1 bg-blue-500 rounded-full w-8 h-8 justify-center items-center">
+            <Ionicons name="checkmark-circle" size={16} color="white" />
+          </View>
+        )}
+      </View>
+    );
   };
 
   return (
@@ -161,13 +135,11 @@ const BuddyModalContent: React.FC<BuddyModalContentProps> = ({
         </Text>
       </View>
 
-      {/* Card */}
-      <View
-        className={`gap-4 rounded-3xl p-8 justify-center items-center relative ${
-          isDark ? "bg-slate-700/50" : "bg-indigo-50/50"
-        }`}
-      >
-        <View className="items-center my-8 py-8">{renderBuddyVisual()}</View>
+      {/* Card Content */}
+      <View className={`h-72 my-4 rounded-3xl justify-center bg-center items-center overflow-hidden relative ${isDark ? 'bg-slate-700/50' : 'bg-indigo-50/50'}`}>
+
+        {/* Buddy Preview */}
+        {renderBuddyVisual()}
          <View className="absolute top-3 right-3 z-10 rounded-3xl bg-black/40 p-1.5">
             <LockLight width={12} height={12} color="white"  />
         </View>

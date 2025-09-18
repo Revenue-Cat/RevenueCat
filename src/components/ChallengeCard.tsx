@@ -25,6 +25,7 @@ export interface ChallengeCardProps {
   onRestartChallenge?: (challengeId: string) => void;
   cardIcon?: any;
   icon?: any;
+  iconPreview?: any; // Icon to show in History Section for in-progress challenges
   achievementIcon?: any;
   achievementDescription?: string;
   motivation: string[];

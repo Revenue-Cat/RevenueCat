@@ -29,22 +29,24 @@ const SceneModalContent: React.FC<SceneModalContentProps> = ({
   // Helper function to render scene preview
   const renderScenePreview = () => {
     return (
-      <View className="w-full h-full relative rounded-2xl overflow-hidden">
+      <View className="w-full h-full relative rounded-2xl overflow-hidden justify-center items-center">
         {isPlaceholderScene ? (
           // Render SVG icon for PLACEHOLDER_SCENE
           <View className="w-full h-full justify-center items-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800">
-            {React.createElement(scene.icon, {
+            {scene.icon && React.createElement(scene.icon, {
               height: 220,
               color: (isDark ? "#94A3B8" : "#CBD5E1")
             })}
           </View>
         ) : (
           // Render background image for regular scenes
-          <Image
-            source={scene.background}
-            className='w-full h-full'
-            resizeMode="stretch"
-          />
+          <View className="w-full h-full justify-center items-center">
+            <Image
+              source={scene.background}
+              className='w-full h-full'
+              resizeMode="cover"
+            />
+          </View>
         )}
 
         {/* Status Badges */}
@@ -87,12 +89,12 @@ const SceneModalContent: React.FC<SceneModalContentProps> = ({
         </Text>
       </View>
       {/* Card Content */}
-      <View className={`h-64 my-4 rounded-3xl justify-center items-center overflow-hidden relative ${isDark ? 'bg-slate-700/50' : 'bg-indigo-50/50'}`}>
-      
+      <View className={`h-72 my-4 rounded-3xl justify-center bg-center items-center overflow-hidden relative ${isDark ? 'bg-slate-700/50' : 'bg-indigo-50/50'}`}>
+
         {/* Scene Preview */}
         {renderScenePreview()}
          <View className="absolute top-3 right-3 z-10 rounded-3xl bg-black/40 p-1.5">
-            <LockLight width={12} height={12} color="white"  />
+            <LockLight width={12} height={12} color="white" />
         </View>
       </View>
     </>

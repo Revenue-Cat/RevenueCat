@@ -5,6 +5,7 @@ import { useApp } from '../contexts/AppContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { PLACEHOLDER_SCENE } from '../data/scenesData';
+import CoinIcon from '../assets/icons/coins.svg';
 interface SceneModalActionsProps {
   scene: any;
   userCoins: number;
@@ -42,7 +43,7 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
   };
 
   return (
-    <View className="my-6 flex-row justify-center gap-4">
+    <View className="mt-6 flex-row justify-center gap-2">
       {/* Close Button */}
       <Pressable
         className={`w-15 h-15 rounded-2xl justify-center items-center ${
@@ -53,7 +54,7 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
         accessibilityLabel={t("common.close", "Close")}
       >
         <Text
-          className={`text-2xl rounded-2xl px-4 py-2 font-bold ${
+          className={`text-2xl rounded-2xl px-5 py-2 font-bold ${
             isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
           }`}
         >
@@ -86,13 +87,11 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
               : t("shop.purchase", "Purchase")
           }
         >
-          <Text
-            className={`font-semibold text-xl text-white`}
-          >
-            {canAfford
-              ? t("shop.buyFor", { coins: scene.coin })
-              : t("shop.purchase", "Purchase")}
-          </Text>
+          
+          <View className="flex-row items-center justify-center gap-2">
+            <Text className={`font-semibold text-xl text-white`}>{t("shop.buyFor", { coins: scene.coin })}</Text>
+            <CoinIcon width={20} height={20} className="ml-1" />
+          </View>
         </Pressable>
       )}
 

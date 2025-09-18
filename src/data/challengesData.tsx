@@ -431,6 +431,7 @@ export const convertToChallengeCardProps = (challenge: ChallengeData, status: 'a
   streak,
   checkIns,
   cardIcon: challenge.cardIcon,
+  iconPreview: challenge.iconPreview, // Icon to show in History Section
   isExclusive: challenge.isExclusive,
   motivation: challenge.motivation,
   buddyAdvice: challenge.buddyAdvice,

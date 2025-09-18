@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Pressable, Text } from 'react-native';
+import { View, Pressable, Text, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Animated, {
@@ -57,9 +57,10 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
     [t]
   );
 
-  // Animation: first card instant, second and third cards slide from top to bottom
+  // Animation: first card instant, second and third cards slide down on open, slide up on close (reverse order)
   useEffect(() => {
     if (!isCollapsed) {
+      // Opening animation - cards slide down from top
       // Reset second and third cards for animation (start from above)
       secondCardOpacity.value = 0;
       secondCardTranslateY.value = -30;
@@ -67,18 +68,21 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
       thirdCardTranslateY.value = -30;
 
       // Animate second card first (slide down from top to bottom)
-      secondCardOpacity.value = withDelay(100, withTiming(1, { duration: 350 }));
-      secondCardTranslateY.value = withDelay(100, withTiming(0, { duration: 350 }));
+      secondCardOpacity.value = withDelay(50, withTiming(1, { duration: 250 }));
+      secondCardTranslateY.value = withDelay(50, withTiming(0, { duration: 250 }));
 
       // Animate third card with longer delay (slide down from top to bottom)
-      thirdCardOpacity.value = withDelay(250, withTiming(1, { duration: 400 }));
-      thirdCardTranslateY.value = withDelay(250, withTiming(0, { duration: 400 }));
+      thirdCardOpacity.value = withDelay(150, withTiming(1, { duration: 300 }));
+      thirdCardTranslateY.value = withDelay(150, withTiming(0, { duration: 300 }));
     } else {
-      // Instant reset when collapsing
-      secondCardOpacity.value = 0;
-      secondCardTranslateY.value = -30;
-      thirdCardOpacity.value = 0;
-      thirdCardTranslateY.value = -30;
+      // Closing animation - cards slide up and fade out (opposite of opening)
+      // Animate third card first (slide up from bottom to top) - slightly longer
+      thirdCardOpacity.value = withDelay(80, withTiming(0, { duration: 350 }));
+      thirdCardTranslateY.value = withDelay(80, withTiming(-30, { duration: 350 }));
+
+      // Animate second card with delay (slide up from bottom to top) - slightly longer
+      secondCardOpacity.value = withDelay(200, withTiming(0, { duration: 400 }));
+      secondCardTranslateY.value = withDelay(200, withTiming(-30, { duration: 400 }));
     }
   }, [isCollapsed, secondCardOpacity, secondCardTranslateY, thirdCardOpacity, thirdCardTranslateY]);
 
@@ -174,31 +178,72 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
     </View>
   ), [firstThreeAchievements, getProgressForAchievement, secondCardAnimatedStyle, thirdCardAnimatedStyle]);
 
-  // Memoize the collapsed achievement view
+  // Memoize the collapsed achievement view with cross-platform consistent styling
   const collapsedAchievementView = useMemo(() => {
     if (firstThreeAchievements.length === 0) return null;
 
+    // Consistent styling for cross-platform compatibility
+    const cardBaseStyle = {
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: isDark ? 0.3 : 0.15,
+      shadowRadius: 4,
+      elevation: 3, // Android shadow
+    };
+
     return (
-      <View className="mb-4 relative overflow-visible" style={{ height: 160 }}>
+      <View className="mb-4 relative overflow-visible" style={{ height: 160, minHeight: 160 }}>
         {/* Card Stack - Show preview cards */}
         <View className="absolute top-0 left-0 right-0 bottom-0" style={{ zIndex: 1 }}>
           {/* Card 2 - Second achievement (showing a little) */}
           {firstThreeAchievements.length > 1 && (
             <View
-              className={`absolute ${isDark ? 'bg-slate-700' : 'bg-white'} bottom-7 rounded-xl left-4 right-4 h-20 border`}
               style={{
-                opacity: 0.7, // Fixed opacity
-                transform: [{ translateY: 0 }] // Fixed position
+                position: 'absolute',
+                bottom: 28, // Fixed pixel value for consistency
+                left: 16,
+                right: 16,
+                height: 80,
+                backgroundColor: isDark ? '#334155' : '#ffffff',
+                borderRadius: 12,
+                opacity: 0.75,
+                ...cardBaseStyle,
+                // Platform-specific adjustments
+                ...Platform.select({
+                  ios: {
+                    shadowOpacity: isDark ? 0.3 : 0.15,
+                  },
+                  android: {
+                    elevation: 3,
+                  },
+                }),
               }}
             />
           )}
           {/* Card 3 - Third achievement (showing a little less) */}
           {firstThreeAchievements.length > 2 && (
             <View
-              className={`absolute ${isDark ? 'bg-slate-700' : 'bg-white'} bottom-5 rounded-xl left-8 right-8 h-14`}
               style={{
-                opacity: 0.5, // Fixed opacity
-                transform: [{ translateY: 0 }] // Fixed position
+                position: 'absolute',
+                bottom: 20, // Fixed pixel value for consistency
+                left: 32,
+                right: 32,
+                height: 56,
+                backgroundColor: isDark ? '#334155' : '#ffffff',
+                borderRadius: 12,
+                opacity: 0.6,
+                ...cardBaseStyle,
+                // Platform-specific adjustments
+                ...Platform.select({
+                  ios: {
+                    shadowOpacity: isDark ? 0.25 : 0.1,
+                  },
+                  android: {
+                    elevation: 2,
+                  },
+                }),
               }}
             />
           )}

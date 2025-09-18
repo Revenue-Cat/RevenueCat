@@ -15,7 +15,7 @@ import { CHALLENGES_DATA, ChallengeData } from "../data/challengesData";
 import ProgressRing from "./ProgressRing";
 import LockLight from "../assets/icons/lock.svg";
 import ExclusiveAchievementsModal from "./ExclusiveAchievementsModal";
-
+import TimeIcon from "../assets/icons/time.svg";
 const AchievementLockedIcon = require("../assets/achievements/achievement-locked.png");
 const LockIcon = require("../assets/achievements/lock.png");
 
@@ -186,7 +186,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                     />
                   {/* Achievement Icon */}
                   <View className="absolute w-[70px] h-[70px] rounded-full justify-center items-center">
-                    {challenge.achievementIcon && !isLocked && !isActive ? (
+                    {challenge.achievementIcon && !isLocked && !isActive && isCompleted ? (
                       <Image
                         source={challenge.achievementIcon}
                         style={{ width: 80, height: 80 }}
@@ -208,6 +208,12 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                       </View>
                     )}
 
+                     {isInProgress && !isCompleted && (
+                      <View className="absolute -top-2 -right-2 bg-white/20 rounded-full w-6 h-6 justify-center items-center">
+                        <TimeIcon width={16} height={16} color="white" opacity={0.5} />
+                      </View>
+                    )}
+
                     {/* Completion count badge */}
                     {completionCount > 0 && (
                       <View className="absolute -top-2 -right-1 bg-green-500 rounded-full w-5 h-5 justify-center items-center">
@@ -225,7 +231,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                   {/* Challenge Title */}
                   <Text
                     className={`text-sm mt-2 text-center font-medium ${
-                      isCompleted || isInProgress
+                      isCompleted
                         ? isDark
                           ? "text-slate-100"
                           : "text-white"

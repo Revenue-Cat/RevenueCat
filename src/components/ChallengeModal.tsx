@@ -15,6 +15,7 @@ import ProgressRing from './ProgressRing';
 import ClapIcon from "../assets/icons/clap.svg";
 import BreatheIcon from "../assets/icons/breathe.svg";
 
+
 interface ChallengeModalProps {
   visible: boolean;
   challenge: ChallengeCardProps | null;
@@ -387,7 +388,11 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                 {/* Today */}
                 <View className="flex-row justify-between items-center mb-3">
                   <View className="flex-row items-center">
-                    <GlassIcon width={24} height={24} color={isDark ? "#64748b" : "#94a3b8"} />
+                    {challenge.iconPreview ? (
+                      <challenge.iconPreview width={20} height={20} color={isDark ? "#64748b" : "#3B82F6"} />
+                    ) : (
+                      <GlassIcon width={24} height={24} color={isDark ? "#64748b" : "#3B82F6"} />
+                    )}
                     <View className="ml-2">
                       <Text className={`text-md font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
                         {t('challenges.modal.today')}
@@ -406,7 +411,11 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                 {previousDaysData.map((dayData, index) => (
                   <View key={index} className="flex-row justify-between items-center mb-3">
                     <View className="flex-row items-center">
-                      <GlassIcon width={24} height={24} color={isDark ? "#64748b" : "#94a3b8"} />
+                      {challenge.iconPreview ? (
+                        <challenge.iconPreview width={20} height={20} color={isDark ? "#64748b" : "#3B82F6"} />
+                      ) : (
+                        <GlassIcon width={24} height={24} color={isDark ? "#64748b" : "#3B82F6"} />
+                      )}
                       <View className="ml-2">
                         <Text className={`text-md font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
                           {dayData.date}
@@ -558,7 +567,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
         )}
         </ScrollView>
         {/* Action Buttons Container */}
-        <View className="my-6 flex-row justify-center gap-4">
+        <View className="mt-6 flex-row justify-center gap-2">
         {/* Close Button */}
         <Pressable
           className={`w-15 h-15 rounded-2xl justify-center items-center ${
@@ -569,7 +578,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           accessibilityLabel={t("common.close", "Close")}
         >
           <Text
-            className={`text-2xl rounded-2xl px-4 py-2 font-bold ${
+            className={`text-2xl rounded-2xl px-5 py-2 font-bold ${
               isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
             }`}
           >
@@ -612,7 +621,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             {(isInProgress || isActive || isCompleted) ? (
              ""
             ) : (
-              <LockLight width={16} height={14} color="#ffffff" opacity={0.5} />
+                 <CoinIcon width={20} height={20} className="ml-1" />
             )}
        </Pressable>
     

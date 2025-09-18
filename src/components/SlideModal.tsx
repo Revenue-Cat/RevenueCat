@@ -143,7 +143,7 @@ const SlideModal: React.FC<SlideModalProps> = ({
                     accessibilityRole="button"
                     accessibilityLabel="Confirm"
                   >
-                    <Text className="text-2xl font-bold text-white px-4 py-2">
+                    <Text className="text-2xl font-bold text-white px-5 py-4">
                       {confirmText}
                     </Text>
                   </Pressable>
@@ -158,7 +158,7 @@ const SlideModal: React.FC<SlideModalProps> = ({
                     accessibilityLabel="Close"
                   >
                     <Text
-                      className={`text-2xl rounded-2xl px-4 py-2 font-bold ${
+                      className={`text-2xl rounded-2xl px-5 py-2 font-bold ${
                         isDark
                           ? "text-slate-100 bg-slate-700"
                           : "text-indigo-900 bg-indigo-50"

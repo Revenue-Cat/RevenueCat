@@ -637,6 +637,7 @@ const Home: React.FC<HomeProps> = ({
                 borderRadius: 8, // Match the button's border radius
                 paddingHorizontal: 0, // Match container padding
                 paddingTop: 16, // Match container padding
+                paddingBottom: 8,
               }}
             >
               <CTAButton
@@ -659,6 +660,7 @@ const Home: React.FC<HomeProps> = ({
                 right: 0,
                 zIndex: 200,
                 opacity: shopButtonOpacity,
+          
                 transform: [{ translateY: shopButtonTranslateY }],
               }}
               pointerEvents={currentView === "shop" ? "auto" : "none"}
@@ -671,6 +673,7 @@ const Home: React.FC<HomeProps> = ({
                   borderRadius: 8, // Match the button's border radius
                   paddingHorizontal: 0, // Match container padding
                   paddingTop: 16, // Match container padding
+                  paddingBottom: 8,
                 }}
               >
                 <CTAButton

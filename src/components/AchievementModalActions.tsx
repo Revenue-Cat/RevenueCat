@@ -41,7 +41,7 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
   };
 
   return (
-    <View className="my-6 flex-row justify-center gap-4">
+    <View className="mt-6 flex-row justify-center gap-4">
       <Pressable
         className={`w-15 h-15 rounded-2xl justify-center items-center ${
           isDark ? "bg-slate-700" : "bg-indigo-50"
@@ -51,7 +51,7 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
         accessibilityLabel={t("common.close", "Close")}
       >
         <Text
-          className={`text-2xl rounded-2xl px-4 py-2 font-bold ${
+          className={`text-2xl rounded-2xl px-5 py-3 font-bold ${
             isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
           }`}
         >

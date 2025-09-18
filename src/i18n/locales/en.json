@@ -784,7 +784,7 @@
   },
   "shop": {
     "balance": "Balance {{coins}}",
-    "buyFor": "Buy for {{coins}} coins",
+    "buyFor": "Buy for {{coins}}",
     "close": "Close",
     "description": "A wonderful companion for your journey to quit smoking.",
     "owned": "Owned",
