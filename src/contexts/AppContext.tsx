@@ -626,7 +626,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log('AppContext: Notification settings saved with app state');
         
         // Also reschedule notifications with current app state
-        await scheduleUserNotifications();
+        // await scheduleUserNotifications();
         console.log('AppContext: Notifications rescheduled with app state');
       } catch (notificationError) {
         console.error('AppContext: Error saving notification settings:', notificationError);
