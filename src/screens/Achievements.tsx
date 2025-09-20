@@ -283,7 +283,7 @@ const Achievements: React.FC<AchievementsProps> = ({
   return (
     <View
       className={`flex-1`}
-      style={{ backgroundColor: "transparent", paddingTop: 20 }}
+      style={{ backgroundColor: "transparent", paddingTop: 40 }}
     >
       {/* Background Parallax Layers */}
       <Animated.View

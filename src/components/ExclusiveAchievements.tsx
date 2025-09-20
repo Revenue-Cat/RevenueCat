@@ -54,7 +54,6 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
     return ["#1F1943", "#4E3EA9"];
   };
 
-  const gradientColors = parseGradient(selectedBackground.backgroundColor);
 
   // Helper function to map challenge IDs to translation keys
   const getChallengeTranslationKey = (challengeId: string): string => {
@@ -104,20 +103,31 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
       };
     });
 
-    // Sort challenges: completed first, then in-progress, then locked
+    // Sort challenges: completed (or previously completed) first, then in-progress, then active, then rest (locked)
     return challenges.sort((a, b) => {
       const aCompleted = a.timeBasedProgress >= a.totalDurations;
       const bCompleted = b.timeBasedProgress >= b.totalDurations;
+      const aHasCompletions = a.previousCompletions.length > 0;
+      const bHasCompletions = b.previousCompletions.length > 0;
       const aInProgress = a.status === 'inprogress';
       const bInProgress = b.status === 'inprogress';
+      const aActive = a.status === 'active';
+      const bActive = b.status === 'active';
 
-      // Completed challenges first
-      if (aCompleted && !bCompleted) return -1;
-      if (!aCompleted && bCompleted) return 1;
+      // Completed challenges (current or previous) first
+      const aIsCompletedOrHasCompletions = aCompleted || aHasCompletions;
+      const bIsCompletedOrHasCompletions = bCompleted || bHasCompletions;
+      
+      if (aIsCompletedOrHasCompletions && !bIsCompletedOrHasCompletions) return -1;
+      if (!aIsCompletedOrHasCompletions && bIsCompletedOrHasCompletions) return 1;
 
       // In-progress challenges second
-      if (aInProgress && !bInProgress && !bCompleted) return -1;
-      if (!aInProgress && bInProgress && !aCompleted) return 1;
+      if (aInProgress && !bInProgress && !bIsCompletedOrHasCompletions) return -1;
+      if (!aInProgress && bInProgress && !aIsCompletedOrHasCompletions) return 1;
+
+      // Active challenges third
+      if (aActive && !bActive && !bIsCompletedOrHasCompletions && !bInProgress) return -1;
+      if (!aActive && bActive && !aIsCompletedOrHasCompletions && !aInProgress) return 1;
 
       // Keep original order for same status
       return 0;
@@ -148,7 +158,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
         className="flex-1"
         contentContainerStyle={{
           paddingBottom: 20,
-          paddingTop: 30,
+          paddingTop: 50,
         }}
         bounces={false}
         overScrollMode="never"
@@ -174,7 +184,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                 >
                   {/* Progress Ring */}
                   <ProgressRing
-                    progress={isCompleted ? 100 : challenge.timeBasedProgress}
+                    progress={(isCompleted || completionCount > 0) ? 100 : challenge.timeBasedProgress}
                     size={80}
                     strokeWidth={3}
                     color={
@@ -186,7 +196,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                     />
                   {/* Achievement Icon */}
                   <View className="absolute w-[70px] h-[70px] rounded-full justify-center items-center">
-                    {challenge.achievementIcon && !isLocked && !isActive && isCompleted ? (
+                    {challenge.achievementIcon && !isLocked && !isActive && (isCompleted || completionCount > 0) ? (
                       <Image
                         source={challenge.achievementIcon}
                         style={{ width: 80, height: 80 }}
@@ -231,7 +241,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                   {/* Challenge Title */}
                   <Text
                     className={`text-sm mt-2 text-center font-medium ${
-                      isCompleted
+                      (isCompleted || completionCount > 0)
                         ? isDark
                           ? "text-slate-100"
                           : "text-white"

@@ -140,7 +140,7 @@ const Home: React.FC<HomeProps> = ({
     setIsScenesSelected(isScenes);
   }, []);
 
-  const gradientColors = parseGradient(selectedBackground.backgroundColor);
+  const gradientColors = parseGradient(selectedBackground?.backgroundColor || '');
 
   // Calculate total cost of all available buddies for current gender
   const totalBuddyCost = useMemo(() => {
@@ -335,7 +335,7 @@ const Home: React.FC<HomeProps> = ({
                 onPress={handleNavigateToProfile}
               >
                 <Pressable
-                  className="w-8 h-8 rounded-full bg-black/50 justify-center items-center overflow-hidden"
+                  className="w-9 h-9 rounded-full bg-black/50 justify-center items-center overflow-hidden border border-amber-400"
                   onPress={handleNavigateToProfile}
                   style={{ position: "relative", transform: [{ translateY: -8 }] }}
                 >
@@ -346,9 +346,9 @@ const Home: React.FC<HomeProps> = ({
                       loop={false}
                       progress={0.4}
                       style={{
-                        width: 56,
-                        height: 56,
-                        transform: [{ translateY: 10 }, { scale: 0.8 }],
+                        width: 60,
+                        height: 60,
+                        transform: [{ translateY: 12 }, { scale: 0.9 }],
                       }}
                       resizeMode="contain"
                     />
@@ -363,13 +363,12 @@ const Home: React.FC<HomeProps> = ({
 
               {/* User Coins - Fixed */}
               <Pressable
-                className="flex-row items-center justify-center bg-black/50 w-[70px] h-8 rounded-3xl py-1 px-2 gap-1.5"
                 onPress={handleCoinPurchase}
               >
-                <Text className="text-base font-semibold text-amber-500 leading-6">
-                  {userCoins}
-                </Text>
-                <CoinIcon width={16} height={16} />
+                  <View className="bg-black/50 flex-row items-center border border-orange-500 pl-2 pr-1.5 py-0 rounded-full self-start mb-1 gap-0.5 text-center">
+                    <Text className="text-lg font-bold text-amber-400">{userCoins}</Text>
+                    <CoinIcon width={16} height={16} color="#FF6B35" />
+                </View>
               </Pressable>
             </View>
           </View>
@@ -384,7 +383,7 @@ const Home: React.FC<HomeProps> = ({
           </Animated.View>
 
           {/* Fixed Navigation Dots - positioned after HomeHeader, before buddy */}
-          <View className="absolute top-[130px] left-0 right-0 z-[20]" pointerEvents="box-none">
+          <View className="absolute top-[145px] left-0 right-0 z-[20]" pointerEvents="box-none">
             <View className="flex-row justify-center">
               <View className="flex-row bg-black/30 rounded-full px-2 py-1 gap-1">
                 <Pressable
@@ -411,7 +410,7 @@ const Home: React.FC<HomeProps> = ({
 
           {/* Buddy Lottie on top of background */}
           <Animated.View
-            className="absolute top-5 left-0 right-0 items-center justify-end"
+            className="absolute top-10 left-0 right-0 items-center justify-end"
             style={{ height: 360, zIndex: 30 }}
             pointerEvents="none"
           >
@@ -435,7 +434,7 @@ const Home: React.FC<HomeProps> = ({
           <Animated.View
             style={{
               position: "absolute",
-              top: 0,
+              top: 5,
               left: 0,
               right: 0,
               zIndex: 20,
@@ -483,7 +482,7 @@ const Home: React.FC<HomeProps> = ({
           <Animated.View
             style={{
               position: "absolute",
-              top: 0,
+              top: 20,
               left: 0,
               right: 0,
               zIndex: 50,
@@ -562,7 +561,7 @@ const Home: React.FC<HomeProps> = ({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ flexGrow: 1 }}
               scrollEnabled={currentView === "home"}
-              style={{ width, marginTop: -55, }}
+              style={{ width, marginTop: -40, }}
             >
               <View style={{ flex: 1 }}>
                 <AchievementSection

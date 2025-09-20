@@ -52,22 +52,22 @@ const HomeStats: React.FC = () => {
     <View className="flex-1">
       <View className="flex-row gap-1 mb-1">
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-          <Text className="text-2xl font-bold text-white">{savings.itemsAvoided}</Text>
+          <Text className="text-4xl font-semibold text-white">{savings.itemsAvoided}</Text>
           <Text className="text-s font-medium text-white opacity-50">{getAvoidedLabel(smokeType || 'cigarettes')}</Text>
         </View>
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-          <Text className="text-2xl font-bold text-white">{packPriceCurrency || '$'}{Math.round(savings.moneySaved)}</Text>
+          <Text className="text-4xl font-semibold text-white">{packPriceCurrency || '$'}{Math.round(savings.moneySaved)}</Text>
           <Text className="text-s font-medium text-white opacity-50">{t('home.stats.moneySaved')}</Text>
         </View>
       </View>
       <View className="flex-row gap-1 mb-6">
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
-          <Text className="text-2xl font-bold text-white">{formatTime()}</Text>
+          <Text className="text-4xl font-semibold text-white">{formatTime()}</Text>
           <Text className="text-s font-medium text-white opacity-50">{t('home.stats.timeSaved')}</Text>
         </View>
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
           <View className="flex-row items-baseline">
-            <Text className="text-2xl font-semibold text-red-400">{slipsUsed}</Text>
+            <Text className="text-4xl font-semibold text-red-400">{slipsUsed}</Text>
             <Text className="text-sm font-bold text-white ml-1 opacity-50">/ {allowedSlips}</Text>
           </View>
           <Text className="text-s font-medium text-white opacity-50">{t('home.stats.slips')}</Text>

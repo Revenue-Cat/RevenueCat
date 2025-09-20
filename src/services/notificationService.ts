@@ -340,6 +340,9 @@ class NotificationService {
 
       // Clear existing scheduled notifications for this user
       await this.safeClearScheduledNotifications(userSettings.userId);
+      
+      // Also clear any old notifications that are no longer relevant
+      await this.clearOldNotifications(userSettings.userId, daysSinceStart);
 
 
       // Schedule notifications for the next 365 days or until we reach the end of our data
@@ -372,8 +375,8 @@ class NotificationService {
           
           scheduledTime = this.calculateScheduledTime(startDate, day, selectedNotification.timeOfDay, userSettings);
           
-          // Only schedule future notifications
-          if (scheduledTime > currentDate) {
+          // Only schedule future notifications AND ensure it's for the correct day
+          if (scheduledTime > currentDate && day >= daysSinceStart) {
             const message = this.prepareMessage(selectedNotification, userSettings);
             
             const scheduledNotification: ScheduledNotification = {
@@ -397,6 +400,7 @@ class NotificationService {
             console.log(`NotificationService: Scheduled SINGLE notification for day ${day} (${selectedNotification.timeOfDay}) at ${scheduledTime.toISOString()}`);
             console.log(`NotificationService: User timezone: ${userSettings.timezone}`);
             console.log(`NotificationService: Local time: ${scheduledTime.toLocaleString()} (${userSettings.timezone})`);
+            console.log(`NotificationService: Target time: ${selectedNotification.timeOfDay === 'morning' ? '8:00 AM' : selectedNotification.timeOfDay === 'evening' ? '8:00 PM' : '8:00 AM'} in user's timezone`);
           }
         }
       }
@@ -441,39 +445,25 @@ class NotificationService {
 
   /**
    * Convert a date to the user's timezone
+   * This ensures notifications are sent at the correct local time for each user
    */
   private convertToUserTimezone(date: Date, userTimezone: string): Date {
     try {
-      // Create a date string in the user's timezone
-      const dateString = date.toLocaleString("en-US", { 
-        timeZone: userTimezone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      });
+      // Get the current time in the user's timezone
+      const now = new Date();
+      const userTime = new Date(now.toLocaleString("en-US", { timeZone: userTimezone }));
+      const serverTime = new Date(now.toLocaleString("en-US", { timeZone: "UTC" }));
       
-      // Parse the date string to create a new Date object
-      const [datePart, timePart] = dateString.split(', ');
-      const [month, day, year] = datePart.split('/');
-      const [hours, minutes, seconds] = timePart.split(':');
+      // Calculate the timezone offset
+      const timezoneOffset = userTime.getTime() - serverTime.getTime();
       
-      // Create a new Date object with the user's timezone time
-      const userDate = new Date(
-        parseInt(year), 
-        parseInt(month) - 1, 
-        parseInt(day), 
-        parseInt(hours), 
-        parseInt(minutes), 
-        parseInt(seconds)
-      );
+      // Apply the offset to the target date
+      const adjustedDate = new Date(date.getTime() + timezoneOffset);
       
-      console.log(`NotificationService: Converted ${date.toISOString()} to user timezone ${userTimezone}: ${userDate.toISOString()}`);
+      console.log(`NotificationService: Converted ${date.toISOString()} to user timezone ${userTimezone}: ${adjustedDate.toISOString()}`);
+      console.log(`NotificationService: User timezone offset: ${timezoneOffset / (1000 * 60 * 60)} hours`);
       
-      return userDate;
+      return adjustedDate;
     } catch (error) {
       console.error('NotificationService: Error converting to user timezone:', error);
       return date;
@@ -482,6 +472,7 @@ class NotificationService {
 
   /**
    * Get the time (hours, minutes) for a specific time of day
+   * Always use 8 AM for morning and 8 PM for evening to ensure consistency
    */
   private getTimeForDay(
     timeOfDay: 'morning' | 'evening' | 'day',
@@ -489,17 +480,16 @@ class NotificationService {
   ): [number, number] {
     switch (timeOfDay) {
       case 'morning':
-        const [morningHours, morningMinutes] = userSettings.morningTime.split(':').map(Number);
-        return [morningHours, morningMinutes];
+        // Always use 8:00 AM for morning notifications
+        return [8, 0];
       case 'evening':
-        const [eveningHours, eveningMinutes] = userSettings.eveningTime.split(':').map(Number);
-        return [eveningHours, eveningMinutes];
+        // Always use 8:00 PM (20:00) for evening notifications
+        return [20, 0];
       case 'day':
-        // For 'day' notifications, use morning time as default
-        const [dayHours, dayMinutes] = userSettings.morningTime.split(':').map(Number);
-        return [dayHours, dayMinutes];
+        // For 'day' notifications, use 8:00 AM as default
+        return [8, 0];
       default:
-        return [9, 0]; // Default to 9:00 AM
+        return [8, 0]; // Default to 8:00 AM
     }
   }
 
@@ -615,6 +605,24 @@ class NotificationService {
         console.log(`NotificationService: Processing notification ${data.id} for day ${data.day}`);
 
         try {
+          // Validate that this notification is for the correct user and day
+          const userSettings = await this.getUserSettings(data.userId);
+          if (!userSettings) {
+            console.log(`NotificationService: User settings not found for ${data.userId}, skipping notification`);
+            continue;
+          }
+
+          // Calculate the user's current day based on their start date
+          const userStartDate = userSettings.startDate;
+          const currentDate = new Date();
+          const daysSinceStart = Math.floor((currentDate.getTime() - userStartDate.getTime()) / (1000 * 60 * 60 * 24));
+          
+          // Only send notification if it matches the user's current day
+          if (data.day !== daysSinceStart) {
+            console.log(`NotificationService: Skipping notification for day ${data.day} - user is on day ${daysSinceStart}`);
+            continue;
+          }
+
           // Create notification object with converted date
           const notification: ScheduledNotification = {
             id: data.id,
@@ -873,6 +881,43 @@ class NotificationService {
         success: false,
         error: `Failed to save scheduled notification: ${(error as Error).message}`
       };
+    }
+  }
+
+  /**
+   * Clear old notifications that are no longer relevant for the user's current day
+   */
+  private async clearOldNotifications(userId: string, currentDay: number): Promise<void> {
+    try {
+      console.log(`NotificationService: Clearing old notifications for user ${userId}, current day: ${currentDay}`);
+      
+      const q = query(
+        collection(db, 'scheduledNotifications'),
+        where('userId', '==', userId),
+        where('isSent', '==', false)
+      );
+
+      const querySnapshot = await getDocs(q);
+      const notificationsToDelete = [];
+
+      for (const docSnap of querySnapshot.docs) {
+        const data = docSnap.data();
+        // Delete notifications for days that have already passed
+        if (data.day < currentDay) {
+          notificationsToDelete.push(docSnap.ref);
+        }
+      }
+
+      // Delete old notifications
+      for (const docRef of notificationsToDelete) {
+        await deleteDoc(docRef);
+      }
+
+      if (notificationsToDelete.length > 0) {
+        console.log(`NotificationService: Cleared ${notificationsToDelete.length} old notifications for user ${userId}`);
+      }
+    } catch (error) {
+      console.error('NotificationService: Error clearing old notifications:', error);
     }
   }
 
