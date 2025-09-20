@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -200,7 +200,7 @@ const BuddySelection: React.FC<Props> = ({
     }
   }, [selectedBuddyId, buddies, sexKey, activeIndex]);
 
-  // Random backgrounds for cards
+  // Random backgrounds for cards - memoized with stable random seed
   const BGs = useMemo(
     () => [
       require("../assets/backgrounds/BG1.png"),
@@ -212,17 +212,20 @@ const BuddySelection: React.FC<Props> = ({
     ],
     []
   );
-  const buddyBGs = useMemo(
-    () => buddies.map(() => BGs[Math.floor(Math.random() * BGs.length)]),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [buddies.length, BGs]
-  );
+  
+  const buddyBGs = useMemo(() => {
+    // Use buddy ID as seed for consistent backgrounds
+    return buddies.map((buddy, index) => {
+      const seed = buddy.id.charCodeAt(0) + index;
+      return BGs[seed % BGs.length];
+    });
+  }, [buddies, BGs]);
 
-  const isLocked = (idx: number) => {
+  const isLocked = useCallback((idx: number) => {
     const buddyKey = buddies[idx].id;
     const genderSpecificId = getGenderSpecificId(buddyKey, sexKey);
     return !ownedBuddies?.includes(genderSpecificId);
-  };
+  }, [buddies, sexKey, ownedBuddies]);
   const centerLocked = isLocked(activeIndex);
   const canProceed = !centerLocked;
 
@@ -308,7 +311,8 @@ const BuddySelection: React.FC<Props> = ({
           isDark={isDark}
           isLocked={(i) => isLocked(i)}
           backgrounds={buddyBGs}
-          onChange={(i) => {
+          selectedBuddyId={selectedBuddyId}
+          onChange={useCallback((i: number) => {
             // In Profile edit mode, do not allow selecting locked ones
             if (fromProfile && isLocked(i)) return;
             setActiveIndex(i);
@@ -324,7 +328,7 @@ const BuddySelection: React.FC<Props> = ({
               setBuddyNameLocal(defaultName);
               setBuddyNameCtx(defaultName);
             }
-          }}
+          }, [fromProfile, isLocked, buddies, sexKey, setSelectedBuddyId, nameEdited, savedBuddyName, setBuddyNameLocal, setBuddyNameCtx])}
         />
       </View>
 

@@ -1,5 +1,5 @@
 // src/components/BuddyCarousel.tsx
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
 import { buddyAssets, BuddyKey, SexKey } from "../assets/buddies";
 import LockLight from "../assets/icons/lock.svg";
+import { useApp } from "../contexts/AppContext";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 const IMG_W = 132;
@@ -41,6 +42,7 @@ type Props = {
   isLocked?: (baseIndex: number) => boolean;
   backgrounds?: any[];
   onEditName?: () => void;
+  selectedBuddyId: string;
 };
 
 /** Plays a Lottie after a small random delay when active; pauses/resets when inactive */
@@ -50,7 +52,7 @@ const BuddyAnim: React.FC<{
   width: number;
   height: number;
   delayMs: number;
-}> = ({ source, active, width, height, delayMs }) => {
+}> = React.memo(({ source, active, width, height, delayMs }) => {
   const ref = useRef<LottieView>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -81,7 +83,7 @@ const BuddyAnim: React.FC<{
       enableMergePathsAndroidForKitKatAndAbove
     />
   );
-};
+});
 
 export default function BuddyCarousel({
   data,
@@ -90,28 +92,36 @@ export default function BuddyCarousel({
   onChange,
   isLocked,
   backgrounds,
+  selectedBuddyId
 }: Props) {
   const listRef = useRef<FlatList>(null);
-
+  
+  // Memoize the initial index calculation to prevent re-renders
+  const initialIdx = useMemo(() => {
+    if (!selectedBuddyId) return null;
+    return data.findIndex((buddy) => buddy.id === selectedBuddyId.split('-')[0]);
+  }, [selectedBuddyId, data]);
+  
   const mid = Math.floor(LOOP_MULTIPLIER / 2);
-  const startIndex = mid * data.length;
+  const startIndex = (initialIdx !== null && initialIdx >= 0) ? initialIdx + mid * data.length : mid * data.length;
   const initialOffset = startIndex * CELL_W;
-
+  
   const scrollX = useRef(new Animated.Value(initialOffset)).current;
 
 
 
   const [isSettling, setIsSettling] = useState(false);
   const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hideBadgeNow = () => {
+  const hideBadgeNow = useCallback(() => {
     setIsSettling(true);
     if (settleTimer.current) clearTimeout(settleTimer.current);
-  };
-  const showBadgeImmediately = () => {
+  }, []);
+  
+  const showBadgeImmediately = useCallback(() => {
     if (settleTimer.current) clearTimeout(settleTimer.current);
     // No delay - show badge instantly
     setIsSettling(false);
-  };
+  }, []);
   useEffect(() => {
     return () => {
       if (settleTimer.current) clearTimeout(settleTimer.current);
@@ -127,7 +137,7 @@ export default function BuddyCarousel({
     [data]
   );
 
-  const [centerExtIndex, setCenterExtIndex] = useState(startIndex);
+  const [centerExtIndex, setCenterExtIndex] = useState(() => startIndex);
 
   useEffect(() => {
     const base = ((centerExtIndex % data.length) + data.length) % data.length;
@@ -178,10 +188,10 @@ export default function BuddyCarousel({
     }
   };
 
-  const scrollTo = (i: number) => {
+  const scrollTo = useCallback((i: number) => {
     hideBadgeNow();
     listRef.current?.scrollToIndex({ index: i, animated: true });
-  };
+  }, []);
 
   const LockIcon = LockLight;
 
@@ -191,7 +201,7 @@ export default function BuddyCarousel({
     [data.length]
   );
 
-  const renderItem = ({ index }: { item: Buddy; index: number }) => {
+  const renderItem = useCallback(({ index }: { item: Buddy; index: number }) => {
     const baseIdx = ((index % data.length) + data.length) % data.length;
     const animSrc = buddyAssets[data[baseIdx].id][sex];
     const locked = isLocked ? isLocked(baseIdx) : false;
@@ -218,12 +228,12 @@ export default function BuddyCarousel({
       extrapolate: "clamp",
     });
 
-    // Show badge immediately on the center item (settling handled by timer)
+    // Show badge only on center item when not settling
     const showBadge = isCenter && !isSettling && centerExtIndex % data.length === baseIdx;
 
     return (
       <View style={{ width: CELL_W, overflow: "visible" }} className="items-center">
-        <Pressable onPress={() => scrollTo(index)}>
+        <View>
           <View className="relative" style={{ width: ITEM_W, height: ITEM_H, overflow: "visible" as any }}>
             <Animated.View
               className="rounded-3xl"
@@ -277,21 +287,26 @@ export default function BuddyCarousel({
               </View>
             )}
           </View>
-        </Pressable>
+        </View>
       </View>
     );
-  };
+  }, [data, sex, isLocked, backgrounds, centerExtIndex, isSettling, scrollX]);
+
+  const keyExtractor = useCallback((_: Buddy, i: number) => `buddy-${i}`, []);
+  
+  const ListHeaderComponent = useMemo(() => <View style={{ width: SIDE_SPACING }} />, []);
+  const ListFooterComponent = useMemo(() => <View style={{ width: SIDE_SPACING }} />, []);
 
   return (
     <Animated.FlatList
       ref={listRef}
       data={extended}
-      keyExtractor={(_, i) => `buddy-${i}`}
+      keyExtractor={keyExtractor}
       renderItem={renderItem}
       horizontal
       showsHorizontalScrollIndicator={false}
-      ListHeaderComponent={<View style={{ width: SIDE_SPACING }} />}
-      ListFooterComponent={<View style={{ width: SIDE_SPACING }} />}
+      ListHeaderComponent={ListHeaderComponent}
+      ListFooterComponent={ListFooterComponent}
       snapToInterval={CELL_W}
       snapToAlignment="start"
       decelerationRate="fast"
@@ -304,13 +319,13 @@ export default function BuddyCarousel({
       onMomentumScrollBegin={handleMomentumBegin}
       onMomentumScrollEnd={handleMomentumEnd}
       onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true })}
-      scrollEventThrottle={16}
+      scrollEventThrottle={32}
       style={{ marginBottom: 16, overflow: "visible" }}
       removeClippedSubviews={true}
-      maxToRenderPerBatch={5}
-      updateCellsBatchingPeriod={50}
-      windowSize={3}
-      initialNumToRender={10}
+      maxToRenderPerBatch={3}
+      updateCellsBatchingPeriod={100}
+      windowSize={5}
+      initialNumToRender={5}
     />
   );
 }
