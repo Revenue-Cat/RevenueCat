@@ -98,8 +98,22 @@ const AppContent: React.FC = () => {
       });
     }
 
-    // Initialize OneSignal
-    oneSignalService.initialize();
+    // Initialize OneSignal and start background notification processing
+    const initializeNotifications = async () => {
+      try {
+        await oneSignalService.initialize();
+        
+        // Import and initialize notification service to start background processing
+        const notificationService = require('./src/services/notificationService').default;
+        await notificationService.initialize();
+        
+        console.log('App: ✅ Background notification processing started');
+      } catch (error) {
+        console.error('App: ❌ Failed to initialize notification services:', error);
+      }
+    };
+    
+    initializeNotifications();
   }, []);
 
   useEffect(() => {

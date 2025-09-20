@@ -22,11 +22,11 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
     selectedBuddyId,
     initializeNotifications,
     scheduleUserNotifications,
-    sendTestNotification,
+    // sendTestNotification,
     getNotificationStats,
     areNotificationsEnabled,
     updateNotificationSettings,
-    forceProcessPendingNotifications,
+    // forceProcessPendingNotifications,
     // Notification preferences
     notificationsEnabled,
     setNotificationsEnabled,
@@ -134,69 +134,69 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
     }
   };
 
-  const handleForceProcess = async () => {
-    setLoading(true);
-    try {
-      const result = await forceProcessPendingNotifications();
-      Alert.alert(
-        'Force Processing Complete',
-        `Processed: ${result.processed} notifications\nErrors: ${result.errors}`
-      );
-      await loadStats();
-    } catch (error) {
-      Alert.alert('Error', 'Failed to force process notifications');
-      console.error('Error force processing notifications:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleForceProcess = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const result = await forceProcessPendingNotifications();
+  //     Alert.alert(
+  //       'Force Processing Complete',
+  //       `Processed: ${result.processed} notifications\nErrors: ${result.errors}`
+  //     );
+  //     await loadStats();
+  //   } catch (error) {
+  //     Alert.alert('Error', 'Failed to force process notifications');
+  //     console.error('Error force processing notifications:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handleTestNotificationFlow = async () => {
-    setLoading(true);
-    try {
-      // Create a test notification in Firebase that's due immediately
-      const testNotification = {
-        id: `test_${Date.now()}`,
-        userId: await getOrCreatePersistentUserId(),
-        notificationId: 'test_flow',
-        day: 0,
-        timeOfDay: 'day' as const,
-        scheduledTime: new Date(Date.now() - 1000), // 1 second ago (already due)
-        message: '🔔 Test Notification Flow - If you see this, the system is working!',
-        category: 'test' as const,
-        isSent: false,
-        createdAt: new Date()
-      };
+  // const handleTestNotificationFlow = async () => {
+  //   setLoading(true);
+  //   try {
+  //     // Create a test notification in Firebase that's due immediately
+  //     const testNotification = {
+  //       id: `test_${Date.now()}`,
+  //       userId: await getOrCreatePersistentUserId(),
+  //       notificationId: 'test_flow',
+  //       day: 0,
+  //       timeOfDay: 'day' as const,
+  //       scheduledTime: new Date(Date.now() - 1000), // 1 second ago (already due)
+  //       message: '🔔 Test Notification Flow - If you see this, the system is working!',
+  //       category: 'test' as const,
+  //       isSent: false,
+  //       createdAt: new Date()
+  //     };
 
-      console.log('TestPanel: Creating test notification for flow testing...');
+  //     console.log('TestPanel: Creating test notification for flow testing...');
 
-      // Save test notification to Firebase
-      const saveResult = await safeSaveScheduledNotification(testNotification);
-      if (!saveResult.success) {
-        throw new Error(`Failed to save test notification: ${saveResult.error}`);
-      }
+  //     // Save test notification to Firebase
+  //     const saveResult = await safeSaveScheduledNotification(testNotification);
+  //     if (!saveResult.success) {
+  //       throw new Error(`Failed to save test notification: ${saveResult.error}`);
+  //     }
 
-      console.log('TestPanel: Test notification saved, now force processing...');
+  //     console.log('TestPanel: Test notification saved, now force processing...');
 
-      // Force process to trigger the notification
-      const processResult = await forceProcessPendingNotifications();
+  //     // Force process to trigger the notification
+  //     const processResult = await forceProcessPendingNotifications();
 
-      Alert.alert(
-        'Test Notification Flow',
-        `✅ Test notification created and processed!\n\n` +
-        `📱 Check your device for the test notification\n` +
-        `📊 Processing Result: ${processResult.processed} processed, ${processResult.errors} errors\n\n` +
-        `🔍 Check console logs for detailed flow information`
-      );
+  //     Alert.alert(
+  //       'Test Notification Flow',
+  //       `✅ Test notification created and processed!\n\n` +
+  //       `📱 Check your device for the test notification\n` +
+  //       `📊 Processing Result: ${processResult.processed} processed, ${processResult.errors} errors\n\n` +
+  //       `🔍 Check console logs for detailed flow information`
+  //     );
 
-      await loadStats();
-    } catch (error) {
-      Alert.alert('Test Failed', `Error testing notification flow: ${error.message}`);
-      console.error('Error testing notification flow:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     await loadStats();
+  //   } catch (error) {
+  //     Alert.alert('Test Failed', `Error testing notification flow: ${error.message}`);
+  //     console.error('Error testing notification flow:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const formatDate = (date: Date) => {
     return date.toLocaleString();

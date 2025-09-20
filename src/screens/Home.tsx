@@ -140,7 +140,7 @@ const Home: React.FC<HomeProps> = ({
     setIsScenesSelected(isScenes);
   }, []);
 
-  const gradientColors = parseGradient(selectedBackground.backgroundColor);
+  const gradientColors = parseGradient(selectedBackground?.backgroundColor || '#4A90E2');
 
   // Calculate total cost of all available buddies for current gender
   const totalBuddyCost = useMemo(() => {
@@ -157,7 +157,7 @@ const Home: React.FC<HomeProps> = ({
     const availableScenes = translatedScenes.filter(scene => 
       !ownedBackgrounds?.includes(scene.id)
     );
-    return availableScenes.reduce((total, scene) => total + scene.coin, 0);
+    return availableScenes.reduce((total, scene) => total + (scene.coin || 0), 0);
   }, [ownedBackgrounds, t]);
 
   // Get the appropriate total cost and label based on current shop tab
@@ -191,9 +191,9 @@ const Home: React.FC<HomeProps> = ({
             id: scene.id,
             emoji: "🎨", // Default emoji for scenes
             name: scene.name,
-            price: scene.coin,
-            owned: scene.owned,
-            coin: scene.coin, // Add coin field for compatibility
+            price: scene.coin || 0,
+            owned: scene.owned || false,
+            coin: scene.coin || 0, // Add coin field for compatibility
           };
           await purchaseItem(shopItem, 'backgrounds');
         } catch (error) {
@@ -374,6 +374,116 @@ const Home: React.FC<HomeProps> = ({
             </View>
           </View>
 
+          {/* TEST BUTTONS - Temporary for notification testing */}
+          <View className="absolute top-32 left-4 right-4 z-[70]" pointerEvents="box-none">
+            {/* Basic Connectivity Test Button */}
+            {/* <Pressable
+              className="bg-gray-500 rounded-lg py-3 px-4 mb-2"
+              onPress={async () => {
+                try {
+                  console.log('🌐 Testing basic OneSignal connectivity...');
+                  await testBasicOneSignalConnectivity();
+                  console.log('✅ Basic connectivity test complete');
+                  alert('Basic OneSignal connectivity test complete! Check console for details.');
+                } catch (error) {
+                  console.error('❌ Basic connectivity test failed:', error);
+                  alert('Basic connectivity test failed: ' + (error as Error).message);
+                }
+              }}
+            >
+              <Text className="text-white text-center font-bold">
+                🌐 Test Connectivity
+              </Text>
+            </Pressable> */}
+
+            {/* User Registration Test Button */}
+            {/* <Pressable
+              className="bg-indigo-500 rounded-lg py-3 px-4 mb-2"
+              onPress={async () => {
+                try {
+                  console.log('👤 Testing user registration with OneSignal...');
+                  await testUserRegistration();
+                  console.log('✅ User registration test complete');
+                  alert('User registration test complete! Check console for details.');
+                } catch (error) {
+                  console.error('❌ User registration test failed:', error);
+                  alert('User registration test failed: ' + (error as Error).message);
+                }
+              }}
+            >
+              <Text className="text-white text-center font-bold">
+                👤 Test User Registration
+              </Text>
+            </Pressable> */}
+
+            {/* Test Configuration Button */}
+            {/* <Pressable
+              className="bg-yellow-500 rounded-lg py-3 px-4 mb-2"
+              onPress={async () => {
+                try {
+                  console.log('🧪 Testing OneSignal configuration...');
+                  await testOneSignalConfiguration();
+                  console.log('✅ Configuration test complete');
+                  alert('OneSignal configuration test complete! Check console for details.');
+                } catch (error) {
+                  console.error('❌ Configuration test failed:', error);
+                  alert('Configuration test failed: ' + (error as Error).message);
+                }
+              }}
+            >
+              <Text className="text-white text-center font-bold">
+                🧪 Test Config
+              </Text>
+            </Pressable> */}
+
+            {/* Status Check Button */}
+            {/* <Pressable
+              className="bg-purple-500 rounded-lg py-3 px-4 mb-2"
+              onPress={async () => {
+                try {
+                  console.log('🔍 Checking notification status...');
+                  await checkNotificationStatus();
+                  console.log('✅ Status check complete');
+                  alert('Status check complete! Check console for details.');
+                } catch (error) {
+                  console.error('❌ Status check failed:', error);
+                  alert('Status check failed: ' + (error as Error).message);
+                }
+              }}
+            >
+              <Text className="text-white text-center font-bold">
+                🔍 Check Status
+              </Text>
+            </Pressable> */}
+
+            {/* Simple Push Notification Button */}
+            {/* <Pressable
+              className="bg-orange-500 rounded-lg py-3 px-4 mb-2"
+              onPress={async () => {
+                try {
+                  console.log('📱 Testing simple push notification...');
+                  await sendSimplePushNotification("📱 Simple Push Test - This should work!");
+                  console.log('✅ Simple push notification sent');
+                  alert('Simple push notification sent! You should see it RIGHT NOW!');
+                } catch (error) {
+                  console.error('❌ Simple push test failed:', error);
+                  alert('Simple push test failed: ' + (error as Error).message);
+                }
+              }}
+            >
+              <Text className="text-white text-center font-bold">
+                📱 Simple Push Test
+              </Text>
+            </Pressable> */}
+
+
+
+
+
+
+
+          </View>
+
           <Animated.View
             style={{
               height: backgroundHeight
@@ -540,7 +650,7 @@ const Home: React.FC<HomeProps> = ({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ flexGrow: 1 }}
               scrollEnabled={currentView === "achievements"}
-              style={{ width }}
+              style={{ width, paddingBottom: 100 }}
             >
               <View style={{ flex: 1 }}>
                 <HomeContent
@@ -562,14 +672,10 @@ const Home: React.FC<HomeProps> = ({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ flexGrow: 1 }}
               scrollEnabled={currentView === "home"}
-              style={{ width, marginTop: -55, }}
+              style={{ width }}
             >
               <View style={{ flex: 1 }}>
-                <AchievementSection
-                  isCollapsed={isAchievementsCollapsed}
-                  onToggle={toggleAchievements}
-                  onNavigateToProgressChallenges={handleNavigateToProgressChallenges}
-                />
+             
 
                 <View style={{ flex: 1 }}>
                   <HomeContent

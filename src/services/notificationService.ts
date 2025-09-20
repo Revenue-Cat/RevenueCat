@@ -8,7 +8,6 @@ import {
   query, 
   where, 
   getDocs,
-  orderBy,
   limit,
   Timestamp 
 } from 'firebase/firestore';
@@ -117,61 +116,79 @@ class NotificationService {
   /**
    * Force process all pending notifications (useful for testing and recovery)
    */
-  public async forceProcessPendingNotifications(): Promise<{
-    processed: number;
-    errors: number;
-  }> {
-    try {
-      console.log('NotificationService: Force processing all pending notifications');
+  // public async forceProcessPendingNotifications(): Promise<{
+  //   processed: number;
+  //   errors: number;
+  // }> {
+  //   try {
+  //     console.log('NotificationService: Force processing all pending notifications');
 
-      const currentTime = new Date();
-      const q = query(
-        collection(db, 'scheduledNotifications'),
-        where('isSent', '==', false),
-        orderBy('scheduledTime'),
-        limit(100) // Process up to 100 at a time
-      );
+  //     const currentTime = new Date();
+  //     // Remove orderBy to avoid composite index requirement
+  //     const q = query(
+  //       collection(db, 'scheduledNotifications'),
+  //       where('isSent', '==', false),
+  //       limit(100) // Process up to 100 at a time
+  //     );
 
-      const querySnapshot = await getDocs(q);
-      console.log(`NotificationService: Found ${querySnapshot.docs.length} pending notifications to force process`);
+  //     const querySnapshot = await getDocs(q);
+  //     console.log(`NotificationService: Found ${querySnapshot.docs.length} pending notifications to force process`);
 
-      let processed = 0;
-      let errors = 0;
+  //     let processed = 0;
+  //     let errors = 0;
 
-      for (const docSnap of querySnapshot.docs) {
-        try {
-          const notification = docSnap.data() as ScheduledNotification;
+  //     for (const docSnap of querySnapshot.docs) {
+  //       try {
+  //         const data = docSnap.data();
+  //         // Convert Firestore Timestamp to Date
+  //         const scheduledTime = data.scheduledTime.toDate();
 
-          // Only process notifications that are past due or very close to due time
-          const timeDiff = currentTime.getTime() - notification.scheduledTime.getTime();
-          const isPastDue = timeDiff > 0;
-          const isVeryClose = timeDiff > -5 * 60 * 1000; // Within 5 minutes
+  //         // Only process notifications that are past due or very close to due time
+  //         const timeDiff = currentTime.getTime() - scheduledTime.getTime();
+  //         const isPastDue = timeDiff > 0;
+  //         const isVeryClose = timeDiff > -5 * 60 * 1000; // Within 5 minutes
 
-          if (isPastDue || isVeryClose) {
-            console.log(`NotificationService: Force processing notification: ${notification.id}`);
-            await this.sendNotification(notification);
+  //         if (isPastDue || isVeryClose) {
+  //           console.log(`NotificationService: Force processing notification: ${data.id}`);
+            
+  //           // Create notification object with converted date
+  //           const notification: ScheduledNotification = {
+  //             id: data.id,
+  //             userId: data.userId,
+  //             notificationId: data.notificationId,
+  //             day: data.day,
+  //             timeOfDay: data.timeOfDay,
+  //             scheduledTime: scheduledTime,
+  //             message: data.message,
+  //             category: data.category,
+  //             isSent: data.isSent,
+  //             sentAt: data.sentAt?.toDate(),
+  //             createdAt: data.createdAt.toDate()
+  //           };
+            
+  //           await this.sendNotification(notification);
 
-            // Mark as sent
-            await updateDoc(docSnap.ref, {
-              isSent: true,
-              sentAt: Timestamp.now()
-            });
+  //           // Mark as sent
+  //           await updateDoc(docSnap.ref, {
+  //             isSent: true,
+  //             sentAt: Timestamp.now()
+  //           });
 
-            processed++;
-          }
-        } catch (error) {
-          console.error('NotificationService: Error force processing notification:', error);
-          errors++;
-        }
-      }
+  //           processed++;
+  //         }
+  //       } catch (error) {
+  //         console.error('NotificationService: Error force processing notification:', error);
+  //         errors++;
+  //       }
+  //     }
 
-      console.log(`NotificationService: Force processing completed. Processed: ${processed}, Errors: ${errors}`);
-      return { processed, errors };
-    } catch (error) {
-      console.error('NotificationService: Error in force processing:', error);
-      return { processed: 0, errors: 1 };
-    }
-  }
+  //     console.log(`NotificationService: Force processing completed. Processed: ${processed}, Errors: ${errors}`);
+  //     return { processed, errors };
+  //   } catch (error) {
+  //     console.error('NotificationService: Error in force processing:', error);
+  //     return { processed: 0, errors: 1 };
+  //   }
+  // }
 
   /**
    * Send installation notification immediately after app installation
@@ -334,7 +351,9 @@ class NotificationService {
         const notificationsForDay = getNotificationsForDay(day);
         
         for (const notification of notificationsForDay) {
-          const scheduledTime = this.calculateScheduledTime(startDate, day, notification.timeOfDay, userSettings);
+          let scheduledTime: Date;
+          
+          scheduledTime = this.calculateScheduledTime(startDate, day, notification.timeOfDay, userSettings);
           
       // Only schedule future notifications
       if (scheduledTime > currentDate) {
@@ -492,29 +511,62 @@ class NotificationService {
   public async processDueNotifications(): Promise<void> {
     try {
       const currentTime = new Date();
+      // Query only by isSent to avoid composite index requirement
+      // We'll filter by scheduledTime in the application code
       const q = query(
         collection(db, 'scheduledNotifications'),
         where('isSent', '==', false),
-        where('scheduledTime', '<=', Timestamp.fromDate(currentTime)),
-        orderBy('scheduledTime'),
-        limit(50) // Process max 50 notifications at a time
+        limit(100) // Process max 100 at a time
       );
 
       const querySnapshot = await getDocs(q);
-      console.log(`NotificationService: Found ${querySnapshot.docs.length} due notifications`);
+      console.log(`NotificationService: Found ${querySnapshot.docs.length} unsent notifications`);
 
       if (querySnapshot.docs.length === 0) {
+        console.log('NotificationService: No unsent notifications found - system is idle');
+        return;
+      }
+
+      // Filter by scheduledTime in application code to avoid composite index
+      const dueNotifications = [];
+        for (const docSnap of querySnapshot.docs) {
+          const data = docSnap.data();
+          const scheduledTime = data.scheduledTime?.toDate ? data.scheduledTime.toDate() : new Date(data.scheduledTime);
+
+          // Check if notification is due (scheduledTime <= currentTime)
+          if (scheduledTime <= currentTime) {
+          dueNotifications.push({ docSnap, data, scheduledTime });
+        }
+      }
+
+      console.log(`NotificationService: Found ${dueNotifications.length} due notifications out of ${querySnapshot.docs.length} unsent`);
+
+      if (dueNotifications.length === 0) {
         console.log('NotificationService: No due notifications found - system is idle');
         return;
       }
 
       console.log('NotificationService: Processing due notifications...');
 
-      for (const docSnap of querySnapshot.docs) {
-        const notification = docSnap.data() as ScheduledNotification;
-        console.log(`NotificationService: Processing notification ${notification.id} for day ${notification.day}`);
+      for (const { docSnap, data, scheduledTime } of dueNotifications) {
+        console.log(`NotificationService: Processing notification ${data.id} for day ${data.day}`);
 
         try {
+          // Create notification object with converted date
+          const notification: ScheduledNotification = {
+            id: data.id,
+            userId: data.userId,
+            notificationId: data.notificationId,
+            day: data.day,
+            timeOfDay: data.timeOfDay,
+            scheduledTime: scheduledTime,
+            message: data.message,
+            category: data.category,
+            isSent: data.isSent,
+            sentAt: data.sentAt?.toDate(),
+            createdAt: data.createdAt.toDate()
+          };
+          
           await this.sendNotification(notification);
 
           // Mark as sent
@@ -523,13 +575,13 @@ class NotificationService {
             sentAt: Timestamp.now()
           });
 
-          console.log(`NotificationService: ✅ Successfully processed notification ${notification.id}`);
+          console.log(`NotificationService: ✅ Successfully processed notification ${data.id}`);
         } catch (error) {
-          console.error(`NotificationService: ❌ Failed to process notification ${notification.id}:`, error);
+          console.error(`NotificationService: ❌ Failed to process notification ${data.id}:`, error);
 
           // Mark as failed but don't remove - allow retry
           await updateDoc(docSnap.ref, {
-            lastError: error.message,
+            lastError: (error as Error).message,
             lastAttemptAt: Timestamp.now()
           });
         }
@@ -568,24 +620,20 @@ class NotificationService {
         eveningTime: userSettings.eveningTime
       });
 
-      // Schedule notification with OneSignal scheduler
-      await oneSignalScheduler.scheduleNotification({
-        id: notification.id,
-        userId: notification.userId,
-        message: notification.message,
-        scheduledTime: notification.scheduledTime,
-        additionalData: {
+      // Schedule notification directly with OneSignal REST API
+      await oneSignalService.scheduleNotification(
+        notification.message,
+        notification.scheduledTime,
+        {
           day: notification.day.toString(),
           category: notification.category,
           timeOfDay: notification.timeOfDay,
           notificationId: notification.notificationId,
           userId: notification.userId
-        },
-        isSent: false,
-        createdAt: new Date()
-      });
+        }
+      );
 
-      console.log(`NotificationService: OneSignal notification scheduled for day ${notification.day}`);
+      console.log(`NotificationService: ✅ OneSignal notification scheduled for day ${notification.day} at ${notification.scheduledTime.toISOString()}`);
       
     } catch (error) {
       console.error('NotificationService: Error scheduling with OneSignal:', error);
@@ -642,10 +690,25 @@ class NotificationService {
       );
 
       const querySnapshot = await getDocs(q);
-      const notifications = querySnapshot.docs.map(doc => doc.data() as ScheduledNotification);
-
+      const notifications: ScheduledNotification[] = [];
+      
+      // Convert Firestore data to proper ScheduledNotification objects
+      for (const docSnap of querySnapshot.docs) {
+        const data = docSnap.data();
+        const notification: ScheduledNotification = {
+          ...data,
+          scheduledTime: data.scheduledTime?.toDate ? data.scheduledTime.toDate() : new Date(data.scheduledTime),
+          sentAt: data.sentAt?.toDate ? data.sentAt.toDate() : (data.sentAt ? new Date(data.sentAt) : undefined),
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt)
+        } as ScheduledNotification;
+        notifications.push(notification);
+      }
+      console.log('NotificationService: Converted notifications:', notifications.length);
       const sent = notifications.filter(n => n.isSent).length;
       const pending = notifications.filter(n => !n.isSent).length;
+      console.log('NotificationService: Sent:', sent);
+      console.log('NotificationService: Pending:', pending);
+      
       const nextNotification = pending > 0 
         ? notifications.filter(n => !n.isSent).sort((a, b) => a.scheduledTime.getTime() - b.scheduledTime.getTime())[0].scheduledTime
         : undefined;
@@ -686,15 +749,22 @@ class NotificationService {
       for (const docSnap of querySnapshot.docs) {
         try {
           const data = docSnap.data();
+          
+          // Safely convert Timestamps to Dates
+          const scheduledTime = data.scheduledTime?.toDate ? data.scheduledTime.toDate() : new Date(data.scheduledTime);
+          const sentAt = data.sentAt?.toDate ? data.sentAt.toDate() : (data.sentAt ? new Date(data.sentAt) : undefined);
+          const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+          
           const notification: ScheduledNotification = {
             ...data,
-            scheduledTime: data.scheduledTime.toDate(),
-            sentAt: data.sentAt?.toDate(),
-            createdAt: data.createdAt.toDate(),
+            scheduledTime,
+            sentAt,
+            createdAt,
           } as ScheduledNotification;
           notifications.push(notification);
         } catch (parseError) {
           console.error('NotificationService: Error parsing scheduled notification:', parseError);
+          console.error('NotificationService: Document ID:', docSnap.id);
           // Continue processing other notifications
         }
       }
@@ -831,9 +901,24 @@ class NotificationService {
       const notifications = result.notifications;
       const sent = notifications.filter(n => n.isSent).length;
       const pending = notifications.filter(n => !n.isSent).length;
-      const nextNotification = pending > 0
-        ? notifications.filter(n => !n.isSent).sort((a, b) => a.scheduledTime.getTime() - b.scheduledTime.getTime())[0].scheduledTime
-        : undefined;
+      
+      // Safely get next notification time
+      let nextNotification: Date | undefined;
+      if (pending > 0) {
+        try {
+          const pendingNotifications = notifications.filter(n => !n.isSent);
+          const sortedNotifications = pendingNotifications.sort((a, b) => {
+            // Ensure scheduledTime is a Date object
+            const aTime = a.scheduledTime instanceof Date ? a.scheduledTime : new Date(a.scheduledTime);
+            const bTime = b.scheduledTime instanceof Date ? b.scheduledTime : new Date(b.scheduledTime);
+            return aTime.getTime() - bTime.getTime();
+          });
+          nextNotification = sortedNotifications[0]?.scheduledTime;
+        } catch (sortError) {
+          console.error('NotificationService: Error sorting notifications:', sortError);
+          nextNotification = undefined;
+        }
+      }
 
       return {
         stats: {
@@ -872,19 +957,140 @@ class NotificationService {
     }
   }
 
-  /**
-   * Send a test notification immediately
-   */
-  public async sendTestNotification(userSettings: UserNotificationSettings): Promise<void> {
-    try {
-      const testMessage = this.prepareMessage(NOTIFICATION_DATA[0], userSettings);
-      
-      // Send test notification immediately via OneSignal scheduler
-      await oneSignalScheduler.sendTestNotification(userSettings, testMessage);
 
-      console.log('NotificationService: Test notification sent via OneSignal');
+
+
+  /**
+   * Add a scheduled notification to Firebase for a specific user and time
+   */
+  public async addScheduledNotificationToFirebase(
+    userId: string,
+    scheduledTime: Date,
+    message: string,
+    day: number = 0,
+    timeOfDay: 'morning' | 'evening' | 'day' = 'day',
+    category: 'start' | 'support' | 'celebration' | 'final' = 'support'
+  ): Promise<void> {
+    try {
+      console.log('NotificationService: 📅 Adding scheduled notification to Firebase...');
+      
+      await oneSignalService.addScheduledNotificationToFirebase(
+        userId,
+        scheduledTime,
+        message,
+        day,
+        timeOfDay,
+        category
+      );
+
+      console.log('NotificationService: ✅ Scheduled notification added to Firebase');
+      console.log('NotificationService: 📱 Notification will be sent at:', scheduledTime.toLocaleString());
     } catch (error) {
-      console.error('NotificationService: Error sending test notification:', error);
+      console.error('NotificationService: Error adding scheduled notification to Firebase:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send a simple push notification directly
+   */
+  public async sendSimplePushNotification(message: string): Promise<void> {
+    try {
+      console.log('NotificationService: Sending simple push notification:', message);
+      
+      await oneSignalService.sendSimplePushNotification(message);
+
+      console.log('NotificationService: ✅ Simple push notification sent');
+      console.log('NotificationService: 📱 You should see this notification RIGHT NOW!');
+    } catch (error) {
+      console.error('NotificationService: Error sending simple push notification:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send an immediate test notification for debugging
+   */
+  public async sendImmediateTestNotification(): Promise<void> {
+    try {
+      console.log('NotificationService: Sending IMMEDIATE test notification for debugging...');
+      
+      // Use the simple push notification method
+      await oneSignalService.sendSimplePushNotification("🚨 IMMEDIATE TEST - This should appear right now!");
+
+      console.log('NotificationService: ✅ Immediate test notification sent');
+      console.log('NotificationService: 📱 You should see this notification RIGHT NOW!');
+    } catch (error) {
+      console.error('NotificationService: Error sending immediate test notification:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check notification system status
+   */
+  public async checkNotificationStatus(): Promise<void> {
+    try {
+      console.log('NotificationService: 🔍 Checking notification system status...');
+      
+      // Check OneSignal status
+      await oneSignalService.checkOneSignalStatus();
+      
+      // Check if notifications are enabled
+      const enabled = await this.areNotificationsEnabled();
+      console.log('NotificationService: Notifications enabled:', enabled);
+      
+      console.log('NotificationService: ✅ Status check complete');
+    } catch (error) {
+      console.error('NotificationService: ❌ Status check failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Test OneSignal configuration
+   */
+  public async testOneSignalConfiguration(): Promise<void> {
+    try {
+      console.log('NotificationService: 🧪 Testing OneSignal configuration...');
+      
+      await oneSignalService.testOneSignalConfiguration();
+      
+      console.log('NotificationService: ✅ OneSignal configuration test complete');
+    } catch (error) {
+      console.error('NotificationService: ❌ OneSignal configuration test failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Test basic OneSignal connectivity
+   */
+  public async testBasicOneSignalConnectivity(): Promise<void> {
+    try {
+      console.log('NotificationService: 🌐 Testing basic OneSignal connectivity...');
+      
+      await oneSignalService.testBasicOneSignalConnectivity();
+      
+      console.log('NotificationService: ✅ Basic OneSignal connectivity test complete');
+    } catch (error) {
+      console.error('NotificationService: ❌ Basic OneSignal connectivity test failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Test user registration with OneSignal
+   */
+  public async testUserRegistration(): Promise<void> {
+    try {
+      console.log('NotificationService: 👤 Testing user registration with OneSignal...');
+      
+      await oneSignalService.testUserRegistration();
+      
+      console.log('NotificationService: ✅ User registration test complete');
+    } catch (error) {
+      console.error('NotificationService: ❌ User registration test failed:', error);
       throw error;
     }
   }
@@ -902,6 +1108,208 @@ class NotificationService {
       return false;
     }
   }
+
+  /**
+   * Test Firebase connectivity
+   */
+  public async testFirebaseConnectivity(): Promise<void> {
+    try {
+      console.log('NotificationService: 🌐 Testing Firebase connectivity...');
+      console.log('NotificationService: 🔗 Firebase project ID: quitqly-e5383');
+      
+      // Try a simple read operation to test connectivity
+      const testRef = doc(db, 'test', 'connectivity');
+      
+      try {
+        await getDoc(testRef);
+        console.log('NotificationService: ✅ Firebase connectivity test successful!');
+      } catch (readError) {
+        console.log('NotificationService: ⚠️ Firebase read test failed, but this might be normal if the document doesn\'t exist');
+        console.log('NotificationService: 🔍 Read error details:', (readError as any).code);
+      }
+      
+      // Try a simple write operation to test connectivity
+      try {
+        await setDoc(testRef, {
+          test: true,
+          timestamp: Timestamp.now()
+        });
+        console.log('NotificationService: ✅ Firebase write test successful!');
+        
+        // Clean up the test document
+        await deleteDoc(testRef);
+        console.log('NotificationService: 🧹 Test document cleaned up');
+        
+      } catch (writeError) {
+        console.error('NotificationService: ❌ Firebase write test failed:', writeError);
+        throw writeError;
+      }
+      
+      console.log('NotificationService: ✅ Firebase connectivity test completed successfully!');
+      
+    } catch (error) {
+      console.error('NotificationService: ❌ Firebase connectivity test failed:', error);
+      console.error('NotificationService: 🔍 Error details:', {
+        code: (error as any).code,
+        message: (error as any).message,
+        stack: (error as any).stack
+      });
+      
+      if ((error as any).code === 'auth/network-request-failed') {
+        console.error('NotificationService: 🌐 Network error detected!');
+        console.error('NotificationService: 💡 Solutions:');
+        console.error('NotificationService:   1. Check your internet connection');
+        console.error('NotificationService:   2. Restart the app');
+        console.error('NotificationService:   3. Check Firebase console for project status');
+        console.error('NotificationService:   4. Try switching networks (WiFi/Mobile)');
+      }
+      
+      throw error;
+    }
+  }
+
+  /**
+   * Force process all pending notifications immediately (for testing)
+   */
+  public async forceProcessAllPendingNotifications(): Promise<void> {
+    try {
+      console.log('NotificationService: 🔥 Force processing ALL pending notifications...');
+      
+      // Process all pending notifications
+      const currentTime = new Date();
+      const q = query(
+        collection(db, 'scheduledNotifications'),
+        where('isSent', '==', false),
+        limit(100)
+      );
+
+      const querySnapshot = await getDocs(q);
+      console.log(`NotificationService: Found ${querySnapshot.docs.length} pending notifications to process`);
+
+      let processed = 0;
+      let errors = 0;
+
+      for (const docSnap of querySnapshot.docs) {
+        try {
+          const data = docSnap.data();
+          const scheduledTime = data.scheduledTime?.toDate ? data.scheduledTime.toDate() : new Date(data.scheduledTime);
+          
+          // Process notifications that are past due or very close to due time
+          const timeDiff = currentTime.getTime() - scheduledTime.getTime();
+          const isPastDue = timeDiff > 0;
+          const isVeryClose = timeDiff > -5 * 60 * 1000; // Within 5 minutes
+
+          if (isPastDue || isVeryClose) {
+            console.log(`NotificationService: Force processing notification: ${data.id}`);
+            
+            // Create notification object
+            const notification: ScheduledNotification = {
+              id: data.id,
+              userId: data.userId,
+              notificationId: data.notificationId,
+              day: data.day,
+              timeOfDay: data.timeOfDay,
+              scheduledTime: scheduledTime,
+              message: data.message,
+              category: data.category,
+              isSent: data.isSent,
+              sentAt: data.sentAt?.toDate ? data.sentAt.toDate() : (data.sentAt ? new Date(data.sentAt) : undefined),
+              createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt)
+            };
+            
+            await this.sendNotification(notification);
+
+            // Mark as sent
+            await updateDoc(docSnap.ref, {
+              isSent: true,
+              sentAt: Timestamp.now()
+            });
+
+            processed++;
+          }
+        } catch (error) {
+          console.error('NotificationService: Error force processing notification:', error);
+          errors++;
+        }
+      }
+
+      const result = { processed, errors };
+      
+      console.log(`NotificationService: ✅ Force processing complete!`);
+      console.log(`NotificationService: 📊 Processed: ${result.processed}, Errors: ${result.errors}`);
+      
+      if (result.processed > 0) {
+        console.log('NotificationService: 📱 You should see notifications now!');
+      } else {
+        console.log('NotificationService: ℹ️ No notifications were processed');
+      }
+    } catch (error) {
+      console.error('NotificationService: ❌ Error force processing notifications:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check what pending notifications exist in Firebase
+   */
+  public async checkPendingNotifications(): Promise<void> {
+    try {
+      console.log('NotificationService: 🔍 Checking pending notifications in Firebase...');
+      console.log('NotificationService: 🔗 Firebase project ID: quitqly-e5383');
+      console.log('NotificationService: 🌐 Testing Firebase connectivity...');
+      
+      const currentTime = new Date();
+      console.log('NotificationService: ⏰ Current time:', currentTime.toISOString());
+      
+      // Remove orderBy to avoid composite index requirement
+      const q = query(
+        collection(db, 'scheduledNotifications'),
+        where('isSent', '==', false)
+      );
+
+      console.log('NotificationService: 📡 Executing Firebase query...');
+      const querySnapshot = await getDocs(q);
+      console.log(`NotificationService: ✅ Firebase query successful! Found ${querySnapshot.docs.length} pending notifications`);
+
+      if (querySnapshot.docs.length === 0) {
+        console.log('NotificationService: ℹ️ No pending notifications found');
+        return;
+      }
+
+      console.log('NotificationService: 📋 Pending notifications:');
+      for (const docSnap of querySnapshot.docs) {
+        const data = docSnap.data();
+        // Convert Firestore Timestamp to Date
+        const scheduledTime = data.scheduledTime.toDate();
+        const timeDiff = currentTime.getTime() - scheduledTime.getTime();
+        const isPastDue = timeDiff > 0;
+        const status = isPastDue ? '🔴 PAST DUE' : '🟡 FUTURE';
+        
+        console.log(`NotificationService: ${status} - ${data.id}`);
+        console.log(`NotificationService:   - Scheduled: ${scheduledTime.toLocaleString()}`);
+        console.log(`NotificationService:   - Message: ${data.message}`);
+        console.log(`NotificationService:   - User: ${data.userId}`);
+        console.log(`NotificationService:   - Time diff: ${Math.round(timeDiff / 1000 / 60)} minutes`);
+      }
+      
+    } catch (error) {
+      console.error('NotificationService: ❌ Error checking pending notifications:', error);
+      console.error('NotificationService: 🔍 Error details:', {
+        code: (error as any).code,
+        message: (error as any).message,
+        stack: (error as any).stack
+      });
+      
+      // Check if it's a network error
+      if ((error as any).code === 'auth/network-request-failed') {
+        console.error('NotificationService: 🌐 Network error detected! Check your internet connection and Firebase project status.');
+        console.error('NotificationService: 💡 Try: 1) Check internet connection 2) Restart the app 3) Check Firebase console');
+      }
+      
+      throw error;
+    }
+  }
+
 }
 
 export default NotificationService.getInstance();

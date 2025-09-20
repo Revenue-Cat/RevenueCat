@@ -461,7 +461,7 @@ export const NOTIFICATION_DATA: NotificationMessage[] = [
       en: 'One year 🎉🎉🎉 It\'s me, {{buddy_name}}. You\'re a hero!',
       es: 'Un año 🎉🎉🎉 Soy yo, {{buddy_name}}. ¡Eres un héroe!'
     }
-  }
+  },
 ];
 
 // Helper function to get notification by day and time
