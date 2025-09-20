@@ -975,12 +975,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
         const inProgress = inProgressChallenges.includes(challengeId);
 
-        if (hasCompletions) {
-          return "completed";
-        }
-
         if (inProgress) {
           return "inprogress";
+        }
+
+        if (hasCompletions) {
+          return "completed";
         }
 
         return "active"; // Always active for master-of-air-breathing
@@ -993,13 +993,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         challengeCompletions[challengeId] &&
         challengeCompletions[challengeId].length > 0;
 
-      // Priority: completed > inprogress > purchased/active > locked
-      if (hasCompletions) {
-        return "completed"; // Challenge has been completed before (highest priority)
+      // Priority: inprogress > completed > purchased/active > locked
+      if (inProgress) {
+        return "inprogress"; // Challenge is being worked on (highest priority)
       }
 
-      if (inProgress) {
-        return "inprogress"; // Challenge is being worked on
+      if (hasCompletions) {
+        return "completed"; // Challenge has been completed before
       }
 
       if (purchased || active) {

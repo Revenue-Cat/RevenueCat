@@ -50,7 +50,7 @@ const ShopToggle: React.FC<ShopToggleProps> = ({
         backgroundColor: '#f1f5f9', 
         borderRadius: 16, 
         padding: 2, 
-        width: 220, 
+        width: '60%', 
         height: 44,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 10 },
@@ -75,7 +75,9 @@ const ShopToggle: React.FC<ShopToggleProps> = ({
           onPress={handleBuddiesPress}
           activeOpacity={0.7}
         >
-          <FluffyIcon
+           <FluffyIcon
+            width={24} 
+            height={24} 
             color={!isScenesSelected ? '#1E293B' : '#64748B'} 
           />
           <Text style={{ 
@@ -105,6 +107,8 @@ const ShopToggle: React.FC<ShopToggleProps> = ({
           activeOpacity={0.7}
         >
           <PaintIcon
+            width={24} 
+            height={24} 
             color={isScenesSelected ? '#1E293B' : '#64748B'} 
           />
           <Text style={{ 

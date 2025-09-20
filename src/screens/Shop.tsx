@@ -404,7 +404,7 @@ const Shop: React.FC<ShopProps> = ({
 
   return (
     <View
-      className={`flex-1 `}
+      className={`flex-1 pt-[20px]`}
       // style={{ backgroundColor: isDark ? undefined : gradientColors[0] }}
     >
       <Animated.View

@@ -106,7 +106,6 @@ const ProgressChallenges: React.FC<ProgressChallengesProps> = ({ onBack }) => {
     return ["#1F1943", "#4E3EA9"]; // Default fallback
   };
 
-  const gradientColors = parseGradient(selectedBackground.backgroundColor);
 
   return (
     <View
