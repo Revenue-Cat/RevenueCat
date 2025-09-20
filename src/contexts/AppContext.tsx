@@ -213,8 +213,6 @@ interface AppState {
   scheduleUserNotifications: () => Promise<void>;
   updateNotificationSettings: (settings: Partial<UserNotificationSettings>) => Promise<void>;
   ensureNotificationSettingsExist: () => Promise<void>;
-  sendTestNotification: () => Promise<void>;
-  sendDirectPushNotification: (message: string) => Promise<void>;
   getNotificationStats: () => Promise<{
     totalScheduled: number;
     sent: number;
@@ -1351,34 +1349,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
 
 
-  const sendTestNotification = useCallback(async () => {
+
+
+  const checkNotificationStatus = useCallback(async () => {
     try {
-      // Get the actual buddy name from the buddy data
-      const selectedBuddy = getBuddyById(selectedBuddyId);
-      const actualBuddyName = selectedBuddy?.name || buddyName || 'Your Buddy';
-
-      const userSettings: UserNotificationSettings = {
-        userId: await getOrCreatePersistentUserId(),
-        language: getNotificationLanguage(),
-        buddyName: actualBuddyName,
-        selectedBuddyId: selectedBuddyId,
-        gender: gender,
-        startDate: userProgress.startDate || new Date(),
-        isEnabled: true,
-        morningTime: '08:00',
-        eveningTime: '20:00',
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      };
-
-      await notificationService.sendTestNotification(userSettings);
+      console.log('AppContext: 🔍 Checking notification system status...');
       
-      console.log('AppContext: Test notification sent');
+      await notificationService.checkNotificationStatus();
+      
+      console.log('AppContext: ✅ Status check complete');
     } catch (error) {
-      console.error('AppContext: Error sending test notification:', error as Error);
+      console.error('AppContext: Error checking notification status:', error as Error);
       throw error;
     }
-  }, [userProgress.startDate, buddyName, gender, selectedBuddyId, contextLanguage]);
-
+  }, []);
 
   // Direct push notification function
   const sendDirectPushNotification = useCallback(async (message: string) => {
@@ -1480,31 +1464,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   /**
    * Force process all pending notifications (for testing and recovery)
    */
-  const forceProcessPendingNotifications = useCallback(async () => {
-    try {
-      console.log('AppContext: Force processing pending notifications');
+  // const forceProcessPendingNotifications = useCallback(async () => {
+  //   try {
+  //     console.log('AppContext: Force processing pending notifications');
 
-      const result = await notificationService.forceProcessPendingNotifications();
+  //     const result = await notificationService.forceProcessPendingNotifications();
 
-      if (result.processed > 0) {
-        console.log(`AppContext: Force processed ${result.processed} notifications`);
-        // Refresh notification stats after processing
-        await safeLoadNotificationStats();
-      }
+  //     if (result.processed > 0) {
+  //       console.log(`AppContext: Force processed ${result.processed} notifications`);
+  //       // Refresh notification stats after processing
+  //       await safeLoadNotificationStats();
+  //     }
 
-      if (result.errors > 0) {
-        console.warn(`AppContext: ${result.errors} errors occurred during force processing`);
-      }
+  //     if (result.errors > 0) {
+  //       console.warn(`AppContext: ${result.errors} errors occurred during force processing`);
+  //     }
 
-      return result;
-    } catch (error) {
-      console.error('AppContext: Error in force processing:', error);
-      return {
-        processed: 0,
-        errors: 1
-      };
-    }
-  }, []);
+  //     return result;
+  //   } catch (error) {
+  //     console.error('AppContext: Error in force processing:', error);
+  //     return {
+  //       processed: 0,
+  //       errors: 1
+  //     };
+  //   }
+  // }, []);
+
 
   /**
    * Safely load notification settings from Firebase
@@ -1862,8 +1847,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       scheduleUserNotifications,
       updateNotificationSettings,
       ensureNotificationSettingsExist,
-      sendTestNotification,
       sendDirectPushNotification,
+      checkNotificationStatus,
       getNotificationStats,
       areNotificationsEnabled,
 
@@ -1945,8 +1930,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       scheduleUserNotifications,
       updateNotificationSettings,
       ensureNotificationSettingsExist,
-      sendTestNotification,
       sendDirectPushNotification,
+      checkNotificationStatus,
       getNotificationStats,
       areNotificationsEnabled,
 
@@ -1959,7 +1944,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       safeSaveNotificationSettings,
       safeSaveScheduledNotification,
       safeClearScheduledNotifications,
-      forceProcessPendingNotifications,
+      // forceProcessPendingNotifications,
     ]
   );
 

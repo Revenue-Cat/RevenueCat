@@ -614,13 +614,13 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             <Text className="font-semibold text-xl text-white ml-2 mr-2">
               {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : (isLocked ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 }) : t('challenges.modal.startNow'))))}
             </Text>
-            {progressData.checkIns && isInProgress && !isCompleted && previousCompletions.length === 0 && (
+            {progressData.checkIns && isInProgress && !isCompleted && previousCompletions.length === 0 ? (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
                   <Text className="text-white text-s font-bold">{progressData.checkIns}</Text>
                 </View>
-              )}
+              ) : null}
             {(isInProgress || isActive || isCompleted) ? (
-             ""
+             null
             ) : (
                  <CoinIcon width={20} height={20} className="ml-1" />
             )}
