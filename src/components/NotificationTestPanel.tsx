@@ -22,6 +22,10 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
     selectedBuddyId,
     initializeNotifications,
     scheduleUserNotifications,
+    clearSentNotifications,
+    clearUserNotifications,
+    testTimezoneConversion,
+    sendDirectPushNotification,
     // sendTestNotification,
     getNotificationStats,
     areNotificationsEnabled,
@@ -107,7 +111,7 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
   const handleTestNotification = async () => {
     setLoading(true);
     try {
-      await sendTestNotification();
+      await sendDirectPushNotification('🧪 Test notification from app!');
       Alert.alert('Success', 'Test notification sent!');
     } catch (error) {
       Alert.alert('Error', 'Failed to send test notification');
@@ -131,6 +135,45 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
       console.error('Error updating notification settings:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+
+  const handleClearSentNotifications = async () => {
+    setLoading(true);
+    try {
+      await clearSentNotifications();
+      Alert.alert('Success', 'Sent notifications cleared! This will prevent duplicate notifications.');
+      await loadStats();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to clear sent notifications');
+      console.error('Error clearing sent notifications:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearUserNotifications = async () => {
+    setLoading(true);
+    try {
+      await clearUserNotifications();
+      Alert.alert('Success', 'All your notifications cleared! You can now reschedule them.');
+      await loadStats();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to clear user notifications');
+      console.error('Error clearing user notifications:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTestTimezoneConversion = () => {
+    try {
+      testTimezoneConversion();
+      Alert.alert('Success', 'Timezone conversion test completed! Check console for details.');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to test timezone conversion');
+      console.error('Error testing timezone conversion:', error);
     }
   };
 
@@ -332,24 +375,35 @@ const NotificationTestPanel: React.FC<NotificationTestPanelProps> = ({ onClose }
         </Pressable>
 
         <Pressable
-          onPress={handleForceProcess}
+          onPress={handleClearSentNotifications}
           disabled={loading}
-          className={`py-4 px-6 rounded-lg ${loading ? 'opacity-50' : ''} ${isDark ? 'bg-red-700' : 'bg-red-200'}`}
+          className={`py-4 px-6 rounded-lg ${loading ? 'opacity-50' : ''} ${isDark ? 'bg-orange-700' : 'bg-orange-200'}`}
         >
-          <Text className={`text-center font-semibold ${isDark ? 'text-slate-100' : 'text-red-950'}`}>
-            🔄 Force Process Pending Notifications
+          <Text className={`text-center font-semibold ${isDark ? 'text-slate-100' : 'text-orange-950'}`}>
+            🗑️ Clear Sent Notifications
           </Text>
         </Pressable>
 
         <Pressable
-          onPress={handleTestNotificationFlow}
+          onPress={handleClearUserNotifications}
           disabled={loading}
           className={`py-4 px-6 rounded-lg ${loading ? 'opacity-50' : ''} ${isDark ? 'bg-purple-700' : 'bg-purple-200'}`}
         >
           <Text className={`text-center font-semibold ${isDark ? 'text-slate-100' : 'text-purple-950'}`}>
-            🔔 Test Full Notification Flow
+            🧹 Clear My Notifications
           </Text>
         </Pressable>
+
+        <Pressable
+          onPress={handleTestTimezoneConversion}
+          disabled={loading}
+          className={`py-4 px-6 rounded-lg ${loading ? 'opacity-50' : ''} ${isDark ? 'bg-teal-700' : 'bg-teal-200'}`}
+        >
+          <Text className={`text-center font-semibold ${isDark ? 'text-slate-100' : 'text-teal-950'}`}>
+            🧪 Test Timezone Conversion
+          </Text>
+        </Pressable>
+
 
         <Pressable
           onPress={loadStats}

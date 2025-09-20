@@ -114,6 +114,7 @@ const SlideModal: React.FC<SlideModalProps> = ({
   useEffect(() => {
     if (modalVisible && visible) {
       // If keyboard appears/disappears while modal is visible, adjust position
+      // Only animate the slide, don't touch the fade animation
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 150,
@@ -130,22 +131,38 @@ const SlideModal: React.FC<SlideModalProps> = ({
       animationType="none"
       onRequestClose={onClose}
     >
-      {/* Dark Overlay - Smooth fade in/out */}
-      <Animated.View
-        className="flex-1 bg-black"
-        style={{
-          opacity: Animated.multiply(fadeAnim, 0.5),
-        }}
-      />
+      <View className="flex-1">
+        {/* Dark Overlay - Smooth fade in/out */}
+        <View
+          className="absolute inset-0"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+          onLayout={() => {
+            console.log('SlideModal: Dark overlay rendered - TEST VERSION');
+          }}
+        />
+        
+        {/* Animated Overlay - This should fade in/out */}
+        <Animated.View
+          className="absolute inset-0"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            opacity: fadeAnim,
+          }}
+          onLayout={() => {
+            console.log('SlideModal: Animated overlay rendered');
+          }}
+        />
 
-      {/* Modal Content - Slides from bottom with smooth animation */}
-      <Animated.View
-        className="absolute left-0 right-0"
-        style={{
-          bottom: keyboardHeight,
-          transform: [{ translateY: slideAnim }],
-        }}
-      >
+        {/* Modal Content - Slides from bottom with smooth animation */}
+        <Animated.View
+          className="absolute left-0 right-0"
+          style={{
+            bottom: keyboardHeight,
+            transform: [{ translateY: slideAnim }],
+          }}
+        >
         <View
           className={`${
             isDark ? "bg-dark-background" : "bg-light-background"
@@ -212,6 +229,7 @@ const SlideModal: React.FC<SlideModalProps> = ({
           </View>
         </View>
       </Animated.View>
+      </View>
     </Modal>
   );
 };

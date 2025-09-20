@@ -350,33 +350,54 @@ class NotificationService {
       for (let day = Math.max(minDays, daysSinceStart); day <= maxDays; day++) {
         const notificationsForDay = getNotificationsForDay(day);
         
-        for (const notification of notificationsForDay) {
+        // Only schedule ONE notification per day - prioritize morning, then evening, then day
+        let selectedNotification = null;
+        
+        // First try to find morning notification
+        selectedNotification = notificationsForDay.find(n => n.timeOfDay === 'morning');
+        
+        // If no morning, try evening
+        if (!selectedNotification) {
+          selectedNotification = notificationsForDay.find(n => n.timeOfDay === 'evening');
+        }
+        
+        // If no morning or evening, try day
+        if (!selectedNotification) {
+          selectedNotification = notificationsForDay.find(n => n.timeOfDay === 'day');
+        }
+        
+        // If we found a notification for this day, schedule it
+        if (selectedNotification) {
           let scheduledTime: Date;
           
-          scheduledTime = this.calculateScheduledTime(startDate, day, notification.timeOfDay, userSettings);
+          scheduledTime = this.calculateScheduledTime(startDate, day, selectedNotification.timeOfDay, userSettings);
           
-      // Only schedule future notifications
-      if (scheduledTime > currentDate) {
-        const message = this.prepareMessage(notification, userSettings);
-        
-        const scheduledNotification: ScheduledNotification = {
-          id: `${userSettings.userId}_${notification.id}`,
-          userId: userSettings.userId,
-          notificationId: notification.id,
-          day: day,
-          timeOfDay: notification.timeOfDay,
-          scheduledTime: scheduledTime,
-          message: message,
-          category: notification.category,
-          isSent: false,
-          createdAt: new Date()
-        };
+          // Only schedule future notifications
+          if (scheduledTime > currentDate) {
+            const message = this.prepareMessage(selectedNotification, userSettings);
+            
+            const scheduledNotification: ScheduledNotification = {
+              id: `${userSettings.userId}_${selectedNotification.id}`,
+              userId: userSettings.userId,
+              notificationId: selectedNotification.id,
+              day: day,
+              timeOfDay: selectedNotification.timeOfDay,
+              scheduledTime: scheduledTime,
+              message: message,
+              category: selectedNotification.category,
+              isSent: false,
+              createdAt: new Date()
+            };
 
-        await this.saveScheduledNotification(scheduledNotification);
-        
-        // Also schedule with OneSignal for immediate delivery when the time comes
-        await this.scheduleWithOneSignal(scheduledNotification, userSettings);
-      }
+            await this.saveScheduledNotification(scheduledNotification);
+            
+            // Also schedule with OneSignal for immediate delivery when the time comes
+            await this.scheduleWithOneSignal(scheduledNotification, userSettings);
+            
+            console.log(`NotificationService: Scheduled SINGLE notification for day ${day} (${selectedNotification.timeOfDay}) at ${scheduledTime.toISOString()}`);
+            console.log(`NotificationService: User timezone: ${userSettings.timezone}`);
+            console.log(`NotificationService: Local time: ${scheduledTime.toLocaleString()} (${userSettings.timezone})`);
+          }
         }
       }
 
@@ -414,7 +435,49 @@ class NotificationService {
       targetDate.setHours(hours, minutes, 0, 0);
     }
 
-    return targetDate;
+    // Convert to user's timezone
+    return this.convertToUserTimezone(targetDate, userSettings.timezone);
+  }
+
+  /**
+   * Convert a date to the user's timezone
+   */
+  private convertToUserTimezone(date: Date, userTimezone: string): Date {
+    try {
+      // Create a date string in the user's timezone
+      const dateString = date.toLocaleString("en-US", { 
+        timeZone: userTimezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      
+      // Parse the date string to create a new Date object
+      const [datePart, timePart] = dateString.split(', ');
+      const [month, day, year] = datePart.split('/');
+      const [hours, minutes, seconds] = timePart.split(':');
+      
+      // Create a new Date object with the user's timezone time
+      const userDate = new Date(
+        parseInt(year), 
+        parseInt(month) - 1, 
+        parseInt(day), 
+        parseInt(hours), 
+        parseInt(minutes), 
+        parseInt(seconds)
+      );
+      
+      console.log(`NotificationService: Converted ${date.toISOString()} to user timezone ${userTimezone}: ${userDate.toISOString()}`);
+      
+      return userDate;
+    } catch (error) {
+      console.error('NotificationService: Error converting to user timezone:', error);
+      return date;
+    }
   }
 
   /**
@@ -569,13 +632,10 @@ class NotificationService {
           
           await this.sendNotification(notification);
 
-          // Mark as sent
-          await updateDoc(docSnap.ref, {
-            isSent: true,
-            sentAt: Timestamp.now()
-          });
+          // Remove the notification from Firebase after sending to prevent duplicates
+          await deleteDoc(docSnap.ref);
 
-          console.log(`NotificationService: ✅ Successfully processed notification ${data.id}`);
+          console.log(`NotificationService: ✅ Successfully sent and removed notification ${data.id} from Firebase`);
         } catch (error) {
           console.error(`NotificationService: ❌ Failed to process notification ${data.id}:`, error);
 
@@ -1308,6 +1368,158 @@ class NotificationService {
       
       throw error;
     }
+  }
+
+  /**
+   * Clear ALL notifications from Firebase (for debugging and cleanup)
+   */
+  public async clearAllNotifications(): Promise<void> {
+    try {
+      console.log('NotificationService: 🧹 Clearing ALL notifications from Firebase...');
+      
+      // Get all notifications (both sent and unsent)
+      const q = query(collection(db, 'scheduledNotifications'));
+      const querySnapshot = await getDocs(q);
+      
+      console.log(`NotificationService: Found ${querySnapshot.docs.length} total notifications to clear`);
+      
+      if (querySnapshot.docs.length === 0) {
+        console.log('NotificationService: ℹ️ No notifications found to clear');
+        return;
+      }
+
+      // Delete all notifications
+      let deletedCount = 0;
+      for (const docSnap of querySnapshot.docs) {
+        try {
+          await deleteDoc(docSnap.ref);
+          deletedCount++;
+        } catch (deleteError) {
+          console.error('NotificationService: Error deleting notification:', deleteError);
+        }
+      }
+      
+      // Clear from OneSignal scheduler
+      oneSignalScheduler.clearUserNotifications('all');
+      
+      console.log(`NotificationService: ✅ Cleared ${deletedCount} notifications from Firebase`);
+      console.log('NotificationService: 🧹 All notifications cleared successfully');
+      
+    } catch (error) {
+      console.error('NotificationService: ❌ Error clearing all notifications:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Clear only SENT notifications from Firebase (to prevent duplicates)
+   */
+  public async clearSentNotifications(): Promise<void> {
+    try {
+      console.log('NotificationService: 🧹 Clearing SENT notifications from Firebase...');
+      
+      // Get only sent notifications
+      const q = query(
+        collection(db, 'scheduledNotifications'),
+        where('isSent', '==', true)
+      );
+      const querySnapshot = await getDocs(q);
+      
+      console.log(`NotificationService: Found ${querySnapshot.docs.length} sent notifications to clear`);
+      
+      if (querySnapshot.docs.length === 0) {
+        console.log('NotificationService: ℹ️ No sent notifications found to clear');
+        return;
+      }
+
+      // Delete only sent notifications
+      let deletedCount = 0;
+      for (const docSnap of querySnapshot.docs) {
+        try {
+          await deleteDoc(docSnap.ref);
+          deletedCount++;
+        } catch (deleteError) {
+          console.error('NotificationService: Error deleting sent notification:', deleteError);
+        }
+      }
+      
+      console.log(`NotificationService: ✅ Cleared ${deletedCount} sent notifications from Firebase`);
+      console.log('NotificationService: 🧹 Sent notifications cleared successfully');
+      
+    } catch (error) {
+      console.error('NotificationService: ❌ Error clearing sent notifications:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Clear all notifications for a specific user (for rescheduling)
+   */
+  public async clearUserNotifications(userId: string): Promise<void> {
+    try {
+      console.log(`NotificationService: 🧹 Clearing ALL notifications for user ${userId}...`);
+      
+      // Get all notifications for this user
+      const q = query(
+        collection(db, 'scheduledNotifications'),
+        where('userId', '==', userId)
+      );
+      const querySnapshot = await getDocs(q);
+      
+      console.log(`NotificationService: Found ${querySnapshot.docs.length} notifications for user ${userId}`);
+      
+      if (querySnapshot.docs.length === 0) {
+        console.log('NotificationService: ℹ️ No notifications found for user');
+        return;
+      }
+
+      // Delete all notifications for this user
+      let deletedCount = 0;
+      for (const docSnap of querySnapshot.docs) {
+        try {
+          await deleteDoc(docSnap.ref);
+          deletedCount++;
+        } catch (deleteError) {
+          console.error('NotificationService: Error deleting notification:', deleteError);
+        }
+      }
+      
+      console.log(`NotificationService: ✅ Cleared ${deletedCount} notifications for user ${userId}`);
+      
+    } catch (error) {
+      console.error('NotificationService: ❌ Error clearing user notifications:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Test timezone conversion for debugging
+   */
+  public testTimezoneConversion(userTimezone: string): void {
+    console.log('NotificationService: 🧪 Testing timezone conversion...');
+    console.log('NotificationService: User timezone:', userTimezone);
+    
+    // Test with today at 8 AM
+    const today = new Date();
+    today.setHours(8, 0, 0, 0);
+    
+    console.log('NotificationService: Original date (8 AM local):', today.toISOString());
+    console.log('NotificationService: Original date (8 AM local):', today.toLocaleString());
+    
+    const convertedDate = this.convertToUserTimezone(today, userTimezone);
+    console.log('NotificationService: Converted date (8 AM user timezone):', convertedDate.toISOString());
+    console.log('NotificationService: Converted date (8 AM user timezone):', convertedDate.toLocaleString());
+    
+    // Test with today at 8 PM
+    const evening = new Date();
+    evening.setHours(20, 0, 0, 0);
+    
+    console.log('NotificationService: Original evening (8 PM local):', evening.toISOString());
+    console.log('NotificationService: Original evening (8 PM local):', evening.toLocaleString());
+    
+    const convertedEvening = this.convertToUserTimezone(evening, userTimezone);
+    console.log('NotificationService: Converted evening (8 PM user timezone):', convertedEvening.toISOString());
+    console.log('NotificationService: Converted evening (8 PM user timezone):', convertedEvening.toLocaleString());
   }
 
 }

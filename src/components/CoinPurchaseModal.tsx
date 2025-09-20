@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Dimensions } from "react-native";
+import { View, Text, Dimensions, Pressable } from "react-native";
 import SlideModal from "./SlideModal";
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -30,7 +30,11 @@ const CoinPurchaseModal: React.FC = () => {
       : undefined,
   }));
 
-  const handleBuy = async (pack: CoinPack) => {
+  const [selectedPack, setSelectedPack] = useState<CoinPack | null>(packs[0] || null)
+
+  const handleBuy = async () => {
+    if (!selectedPack) return;
+    
     try {
       setIsLoading(true)
       const offerings = await Purchases.getOfferings();
@@ -39,10 +43,10 @@ const CoinPurchaseModal: React.FC = () => {
         throw new Error("No current offering available");
       }
       const rcPackage = currentOffering.availablePackages.find(
-        (p) => p.identifier === pack.id
+        (p) => p.identifier === selectedPack.id
       );
       if (!rcPackage) {
-        throw new Error(`No package found with identifier ${pack.id}`);
+        throw new Error(`No package found with identifier ${selectedPack.id}`);
       }
       console.log("--------------", rcPackage, currentOffering.availablePackages)
       const { customerInfo } = await Purchases.purchasePackage(rcPackage);
@@ -67,8 +71,9 @@ const CoinPurchaseModal: React.FC = () => {
     <SlideModal
       visible={showCoinPurchase}
       onClose={() => setShowCoinPurchase(false)}
+      showCloseButton={false}
     >
-      {isLoading ? (
+      {isLoading ? (  
           <View
             className={`flex-1 justify-center items-center ${
               theme === "dark" ? "bg-dark-background" : "bg-light-background"
@@ -115,12 +120,49 @@ const CoinPurchaseModal: React.FC = () => {
 
             <View className="px-2">
               {packs.map((p) => (
-                <CoinPackCard key={p.id} pack={p} onPress={handleBuy} />
+                <CoinPackCard 
+                  key={p.id} 
+                  pack={p} 
+                  onPress={() => setSelectedPack(p)} 
+                  isSelected={selectedPack?.id === p.id}
+                />
               ))}
             </View>
           </>
         )
       }
+      {/* Actions Button - Only show when not loading (Apple ID modal not open) */}
+      {!isLoading && (
+        <View className="mt-6 flex-row justify-center gap-2">
+          {/* Close Button */}
+          <Pressable
+            className={`w-15 h-15 rounded-2xl justify-center items-center ${
+              isDark ? "bg-slate-700" : "bg-indigo-50"
+            }`}
+            onPress={() => setShowCoinPurchase(false)}
+            accessibilityRole="button"
+            accessibilityLabel={t("common.close", "Close")}
+          >
+            <Text
+              className={`text-2xl rounded-2xl px-5 py-2 font-bold ${
+                isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
+              }`}
+            >
+              ✕
+            </Text>
+          </Pressable>
+          <Pressable
+            className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
+            onPress={handleBuy}
+            accessibilityRole="button"
+            accessibilityLabel={t("shop.buyCoins", "Buy coins")}
+          >
+            <Text className="font-semibold text-xl text-white">
+              {t("shop.buyCoins", "Buy coins")}
+            </Text>
+          </Pressable>
+        </View>
+      )}
     </SlideModal>
   );
 };

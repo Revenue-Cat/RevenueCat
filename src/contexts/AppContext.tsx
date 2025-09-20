@@ -213,6 +213,10 @@ interface AppState {
   scheduleUserNotifications: () => Promise<void>;
   updateNotificationSettings: (settings: Partial<UserNotificationSettings>) => Promise<void>;
   ensureNotificationSettingsExist: () => Promise<void>;
+  clearSentNotifications: () => Promise<void>;
+  clearUserNotifications: () => Promise<void>;
+  testTimezoneConversion: () => void;
+  sendDirectPushNotification: (message: string) => Promise<void>;
   getNotificationStats: () => Promise<{
     totalScheduled: number;
     sent: number;
@@ -1462,6 +1466,71 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   /**
+   * Clear only SENT notifications from Firebase (to prevent duplicates)
+   */
+  const clearSentNotifications = useCallback(async () => {
+    try {
+      console.log('AppContext: 🧹 Clearing SENT notifications from Firebase...');
+      
+      // Import notification service directly
+      const notificationService = (await import('../services/notificationService')).default;
+      
+      // Clear only sent notifications
+      await notificationService.clearSentNotifications();
+      
+      console.log('AppContext: ✅ Sent notifications cleared successfully');
+    } catch (error) {
+      console.error('AppContext: ❌ Failed to clear sent notifications:', error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Clear all notifications for current user (for rescheduling)
+   */
+  const clearUserNotifications = useCallback(async () => {
+    try {
+      console.log('AppContext: 🧹 Clearing ALL notifications for current user...');
+      
+      const userId = await getOrCreatePersistentUserId();
+      
+      // Import notification service directly
+      const notificationService = (await import('../services/notificationService')).default;
+      
+      // Clear all notifications for this user
+      await notificationService.clearUserNotifications(userId);
+      
+      console.log('AppContext: ✅ User notifications cleared successfully');
+    } catch (error) {
+      console.error('AppContext: ❌ Failed to clear user notifications:', error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Test timezone conversion for debugging
+   */
+  const testTimezoneConversion = useCallback(() => {
+    try {
+      console.log('AppContext: 🧪 Testing timezone conversion...');
+      
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      console.log('AppContext: Current user timezone:', userTimezone);
+      
+      // Import notification service directly
+      const notificationService = require('../services/notificationService').default;
+      
+      // Test timezone conversion
+      notificationService.testTimezoneConversion(userTimezone);
+      
+      console.log('AppContext: ✅ Timezone conversion test completed - check console for details');
+    } catch (error) {
+      console.error('AppContext: ❌ Failed to test timezone conversion:', error);
+      throw error;
+    }
+  }, []);
+
+  /**
    * Force process all pending notifications (for testing and recovery)
    */
   // const forceProcessPendingNotifications = useCallback(async () => {
@@ -1847,6 +1916,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       scheduleUserNotifications,
       updateNotificationSettings,
       ensureNotificationSettingsExist,
+      clearSentNotifications,
+      clearUserNotifications,
+      testTimezoneConversion,
       sendDirectPushNotification,
       checkNotificationStatus,
       getNotificationStats,
@@ -1930,6 +2002,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       scheduleUserNotifications,
       updateNotificationSettings,
       ensureNotificationSettingsExist,
+      clearSentNotifications,
       sendDirectPushNotification,
       checkNotificationStatus,
       getNotificationStats,

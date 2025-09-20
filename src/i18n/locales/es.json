@@ -784,6 +784,7 @@
   },
   "shop": {
     "balance": "Saldo {{coins}}",
+    "buyCoins": "Comprar monedas",
     "buyFor": "Comprar por {{coins}}",
     "close": "Cerrar",
     "description": "Un maravilloso compañero para tu viaje para dejar de fumar.",
