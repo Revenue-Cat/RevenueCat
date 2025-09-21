@@ -245,7 +245,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   if (!challenge) return null;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
       <SlideModal
         visible={visible}
         onClose={onClose}
@@ -584,7 +584,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
         
         {/* Full-width LinearGradient Action Buttons - Inside SlideModal */}
         <LinearGradient
-          colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+          colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.953)']}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           style={{

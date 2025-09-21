@@ -82,14 +82,19 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
     <SlideModal
       visible={visible}
       onClose={onClose}
-      title={t("cravingSOS.modal.title")}
+      title={""}
       showCloseButton={false}
     >
+      <Text
+        className={`text-xl font-bold text-center px-8 mt-3 mb-2`}
+      >
+        {t("cravingSOS.modal.title")}
+      </Text>
+
       <Text
         className={`${
           isDark ? "text-slate-300" : "text-slate-500"
         } text-center`}
-        style={{ fontSize: 14, lineHeight: 20 }}
       >
         {t("cravingSOS.modal.subtitle")}
       </Text>
@@ -130,7 +135,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
             ];
             const scale = scrollX.interpolate({
               inputRange,
-              outputRange: [0.94, 1, 0.94],
+              outputRange: [0.9, 1, 0.9],
               extrapolate: "clamp",
             });
             const translateY = scrollX.interpolate({
@@ -148,8 +153,8 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                 <View
                   className={`${
                     isDark ? "bg-slate-700" : "bg-indigo-50"
-                  } rounded-2xl px-3 py-4`}
-                  style={{ minHeight: 320, justifyContent: "space-between" }}
+                    } rounded-2xl px-6 py-4 justify-between`}
+
                 >
                   {/* iconPreview Icon */}
                   <View className="items-center mb-1 p-2 justify-center">
@@ -166,13 +171,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                   <Text
                     className={`${
                       isDark ? "text-slate-100" : "text-indigo-950"
-                    } mb-1`}
-                    style={{
-                      fontWeight: "700",
-                      fontSize: 16,
-                      lineHeight: 22,
-                      textAlign: "center",
-                    }}
+                    } mb-1 text-base text-center font-bold`}
                   >
                     {t(item.titleKey)}
                   </Text>
@@ -180,14 +179,10 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                   {/* Description */}
                   <Text
                     className={`${
-                      isDark ? "text-slate-300" : "text-slate-600"
-                    }`}
-                    style={{
-                      fontWeight: "500",
-                      fontSize: 14,
-                      lineHeight: 20,
-                      marginBottom: 16,
-                    }}
+                      isDark ? "text-slate-300" : "text-slate-700"
+                      } text-sm mb-4`}
+                    style={{ minHeight: 90, height: 90 }}
+                   
                   >
                     {t(item.descriptionKey)}
                   </Text>
@@ -253,7 +248,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
 
       {/* Indicators */}
       <View className="flex-row justify-center">
-        <View className="flex-row bg-indigo-50 h-4 rounded-full px-1 py-1 gap-1">
+        <View className="flex-row bg-indigo-50 h-4 rounded-full px-2 py-1 gap-1">
           {data.map((_, i) => {
             const position = Animated.divide(scrollX, ITEM_WIDTH);
             const scale = position.interpolate({
@@ -269,9 +264,8 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
             return (
               <Animated.View
                 key={i}
+                className="w-2 h-2 rounded-full"
                 style={{
-                  width: 6,
-                  height: 6,
                   borderRadius: 4,
                   backgroundColor: "#312e81",
                   marginHorizontal: 0.5,
@@ -285,7 +279,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
       </View>
 
       <LinearGradient
-        colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+        colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.5)']}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={{

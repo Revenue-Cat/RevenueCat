@@ -142,7 +142,7 @@ const ProgressChallenges: React.FC<ProgressChallengesProps> = ({ onBack }) => {
         }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="gap-1">
+        <View className="gap-0">
           {allRegularAchievements.map((achievement) => {
             const progress = getProgressForAchievement(achievement.id);
             const timeLeft = progress.percentage === 100 

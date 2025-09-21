@@ -365,7 +365,7 @@ const Home: React.FC<HomeProps> = ({
               <Pressable
                 onPress={handleCoinPurchase}
               >
-                  <View className="bg-black/50 flex-row items-center border border-orange-500 pl-2 pr-1.5 py-0 rounded-full self-start mb-1 gap-0.5 text-center">
+                  <View className="bg-black/50 flex-row items-center border border-amber-400 pl-2 pr-1.5 py-0 rounded-full self-start mb-1 gap-0.5 text-center">
                     <Text className="text-lg font-bold text-amber-400">{userCoins}</Text>
                     <CoinIcon width={16} height={16} color="#FF6B35" />
                 </View>
@@ -386,6 +386,7 @@ const Home: React.FC<HomeProps> = ({
           <View className="absolute top-[145px] left-0 right-0 z-[20]" pointerEvents="box-none">
             <View className="flex-row justify-center">
               <View className="flex-row bg-black/30 rounded-full px-2 py-1 gap-1">
+                
                 <Pressable
                   className={`w-2 h-2 rounded-full ${
                     currentView === "achievements" ? "bg-white" : "bg-black/30"
