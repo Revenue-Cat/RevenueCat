@@ -79,7 +79,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
           {isRegularAchievement ? (
             // Regular achievements logic
             <>
-              {isFirstThree || progressPercentage === 100 ? (
+              {isFirstThree || progressPercentage >= 100 ? (
                 // First 3 achievements OR 100% progress: show achievement icon and green progress
                 <>
                   {icon ? (
@@ -96,7 +96,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
                     />
                   )}
                   {/* Check icon for 100% progress */}
-                  {progressPercentage === 100 && (
+                  {progressPercentage >= 100 && (
                     <View className="absolute -top-1 -right-1 bg-green-500 rounded-full w-5 h-5 justify-center items-center">
                       <Ionicons name="checkmark" size={10} color="white" />
                     </View>

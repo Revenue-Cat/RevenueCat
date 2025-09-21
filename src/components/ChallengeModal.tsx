@@ -51,7 +51,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
     };
     return mapping[challengeId] || challengeId;
   };
-  const { startChallenge, getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns, getChallengeCompletions, setChallengeCompletionsForId, addDailyCheckIn, userCoins, setShowCoinPurchase, purchaseItem } = useApp();
+  const { startChallenge, setDailyCheckIns,getChallengeStatus, getChallengeProgress, updateChallengeProgress, calculateProgressBasedOnTime, cancelChallenge, getDailyCheckIns, getChallengeCompletions, setChallengeCompletionsForId, addDailyCheckIn, userCoins, setShowCoinPurchase, purchaseItem } = useApp();
 
   const handleStartChallenge = async () => {
     if (!challengeId) return;
@@ -111,6 +111,13 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
 
   const handleCheckIn = () => {
     if (challengeId) {
+      // For exclusive challenges, navigate to breathing exercise
+      if (challenge?.isExclusive) {
+        onNavigateToBreathing?.(true);
+        return;
+      }
+      
+      // For regular challenges, do normal check-in
       const currentProgress = getChallengeProgress(challengeId);
       const newStreak = currentProgress.streak + 1;
       
@@ -551,6 +558,11 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                       onPress: () => {
                         if (challengeId) {
                           cancelChallenge(challengeId);
+                          setDailyCheckIns((prev) => {
+                            const newCheckIns = { ...prev };
+                            delete newCheckIns[challengeId];
+                            return newCheckIns;
+                          });
                           onClose();
                         }
                       }
@@ -608,14 +620,24 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             {/* Action Button - Start now, Check In, or Restart challenge */}
             <Pressable
               className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
-
-              onPress={isCompleted ? handleRestartChallenge : (isInProgress ? (challenge?.isExclusive && !previousCompletions.length ? () => onNavigateToBreathing?.(true) : handleCheckIn) : (previousCompletions.length > 0 ? handleRestartChallenge : handleStartChallenge))}
+              onPress={() => {
+                if (isCompleted) {
+                  handleRestartChallenge();
+                } else if (isInProgress) {
+                  // Use handleCheckIn which handles both exclusive and regular challenges
+                  handleCheckIn();
+                } else if (previousCompletions.length > 0) {
+                  handleRestartChallenge();
+                } else {
+                  handleStartChallenge();
+                }
+              }}
               accessibilityRole="button"
               accessibilityLabel={
                 isCompleted 
                   ? t('challenges.modal.restartChallenge', "Restart Challenge")
                   : isInProgress 
-                    ? (challenge?.isExclusive && !previousCompletions.length ? "Take 5 breathe" : t('challenges.checkIn', "Check In"))
+                    ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn', "Check In"))
                     : (previousCompletions.length > 0 
                         ? t('challenges.modal.restartChallenge', "Restart Challenge")
                         : (isLocked 
@@ -631,9 +653,9 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                   ""
                 )}     
             <Text className="font-semibold text-xl text-white ml-2 mr-2">
-                  {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : (isLocked ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 }) : t('challenges.modal.startNow'))))}
-                </Text>
-                {progressData.checkIns && isInProgress && !isCompleted && previousCompletions.length === 0 ? (
+              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : (isLocked ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 }) : t('challenges.modal.startNow'))))}
+            </Text>
+            {progressData.checkIns > 0 && isInProgress && !isCompleted ? (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
                   <Text className="text-white text-s font-bold">{progressData.checkIns}</Text>
                     </View>

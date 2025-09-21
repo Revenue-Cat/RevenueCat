@@ -197,6 +197,7 @@ interface AppState {
   ) => number;
   getDailyCheckIns: (challengeId: string) => Record<string, number>;
   addDailyCheckIn: (challengeId: string, date: string, count: number) => void;
+  setDailyCheckIns: (updater: (prev: Record<string, Record<string, number>>) => Record<string, Record<string, number>>) => void;
 
   getSlipsAllowed: () => number; // 10 + extraSlipPacks*5
   shouldOfferProtectStreak: () => boolean; // show buy card when on 9/14/19...
@@ -1903,6 +1904,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       calculateProgressBasedOnTime,
       getDailyCheckIns,
       addDailyCheckIn,
+      setDailyCheckIns,
       slipsUsed,
       slipsDates,
       extraSlipPacks,

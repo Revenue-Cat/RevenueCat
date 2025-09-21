@@ -162,7 +162,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
           onPress={isCompleted ? () => challengeId && onRestartChallenge?.(challengeId) : (isExclusive ? () => onNavigateToBreathing?.(true) : onCheckIn)}
           className="bg-indigo-600 rounded-2xl p-3 flex-row items-center justify-center"
         >
-          {isCompleted || completionCount > 0 ? (
+          {isCompleted || (completionCount > 0 && !isInProgress) ? (
             isExclusive ? <BreatheIcon width={16} height={16} color="#ffffff" /> : <Ionicons name="refresh" size={20} color="#ffffff" />
           ) : (
             <Ionicons name="checkmark" size={20} color="#ffffff" />

@@ -148,11 +148,11 @@ const ProgressChallenges: React.FC<ProgressChallengesProps> = ({ onBack }) => {
             const timeLeft = progress.percentage === 100 
               ? String(t('achievements.completed', 'Completed!')) 
               : t('achievements.daysLeft', '{{days}}d left', { days: Math.max(0, progress.max - progress.current) });
-            
+
             // Determine progress ring color using the same logic as Achievements screen
             const progressRingColor = 
               isFirstThreeAchievement(achievement.id, allRegularAchievements, getProgressForAchievement) || 
-              progress.percentage === 100
+              progress.percentage >= 100
                 ? "#22C55E"  // Green for first 3 non-completed or 100% completed
                 : "transparent";  // Transparent for others
             
