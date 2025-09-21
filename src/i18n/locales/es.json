@@ -372,8 +372,8 @@
   "countdownTimer": {
     "days": "Días",
     "hours": "Horas",
-    "minutes": "Minutos",
-    "seconds": "Segundos"
+    "minutes": "Min",
+    "seconds": "Seg"
   },
   "cravingSOS": {
     "common": {
@@ -475,7 +475,7 @@
       "smokeFreeDays": "Días sin fumar",
       "timeSaved": "Tiempo ahorrado"
     },
-    "title": "Zero Poofs"
+    "title": "Zero Puffs"
   },
   "languages": {
     "english": "English",
@@ -545,8 +545,8 @@
       "title": "¡Somos un equipo creativo pequeño!"
     },
     "share": {
-      "message": "Únete a mí en Zero Poofs — mi app favorita para dejar de fumar.",
-      "title": "Zero Poofs"
+      "message": "Únete a mí en Zero Puffs — mi app favorita para dejar de fumar.",
+      "title": "Zero Puffs"
     }
   },
   "regularAchievements": {
@@ -867,7 +867,7 @@
     "description": "Únete a miles de personas que han dejado de fumar exitosamente con nuestro enfoque probado.",
     "selectLanguage": "Idioma",
     "subtitle": "Tu viaje hacia una vida sin humo comienza aquí",
-    "title": "Bienvenido a Zero Poofs",
+    "title": "Bienvenido a Zero Puffs",
     "willYouQuit": "¿Vas a... dejar de fumar?"
   },
   "auth": {

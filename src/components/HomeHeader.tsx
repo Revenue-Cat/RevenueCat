@@ -10,6 +10,7 @@ import { BUDDIES_DATA } from "../data/buddiesData";
 import { SCENES_DATA } from "../data/scenesData";
 import Purchases from "react-native-purchases";
 import LottieView from "lottie-react-native";
+import { CHALLENGES_DATA } from "../data/challengesData";
 
 interface HomeHeaderProps {
   currentView: "home" | "achievements" | "shop";
@@ -35,6 +36,9 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     ownedBuddies,
     ownedBackgrounds,
     refreshCoinsBalance,
+    getChallengeStatus,
+    getChallengeProgress,
+    getChallengeCompletions,
   } = useApp();
 
   // Get the selected buddy data
@@ -63,7 +67,15 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   const completedAchievementsCount = achievements.filter((achievement) => {
     const progress = getProgressForAchievement(achievement.id);
     return progress.percentage === 100;
-  }).length;
+  }).length || 0;
+
+
+  const completedChallengesCount = CHALLENGES_DATA.filter((challenge) => {
+    const status = getChallengeStatus(challenge.id);
+    const previousCompletions = getChallengeCompletions(challenge.id);
+      
+    return status === 'completed' || previousCompletions.length > 0;
+  }).length || 0;
 
   const getViewTitle = () => {
     switch (currentView) {
@@ -103,7 +115,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
       {/* Carousel Header - Centered with Consistent Layout */}
       <View className="items-center justify-center flex-1 mt-2">
         {/* Title - Consistent positioning */}
-        <Text className="text-2xl font-bold text-indigo-950 leading-7 text-center">
+        <Text className="text-xl font-semibold text-indigo-950 leading-7 text-center uppercase opacity-70 mb-1">
           {getViewTitle()}
         </Text>
 
@@ -131,16 +143,16 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
 
           {/* Achievements View - Completed Count */}
           {currentView === "achievements" && (
-            <View className="items-center">
+            <View className="h-12 items-center justify-center">
               <View className="flex-row items-baseline">
-                <Text className="text-3xl font-bold text-indigo-950">
-                  {completedAchievementsCount}
+                <Text className="text-4xl font-semibold text-indigo-950 text-center">
+                  {completedAchievementsCount + completedChallengesCount}
                 </Text>
-                <Text className="text-lg font-bold text-indigo-950/50">
-                  /{achievements.length}
+                <Text className="text-lg font-semibold text-indigo-950/50">
+                  /{achievements.length + CHALLENGES_DATA.length}
                 </Text>
               </View>
-              <Text className="text-lg font-medium text-indigo-950/50 text-center mt-0.5">
+              <Text className="text-s font-medium text-indigo-950/50 text-center">
                 {t("home.badgesCollected")}
               </Text>
             </View>
@@ -148,13 +160,13 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
 
           {/* Shop View - Goodies Count */}
           {currentView === "shop" && (
-            <View className="items-center">
+            <View className="h-12 items-center justify-center">
               <View className="flex-row items-baseline">
-                <Text className="text-3xl font-bold text-indigo-950">
+                <Text className="text-4xl font-semibold text-indigo-950">
                   {goodiesCount}
                 </Text>
               </View>
-              <Text className="text-lg font-medium text-indigo-950/50 text-center mt-0.5">
+              <Text className="text-s font-medium text-indigo-950/50 text-center">
                 {t("home.goodiesAvailable", "Goodies available")}
               </Text>
             </View>

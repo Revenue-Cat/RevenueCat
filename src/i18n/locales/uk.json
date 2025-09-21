@@ -405,8 +405,8 @@
   "countdownTimer": {
     "days": "Днів",
     "hours": "Годин",
-    "minutes": "Хвилин",
-    "seconds": "Секунд"
+    "minutes": "Хв",
+    "seconds": "Сек"
   },
   "cravingSOS": {
     "common": {
@@ -508,7 +508,7 @@
       "smokeFreeDays": "Днів без куріння",
       "timeSaved": "Часу збережено"
     },
-    "title": "Zero Poofs"
+    "title": "Zero Puffs"
   },
   "languages": {
     "english": "English",
@@ -582,8 +582,8 @@
       "title": "Ми невелика креативна команда!"
     },
     "share": {
-      "message": "Приєднуйся до мене в Zero Poofs — моєму улюбленому застосунку для відмови від куріння!",
-      "title": "Zero Poofs"
+      "message": "Приєднуйся до мене в Zero Puffs — моєму улюбленому застосунку для відмови від куріння!",
+      "title": "Zero Puffs"
     }
   },
   "regularAchievements": {
@@ -903,7 +903,7 @@
     "description": "Приєднуйтесь до тисяч людей, які успішно кинули курити за допомогою нашого перевіреного підходу.",
     "selectLanguage": "Мова",
     "subtitle": "Ваша подорож до життя без куріння починається тут",
-    "title": "Ласкаво просимо до Zero Poofs",
+    "title": "Ласкаво просимо до Zero Puffs",
     "willYouQuit": "Чи кинеш... курити?"
   },
   "auth": {
