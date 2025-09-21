@@ -55,7 +55,7 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { t } = useTranslation();
-  console.log("progress", progress, achievement)
+  console.log("progress", progress, achievement,  achievement.completedDate)
   if (!achievement || !getProgressForAchievement) return null;
   const borderColor = isDark ? "#475569" : "#d7d9df";
   // Helper function to render achievement icon and badges

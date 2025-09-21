@@ -172,7 +172,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
             const isLocked = challenge.status === 'locked';
             const completionCount = challenge.previousCompletions.length;
             const isActive = challenge.status === 'active';
-              
+
             return (
               <View
                 key={`${challenge.id}-${index}`}

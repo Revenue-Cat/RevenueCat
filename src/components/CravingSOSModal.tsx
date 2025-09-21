@@ -13,6 +13,7 @@ import {
   View,
   Modal,
 } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
 import SlideModal from "./SlideModal";
 import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
@@ -283,48 +284,63 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
         </View>
       </View>
 
-      <View className="flex-row items-center gap-4 justify-center mt-4 w-full px-4">
-        {/* Close (✕) — made 48x48 to match smoke button */}
-        <Pressable
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.close")}
-          className={`${
-            isDark ? "bg-slate-700" : "bg-indigo-50"
-          } rounded-2xl justify-center items-center`}
-          style={{ width: 48, height: 48 }}
-        >
-          <Text
+      <LinearGradient
+        colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={{
+          marginHorizontal: -40,
+          marginBottom: -40,
+          paddingBottom: 40,
+          paddingHorizontal: 40,
+          paddingVertical: 16,
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+        }}
+      >
+        <View className="flex-row items-center gap-4 justify-center w-full">
+          {/* Close (✕) — made 48x48 to match smoke button */}
+          <Pressable
+            onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel={t("common.close")}
             className={`${
-              isDark ? "text-slate-50" : "text-indigo-900"
-            } font-bold`}
-            style={{ fontSize: 20, lineHeight: 20 }}
+              isDark ? "bg-slate-700" : "bg-indigo-50"
+            } rounded-2xl justify-center items-center`}
+            style={{ width: 48, height: 48 }}
           >
-            ✕
-          </Text>
-        </Pressable>
+            <Text
+              className={`${
+                isDark ? "text-slate-50" : "text-indigo-900"
+              } font-bold`}
+              style={{ fontSize: 20, lineHeight: 20 }}
+            >
+              ✕
+            </Text>
+          </Pressable>
 
-      {/* Take 5 breaths Button */}
-        <Pressable
-          className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 w-[70%]"
-           style={{ height: 48 }}
-          onPress={() => {
-            onClose(); // Close modal first
-            onStartBreathing(); // Then navigate to breathing exercise
-          }}
-        >
-          <Text className="text-white font-bold text-lg">{t('breathing.controls.takeBreaths', { count: 5 })}</Text>
-        </Pressable>
+        {/* Take 5 breaths Button */}
+          <Pressable
+            className="bg-indigo-600 rounded-2xl justify-center items-center px-6 py-2.5 flex-1"
+             style={{ height: 48 }}
+            onPress={() => {
+              onClose(); // Close modal first
+              onStartBreathing(); // Then navigate to breathing exercise
+            }}
+          >
+            <Text className="text-white font-bold text-lg">{t('breathing.controls.takeBreaths', { count: 5 })}</Text>
+          </Pressable>
 
-        {/* I smoked button — 48x48, rounded-2xl, white 24x24 icon */}
-        <Pressable
-          onPress={onOpenSlipsLog}
-          className="bg-red-500 rounded-2xl justify-center items-center"
-          style={{ width: 48, height: 48 }}
-        >
-          <SmokeIcon width={24} height={24} color="#ffffff" />
-        </Pressable>
-      </View>
+          {/* I smoked button — 48x48, rounded-2xl, white 24x24 icon */}
+          <Pressable
+            onPress={onOpenSlipsLog}
+            className="bg-red-500 rounded-2xl justify-center items-center"
+            style={{ width: 48, height: 48 }}
+          >
+            <SmokeIcon width={24} height={24} color="#ffffff" />
+          </Pressable>
+        </View>
+      </LinearGradient>
 
       {/* Don't Give Up Modal */}
       <Modal
