@@ -39,7 +39,7 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
   if (!challenge) return null;
 
   const status = getChallengeStatus(challenge.id);
-  const isCompleted = status === 'completed';
+  const isCompleted = status === 'completed' || challenge.previousCompletions.length;
   const isInProgress = status === 'inprogress';
   const isLocked = status === 'locked';
   const borderColor = isDark ? "#475569" : "#d7d9df";

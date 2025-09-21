@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, Pressable, Image, Share, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import SlideModal from './SlideModal';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -237,11 +238,12 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   if (!challenge) return null;
 
   return (
-    <SlideModal
-      visible={visible}
-      onClose={onClose}
-      showCloseButton={false}
-    >
+    <View style={{ flex: 1 }}>
+      <SlideModal
+        visible={visible}
+        onClose={onClose}
+        showCloseButton={false}
+      >
       <View className="px-2">
         {/* Header: Coins on left, Duration on right */}
         <View className={`flex-row ${!isLocked ? 'justify-center' : 'justify-between' } items-center mb-2`}>
@@ -567,68 +569,86 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
           </View>
         )}
         </ScrollView>
-        {/* Action Buttons Container */}
-        <View className="mt-6 flex-row justify-center gap-2">
-        {/* Close Button */}
-        <Pressable
-          className={`w-15 h-15 rounded-2xl justify-center items-center ${
-            isDark ? "bg-slate-700" : "bg-indigo-50"
-          }`}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.close", "Close")}
+        
+        {/* Full-width LinearGradient Action Buttons - Inside SlideModal */}
+        <LinearGradient
+          colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={{
+            // marginTop: 24,
+            marginHorizontal: -40,
+            marginBottom: -40,
+            paddingBottom: 40,// Extended negative margin to reach screen edges
+            paddingHorizontal: 40,
+            paddingVertical: 16,
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+          }}
         >
-          <Text
-            className={`text-2xl rounded-2xl px-5 py-3 font-bold ${
-              isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
-            }`}
-          >
-            ✕
-          </Text>
-        </Pressable>
+          <View className="flex-row justify-center gap-2">
+            {/* Close Button */}
+            <Pressable
+              className={`w-15 h-15 rounded-2xl justify-center items-center ${
+                isDark ? "bg-slate-700" : "bg-indigo-50"
+              }`}
+              onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.close", "Close")}
+            >
+              <Text
+                className={`text-2xl rounded-2xl px-5 py-3 font-bold ${
+                  isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
+                }`}
+              >
+                ✕
+              </Text>
+            </Pressable>
 
-      {/* Action Button - Start now, Check In, or Restart challenge */}
-        <Pressable
-          className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
-          onPress={isCompleted ? handleRestartChallenge : (isInProgress ? (challenge?.isExclusive && !previousCompletions.length ? () => onNavigateToBreathing?.(true) : handleCheckIn) : (previousCompletions.length > 0 ? handleRestartChallenge : handleStartChallenge))}
-          accessibilityRole="button"
-          accessibilityLabel={
-            isCompleted 
-              ? t('challenges.modal.restartChallenge', "Restart Challenge")
-              : isInProgress 
-                ? (challenge?.isExclusive && !previousCompletions.length ? "Take 5 breathe" : t('challenges.checkIn', "Check In"))
-                : (previousCompletions.length > 0 
-                    ? t('challenges.modal.restartChallenge', "Restart Challenge")
-                    : (isLocked 
-                        ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 })
-                        : t('challenges.modal.startNow', "Start Now")))
-          }
-        >      
-          {isInProgress ? (
+            {/* Action Button - Start now, Check In, or Restart challenge */}
+            <Pressable
+              className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
+
+              onPress={isCompleted ? handleRestartChallenge : (isInProgress ? (challenge?.isExclusive && !previousCompletions.length ? () => onNavigateToBreathing?.(true) : handleCheckIn) : (previousCompletions.length > 0 ? handleRestartChallenge : handleStartChallenge))}
+              accessibilityRole="button"
+              accessibilityLabel={
+                isCompleted 
+                  ? t('challenges.modal.restartChallenge', "Restart Challenge")
+                  : isInProgress 
+                    ? (challenge?.isExclusive && !previousCompletions.length ? "Take 5 breathe" : t('challenges.checkIn', "Check In"))
+                    : (previousCompletions.length > 0 
+                        ? t('challenges.modal.restartChallenge', "Restart Challenge")
+                        : (isLocked 
+                            ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 })
+                            : t('challenges.modal.startNow', "Start Now")))
+              }
+            >      
+              {isInProgress ? (
               challenge?.isExclusive && !previousCompletions.length ? <BreatheIcon width={16} height={16} color="#ffffff" /> : <Ionicons name="checkmark" size={18} color="#ffffff" />
-            ) : (isCompleted || previousCompletions.length > 0) ? (
+                ) : (isCompleted || previousCompletions.length > 0) ? (
               <Ionicons name="refresh" size={18} color="#ffffff" />
-            ) : (
-              ""
-            )}     
+                ) : (
+                  ""
+                )}     
             <Text className="font-semibold text-xl text-white ml-2 mr-2">
-              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : (isLocked ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 }) : t('challenges.modal.startNow'))))}
-            </Text>
-            {progressData.checkIns && isInProgress && !isCompleted && previousCompletions.length === 0 ? (
+                  {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : (isLocked ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 }) : t('challenges.modal.startNow'))))}
+                </Text>
+                {progressData.checkIns && isInProgress && !isCompleted && previousCompletions.length === 0 ? (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
                   <Text className="text-white text-s font-bold">{progressData.checkIns}</Text>
-                </View>
-              ) : null}
-            {(isInProgress || isActive || isCompleted || previousCompletions.length > 0) ? (
-             null
-            ) : (
-                 <CoinIcon width={20} height={20} className="ml-1" />
-            )}
-       </Pressable>
-    
-      </View>     
+                    </View>
+                  ) : null}
+                {(isInProgress || isActive || isCompleted || previousCompletions.length > 0) ? (
+                 null
+                ) : (
+                     <CoinIcon width={20} height={20} className="ml-1" />
+                )}
+           </Pressable>
+          </View>
+        </LinearGradient>
       </View>
-    </SlideModal>
+      </SlideModal>
+    </View>
   );
 };
 

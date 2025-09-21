@@ -60,6 +60,7 @@ import DropIcon from '../assets/strategies/icons/drop.svg';
 import ArticleIcon from '../assets/strategies/icons/article.svg';
 import RelaxIcon from '../assets/strategies/icons/relax.svg';
 export interface ChallengeData {
+  previousCompletions: any;
   timeBasedProgress?: number;
   id: string;
   title: string;

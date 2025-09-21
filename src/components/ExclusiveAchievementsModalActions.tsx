@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, Share } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ChallengeData } from '../data/challengesData';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -31,40 +32,55 @@ const ExclusiveAchievementsModalActions: React.FC<ExclusiveAchievementsModalActi
   const isLocked = status === 'locked';
 
   return (
-    <View className="mt-6 flex-row justify-center gap-4">
-      <Pressable 
-        className={`w-15 h-15 rounded-2xl justify-center items-center ${isDark ? 'bg-slate-700' : 'bg-indigo-50'}`}
-        onPress={onClose}
-      >
-        <Text className={`text-2xl rounded-2xl px-5 py-3 font-bold ${isDark ? 'text-slate-100 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
-      </Pressable>
-
-      {(isInProgress || isLocked )? null : (
+    <LinearGradient
+      colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={{
+        marginHorizontal: -40,
+        marginBottom: -40,
+        paddingBottom: 40,
+        paddingHorizontal: 40,
+        paddingVertical: 16,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+      }}
+    >
+      <View className="flex-row justify-center gap-4">
         <Pressable 
-          className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
-          onPress={() => {
-            if (isCompleted) {
-              handleShare();
-            } else {
-              handleStartChallenge();
-            }
-          }}
-          style={({ pressed }) => [
-            {
-              opacity: pressed ? 0.7 : 1,
-              backgroundColor: pressed ? '#4F46E5' : '#4F46E5'
-            }
-          ]}
+          className={`w-15 h-15 rounded-2xl justify-center items-center ${isDark ? 'bg-slate-700' : 'bg-indigo-50'}`}
+          onPress={onClose}
         >
-          <View className="flex-row items-center">
-            {isLocked ? <UpgradeIcon width={24} height={24} color="white" /> : ""}
-            <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">
-              {isCompleted ? t('achievements.share') : "Start Challenge"}
-            </Text>
-          </View>
+          <Text className={`text-2xl rounded-2xl px-5 py-3 font-bold ${isDark ? 'text-slate-100 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
         </Pressable>
-      )}
-    </View>
+
+        {(isInProgress || isLocked )? null : (
+          <Pressable 
+            className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
+            onPress={() => {
+              if (isCompleted) {
+                handleShare();
+              } else {
+                handleStartChallenge();
+              }
+            }}
+            style={({ pressed }) => [
+              {
+                opacity: pressed ? 0.7 : 1,
+                backgroundColor: pressed ? '#4F46E5' : '#4F46E5'
+              }
+            ]}
+          >
+            <View className="flex-row items-center">
+              {isLocked ? <UpgradeIcon width={24} height={24} color="white" /> : ""}
+              <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">
+                {isCompleted ? t('achievements.share') : "Start Challenge"}
+              </Text>
+            </View>
+          </Pressable>
+        )}
+      </View>
+    </LinearGradient>
   );
 };
 

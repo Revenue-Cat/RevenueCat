@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, Share } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Achievement } from '../services/achievementService';
 import { isRegularAchievement } from '../utils/achievementHelpers';
 import { useTheme } from '../contexts/ThemeContext';
@@ -41,53 +42,68 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
   };
 
   return (
-    <View className="mt-6 flex-row justify-center gap-4">
-      <Pressable
-        className={`w-15 h-15 rounded-2xl justify-center items-center ${
-          isDark ? "bg-slate-700" : "bg-indigo-50"
-        }`}
-        onPress={onClose}
-        accessibilityRole="button"
-        accessibilityLabel={t("common.close", "Close")}
-      >
-        <Text
-          className={`text-2xl rounded-2xl px-5 py-3 font-bold ${
-            isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
-          }`}
-        >
-          ✕
-        </Text>
-      </Pressable>
-
-      {(isRegularAchievement(achievement.id) && (progress?.percentage || 0) !== 100) ? null : (
+    <LinearGradient
+      colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={{
+        marginHorizontal: -40,
+        marginBottom: -40,
+        paddingBottom: 40,
+        paddingHorizontal: 40,
+        paddingVertical: 16,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+      }}
+    >
+      <View className="flex-row justify-center gap-4">
         <Pressable
-          className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
-          onPress={() => {
-            if (achievement.unlocked && (progress?.percentage || 0) === 100) {
-              handleShare();
-            } else if (isRegularAchievement(achievement.id)) {
-              // Regular achievements don't have Update button when locked
-              console.log('Regular achievement locked - no action');
-            } else {
-              // Exclusive achievements have Update button when locked
-              handleUpdate();
-            }
-          }}
+          className={`w-15 h-15 rounded-2xl justify-center items-center ${
+            isDark ? "bg-slate-700" : "bg-indigo-50"
+          }`}
+          onPress={onClose}
           accessibilityRole="button"
-          accessibilityLabel={
-            achievement.unlocked && (progress?.percentage || 0) === 100 
-              ? t('achievements.share', "Share")
-              : (isRegularAchievement(achievement.id) 
-                  ? t('achievements.close', "Close")
-                  : t('achievements.update', "Update"))
-          }
+          accessibilityLabel={t("common.close", "Close")}
         >
-          <Text className="font-semibold text-xl text-white">
-            {achievement.unlocked && (progress?.percentage || 0) === 100 ? t('achievements.share') : (isRegularAchievement(achievement.id) ? t('achievements.close') : t('achievements.update'))}
+          <Text
+            className={`text-2xl rounded-2xl px-5 py-3 font-bold ${
+              isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
+            }`}
+          >
+            ✕
           </Text>
         </Pressable>
-      )}
-    </View>
+
+        {(isRegularAchievement(achievement.id) && (progress?.percentage || 0) !== 100) ? null : (
+          <Pressable
+            className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
+            onPress={() => {
+              if (achievement.unlocked && (progress?.percentage || 0) === 100) {
+                handleShare();
+              } else if (isRegularAchievement(achievement.id)) {
+                // Regular achievements don't have Update button when locked
+                console.log('Regular achievement locked - no action');
+              } else {
+                // Exclusive achievements have Update button when locked
+                handleUpdate();
+              }
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={
+              achievement.unlocked && (progress?.percentage || 0) === 100 
+                ? t('achievements.share', "Share")
+                : (isRegularAchievement(achievement.id) 
+                    ? t('achievements.close', "Close")
+                    : t('achievements.update', "Update"))
+            }
+          >
+            <Text className="font-semibold text-xl text-white">
+              {achievement.unlocked && (progress?.percentage || 0) === 100 ? t('achievements.share') : (isRegularAchievement(achievement.id) ? t('achievements.close') : t('achievements.update'))}
+            </Text>
+          </Pressable>
+        )}
+      </View>
+    </LinearGradient>
   );
 };
 

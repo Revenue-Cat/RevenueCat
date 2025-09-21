@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Dimensions, Pressable } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
 import SlideModal from "./SlideModal";
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -133,35 +134,50 @@ const CoinPurchaseModal: React.FC = () => {
       }
       {/* Actions Button - Only show when not loading (Apple ID modal not open) */}
       {!isLoading && (
-        <View className="mt-6 flex-row justify-center gap-2">
-          {/* Close Button */}
-          <Pressable
-            className={`w-15 h-15 rounded-2xl justify-center items-center ${
-              isDark ? "bg-slate-700" : "bg-indigo-50"
-            }`}
-            onPress={() => setShowCoinPurchase(false)}
-            accessibilityRole="button"
-            accessibilityLabel={t("common.close", "Close")}
-          >
-            <Text
-              className={`text-2xl rounded-2xl px-5 py-3 font-bold ${
-                isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
+        <LinearGradient
+          colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={{
+            marginHorizontal: -40,
+            marginBottom: -40,
+            paddingBottom: 40,
+            paddingHorizontal: 40,
+            paddingVertical: 16,
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+          }}
+        >
+          <View className="flex-row justify-center gap-2">
+            {/* Close Button */}
+            <Pressable
+              className={`w-15 h-15 rounded-2xl justify-center items-center ${
+                isDark ? "bg-slate-700" : "bg-indigo-50"
               }`}
+              onPress={() => setShowCoinPurchase(false)}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.close", "Close")}
             >
-              ✕
-            </Text>
-          </Pressable>
-          <Pressable
-            className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
-            onPress={handleBuy}
-            accessibilityRole="button"
-            accessibilityLabel={t("shop.buyCoins", "Buy coins")}
-          >
-            <Text className="font-semibold text-xl text-white">
-              {t("shop.buyCoins", "Buy coins")}
-            </Text>
-          </Pressable>
-        </View>
+              <Text
+                className={`text-2xl rounded-2xl px-5 py-3 font-bold ${
+                  isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
+                }`}
+              >
+                ✕
+              </Text>
+            </Pressable>
+            <Pressable
+              className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
+              onPress={handleBuy}
+              accessibilityRole="button"
+              accessibilityLabel={t("shop.buyCoins", "Buy coins")}
+            >
+              <Text className="font-semibold text-xl text-white">
+                {t("shop.buyCoins", "Buy coins")}
+              </Text>
+            </Pressable>
+          </View>
+        </LinearGradient>
       )}
     </SlideModal>
   );
