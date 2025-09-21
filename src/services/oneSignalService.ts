@@ -223,10 +223,11 @@ class OneSignalService {
       
       console.log('OneSignal: ✅ Using secure configuration from Firebase');
   
+      // Target specific user instead of all users
       const notificationData = {
         app_id: config.appId,
-        // Send to all users by targeting all subscribed players
-        included_segments: ['All'],
+        // Target specific user by external user ID
+        include_external_user_ids: [userId],
         contents: {
           en: message
         },
