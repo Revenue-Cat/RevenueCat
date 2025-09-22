@@ -32,8 +32,25 @@ const ReviewModal: React.FC<Props> = ({
 
   const openReview = async () => {
     try {
-      await Linking.openURL(appReviewUrl || APP_STORE_REVIEW_URL);
-    } catch {}
+      const url = appReviewUrl || APP_STORE_REVIEW_URL;
+      console.log('Opening App Store URL:', url);
+      const canOpen = await Linking.canOpenURL(url);
+      console.log('Can open URL:', canOpen);
+      if (canOpen) {
+        await Linking.openURL(url);
+      } else {
+        console.log('Cannot open URL, trying alternative');
+        await Linking.openURL('https://apps.apple.com/app/id6751299071');
+      }
+    } catch (error) {
+      console.log('Error opening App Store:', error);
+      // Fallback to web URL
+      try {
+        await Linking.openURL('https://apps.apple.com/app/id6751299071');
+      } catch (fallbackError) {
+        console.log('Fallback also failed:', fallbackError);
+      }
+    }
   };
 
   const submit = async (value: number) => {

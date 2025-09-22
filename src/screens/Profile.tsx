@@ -2,6 +2,7 @@
 import React, { useRef, useMemo, useState, useEffect } from "react";
 import { View, Text, Pressable, Animated } from "react-native";
 import LottieView from "lottie-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { t } from "i18next";
 
 import { useApp } from "../contexts/AppContext";
@@ -28,8 +29,6 @@ import FeedbackLight from "../assets/icons/feedback.svg";
 import FeedbackDark from "../assets/icons/feedback-d.svg";
 import SupportLight from "../assets/icons/support.svg";
 import SupportDark from "../assets/icons/support-d.svg";
-import ArrowRightLight from "../assets/icons/arrow-right.svg";
-import ArrowRightDark from "../assets/icons/arrow-right-d.svg";
 import FlagEn from "../assets/icons/flag-en.svg";
 import FlagEs from "../assets/icons/flag-es.svg";
 import FlagUk from "../assets/icons/flag-uk.svg";
@@ -61,7 +60,6 @@ const Profile: React.FC<ProfileProps> = ({
   // icons + colors per theme
   const EditIcon = isDark ? EditDark : EditLight;
   const PrevIcon = isDark ? PrevDark : PrevLight;
-  const Right = isDark ? ArrowRightDark : ArrowRightLight;
   const iconColor = isDark ? "#FFFFFF" : "#1e1b4b";
   const systemIconColor = isDark ? "#CBD5E1" : "#1e1b4b";
 
@@ -389,7 +387,7 @@ const Profile: React.FC<ProfileProps> = ({
         <View className="mx-4 gap-3">
           {/* Notifications */}
           <Pressable
-            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+            className={`w-full h-14 rounded-full px-4 flex-row items-center justify-between ${
               isDark ? "bg-slate-700" : "bg-indigo-50"
             }`}
             onPress={() => {}}
@@ -409,12 +407,12 @@ const Profile: React.FC<ProfileProps> = ({
                 {t("profile.sections.notification", "Notification")}
               </Text>
             </View>
-            <Right width={18} height={18} color={systemIconColor} />
+            <Ionicons name="checkmark" size={18} color={systemIconColor} />
           </Pressable>
 
           {/* Theme */}
           <Pressable
-            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+            className={`w-full h-14 rounded-full px-4 flex-row items-center justify-between ${
               isDark ? "bg-slate-700" : "bg-indigo-50"
             }`}
             onPress={() => setShowSideModal(true)}
@@ -430,12 +428,12 @@ const Profile: React.FC<ProfileProps> = ({
                 {t("profile.sections.theme", "Theme")}
               </Text>
             </View>
-            <Right width={18} height={18} color={systemIconColor} />
+            <Ionicons name="checkmark" size={18} color={systemIconColor} />
           </Pressable>
 
           {/* Language */}
           <Pressable
-            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+            className={`w-full h-14 rounded-full px-4 flex-row items-center justify-between ${
               isDark ? "bg-slate-700" : "bg-indigo-50"
             }`}
             onPress={() => setShowLanguageModal(true)}
@@ -453,7 +451,7 @@ const Profile: React.FC<ProfileProps> = ({
                 {currentLanguage.name}
               </Text>
             </View>
-            <Right width={18} height={18} color={systemIconColor} />
+            <Ionicons name="checkmark" size={18} color={systemIconColor} />
           </Pressable>
         </View>
 
@@ -471,8 +469,8 @@ const Profile: React.FC<ProfileProps> = ({
         {/* Settings block 2 */}
         <View className="mx-4 gap-3">
           {/* Feedback -> open SupportSlide */}
-          <Pressable
-            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+          {/* <Pressable
+            className={`w-full h-14 rounded-full px-4 flex-row items-center justify-between ${
               isDark ? "bg-slate-700" : "bg-indigo-50"
             }`}
             onPress={() => setShowReview(true)}
@@ -488,12 +486,12 @@ const Profile: React.FC<ProfileProps> = ({
                 {t("profile.sections.feedback", "Feedback")}
               </Text>
             </View>
-            <Right width={18} height={18} color={systemIconColor} />
-          </Pressable>
+            <Ionicons name="checkmark" size={18} color={systemIconColor} />
+          </Pressable> */}
 
           {/* Support -> open SupportSlide */}
           <Pressable
-            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
+            className={`w-full h-14 rounded-full px-4 flex-row items-center justify-between ${
               isDark ? "bg-slate-700" : "bg-indigo-50"
             }`}
             onPress={() => setShowSupportModal(true)}
@@ -509,7 +507,7 @@ const Profile: React.FC<ProfileProps> = ({
                 {t("profile.sections.support", "Support")}
               </Text>
             </View>
-            <Right width={18} height={18} color={systemIconColor} />
+            <Ionicons name="checkmark" size={18} color={systemIconColor} />
           </Pressable>
         </View>
         <View

@@ -97,5 +97,5 @@ export const SLIPS_CONFIG = {
 
 // App Store links (replace with your real IDs/links)
 export const APP_STORE_REVIEW_URL =
-  "itms-apps://apps.apple.com/app/id0000000000?action=write-review";
-export const APP_SHARE_URL = "https://apps.apple.com/app/id0000000000";
+  "itms-apps://apps.apple.com/app/id6751299071?action=write-review";
+export const APP_SHARE_URL = "https://apps.apple.com/app/id6751299071";
