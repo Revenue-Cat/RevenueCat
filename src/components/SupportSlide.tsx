@@ -1,11 +1,11 @@
 import React from "react";
-import { View, Text, Pressable, Alert } from "react-native";
+import { View, Text, Pressable, Alert, Linking } from "react-native";
 import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import SlideModal from "./SlideModal";
 
 // icons (colored brands) + right chevrons
-import TelegramIcon from "../assets/icons/telegram.svg";
+// import TelegramIcon from "../assets/icons/telegram.svg";
 import EmailIcon from "../assets/icons/email.svg";
 import ArrowRightLight from "../assets/icons/arrow-right.svg";
 import ArrowRightDark from "../assets/icons/arrow-right-d.svg";
@@ -23,18 +23,26 @@ const SupportSlide: React.FC<Props> = ({ visible, onClose }) => {
   const Right = isDark ? ArrowRightDark : ArrowRightLight;
   const systemIconColor = isDark ? "#CBD5E1" : "#1e1b4b";
 
+  const handleEmailPress = async () => {
+    try {
+      await Linking.openURL("mailto:support@quitqly.com");
+    } catch (error) {
+      Alert.alert(t("alerts.email"), t("alerts.mockEmail"));
+    }
+  };
+
   const rows = [
-    {
-      key: "tg",
-      Icon: TelegramIcon,
-      label: t("support.telegram", "Message us on Telegram"),
-      onPress: () => Alert.alert(t("alerts.telegram"), t("alerts.mockTelegram")),
-    },
+    // {
+    //   key: "tg",
+    //   Icon: TelegramIcon,
+    //   label: t("support.telegram", "Message us on Telegram"),
+    //   onPress: () => Alert.alert(t("alerts.telegram"), t("alerts.mockTelegram")),
+    // },
     {
       key: "email",
       Icon: EmailIcon,
       label: t("support.email", "Write to us by email"),
-      onPress: () => Alert.alert(t("alerts.email"), t("alerts.mockEmail")),
+      onPress: handleEmailPress,
     },
   ] as const;
 

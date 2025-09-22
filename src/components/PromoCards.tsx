@@ -1,12 +1,11 @@
 // src/components/PromoCards.tsx
 import React, { useState } from "react";
-import { View, Text, Pressable, Share, Modal } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { View, Text, Pressable, Share, Modal, Image } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../contexts/ThemeContext";
 import ReviewModal from "./ReviewModal";
-import Coins from "../assets/coins.svg";
-import BuddyReview from "../assets/buddy-review.svg";
+import ReviewBannerImage from "../assets/review-banner-image.png";
+import Coins from "../assets/icons/coins.svg";
 import { APP_SHARE_URL } from "../config/subscriptions";
 
 type Props = {
@@ -81,45 +80,39 @@ const PromoCards: React.FC<Props> = ({
       </View> */}
 
       {/* Review card */}
-      <View className="mt-4 rounded-3xl overflow-hidden">
-        <LinearGradient
-          colors={["#8DB0FF", "#F07AC2"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+      <View className="mt-4 bg-indigo-50 rounded-2xl p-5">
+        {/* Top illustration */}
+        <Image
+          source={ReviewBannerImage}
+          resizeMode="contain"
+          style={{ width: 280 }}
+        />
+
+        {/* Title */}
+        <Text className="text-xl font-bold text-indigo-950 text-center">
+          {t("review.title", "Leave feedback")}
+        </Text>
+
+        {/* Description */}
+        <Text className="text-s text-slate-850 text-center mt-2">
+          {t(
+            "review.description",
+            "We're a small creative team! Help us grow by leaving a quick 5★ review. Your support means a lot and keeps us creating more for you!"
+          )}
+        </Text>
+
+        {/* Feedback Button */}
+        <Pressable
+          onPress={onOpenReview}
+          className="w-full h-[52px] bg-indigo-600 rounded-2xl justify-center items-center mt-4"
         >
-          <View className="px-5 py-5 relative pr-32 min-h-[128px]">
-            <View className="flex-row items-center justify-between">
-              <View style={{ paddingRight: 16 }}>
-                <Text className="text-white/90 font-semibold text-s">
-                  {t(
-                    "promos.review.subtitle",
-                    "Help us grow with a quick 5★ review"
-                  )}
-                </Text>
-                <Text className="text-white font-bold text-base mt-1">
-                  {t("promos.review.title", "We’re a small creative team!")}
-                </Text>
-
-                <Pressable
-                  onPress={onOpenReview}
-                  className="self-start bg-white/20 rounded-3xl px-4 py-2 mt-4"
-                >
-                  <Text className="text-white font-bold text-sm">
-                    {t("promos.review.cta", "Give us a 5-star")}
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-
-            {/* Artwork anchored to corner; slight overflow to match screenshot */}
-            <View
-              pointerEvents="none"
-              style={{ position: "absolute", right: -6, bottom: -8 }}
-            >
-              <BuddyReview width={136} height={136} />
-            </View>
+          <View className="flex-row items-center justify-center">
+            <Text className="text-white font-bold text-xl mr-2">
+              {t("review.button", "Feedback")} +150
+            </Text>
+            <Coins width={20} height={20} />
           </View>
-        </LinearGradient>
+        </Pressable>
       </View>
     </View>
   );
