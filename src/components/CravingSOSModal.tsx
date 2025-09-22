@@ -41,7 +41,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
   const isDark = theme === "dark";
   const { width } = Dimensions.get("window");
   const ITEM_WIDTH = width * 0.7; // center card width (~70%)
-  const SIDE_GUTTER = width * 0.1; // side visibility (~10% each side)
+  const SIDE_GUTTER = width * 0.15; // side visibility (~10% each side)
 
   const scrollX = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(0);
@@ -85,21 +85,22 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
       title={""}
       showCloseButton={false}
     >
-      <Text
-        className={`text-xl font-bold text-center px-8 mt-3 mb-2`}
-      >
-        {t("cravingSOS.modal.title")}
-      </Text>
+      <View style={{ marginHorizontal: -20 }}>
+        <Text
+          className={`text-xl font-bold text-center px-8 mt-3 mb-2`}
+        >
+          {t("cravingSOS.modal.title")}
+        </Text>
 
-      <Text
-        className={`${
-          isDark ? "text-slate-300" : "text-slate-500"
-        } text-center`}
-      >
-        {t("cravingSOS.modal.subtitle")}
-      </Text>
+        <Text
+          className={`${
+            isDark ? "text-slate-300" : "text-slate-500"
+          } text-center`}
+        >
+          {t("cravingSOS.modal.subtitle")}
+        </Text>
 
-      <Animated.FlatList
+        <Animated.FlatList
         ref={flatListRef}
         data={data}
         keyExtractor={(item) => item.id}
@@ -117,6 +118,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
           paddingHorizontal: SIDE_GUTTER,
           paddingVertical: 16,
         }}
+        style={{ flex: 1 }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: true }
@@ -277,7 +279,8 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
           })}
         </View>
       </View>
-
+      </View>
+ {/* Action buttons container -  */}
       <LinearGradient
         colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.5)']}
         start={{ x: 0, y: 0 }}
@@ -286,7 +289,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
           marginHorizontal: -40,
           marginBottom: -40,
           paddingBottom: 40,
-          paddingHorizontal: 40,
+          paddingHorizontal: 50,
           paddingVertical: 16,
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,

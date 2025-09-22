@@ -386,25 +386,37 @@ const Home: React.FC<HomeProps> = ({
           <View className="absolute top-[145px] left-0 right-0 z-[20]" pointerEvents="box-none">
             <View className="flex-row justify-center">
               <View className="flex-row bg-black/30 rounded-full px-2 py-1 gap-1">
-                
-                <Pressable
-                  className={`w-2 h-2 rounded-full ${
-                    currentView === "achievements" ? "bg-white" : "bg-black/30"
-                  }`}
-                  onPress={() => changeView("achievements")}
-                />
-                <Pressable
-                  className={`w-2 h-2 rounded-full ${
-                    currentView === "home" ? "bg-white" : "bg-black/30"
-                  }`}
-                  onPress={() => changeView("home")}
-                />
-                <Pressable
-                  className={`w-2 h-2 rounded-full ${
-                    currentView === "shop" ? "bg-white" : "bg-black/30"
-                  }`}
-                  onPress={() => changeView("shop")}
-                />
+                {['achievements', 'home', 'shop'].map((view, index) => {
+                  // Create scroll position for scale animation
+                  const scrollPosition = Animated.divide(contentTranslateX, -width);
+                  const scale = scrollPosition.interpolate({
+                    inputRange: [index - 1, index, index + 1],
+                    outputRange: [1, 1.2, 1],
+                    extrapolate: "clamp",
+                  });
+                  const opacity = scrollPosition.interpolate({
+                    inputRange: [index - 0.5, index, index + 0.5],
+                    outputRange: [0.5, 1, 0.5],
+                    extrapolate: "clamp",
+                  });
+                  
+                  return (
+                    <Animated.View
+                      key={view}
+                      style={{
+                        transform: [{ scale }],
+                        opacity,
+                      }}
+                    >
+                      <Pressable
+                        className={`w-2 h-2 rounded-full ${
+                          currentView === view ? "bg-white" : "bg-black/30"
+                        }`}
+                        onPress={() => changeView(view as any)}
+                      />
+                    </Animated.View>
+                  );
+                })}
               </View>
             </View>
           </View>

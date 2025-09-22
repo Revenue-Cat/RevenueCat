@@ -251,7 +251,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
         onClose={onClose}
         showCloseButton={false}
       >
-      <View className="px-2">
+      <View className="px-2 -mb-10">
         {/* Header: Coins on left, Duration on right */}
         <View className={`flex-row ${!isLocked ? 'justify-center' : 'justify-between' } items-center mb-2`}>
           {/* Coins */}
@@ -274,6 +274,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
            showsVerticalScrollIndicator={false}
            bounces={false}
            style={{ maxHeight: 600 }}
+           contentContainerStyle={{ paddingBottom: 100 }}
          >
         {/* Full-width Icon */}
         <View className="items-center mb-6">
@@ -582,20 +583,22 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
         )}
         </ScrollView>
         
-        {/* Full-width LinearGradient Action Buttons - Inside SlideModal */}
+        {/* Full-width LinearGradient Action Buttons - absolute overlay at bottom */}
         <LinearGradient
-          colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.953)']}
+          // colors as per current design
+          colors={['transparent', 'rgba(255, 255, 255, 0.9)']}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           style={{
-            // marginTop: 24,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            // extend to screen edges and overdraw to the very bottom
             marginHorizontal: -40,
             marginBottom: -40,
-            paddingBottom: 40,// Extended negative margin to reach screen edges
+            paddingBottom: 75,
             paddingHorizontal: 40,
-            paddingVertical: 16,
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
           }}
         >
           <View className="flex-row justify-center gap-2">

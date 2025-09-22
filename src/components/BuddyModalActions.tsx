@@ -44,7 +44,7 @@ const BuddyModalActions: React.FC<BuddyModalActionsProps> = ({
 
   return (
     <LinearGradient
-      colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+      colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.5)']}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={{
