@@ -11,12 +11,11 @@ type Props = {
   isSelected?: boolean;
 };
 
-const CoinPackCard: React.FC<Props> = ({ pack, onPress, isSelected: showHighlight }) => {
+const CoinPackCard: React.FC<Props> = ({ pack, onPress, isSelected }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  // Use isSelected for highlight instead of bonus/featured logic
-  showHighlight = !!pack.bonusTag && !!pack.featured;
+  const showHighlight = !!isSelected;
 
   return (
     <Pressable

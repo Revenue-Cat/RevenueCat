@@ -31,7 +31,9 @@ const CoinPurchaseModal: React.FC = () => {
       : undefined,
   }));
 
-  const [selectedPack, setSelectedPack] = useState<CoinPack | null>(packs[0] || null)
+  const [selectedPack, setSelectedPack] = useState<CoinPack | null>(() => {
+    return packs[1] || packs[0] || null;
+  })
 
   const handleBuy = async () => {
     if (!selectedPack) return;
@@ -135,7 +137,7 @@ const CoinPurchaseModal: React.FC = () => {
       {/* Actions Button - Only show when not loading (Apple ID modal not open) */}
       {!isLoading && (
         <LinearGradient
-          colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+          colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.5)']}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           style={{
