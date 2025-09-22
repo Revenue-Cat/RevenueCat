@@ -46,6 +46,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
   const CardContent = (
     <View
       className={`${isDark ? 'bg-slate-700' : 'bg-white'} rounded-2xl p-4 mb-3 flex-row items-center shadow-xs ${containerClassName}`}
+      style={{ height: 120 }}
     >
       <View className="flex-1 mr-4">
           <View className="flex-row items-center border border-orange-500 pl-2 pr-1.5 py-0 rounded-full self-start mb-1 gap-0.5 text-center">

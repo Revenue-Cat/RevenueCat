@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { View, Pressable, Text, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withDelay,
+  runOnJS,
 } from 'react-native-reanimated';
 import AchievementCard from './AchievementCard';
 import { useApp } from '../contexts/AppContext';
@@ -45,6 +46,10 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
+  // Animation values for smooth fold/unfold
+  const sectionHeight = useSharedValue(isCollapsed ? 200 : 400);
+  const toggleRotation = useSharedValue(isCollapsed ? 0 : 180);
+
   // Reanimated shared values for second and third card animations
   const secondCardOpacity = useSharedValue(0);
   const secondCardTranslateY = useSharedValue(-30); // Start above (top to bottom animation)
@@ -59,6 +64,10 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
 
   // Animation: first card instant, second and third cards slide down on open, slide up on close (reverse order)
   useEffect(() => {
+    // Animate section height and toggle rotation
+    sectionHeight.value = withTiming(isCollapsed ? 170 : 440, { duration: 300 });
+    toggleRotation.value = withTiming(isCollapsed ? 0 : 180, { duration: 300 });
+
     if (!isCollapsed) {
       // Opening animation - cards slide down from top
       // Reset second and third cards for animation (start from above)
@@ -68,23 +77,33 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
       thirdCardTranslateY.value = -30;
 
       // Animate second card first (slide down from top to bottom)
-      secondCardOpacity.value = withDelay(50, withTiming(1, { duration: 250 }));
-      secondCardTranslateY.value = withDelay(50, withTiming(0, { duration: 250 }));
+      secondCardOpacity.value = withDelay(100, withTiming(1, { duration: 250 }));
+      secondCardTranslateY.value = withDelay(100, withTiming(0, { duration: 250 }));
 
       // Animate third card with longer delay (slide down from top to bottom)
-      thirdCardOpacity.value = withDelay(150, withTiming(1, { duration: 300 }));
-      thirdCardTranslateY.value = withDelay(150, withTiming(0, { duration: 300 }));
+      thirdCardOpacity.value = withDelay(200, withTiming(1, { duration: 300 }));
+      thirdCardTranslateY.value = withDelay(200, withTiming(0, { duration: 300 }));
     } else {
       // Closing animation - cards slide up and fade out (opposite of opening)
       // Animate third card first (slide up from bottom to top) - slightly longer
-      thirdCardOpacity.value = withDelay(80, withTiming(0, { duration: 350 }));
-      thirdCardTranslateY.value = withDelay(80, withTiming(-30, { duration: 350 }));
+      thirdCardOpacity.value = withTiming(0, { duration: 150 });
+      thirdCardTranslateY.value = withTiming(-30, { duration: 150 });
 
       // Animate second card with delay (slide up from bottom to top) - slightly longer
-      secondCardOpacity.value = withDelay(200, withTiming(0, { duration: 400 }));
-      secondCardTranslateY.value = withDelay(200, withTiming(-30, { duration: 400 }));
+      secondCardOpacity.value = withDelay(50, withTiming(0, { duration: 200 }));
+      secondCardTranslateY.value = withDelay(50, withTiming(-30, { duration: 200 }));
     }
-  }, [isCollapsed, secondCardOpacity, secondCardTranslateY, thirdCardOpacity, thirdCardTranslateY]);
+  }, [isCollapsed, sectionHeight, toggleRotation, secondCardOpacity, secondCardTranslateY, thirdCardOpacity, thirdCardTranslateY]);
+
+  // Animated styles
+  const sectionAnimatedStyle = useAnimatedStyle(() => ({
+    height: sectionHeight.value,
+    overflow: 'hidden',
+  }));
+
+  const toggleAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${toggleRotation.value}deg` }],
+  }));
 
   // Get the first 3 non-completed regular achievements (using translated achievements)
   const firstThreeAchievements = useMemo(() => {
@@ -202,7 +221,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
             <View
               style={{
                 position: 'absolute',
-                bottom: 28, // Fixed pixel value for consistency
+                bottom: 30, // Fixed pixel value for consistency
                 left: 16,
                 right: 16,
                 height: 80,
@@ -227,7 +246,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
             <View
               style={{
                 position: 'absolute',
-                bottom: 20, // Fixed pixel value for consistency
+                bottom: 22, // Fixed pixel value for consistency
                 left: 32,
                 right: 32,
                 height: 56,
@@ -284,29 +303,34 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
         className={`absolute ${isCollapsed ? 'bottom-5' : 'bottom-2'} right-1/2 left-1/2 z-10 bg-black/50 rounded-full justify-center items-center px-1 py-2`}
         onPress={onToggle}
       >
-        <Ionicons 
-          name={isCollapsed ? "arrow-down" : "arrow-up"} 
-          size={20} 
-          color="#ffffff"
-        />
+        <Animated.View style={toggleAnimatedStyle}>
+          <Ionicons 
+            name="arrow-down"
+            size={20} 
+            color="#ffffff"
+          />
+        </Animated.View>
       </Pressable>
 
       {/* More Button - Only show when cards are open, positioned in bottom right corner */}
-        {!isCollapsed && onNavigateToProgressChallenges && (
-          <Pressable 
-            className="absolute bottom-2 right-5 z-10 bg-black/50 rounded-full justify-center items-center px-3 py-2 flex-row gap-1"
-            onPress={onNavigateToProgressChallenges}
-          >
-            <Text className="text-white text-md">{t('achievements.more', 'More')}</Text>
-            <Ionicons 
-              name="arrow-forward" 
-              size={16} 
-              color="#ffffff"
-            />
-          </Pressable>
-        )}
+      {!isCollapsed && onNavigateToProgressChallenges && (
+        <Pressable 
+          className="absolute bottom-2 right-5 z-10 bg-black/50 rounded-full justify-center items-center px-3 py-2 flex-row gap-1"
+          onPress={onNavigateToProgressChallenges}
+        >
+          <Text className="text-white text-md">{t('achievements.more', 'More')}</Text>
+          <Ionicons 
+            name="arrow-forward" 
+            size={16} 
+            color="#ffffff"
+          />
+        </Pressable>
+      )}
 
-      {!isCollapsed ? achievementCardsContent : collapsedAchievementView}
+      {/* Animated content container */}
+      <Animated.View style={sectionAnimatedStyle}>
+        {!isCollapsed ? achievementCardsContent : collapsedAchievementView}
+      </Animated.View>
     </View>
   );
 };
