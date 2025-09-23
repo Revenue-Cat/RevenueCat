@@ -94,6 +94,8 @@ const Profile: React.FC<ProfileProps> = ({
     goal,
     userCoins,
     setUserCoins,
+    hasLeftReview,
+    handleLeaveReview
   } = useApp();
 
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
@@ -510,22 +512,27 @@ const Profile: React.FC<ProfileProps> = ({
             <Ionicons name="checkmark" size={18} color={systemIconColor} />
           </Pressable>
         </View>
-        <View
-          className="self-center my-4"
-          style={{
-            width: 72,
-            height: 2,
-            backgroundColor: isDark ? "#475569" : "#E2E8F0",
-            borderRadius: 2,
-          }}
-        />
-        {/* Promo cards: Refer + Review */}
-        <PromoCards
-          onShared={() => {
-            // optional analytics/coins awarding hook
-          }}
-          onOpenReview={() => setShowReview(true)}
-        />
+        {!hasLeftReview && (
+          <>
+            <View
+              className="self-center my-4"
+              style={{
+                width: 72,
+                height: 2,
+                backgroundColor: isDark ? "#475569" : "#E2E8F0",
+                borderRadius: 2,
+              }}
+            />
+            {/* Promo cards: Refer + Review */}
+            <PromoCards
+              onShared={() => {
+                // optional analytics/coins awarding hook
+              }}
+              onOpenReview={() => setShowReview(true)}
+            />
+          </>
+        ) }
+
         {/* <View
           className="self-center my-4"
           style={{
@@ -573,7 +580,8 @@ const Profile: React.FC<ProfileProps> = ({
         visible={showReview}
         onClose={() => setShowReview(false)}
         onSubmit={(stars) => {
-          // optional: track stars
+          handleLeaveReview(stars)
+          setShowReview(false)
         }}
       />
 
