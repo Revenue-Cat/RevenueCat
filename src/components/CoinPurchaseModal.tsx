@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Dimensions, Pressable } from "react-native";
+import { View, Text, Dimensions, Pressable, Modal } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import SlideModal from "./SlideModal";
 import { useApp } from "../contexts/AppContext";
@@ -70,119 +70,120 @@ const CoinPurchaseModal: React.FC = () => {
     }
   };
 
-  return (
-    <SlideModal
-      visible={showCoinPurchase}
-      onClose={() => setShowCoinPurchase(false)}
-      showCloseButton={false}
-    >
-      {isLoading ? (  
-          <View
-            className={`flex-1 justify-center items-center ${
-              theme === "dark" ? "bg-dark-background" : "bg-light-background"
+  return isLoading ? (  
+      <Modal
+        transparent={true}
+        animationType="none"
+        visible={true}
+        onRequestClose={() => {}} // Prevents closing on back press (optional)
+      >
+      <View
+        className={`flex items-center justify-center z-50`} style={{position:"static", top:0, left: 0,opacity: 50, height: Dimensions.get("window").height, backgroundColor:'rgba(0,0,0,0.5)'}}
+      >
+        <LottieView
+          source={require("../../src/assets/loader_white.json")}
+          autoPlay
+          loop
+          style={{
+            width: Dimensions.get("window").width * 0.8,
+            height: 200,
+            alignSelf: "center",
+          }}
+        />
+      </View>
+      </Modal>
+    ) : (
+      <SlideModal
+        visible={showCoinPurchase}
+        onClose={() => setShowCoinPurchase(false)}
+        showCloseButton={false}
+      >
+        <View className="items-center mt-1 mb-2">
+          <View className="flex-row items-center rounded-full px-3.5 py-1.5 border border-amber-400">
+            <Text className="mr-2 font-bold text-amber-500">
+              {t("coinModal.balance", "Balance")} {userCoins}
+            </Text>
+            <CoinIcon width={16} height={16} />
+          </View>
+        </View>
+
+        <View className="items-center mt-1 mb-4">
+          <Text
+            className={`font-extrabold text-[20px] ${
+              isDark ? "text-slate-100" : "text-indigo-950"
             }`}
           >
-            <LottieView
-              source={require("../../src/assets/loader_color.json")}
-              autoPlay
-              loop
-              style={{
-                width: Dimensions.get("window").width * 0.8,
-                height: 200,
-                alignSelf: "center",
-              }}
+            {t("coinModal.title", "Get More Coins")}
+          </Text>
+          <Text
+            className={`mt-1 text-sm font-medium ${
+              isDark ? "text-slate-400" : "text-slate-500"
+            }`}
+          >
+            {t("coinModal.subtitle", "Choose your pack and keep going!")}
+          </Text>
+        </View>
+
+        <View className="px-2">
+          {packs.map((p) => (
+            <CoinPackCard 
+              key={p.id} 
+              pack={p} 
+              onPress={() => setSelectedPack(p)} 
+              isSelected={selectedPack?.id === p.id}
             />
-          </View>
-        ) : (
-          <>
-            <View className="items-center mt-1 mb-2">
-              <View className="flex-row items-center rounded-full px-3.5 py-1.5 border border-amber-400">
-                <Text className="mr-2 font-bold text-amber-500">
-                  {t("coinModal.balance", "Balance")} {userCoins}
+          ))}
+        </View>
+            
+        {/* Actions Button - Only show when not loading (Apple ID modal not open) */}
+        {!isLoading && (
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.5)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={{
+              marginHorizontal: -40,
+              marginBottom: -40,
+              paddingBottom: 40,
+              paddingHorizontal: 40,
+              paddingVertical: 16,
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+            }}
+          >
+            <View className="flex-row justify-center gap-2">
+              {/* Close Button */}
+              <Pressable
+                className={`w-15 h-15 rounded-2xl justify-center items-center ${
+                  isDark ? "bg-slate-700" : "bg-indigo-50"
+                }`}
+                onPress={() => setShowCoinPurchase(false)}
+                accessibilityRole="button"
+                accessibilityLabel={t("common.close", "Close")}
+              >
+                <Text
+                  className={`text-2xl rounded-2xl px-5 py-3 font-bold ${
+                    isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
+                  }`}
+                >
+                  ✕
                 </Text>
-                <CoinIcon width={16} height={16} />
-              </View>
-            </View>
-
-            <View className="items-center mt-1 mb-4">
-              <Text
-                className={`font-extrabold text-[20px] ${
-                  isDark ? "text-slate-100" : "text-indigo-950"
-                }`}
+              </Pressable>
+              <Pressable
+                className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
+                onPress={handleBuy}
+                accessibilityRole="button"
+                accessibilityLabel={t("shop.buyCoins", "Buy coins")}
               >
-                {t("coinModal.title", "Get More Coins")}
-              </Text>
-              <Text
-                className={`mt-1 text-sm font-medium ${
-                  isDark ? "text-slate-400" : "text-slate-500"
-                }`}
-              >
-                {t("coinModal.subtitle", "Choose your pack and keep going!")}
-              </Text>
+                <Text className="font-semibold text-xl text-white">
+                  {t("shop.buyCoins", "Buy coins")}
+                </Text>
+              </Pressable>
             </View>
-
-            <View className="px-2">
-              {packs.map((p) => (
-                <CoinPackCard 
-                  key={p.id} 
-                  pack={p} 
-                  onPress={() => setSelectedPack(p)} 
-                  isSelected={selectedPack?.id === p.id}
-                />
-              ))}
-            </View>
-          </>
-        )
-      }
-      {/* Actions Button - Only show when not loading (Apple ID modal not open) */}
-      {!isLoading && (
-        <LinearGradient
-          colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.5)']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={{
-            marginHorizontal: -40,
-            marginBottom: -40,
-            paddingBottom: 40,
-            paddingHorizontal: 40,
-            paddingVertical: 16,
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
-          }}
-        >
-          <View className="flex-row justify-center gap-2">
-            {/* Close Button */}
-            <Pressable
-              className={`w-15 h-15 rounded-2xl justify-center items-center ${
-                isDark ? "bg-slate-700" : "bg-indigo-50"
-              }`}
-              onPress={() => setShowCoinPurchase(false)}
-              accessibilityRole="button"
-              accessibilityLabel={t("common.close", "Close")}
-            >
-              <Text
-                className={`text-2xl rounded-2xl px-5 py-3 font-bold ${
-                  isDark ? "text-slate-100 bg-slate-700" : "text-indigo-900 bg-indigo-50"
-                }`}
-              >
-                ✕
-              </Text>
-            </Pressable>
-            <Pressable
-              className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
-              onPress={handleBuy}
-              accessibilityRole="button"
-              accessibilityLabel={t("shop.buyCoins", "Buy coins")}
-            >
-              <Text className="font-semibold text-xl text-white">
-                {t("shop.buyCoins", "Buy coins")}
-              </Text>
-            </Pressable>
-          </View>
-        </LinearGradient>
-      )}
-    </SlideModal>
-  );
+          </LinearGradient>
+        )}
+      </SlideModal>
+    )
 };
 
 export default CoinPurchaseModal;

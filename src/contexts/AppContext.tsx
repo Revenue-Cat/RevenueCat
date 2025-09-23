@@ -49,6 +49,7 @@ interface AppState {
   completedAchievements: string[] | undefined;
   transactions: Transaction[];
   isOnboardingDone: boolean;
+  hasLeftReview: boolean;
 
   // Buddy/User selections
   gender: UserGender; // user's gender (m/w/any)
@@ -132,6 +133,7 @@ interface AppState {
   setShowCoinPurchase: (show: boolean) => void;
   setSelectedShopTab: (tab: ShopTab) => void;
   openShopWithTab: (tab: ShopTab) => void;
+  handleLeaveReview: (value: number) => void;
 
   // Achievement actions
   setStartDate: (startDate: Date) => Promise<void>;
@@ -292,6 +294,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // Shop/state
   const [userCoins, setUserCoinsState] = useState(0);
   const [isOnboardingDone, setIsOnboardingDoneState] = useState<boolean>(false);
+  const [hasLeftReview, setHasLeftReview] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [transactions, setTransactionsState] = useState<Transaction[]>([]);
   const [completedAchievements, setCompletedAchievementsState] = useState<string[] | undefined>(undefined);
@@ -472,6 +475,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                 setGoalState(parsed.goal ?? "");
                 setTransactionsState(parsed.transactions ?? [])
                 setIsOnboardingDoneState(parsed.isOnboardingDone ?? false)
+                setHasLeftReview(parsed.hasLeftReview ?? false)
 
                 // Fix: Convert userProgress startDate to Date (was missing in original code)
                 const userProgressData = parsed.userProgress ?? {
@@ -684,7 +688,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       notificationSoundEnabled,
       morningNotificationTime,
       eveningNotificationTime,
-      lastNotificationCheck
+      lastNotificationCheck,
+      hasLeftReview
     };
 
     if(!isLoading) {
@@ -719,6 +724,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     transactions,
     isOnboardingDone,
     completedAchievements,
+    hasLeftReview,
     // Notification preferences
     notificationsEnabled,
     notificationSoundEnabled,
@@ -1531,6 +1537,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+  const handleLeaveReview = useCallback((value: number) => {
+    const handle = async () =>{
+      try {
+        await adjustCoinsBalance(150)
+        setHasLeftReview(true)
+        addTransaction(150, `Left review ${value} stars`)
+        refreshCoinsBalance();
+      } catch (e) {
+        console.error("handleLeaveReview error", e);
+      }
+    }
+
+    handle()
+  }, []);
+
   /**
    * Force process all pending notifications (for testing and recovery)
    */
@@ -1813,6 +1834,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       transactions,
       isOnboardingDone,
       completedAchievements,
+      hasLeftReview,
 
       gender,
       selectedBuddyId,
@@ -1865,6 +1887,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       setShowCoinPurchase,
       setSelectedShopTab,
       openShopWithTab,
+      handleLeaveReview,
 
       // Notification setters
       setNotificationsEnabled,
@@ -1948,6 +1971,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       packPrice,
       packPriceCurrency,
       goal,
+      hasLeftReview,
       achievements,
       userProgress,
       daysSmokeFree,
