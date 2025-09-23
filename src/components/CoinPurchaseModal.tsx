@@ -83,7 +83,7 @@ const CoinPurchaseModal: React.FC = () => {
             }`}
           >
             <LottieView
-              source={require("../../src/assets/Loadercat.json")}
+              source={require("../../src/assets/loader_color.json")}
               autoPlay
               loop
               style={{
