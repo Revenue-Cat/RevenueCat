@@ -229,7 +229,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                           lineHeight: 16,
                         }}
                       >
-                        {t(`challenges.duration.${item.duration}`)} {t("challenges.challenge")}
+                        {t("common.days", {count: item.totalDurations})} {t("challenges.challenge")}
                       </Text>
                     </View>
                     <View className="ml-3 mr-1">

@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import SlideModal from "./SlideModal";
 
 import GenderLight from "../assets/icons/gander.svg";
@@ -36,14 +37,23 @@ const GenderModal: React.FC<Props> = ({
     Woman: isDark ? WomanDark : WomanLight,
     Incognito: isDark ? IncognitoDark : IncognitoLight,
   };
+  const { t } = useTranslation();
+
+  const getGenderLabel = (g:string) => {
+    return g === "man"
+            ? t("profile.gender.man", "Man")
+            : g === "lady"
+            ? t("profile.gender.woman", "Woman")
+            : t("profile.gender.nonBinary", "Isn't important")
+  }
 
   return (
     <SlideModal visible={visible} onClose={onClose} title="Gender">
       {(
         [
-          { key: "man", label: "Man", Icon: Icons.Man },
-          { key: "lady", label: "Woman", Icon: Icons.Woman },
-          { key: "any", label: "Isn't important", Icon: Icons.Incognito },
+          { key: "man", label: getGenderLabel("man"), Icon: Icons.Man },
+          { key: "lady", label: getGenderLabel("lady"), Icon: Icons.Woman },
+          { key: "any", label: getGenderLabel("any"), Icon: Icons.Incognito },
         ] as const
       ).map(({ key, label, Icon }) => {
         const selected = gender === key;

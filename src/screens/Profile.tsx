@@ -143,13 +143,13 @@ const Profile: React.FC<ProfileProps> = ({
 
   const dailyLabel =
     {
-      "1-5": t("setup.fields.dailyAmount.options.1-5"),
-      "5-10": t("setup.fields.dailyAmount.options.5-10"),
-      "11-15": t("setup.fields.dailyAmount.options.11-15"),
-      "16-20": t("setup.fields.dailyAmount.options.16-20"),
-      "21-30": t("setup.fields.dailyAmount.options.21-30"),
-      "31-40": t("setup.fields.dailyAmount.options.31-40"),
-    }[dailyAmount || "5-10"] || t("setup.fields.dailyAmount.options.5-10");
+      "1-5": t("setup.fields.dailyAmount.options.cigarettes.1-5"),
+      "5-10": t("setup.fields.dailyAmount.options.cigarettes.5-10"),
+      "11-15": t("setup.fields.dailyAmount.options.cigarettes.11-15"),
+      "16-20": t("setup.fields.dailyAmount.options.cigarettes.16-20"),
+      "21-30": t("setup.fields.dailyAmount.options.cigarettes.21-30"),
+      "31-40": t("setup.fields.dailyAmount.options.cigarettes.31-40"),
+    }[dailyAmount || "5-10"] || t("setup.fields.dailyAmount.options.cigarettes.5-10");
 
   // savings math
   const savings = calculateSavings(
