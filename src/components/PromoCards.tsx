@@ -90,13 +90,13 @@ const PromoCards: React.FC<Props> = ({
 
         {/* Title */}
         <Text className="text-xl font-bold text-indigo-950 text-center">
-          {t("review.title", "Leave feedback")}
+          {t("promos.review.title", "Leave feedback")}
         </Text>
 
         {/* Description */}
         <Text className="text-s text-slate-850 text-center mt-2">
           {t(
-            "review.description",
+            "promos.review.description",
             "We're a small creative team! Help us grow by leaving a quick 5★ review. Your support means a lot and keeps us creating more for you!"
           )}
         </Text>

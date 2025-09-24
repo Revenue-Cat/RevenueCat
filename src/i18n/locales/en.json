@@ -519,7 +519,9 @@
         "vaping": "Ml(vaping) avoided"
       }
     },
-    "title": "Zero Puffs"
+    "title": "Zero Puffs",
+    "get_all_scenes": "Get all scenes for {{value}}",
+    "get_all_buddies": "Get all buddies for {{value}}"
   },
   "languages": {
     "english": "English",
@@ -668,7 +670,9 @@
     }
   },
   "review": {
-    "title": "Leave feedback"
+    "title": "Leave feedback",
+    "button": "Positive feedback",
+    "description": "We're a small creative team! Help us grow by leaving a quick 5★ review. Your support means a lot and keeps us creating more for you!"
   },
   "reviewModal": {
     "close": "Close",

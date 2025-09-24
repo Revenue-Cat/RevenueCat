@@ -20,6 +20,7 @@ import { useHomeScroll } from "../hooks/useHomeScroll";
 import CoinPurchaseModal from "../components/CoinPurchaseModal";
 import CTAButton from "../components/CTAButton";
 import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 interface HomeProps {
   onShowCravingSOS: () => void;
@@ -52,6 +53,9 @@ const Home: React.FC<HomeProps> = ({
     ownedBackgrounds,
     purchaseItem,
   } = useApp();
+
+
+  const { t } = useTranslation();
 
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
 
@@ -164,11 +168,6 @@ const Home: React.FC<HomeProps> = ({
   const shopTotalCost = useMemo(() => {
     return isScenesSelected ? totalSceneCost : totalBuddyCost;
   }, [isScenesSelected, totalSceneCost, totalBuddyCost]);
-
-  const shopButtonLabel = useMemo(() => {
-    const itemType = isScenesSelected ? t('shop.scenes') : t('shop.buddies');
-    return t('shop.getAll', { itemType, cost: shopTotalCost });
-  }, [isScenesSelected, shopTotalCost, t]);
 
   // Function to buy all available items (buddies or scenes)
   const handleBuyAllItems = useCallback(async () => {
@@ -309,6 +308,9 @@ const Home: React.FC<HomeProps> = ({
       ]).start();
     }
   }, [currentView, homeButtonOpacity, shopButtonOpacity, homeButtonTranslateY, shopButtonTranslateY]);
+
+  const itemType = isScenesSelected ? "scenes" : "buddies";
+  const shopButtonLabel = t(`home.get_all_${itemType}`, {value:shopTotalCost})
 
   return (
     <View
