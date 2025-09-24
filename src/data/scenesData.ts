@@ -314,6 +314,16 @@ export const SCENES_DATA: Scene[] = [
 export const getTranslatedSceneData = (t: (key: string) => string): Scene[] => {
   return SCENES_DATA.map(scene => ({
     ...scene,
-    name: t(`scenes.${scene.id}.name`)
+    name: t(`scenes.${scene.id}.name`) || scene.name,
+    description: t(`scenes.${scene.id}.description`) || scene.description
+  }));
+};
+
+// Helper function to get translated PLACEHOLDER_SCENE data
+export const getTranslatedPlaceholderSceneData = (t: (key: string) => string): Scene[] => {
+  return PLACEHOLDER_SCENE.map(scene => ({
+    ...scene,
+    name: t(`scenes.${scene.id}.name`) || scene.name,
+    description: t(`scenes.${scene.id}.description`) || scene.description
   }));
 };

@@ -12,6 +12,7 @@ import {
   Text,
   View,
   Modal,
+  ImageBackground,
 } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import SlideModal from "./SlideModal";
@@ -22,6 +23,9 @@ import { CHALLENGES_DATA } from "../data/challengesData";
 import HeartIcon from "../assets/strategies/heart.svg";
 import LockLight from "../assets/icons/lock.svg";
 import SmokeIcon from "../assets/icons/smoke.svg";
+
+const BreathingBgIcon = require('../assets/challenges/breathing-bg.png');
+
 interface CravingSOSModalProps {
   visible: boolean;
   onClose: () => void;
@@ -49,7 +53,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
   const flatListRef = useRef<Animated.FlatList>(null);
 
   // Use original data instead of tripling it for better performance
-  const data = useMemo(() => CHALLENGES_DATA.filter(item => item.titleKey), []);
+  const data = useMemo(() => CHALLENGES_DATA.filter(item => item.titleKey), [t]);
 
   const handleISmoked = () => {
     setShowDontGiveUpModal(true);
@@ -87,7 +91,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
     >
       <View style={{ marginHorizontal: -20 }}>
         <Text
-          className={`text-xl font-bold text-center px-8 mt-3 mb-2`}
+          className={`text-xl font-bold text-center px-8 mt-3 mb-2 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
         >
           {t("cravingSOS.modal.title")}
         </Text>
@@ -100,7 +104,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
           {t("cravingSOS.modal.subtitle")}
         </Text>
 
-        <Animated.FlatList
+      <Animated.FlatList
         ref={flatListRef}
         data={data}
         keyExtractor={(item) => item.id}
@@ -160,7 +164,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                 >
                   {/* iconPreview Icon */}
                   <View className="items-center mb-1 p-2 justify-center">
-                    <View className="bg-indigo-100 p-2 rounded-full">
+                    <View className={`${isDark ? "bg-slate-600" : "bg-indigo-100"} p-2 rounded-full`}>
                       <item.iconPreview
                         width={24}
                         height={24}
@@ -174,6 +178,8 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                     className={`${
                       isDark ? "text-slate-100" : "text-indigo-950"
                     } mb-1 text-base text-center font-bold`}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
                   >
                     {t(item.titleKey)}
                   </Text>
@@ -183,7 +189,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                     className={`${
                       isDark ? "text-slate-300" : "text-slate-700"
                       } text-sm mb-4`}
-                    style={{ minHeight: 90, height: 90 }}
+                    style={{ minHeight: 100, height: 100 }}
                    
                   >
                     {t(item.descriptionKey)}
@@ -191,7 +197,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
 
                   {/* Challenge Box */}
                   <View
-                    className={`bg-indigo-100 rounded-xl p-1 flex-row justify-between items-center relative`}
+                    className={` ${isDark ? "bg-slate-600" : "bg-indigo-100"} rounded-xl p-1 flex-row justify-between items-center relative`}
                   >
                     {/* Lock Icon - Top Right Corner */}
                     {getChallengeStatus(item.id) === 'locked' && <View className="absolute top-2 right-2 z-10 bg-black/50 rounded-full p-1">
@@ -201,13 +207,15 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                     <View className="flex-1 p-3">
                       <Text
                         className={`${
-                          isDark ? "text-slate-100" : "text-indigo-950"
+                          isDark ? "text-indigo-100" : "text-indigo-950"
                         }`}
                         style={{
                           fontWeight: "700",
                           fontSize: 14,
                           lineHeight: 18,
                         }}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
                       >
                         {t(item.challengeKey)}
                       </Text>
@@ -221,7 +229,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                           lineHeight: 16,
                         }}
                       >
-                        {t(item.duration)} {t("challenges.challenge")}
+                        {t(`challenges.duration.${item.duration}`)} {t("challenges.challenge")}
                       </Text>
                     </View>
                     <View className="ml-3 mr-1">
@@ -249,8 +257,8 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
       />
 
       {/* Indicators */}
-      <View className="flex-row justify-center">
-        <View className="flex-row bg-indigo-50 h-4 rounded-full px-2 py-1 gap-1">
+      <View className="flex-row justify-center mb-5">
+        <View className={`flex-row ${isDark ? "bg-slate-600" : "bg-indigo-50"} h-4 rounded-full px-2 py-1 gap-1`}>
           {data.map((_, i) => {
             const position = Animated.divide(scrollX, ITEM_WIDTH);
             const scale = position.interpolate({
@@ -269,7 +277,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
                 className="w-2 h-2 rounded-full"
                 style={{
                   borderRadius: 4,
-                  backgroundColor: "#312e81",
+                  backgroundColor: isDark ? "#CBD5E1" : "#312e81",
                   marginHorizontal: 0.5,
                   transform: [{ scale }],
                   opacity,
@@ -281,21 +289,21 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
       </View>
       </View>
  {/* Action buttons container -  */}
-      <LinearGradient
-        colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.5)']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
+      <ImageBackground
+        source={BreathingBgIcon}
         style={{
           marginHorizontal: -40,
           marginBottom: -40,
           paddingBottom: 40,
           paddingHorizontal: 50,
           paddingVertical: 16,
+          paddingTop: 46,
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,
         }}
+        resizeMode="contain"
       >
-        <View className="flex-row items-center gap-4 justify-center w-full">
+        <View className="flex-row items-center gap-2 justify-center w-full">
           {/* Close (✕) — made 48x48 to match smoke button */}
           <Pressable
             onPress={onClose}
@@ -337,7 +345,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
             <SmokeIcon width={24} height={24} color="#ffffff" />
           </Pressable>
         </View>
-      </LinearGradient>
+      </ImageBackground>
 
       {/* Don't Give Up Modal */}
       <Modal

@@ -14,8 +14,8 @@ import { useApp } from "../contexts/AppContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { buddyAssets, SexKey } from "../assets/buddies";
-import { getTranslatedBuddyData, PLACEHOLDER_BUDDY } from "../data/buddiesData";
-import { getTranslatedSceneData, PLACEHOLDER_SCENE } from "../data/scenesData";
+import { getTranslatedBuddyData, getTranslatedPlaceholderBuddyData, PLACEHOLDER_BUDDY } from "../data/buddiesData";
+import { getTranslatedSceneData, getTranslatedPlaceholderSceneData, PLACEHOLDER_SCENE } from "../data/scenesData";
 import BuddyModal from "../components/BuddyModal";
 import SceneModal from "../components/SceneModal";
 import CoinIcon from "../assets/icons/coins.svg";
@@ -116,7 +116,7 @@ const Shop: React.FC<ShopProps> = ({
     } else {
       setSelectedBuddyForModal(buddy);
       // Check if this is a PLACEHOLDER_BUDDY item
-      const isPlaceholderBuddy = PLACEHOLDER_BUDDY.some(pb => pb.id === buddy.id);
+      const isPlaceholderBuddy = translatedPlaceholderBuddies.some(pb => pb.id === buddy.id);
       setHidePurchaseButton(isPlaceholderBuddy);
       setShowBuddyModal(true);
     }
@@ -134,7 +134,9 @@ const Shop: React.FC<ShopProps> = ({
 
   // i18n data
   const translatedBuddies = useMemo(() => getTranslatedBuddyData(t), [t]);
+  const translatedPlaceholderBuddies = useMemo(() => getTranslatedPlaceholderBuddyData(t), [t]);
   const translatedScenes = useMemo(() => getTranslatedSceneData(t), [t]);
+  const translatedPlaceholderScenes = useMemo(() => getTranslatedPlaceholderSceneData(t), [t]);
   const scenes = translatedScenes;
 
 
@@ -198,7 +200,7 @@ const Shop: React.FC<ShopProps> = ({
           </Pressable>
         );
       })}
-      {PLACEHOLDER_BUDDY.map((item) => {
+      {translatedPlaceholderBuddies.map((item) => {
         const isOwned = ownedBuddies?.includes(item.id) || false;
         const isSelected = selectedBuddyId === item.id;
 
@@ -228,7 +230,7 @@ const Shop: React.FC<ShopProps> = ({
                   {React.createElement(item.icon, {
                     width: 95,
                     height: 95,        // Full icon height
-                    color: isSelected ? "#22C55E" : (isDark ? "#94A3B8" : "#FFFFFF33"),
+                    color: isSelected ? "#22C55E" : "#FFFFFF33",
                     // opacity: 0.2
                   })}
                 </View>
@@ -306,7 +308,7 @@ const Shop: React.FC<ShopProps> = ({
           </Pressable>
         );
       })}
-      {PLACEHOLDER_SCENE.map((item) => {
+      {translatedPlaceholderScenes.map((item) => {
         const isOwned = ownedBackgrounds.includes(item.id) || false;
         const isSelected = selectedBackground.id === item.id;
 
@@ -334,7 +336,7 @@ const Shop: React.FC<ShopProps> = ({
                   {React.createElement(item.icon, {
                     width: 80,
                     height: 80,
-                     color: isSelected ? "#22C55E" : (isDark ? "#94A3B8" : "#FFFFFF33"),
+                     color: isSelected ? "#22C55E" :  "#FFFFFF33",
                     // opacity: 0.5
                   })}
                 </View>

@@ -53,7 +53,7 @@ const HomeStats: React.FC = () => {
       <View className="flex-row gap-1 mb-1">
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
           <Text className="text-4xl font-semibold text-white">{savings.itemsAvoided}</Text>
-          <Text className="text-s font-medium text-white opacity-50">{getAvoidedLabel(smokeType || 'cigarettes')}</Text>
+          <Text className="text-s font-medium text-white opacity-50">{t(`home.stats.avoided.${smokeType || 'cigarettes'}`)}</Text>
         </View>
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
           <Text className="text-4xl font-semibold text-white">{packPriceCurrency || '$'}{Math.round(savings.moneySaved)}</Text>

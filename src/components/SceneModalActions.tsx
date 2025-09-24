@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '../contexts/AppContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -44,10 +43,10 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
   };
 
   return (
-    <LinearGradient
-      colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.5)']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
+    <View
+      className={`${
+        isDark ? "bg-dark-background" : "bg-light-background"
+      }`}
       style={{
         marginHorizontal: -40,
         marginBottom: -40,
@@ -109,7 +108,7 @@ const SceneModalActions: React.FC<SceneModalActionsProps> = ({
           </Pressable>
         )}
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 

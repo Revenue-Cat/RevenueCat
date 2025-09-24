@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Pressable, Share } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { ChallengeData } from '../data/challengesData';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -32,10 +31,10 @@ const ExclusiveAchievementsModalActions: React.FC<ExclusiveAchievementsModalActi
   const isLocked = status === 'locked';
 
   return (
-    <LinearGradient
-      colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.5)']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
+    <View
+      className={`${
+        isDark ? "bg-dark-background" : "bg-light-background"
+      }`}
       style={{
         marginHorizontal: -40,
         marginBottom: -40,
@@ -80,7 +79,7 @@ const ExclusiveAchievementsModalActions: React.FC<ExclusiveAchievementsModalActi
           </Pressable>
         )}
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Pressable, Share } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Achievement } from '../services/achievementService';
 import { isRegularAchievement } from '../utils/achievementHelpers';
 import { useTheme } from '../contexts/ThemeContext';
@@ -42,10 +41,10 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
   };
 
   return (
-    <LinearGradient
-      colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.5)']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
+    <View
+      className={`${
+        isDark ? "bg-dark-background" : "bg-light-background"
+      }`}
       style={{
         marginHorizontal: -40,
         marginBottom: -40,
@@ -103,7 +102,7 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
           </Pressable>
         )}
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 
