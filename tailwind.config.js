@@ -19,7 +19,7 @@ module.exports = {
         },
         // Dark theme colors - matching Welcome page
         dark: {
-          background: '#0f172a', // slate-900
+          background: '#1e293b', // slate-800
           surface: '#1e293b', // slate-800
           primary: '#f1f5f9', // slate-100
           secondary: '#cbd5e1', // slate-300

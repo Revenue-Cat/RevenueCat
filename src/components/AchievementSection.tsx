@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { View, Pressable, Text, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -10,9 +10,11 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import AchievementCard from './AchievementCard';
+import AchievementModal from './AchievementModal';
 import { useApp } from '../contexts/AppContext';
 import { achievementService } from '../services/achievementService';
 import { useTheme } from '../contexts/ThemeContext';
+import { Achievement } from '../services/achievementService';
 
 // Helper function to identify regular achievements
 const isRegularAchievement = (achievementId: string): boolean => {
@@ -45,6 +47,8 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
   const { achievements, getProgressForAchievement } = useApp();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  
+  const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
 
   // Animation values for smooth fold/unfold
   const sectionHeight = useSharedValue(isCollapsed ? 200 : 400);
@@ -61,6 +65,19 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
     () => achievementService.getTranslatedAchievements(t),
     [t]
   );
+
+  // Memoize the achievement selection callback
+  const handleAchievementPress = useCallback(
+    (achievement: Achievement, progress: any) => {
+      setSelectedAchievement({ ...achievement, progress: progress });
+    },
+    []
+  );
+
+  // Memoize the modal close callback
+  const handleCloseModal = useCallback(() => {
+    setSelectedAchievement(null);
+  }, []);
 
   // Animation: first card instant, second and third cards slide down on open, slide up on close (reverse order)
   useEffect(() => {
@@ -153,6 +170,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
                 progressPercentage={progress.percentage}
                 isFirstThree={true}
                 isRegularAchievement={true}
+                onPress={() => handleAchievementPress(achievement, progress)}
               />
             </View>
           );
@@ -170,6 +188,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
                 progressPercentage={progress.percentage}
                 isFirstThree={true}
                 isRegularAchievement={true}
+                onPress={() => handleAchievementPress(achievement, progress)}
               />
             </Animated.View>
           );
@@ -187,6 +206,7 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
                 progressPercentage={progress.percentage}
                 isFirstThree={true}
                 isRegularAchievement={true}
+                onPress={() => handleAchievementPress(achievement, progress)}
               />
             </Animated.View>
           );
@@ -290,6 +310,10 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
             progressPercentage={getProgressForAchievement(firstThreeAchievements[0].id).percentage}
             isFirstThree={true}
             isRegularAchievement={true}
+            // onPress={() => {
+            //   const progress = getProgressForAchievement(firstThreeAchievements[0].id);
+            //   handleAchievementPress(firstThreeAchievements[0], progress);
+            // }}
           />
         </View>
       </View>
@@ -331,6 +355,17 @@ const AchievementSection: React.FC<AchievementSectionProps> = ({
       <Animated.View style={sectionAnimatedStyle}>
         {!isCollapsed ? achievementCardsContent : collapsedAchievementView}
       </Animated.View>
+
+      {/* Achievement Modal */}
+      {selectedAchievement && (
+        <AchievementModal
+          visible={true}
+          onClose={handleCloseModal}
+          achievement={selectedAchievement}
+          progress={selectedAchievement?.progress}
+          getProgressForAchievement={getProgressForAchievement}
+        />
+      )}
     </View>
   );
 };

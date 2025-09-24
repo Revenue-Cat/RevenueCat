@@ -53,7 +53,7 @@ const AchievementsToggle: React.FC<AchievementsToggleProps> = ({
         backgroundColor: '#f1f5f9', 
         borderRadius: 16, 
         padding: 2, 
-        width: '60%', 
+        width: '70%', 
         height: 44,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 10 },

@@ -82,6 +82,38 @@
     "zebra-w": {
       "description": "A strong and determined friend to keep you motivated.",
       "name": "Zebra"
+    },
+    "bear": {
+      "description": "With my strength by your side, we'll conquer smoke stronger than ever before.",
+      "name": "Mighty Bear"
+    },
+    "bunny": {
+      "description": "Hop with me into a smoke-free life — we'll bounce away from cravings together.",
+      "name": "Bouncy Bunny"
+    },
+    "cat": {
+      "description": "My curiosity will guide us — together we'll explore a smoke-free world faster.",
+      "name": "Curious Cat"
+    },
+    "hedgehog": {
+      "description": "With my protective nature, we'll shield ourselves from smoke and emerge victorious.",
+      "name": "Guardian Hedgehog"
+    },
+    "monkey": {
+      "description": "Swing with me through challenges — we'll conquer smoke with playful determination.",
+      "name": "Playful Monkey"
+    },
+    "owl": {
+      "description": "My wisdom lights the way — together we'll see through smoke to freedom.",
+      "name": "Wise Owl"
+    },
+    "penguin": {
+      "description": "Waddle with me through the cold — we'll brave smoke and emerge stronger together.",
+      "name": "Brave Penguin"
+    },
+    "tiger": {
+      "description": "Roar with me against smoke — our combined strength will defeat it faster than ever.",
+      "name": "Fierce Tiger"
     }
   },
   "buddySelection": {
@@ -97,6 +129,12 @@
       "title": "Calm power"
     },
     "challenge": "challenge",
+    "duration": {
+      "1 Days": "1 Day",
+      "2 Days": "2 Days", 
+      "3 Days": "3 Days",
+      "10 Days": "10 Days"
+    },
     "checkIn": "Check In",
     "craveCrusher": {
       "description": "Practice stress relief techniques.",
@@ -473,7 +511,13 @@
       "moneySaved": "Money saved",
       "slips": "Slips",
       "smokeFreeDays": "Smoke-free days",
-      "timeSaved": "Time saved"
+      "timeSaved": "Time saved",
+      "avoided": {
+        "cigarettes": "Cigs avoided",
+        "roll-your-own": "Rolls avoided",
+        "tobacco-heater": "Sticks avoided",
+        "vaping": "Ml(vaping) avoided"
+      }
     },
     "title": "Zero Puffs"
   },
@@ -633,49 +677,92 @@
   },
   "scenes": {
     "bg1": {
-      "name": "Emerald Silence"
+      "name": "Emerald Silence",
+      "description": "Mountains, forest and lake in unity. A place where thoughts fade."
     },
     "bg2": {
-      "name": "Silent Japan"
+      "name": "Silent Japan",
+      "description": "A pagoda among mountains. An atmosphere of harmony and balance."
     },
     "bg3": {
-      "name": "Sandy Horizon"
+      "name": "Sandy Horizon",
+      "description": "Desert under the sun. Endless spaces and a road into the unknown."
     },
     "bg4": {
-      "name": "Golden City"
+      "name": "Golden City",
+      "description": "Skyscrapers glowing in sunset. Energy and pulse of the metropolis."
     },
     "bg5": {
-      "name": "Green Awakening"
+      "name": "Green Awakening",
+      "description": "Jungle under a bright sky. Morning freshness, new life."
     },
     "bg6": {
-      "name": "Violet Evening"
+      "name": "Violet Evening",
+      "description": "Palms and sea at sunset glow. A time for dreams and rest."
     },
     "bg7": {
-      "name": "Misty Forest"
+      "name": "Misty Forest",
+      "description": "Hills and trees in mist. A mysterious, silent world."
     },
     "bg8": {
-      "name": "Pink Horizon"
+      "name": "Pink Horizon",
+      "description": "Mountains in soft hues. A beauty that feels like a dream."
     },
     "bg9": {
-      "name": "Tropical Symphony"
+      "name": "Tropical Symphony",
+      "description": "Beach, waves and sun. A light melody of freedom."
     },
     "bg10": {
-      "name": "Halloween Night"
+      "name": "Halloween Night",
+      "description": "Full moon over the forest. Bats and whispers of secrets."
     },
     "bg11": {
-      "name": "Flower Valley"
+      "name": "Flower Valley",
+      "description": "Hills covered in flowers. Springtime lightness and inspiration."
     },
     "bg12": {
-      "name": "City & Park"
+      "name": "City & Park",
+      "description": "Green paths beside the city. A meeting of nature and urban life."
     },
     "bg13": {
-      "name": "Dawn Bridge"
+      "name": "Dawn Bridge",
+      "description": "Path to the sun over the sea. A beginning full of hope."
     },
     "bg14": {
-      "name": "Dream Sky"
+      "name": "Dream Sky",
+      "description": "Balloons under shooting stars. A gentle sky fairytale."
     },
     "bg15": {
-      "name": "Evening City"
+      "name": "Evening City",
+      "description": "Buildings in sunset light. Warmth and serene grandeur."
+    },
+    "bg01": {
+      "name": "Desert Oasis",
+      "description": "Cactus landscape with warm sands. A serene desert retreat."
+    },
+    "bg02": {
+      "name": "Mountain Peak",
+      "description": "Majestic mountains reaching the sky. A place of strength and tranquility."
+    },
+    "bg03": {
+      "name": "Ancient Forest",
+      "description": "Dense forest with towering trees. A natural sanctuary of peace."
+    },
+    "bg04": {
+      "name": "Starlit Night",
+      "description": "Night sky filled with stars. A peaceful moment under the cosmos."
+    },
+    "bg05": {
+      "name": "Tropical Paradise",
+      "description": "Palm trees swaying in the breeze. Island serenity and calm."
+    },
+    "bg06": {
+      "name": "Urban Garden",
+      "description": "Green park in the city. Nature's touch in urban surroundings."
+    },
+    "bg07": {
+      "name": "Golden Sunset",
+      "description": "Beautiful sunset painting the sky. A moment of reflection and beauty."
     }
   },
   "setup": {
@@ -784,14 +871,18 @@
   },
   "shop": {
     "balance": "Balance {{coins}}",
+    "buddies": "buddies",
     "buyCoins": "Buy coins",
     "buyFor": "Buy for {{coins}}",
     "close": "Close",
     "description": "A wonderful companion for your journey to quit smoking.",
+    "getAll": "Get all {{itemType}} for {{cost}}",
     "owned": "Owned",
     "purchase": "Purchase",
+    "purchaseFailed": "Failed to purchase {{item}}",
     "reward": "Reward {{coins}}",
     "sceneDescription": "A beautiful background to enhance your quit smoking journey.",
+    "scenes": "scenes",
     "select": "Select",
     "selected": "Selected",
     "share": "Share",

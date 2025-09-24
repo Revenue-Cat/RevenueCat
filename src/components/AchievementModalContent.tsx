@@ -193,16 +193,14 @@ const AchievementModalContent: React.FC<AchievementModalContentProps> = ({
           {achievement.name}
         </Text>
 
-        {/* Achievement Description - Only for non-new achievements */}
-        {!isNewAchievement(achievement.id) && (
-          <Text
-            className={`text-sm text-center ${
-              isDark ? "text-slate-100" : "text-slate-500"
-            }`}
-          >
-            {achievement.description}
-          </Text>
-        )}
+        {/* Achievement Description */}
+        <Text
+          className={`text-sm text-center ${
+            isDark ? "text-slate-100" : "text-slate-500"
+          }`}
+        >
+          {achievement.description}
+        </Text>
 
         {/* Achievement Icon */}
         <View className="items-center pb-4">{renderAchievementIcon()}</View>

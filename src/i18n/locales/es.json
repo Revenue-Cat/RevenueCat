@@ -82,6 +82,38 @@
     "zebra-w": {
       "description": "Un amigo fuerte y decidido para mantenerte motivado.",
       "name": "Cebra"
+    },
+    "bear": {
+      "description": "Con mi fuerza a tu lado, conquistaremos el humo más fuerte que nunca.",
+      "name": "Oso Poderoso"
+    },
+    "bunny": {
+      "description": "Salta conmigo hacia una vida libre de humo — rebotaremos lejos de los antojos juntos.",
+      "name": "Conejo Saltarín"
+    },
+    "cat": {
+      "description": "Mi curiosidad nos guiará — juntos exploraremos un mundo libre de humo más rápido.",
+      "name": "Gato Curioso"
+    },
+    "hedgehog": {
+      "description": "Con mi naturaleza protectora, nos protegeremos del humo y saldremos victoriosos.",
+      "name": "Erizo Guardián"
+    },
+    "monkey": {
+      "description": "Balancea conmigo a través de los desafíos — conquistaremos el humo con determinación juguetona.",
+      "name": "Mono Juguetón"
+    },
+    "owl": {
+      "description": "Mi sabiduría ilumina el camino — juntos veremos a través del humo hacia la libertad.",
+      "name": "Búho Sabio"
+    },
+    "penguin": {
+      "description": "Camina conmigo a través del frío — nos enfrentaremos al humo y saldremos más fuertes juntos.",
+      "name": "Pingüino Valiente"
+    },
+    "tiger": {
+      "description": "Ruge conmigo contra el humo — nuestra fuerza combinada lo derrotará más rápido que nunca.",
+      "name": "Tigre Feroz"
     }
   },
   "buddySelection": {
@@ -97,6 +129,12 @@
       "title": "Poder de calma"
     },
     "challenge": "desafío",
+    "duration": {
+      "1 Days": "1 Día",
+      "2 Days": "2 Días", 
+      "3 Days": "3 Días",
+      "10 Days": "10 Días"
+    },
     "checkIn": "Registrarse",
     "craveCrusher": {
       "description": "Practica técnicas de alivio del estrés.",
@@ -473,9 +511,15 @@
       "moneySaved": "Dinero ahorrado",
       "slips": "Recaídas",
       "smokeFreeDays": "Días sin fumar",
-      "timeSaved": "Tiempo ahorrado"
+      "timeSaved": "Tiempo ahorrado",
+      "avoided": {
+        "cigarettes": "Cigarrillos evitados",
+        "roll-your-own": "Cigarrillos liados evitados",
+        "tobacco-heater": "Sticks evitados",
+        "vaping": "Ml(vaping) evitados"
+      }
     },
-    "title": "Zero Puffs"
+    "title": "Cero Caladas"
   },
   "languages": {
     "english": "English",
@@ -546,7 +590,7 @@
     },
     "share": {
       "message": "Únete a mí en Zero Puffs — mi app favorita para dejar de fumar.",
-      "title": "Zero Puffs"
+      "title": "Cero Caladas"
     }
   },
   "regularAchievements": {
@@ -633,49 +677,92 @@
   },
   "scenes": {
     "bg1": {
-      "name": "Silencio Esmeralda"
+      "name": "Silencio Esmeralda",
+      "description": "Montañas, bosque y lago en unidad. Un lugar donde los pensamientos se desvanecen."
     },
     "bg2": {
-      "name": "Japón Silencioso"
+      "name": "Japón Silencioso",
+      "description": "Una pagoda entre montañas. Una atmósfera de armonía y equilibrio."
     },
     "bg3": {
-      "name": "Horizonte Arenoso"
+      "name": "Horizonte Arenoso",
+      "description": "Desierto bajo el sol. Espacios infinitos y un camino hacia lo desconocido."
     },
     "bg4": {
-      "name": "Ciudad Dorada"
+      "name": "Ciudad Dorada",
+      "description": "Rascacielos brillando en el atardecer. Energía y pulso de la metrópolis."
     },
     "bg5": {
-      "name": "Despertar Verde"
+      "name": "Despertar Verde",
+      "description": "Jungla bajo un cielo brillante. Frescura matutina, nueva vida."
     },
     "bg6": {
-      "name": "Atardecer Violeta"
+      "name": "Atardecer Violeta",
+      "description": "Palmeras y mar en el resplandor del atardecer. Un tiempo para sueños y descanso."
     },
     "bg7": {
-      "name": "Bosque Brumoso"
+      "name": "Bosque Brumoso",
+      "description": "Colinas y árboles en la niebla. Un mundo misterioso y silencioso."
     },
     "bg8": {
-      "name": "Horizonte Rosa"
+      "name": "Horizonte Rosa",
+      "description": "Montañas en tonos suaves. Una belleza que se siente como un sueño."
     },
     "bg9": {
-      "name": "Sinfonía Tropical"
+      "name": "Sinfonía Tropical",
+      "description": "Playa, olas y sol. Una melodía ligera de libertad."
     },
     "bg10": {
-      "name": "Noche de Halloween"
+      "name": "Noche de Halloween",
+      "description": "Luna llena sobre el bosque. Murciélagos y susurros de secretos."
     },
     "bg11": {
-      "name": "Valle de Flores"
+      "name": "Valle de Flores",
+      "description": "Colinas cubiertas de flores. Levedad primaveral e inspiración."
     },
     "bg12": {
-      "name": "Ciudad y Parque"
+      "name": "Ciudad y Parque",
+      "description": "Senderos verdes junto a la ciudad. Un encuentro entre naturaleza y vida urbana."
     },
     "bg13": {
-      "name": "Puente del Amanecer"
+      "name": "Puente del Amanecer",
+      "description": "Camino hacia el sol sobre el mar. Un comienzo lleno de esperanza."
     },
     "bg14": {
-      "name": "Cielo de Ensueño"
+      "name": "Cielo de Ensueño",
+      "description": "Globos bajo estrellas fugaces. Un cuento de hadas del cielo gentil."
     },
     "bg15": {
-      "name": "Ciudad Vespertina"
+      "name": "Ciudad Vespertina",
+      "description": "Edificios en la luz del atardecer. Calidez y grandeza serena."
+    },
+    "bg01": {
+      "name": "Oasis del Desierto",
+      "description": "Paisaje de cactus con arenas cálidas. Un retiro sereno del desierto."
+    },
+    "bg02": {
+      "name": "Pico de Montaña",
+      "description": "Montañas majestuosas que llegan al cielo. Un lugar de fuerza y tranquilidad."
+    },
+    "bg03": {
+      "name": "Bosque Ancestral",
+      "description": "Bosque denso con árboles imponentes. Un santuario natural de paz."
+    },
+    "bg04": {
+      "name": "Noche Estrellada",
+      "description": "Cielo nocturno lleno de estrellas. Un momento de paz bajo el cosmos."
+    },
+    "bg05": {
+      "name": "Paraíso Tropical",
+      "description": "Palmeras meciéndose en la brisa. Serenidad y calma de isla."
+    },
+    "bg06": {
+      "name": "Jardín Urbano",
+      "description": "Parque verde en la ciudad. El toque de la naturaleza en el entorno urbano."
+    },
+    "bg07": {
+      "name": "Atardecer Dorado",
+      "description": "Hermoso atardecer pintando el cielo. Un momento de reflexión y belleza."
     }
   },
   "setup": {
@@ -784,14 +871,18 @@
   },
   "shop": {
     "balance": "Saldo {{coins}}",
+    "buddies": "compañeros",
     "buyCoins": "Comprar monedas",
     "buyFor": "Comprar por {{coins}}",
     "close": "Cerrar",
     "description": "Un maravilloso compañero para tu viaje para dejar de fumar.",
+    "getAll": "Obtener todos los {{itemType}} por {{cost}}",
     "owned": "Propiedad",
     "purchase": "Comprar",
+    "purchaseFailed": "Error al comprar {{item}}",
     "reward": "Recompensa {{coins}}",
     "sceneDescription": "Un hermoso fondo para mejorar tu viaje para dejar de fumar.",
+    "scenes": "escenas",
     "select": "Seleccionar",
     "selected": "Seleccionado",
     "share": "Compartir",

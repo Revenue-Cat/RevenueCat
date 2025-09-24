@@ -630,11 +630,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         };
         
         await notificationService.saveUserSettings(notificationSettings);
-        console.log('AppContext: Notification settings saved with app state');
-        
-        // Also reschedule notifications with current app state
-        // await scheduleUserNotifications();
-        console.log('AppContext: Notifications rescheduled with app state');
+     
       } catch (notificationError) {
         console.error('AppContext: Error saving notification settings:', notificationError);
         // Don't fail the main saveState if notification save fails
@@ -1189,7 +1185,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const initializeNotifications = useCallback(async () => {
     try {
       await notificationService.initialize();
-      console.log('AppContext: Notifications initialized');
 
       // Send installation notification if user has permissions and start date is set
       if (userProgress.startDate && (await notificationService.areNotificationsEnabled())) {
@@ -1237,7 +1232,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const scheduleUserNotifications = useCallback(async () => {
     try {
       if (!userProgress.startDate) {
-        console.log('AppContext: No startDate set, skipping notification scheduling');
+        // console.log('AppContext: No startDate set, skipping notification scheduling');
         return;
       }
 
@@ -1260,7 +1255,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
       await notificationService.scheduleUserNotifications(userSettings);
       
-      console.log('AppContext: User notifications scheduled');
     } catch (error) {
       console.error('AppContext: Error scheduling user notifications:', error as Error);
       throw error;
@@ -1275,7 +1269,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     // Automatically reschedule notifications when start date changes
     try {
       await scheduleUserNotifications();
-      console.log('AppContext: Notifications rescheduled after start date change');
+
     } catch (error) {
       console.error('AppContext: Error rescheduling notifications after start date change:', error);
     }
@@ -1294,7 +1288,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const currentSettings = safeResult.settings;
       
       if (!currentSettings) {
-        console.log('AppContext: No existing notification settings found, creating new ones');
+
         // Create new settings with the provided values
         const newSettings: UserNotificationSettings = {
           userId: userId,
@@ -1311,7 +1305,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         };
         
         await notificationService.saveUserSettings(newSettings);
-        console.log('AppContext: New notification settings created');
+
         return;
       }
 
@@ -1332,7 +1326,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const safeResult = await notificationService.safeGetUserSettings(userId);
       
       if (!safeResult.success || !safeResult.settings) {
-        console.log('AppContext: Creating initial notification settings with current app state');
+
         
         const selectedBuddy = getBuddyById(selectedBuddyId);
         const actualBuddyName = selectedBuddy?.name || buddyName || 'Your Buddy';
@@ -1364,11 +1358,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const checkNotificationStatus = useCallback(async () => {
     try {
-      console.log('AppContext: 🔍 Checking notification system status...');
       
       await notificationService.checkNotificationStatus();
       
-      console.log('AppContext: ✅ Status check complete');
     } catch (error) {
       console.error('AppContext: Error checking notification status:', error as Error);
       throw error;
@@ -1378,7 +1370,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // Direct push notification function
   const sendDirectPushNotification = useCallback(async (message: string) => {
     try {
-      console.log('AppContext: 📱 Sending direct push notification:', message);
       
       // Import OneSignal service directly
       const oneSignalService = (await import('../services/oneSignalService')).default;
@@ -1390,7 +1381,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         source: 'app'
       });
       
-      console.log('AppContext: ✅ Direct push notification sent successfully');
     } catch (error) {
       console.error('AppContext: ❌ Failed to send direct push notification:', error);
       throw error;
@@ -1402,11 +1392,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
    */
   const safeSaveNotificationSettings = useCallback(async (settings: UserNotificationSettings) => {
     try {
-      console.log('AppContext: Safely saving notification settings for user:', settings.userId);
 
       const result = await notificationService.saveUserSettings(settings);
 
-      console.log('AppContext: Notification settings saved successfully');
       return {
         success: true
       };
@@ -1424,12 +1412,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
    */
   const safeSaveScheduledNotification = useCallback(async (notification: ScheduledNotification) => {
     try {
-      console.log('AppContext: Safely saving scheduled notification:', notification.id);
 
       const result = await notificationService.safeSaveScheduledNotification(notification);
 
       if (result.success) {
-        console.log('AppContext: Scheduled notification saved successfully');
+        // console.log('AppContext: Scheduled notification saved successfully');
       } else {
         console.error('AppContext: Failed to save scheduled notification:', result.error);
       }
@@ -1450,12 +1437,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const safeClearScheduledNotifications = useCallback(async () => {
     try {
       const userId = await getOrCreatePersistentUserId();
-      console.log('AppContext: Safely clearing scheduled notifications for user:', userId);
 
       const result = await notificationService.safeClearScheduledNotifications(userId);
 
       if (result.success) {
-        console.log('AppContext: Scheduled notifications cleared successfully, deleted:', result.deletedCount);
+
         // Refresh notification stats after clearing
         await safeLoadNotificationStats();
       } else {
@@ -1477,7 +1463,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
    */
   const clearSentNotifications = useCallback(async () => {
     try {
-      console.log('AppContext: 🧹 Clearing SENT notifications from Firebase...');
       
       // Import notification service directly
       const notificationService = (await import('../services/notificationService')).default;
@@ -1485,7 +1470,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       // Clear only sent notifications
       await notificationService.clearSentNotifications();
       
-      console.log('AppContext: ✅ Sent notifications cleared successfully');
     } catch (error) {
       console.error('AppContext: ❌ Failed to clear sent notifications:', error);
       throw error;
@@ -1497,7 +1481,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
    */
   const clearUserNotifications = useCallback(async () => {
     try {
-      console.log('AppContext: 🧹 Clearing ALL notifications for current user...');
       
       const userId = await getOrCreatePersistentUserId();
       
@@ -1507,7 +1490,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       // Clear all notifications for this user
       await notificationService.clearUserNotifications(userId);
       
-      console.log('AppContext: ✅ User notifications cleared successfully');
     } catch (error) {
       console.error('AppContext: ❌ Failed to clear user notifications:', error);
       throw error;
@@ -1519,10 +1501,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
    */
   const testTimezoneConversion = useCallback(() => {
     try {
-      console.log('AppContext: 🧪 Testing timezone conversion...');
       
       const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      console.log('AppContext: Current user timezone:', userTimezone);
       
       // Import notification service directly
       const notificationService = require('../services/notificationService').default;
@@ -1530,7 +1510,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       // Test timezone conversion
       notificationService.testTimezoneConversion(userTimezone);
       
-      console.log('AppContext: ✅ Timezone conversion test completed - check console for details');
     } catch (error) {
       console.error('AppContext: ❌ Failed to test timezone conversion:', error);
       throw error;
@@ -1552,50 +1531,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     handle()
   }, []);
 
-  /**
-   * Force process all pending notifications (for testing and recovery)
-   */
-  // const forceProcessPendingNotifications = useCallback(async () => {
-  //   try {
-  //     console.log('AppContext: Force processing pending notifications');
-
-  //     const result = await notificationService.forceProcessPendingNotifications();
-
-  //     if (result.processed > 0) {
-  //       console.log(`AppContext: Force processed ${result.processed} notifications`);
-  //       // Refresh notification stats after processing
-  //       await safeLoadNotificationStats();
-  //     }
-
-  //     if (result.errors > 0) {
-  //       console.warn(`AppContext: ${result.errors} errors occurred during force processing`);
-  //     }
-
-  //     return result;
-  //   } catch (error) {
-  //     console.error('AppContext: Error in force processing:', error);
-  //     return {
-  //       processed: 0,
-  //       errors: 1
-  //     };
-  //   }
-  // }, []);
-
-
+  
   /**
    * Safely load notification settings from Firebase
    */
   const safeLoadNotificationSettings = useCallback(async () => {
     try {
       setIsLoadingNotifications(true);
-      console.log('AppContext: Starting safe load of notification settings');
 
       const userId = await getOrCreatePersistentUserId();
       const result = await notificationService.safeGetUserSettings(userId);
 
       if (result.success) {
         setNotificationSettings(result.settings);
-        console.log('AppContext: Successfully loaded notification settings:', result.settings ? 'Found' : 'None');
+
       } else {
         console.error('AppContext: Failed to load notification settings:', result.error);
         setNotificationSettings(null);
@@ -1620,14 +1569,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
    */
   const safeLoadNotificationStats = useCallback(async () => {
     try {
-      console.log('AppContext: Starting safe load of notification stats');
 
       const userId = await getOrCreatePersistentUserId();
       const result = await notificationService.safeGetUserNotificationStats(userId);
 
       if (result.success) {
         setNotificationStats(result.stats);
-        console.log('AppContext: Successfully loaded notification stats:', result.stats);
       } else {
         console.error('AppContext: Failed to load notification stats:', result.error);
         setNotificationStats(null);
@@ -1653,7 +1600,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsLoadingNotifications(true);
       setIsNotificationsLoaded(false);
 
-      console.log('AppContext: Starting safe load of all notification data');
 
       // Load notification settings
       const settingsResult = await safeLoadNotificationSettings();
@@ -1665,7 +1611,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (allSuccessful) {
         setIsNotificationsLoaded(true);
-        console.log('AppContext: Successfully loaded all notification data');
       } else {
         console.warn('AppContext: Some notification data failed to load');
         console.warn('Settings result:', settingsResult);

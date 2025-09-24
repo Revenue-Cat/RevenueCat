@@ -221,3 +221,12 @@ export const getTranslatedBuddyData = (t: (key: string) => string): Buddy[] => {
     description: t(`buddies.${buddy.id}.description`)
   }));
 };
+
+// Helper function to get translated PLACEHOLDER_BUDDY data
+export const getTranslatedPlaceholderBuddyData = (t: (key: string) => string): Buddy[] => {
+  return PLACEHOLDER_BUDDY.map(buddy => ({
+    ...buddy,
+    name: t(`buddies.${buddy.id}.name`),
+    description: t(`buddies.${buddy.id}.description`)
+  }));
+};

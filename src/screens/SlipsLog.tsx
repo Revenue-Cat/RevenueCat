@@ -105,7 +105,7 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
       <CoinPurchaseModal></CoinPurchaseModal>
 
       {/* Header */}
-      <View className="px-4 pt-4 pb-3 flex-row items-center justify-between">
+      <View className="pl-4 pt-4 pb-3 flex-row items-center justify-between">
         <Pressable
           onPress={onBack}
           className={`w-10 h-10 rounded-full justify-center items-center ${
@@ -127,15 +127,14 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
         </Text>
 
         <Pressable
-          onPress={handleCoinPurchase}
           className={`rounded-full px-3 py-1 flex-row items-center ${
             isDark ? "bg-amber-300/20" : "bg-yellow-200"
           }`}
         >
-          <CoinIcon width={16} height={16} />
-          <Text className="ml-1 text-yellow-800 font-semibold">
-            +{userCoins}
+          <Text className="mr-1 text-yellow-800 font-semibold">
+            {t("shop.balance", { coins: userCoins })}
           </Text>
+          <CoinIcon width={16} height={16} />
         </Pressable>
       </View>
 
@@ -251,7 +250,7 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
                     color={isUsed ? tileActiveFg : "#94a3b8"}
                   />
                   <Text
-                    className={`mt-2 text-m font-medium ${
+                    className={`mt-2 text-m font-medium text-center ${
                       isUsed ? "text-red-500" : tileInactiveText
                     }`}
                   >

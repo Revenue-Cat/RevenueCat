@@ -157,7 +157,7 @@ const Home: React.FC<HomeProps> = ({
     const availableScenes = translatedScenes.filter(scene => 
       !ownedBackgrounds?.includes(scene.id)
     );
-    return availableScenes.reduce((total, scene) => total + scene.coin, 0);
+    return availableScenes.reduce((total, scene) => total + (scene.coin ?? 0), 0);
   }, [ownedBackgrounds, t]);
 
   // Get the appropriate total cost and label based on current shop tab
@@ -166,9 +166,9 @@ const Home: React.FC<HomeProps> = ({
   }, [isScenesSelected, totalSceneCost, totalBuddyCost]);
 
   const shopButtonLabel = useMemo(() => {
-    const itemType = isScenesSelected ? "scenes" : "buddies";
-    return `Get all ${itemType} for ${shopTotalCost}`;
-  }, [isScenesSelected, shopTotalCost]);
+    const itemType = isScenesSelected ? t('shop.scenes') : t('shop.buddies');
+    return t('shop.getAll', { itemType, cost: shopTotalCost });
+  }, [isScenesSelected, shopTotalCost, t]);
 
   // Function to buy all available items (buddies or scenes)
   const handleBuyAllItems = useCallback(async () => {
@@ -197,7 +197,7 @@ const Home: React.FC<HomeProps> = ({
           };
           await purchaseItem(shopItem, 'backgrounds');
         } catch (error) {
-          console.error(`Failed to purchase ${scene.name}:`, error);
+          console.error(t('shop.purchaseFailed', { item: scene.name }), error);
           break; // Stop if any purchase fails
         }
       }
@@ -221,7 +221,7 @@ const Home: React.FC<HomeProps> = ({
           };
           await purchaseItem(shopItem, 'buddies');
         } catch (error) {
-          console.error(`Failed to purchase ${buddy.name}:`, error);
+          console.error(t('shop.purchaseFailed', { item: buddy.name }), error);
           break; // Stop if any purchase fails
         }
       }
