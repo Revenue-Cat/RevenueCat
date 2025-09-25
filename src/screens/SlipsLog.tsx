@@ -111,7 +111,7 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
       {/* Header */}
       <View className="pl-4 pt-4 pb-3 flex-row items-center justify-between">
         {/* Back button */}
-        <BackButton onPress={onBack} />
+        <BackButton onPress={onBack} variant="icon" />
 
         <Text className={`${titleColor} text-xl font-bold`}>
           {t("slipsLog.title", "Slips log")}

@@ -66,7 +66,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   // Calculate achievements with 100% progress
   const completedAchievementsCount = achievements.filter((achievement) => {
     const progress = getProgressForAchievement(achievement.id);
-    return progress.percentage === 100;
+    return progress.percentage >= 100;
   }).length || 0;
 
 

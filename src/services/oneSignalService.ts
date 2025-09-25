@@ -195,8 +195,8 @@ class OneSignalService {
       const userId = await getOrCreatePersistentUserId();
       OneSignal.login(userId);
 
-      // Send notification using OneSignal's REST API
-      await this.sendNotificationViaAPI(message, additionalData);
+      // Send notification using OneSignal's REST API with the same user ID
+      await this.sendNotificationViaAPIWithUserId(message, additionalData, userId);
       
       console.log('OneSignal: ✅ Notification sent successfully');
     } catch (error) {
@@ -228,6 +228,77 @@ class OneSignalService {
         app_id: config.appId,
         // Target specific user by external user ID
         include_external_user_ids: [userId],
+        contents: {
+          en: message
+        },
+        data: additionalData || {},
+        send_after: new Date().toISOString()
+      };
+
+      console.log('OneSignal: Sending via REST API:', JSON.stringify(notificationData, null, 2));
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${config.restApiKey}`
+        },
+        body: JSON.stringify(notificationData)
+      });
+
+      console.log('OneSignal: Response status:', response.status);
+      console.log('OneSignal: Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('OneSignal: API error response:', errorText);
+        throw new Error(`OneSignal API error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('OneSignal: ✅ API response:', JSON.stringify(result, null, 2));
+      
+      if (result.id) {
+        console.log('OneSignal: ✅ Notification sent successfully with ID:', result.id);
+        console.log('OneSignal: 📱 Check your device for the notification!');
+      } else {
+        console.warn('OneSignal: ⚠️ No notification ID returned from API');
+      }
+      
+    } catch (error) {
+      console.error('OneSignal: ❌ Error sending via API:', error);
+      console.error('OneSignal: Error details:', {
+        message: (error as Error).message,
+        stack: (error as Error).stack
+      });
+      // Fallback to local notification if API fails
+      await this.sendLocalNotification(message, additionalData);
+    }
+  }
+
+  /**
+   * Send notification via OneSignal REST API with specific user ID
+   */
+  private async sendNotificationViaAPIWithUserId(message: string, additionalData?: Record<string, any>, userId?: string): Promise<void> {
+    try {
+      const targetUserId = userId || await getOrCreatePersistentUserId();
+      console.log('OneSignal: User ID for targeting:', targetUserId);
+      
+      // Get secure configuration from Firebase
+      const config = await secureConfig.getOneSignalConfig();
+      console.log('OneSignal: App ID:', config.appId);
+      console.log('OneSignal: API Key length:', config.restApiKey.length);
+      
+      // OneSignal REST API endpoint
+      const url = 'https://onesignal.com/api/v1/notifications';
+      
+      console.log('OneSignal: ✅ Using secure configuration from Firebase');
+  
+      // Target specific user instead of all users
+      const notificationData = {
+        app_id: config.appId,
+        // Target specific user by external user ID
+        include_external_user_ids: [targetUserId],
         contents: {
           en: message
         },
@@ -344,8 +415,8 @@ class OneSignalService {
       
       const notificationData = {
         app_id: config.appId,
-        // Send to all users by targeting all subscribed players
-        included_segments: ['All'],
+        // Target specific user by external user ID instead of all users
+        include_external_user_ids: [userId],
         contents: {
           en: message
         },

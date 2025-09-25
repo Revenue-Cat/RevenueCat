@@ -32,7 +32,7 @@ const BackButton: React.FC<BackButtonProps> = ({
       {variant === "icon" ? (
         <Ionicons 
           name="arrow-back" 
-          size={24} 
+          size={16} 
           color={isDark ? "#e2e8f0" : "#1e1b4b"} 
         />
       ) : (

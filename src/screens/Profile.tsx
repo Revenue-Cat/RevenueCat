@@ -37,6 +37,8 @@ import PromoCards from "../components/PromoCards";
 import { COIN_PACKS, CoinPack, Plan } from "../config/subscriptions";
 import ReviewModal from "../components/ReviewModal";
 import CoinPackCard from "../components/CoinPackCard";
+import BackButton from "../components/BackButton";
+import Toggle from "../components/Toggle";
 
 interface ProfileProps {
   onBack: () => void;
@@ -97,7 +99,10 @@ const Profile: React.FC<ProfileProps> = ({
     userCoins,
     setUserCoins,
     hasLeftReview,
-    handleLeaveReview
+    handleLeaveReview,
+    notificationsEnabled,
+    updateNotificationSettings,
+    areNotificationsEnabled
   } = useApp();
 
   const sexKey: SexKey = gender === "lady" ? "w" : "m";
@@ -195,30 +200,51 @@ const Profile: React.FC<ProfileProps> = ({
   // Support slide
   const [showSupportModal, setShowSupportModal] = useState(false);
 
+  // Notification state
+  const [notificationPermission, setNotificationPermission] = useState<boolean>(notificationsEnabled);
+
+  // Sync notification permission with actual settings
+  useEffect(() => {
+    const checkNotificationStatus = async () => {
+      try {
+        const isEnabled = await areNotificationsEnabled();
+        setNotificationPermission(isEnabled);
+      } catch (error) {
+        console.error('Profile: Error checking notification status:', error);
+      }
+    };
+
+    checkNotificationStatus();
+  }, [areNotificationsEnabled]);
+
   const handleBuyPack = (pack: CoinPack) => {
     setUserCoins(userCoins + pack.coins);
     // hook: analytics / server call could go here
+  };
+
+  // Handle notification toggle
+  const handleNotificationToggle = async (enabled: boolean) => {
+    try {
+      setNotificationPermission(enabled);
+      
+      // Update notification settings
+      await updateNotificationSettings({
+        isEnabled: enabled
+      });
+      
+      console.log('Profile: Notification settings updated:', enabled);
+    } catch (error) {
+      console.error('Profile: Error updating notification settings:', error);
+      // Revert the toggle if update failed
+      setNotificationPermission(!enabled);
+    }
   };
 
   return (
     <View className={`flex-1 ${isDark ? "bg-slate-800" : "bg-white"}`}>
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-4 pb-3">
-        <Pressable
-          className={`w-10 h-10 rounded-full justify-center items-center p-1 ${
-            isDark ? "bg-slate-500" : "bg-slate-100"
-          }`}
-          onPress={onBack}
-          hitSlop={10}
-          style={({ hovered }) => [
-            isDark
-              ? { backgroundColor: hovered ? "#475569" : "#334155" }
-              : { backgroundColor: hovered ? "#e0e7ff" : "#f8fafc" },
-            isDark ? { elevation: 2 } : null,
-          ]}
-        >
-          <PrevIcon width={18} height={18} color={iconColor} />
-        </Pressable>
+        <BackButton onPress={onBack} variant="icon" />
         <Text
           className={`text-xl font-bold ${
             isDark ? "text-white" : "text-indigo-950"
@@ -242,7 +268,7 @@ const Profile: React.FC<ProfileProps> = ({
           className={`mx-4 rounded-3xl ${
             isDark ? "bg-slate-700" : "bg-indigo-50"
           }`}
-          style={{ height: 231 }}
+          style={{ height: 210 }}
         >
           <View className="rounded-3xl overflow-hidden" style={{ height: 143 }}>
             <ParallaxBackground scrollY={scrollY} height={143} anchor="middle">
@@ -256,6 +282,7 @@ const Profile: React.FC<ProfileProps> = ({
                   height: 143,
                   alignItems: "center",
                   justifyContent: "flex-end",
+                  zIndex: 50,
                 }}
               >
                 {/* Lottie buddy */}
@@ -266,7 +293,7 @@ const Profile: React.FC<ProfileProps> = ({
                   style={{
                     width: "100%",
                     height: 143,
-                    zIndex: 21,
+                    zIndex: 50,
                     transform: [{ scale: 1.3 }],
                   }}
                 />
@@ -275,18 +302,12 @@ const Profile: React.FC<ProfileProps> = ({
               {/* Edit buddy -> BuddySelection */}
               <Pressable
                 onPress={onNavigateToBuddy}
-                className={`w-10 h-10 rounded-full z-[41] justify-center items-center absolute right-3 top-3 p-1 ${
-                  isDark ? "bg-slate-500" : "bg-indigo-100"
+                className={`w-10 h-10 rounded-full z-[41] justify-center items-center absolute right-3 top-3 ${
+                  isDark ? "bg-slate-600" : "bg-slate-100"
                 }`}
                 hitSlop={10}
-                style={({ hovered }) => [
-                  isDark
-                    ? { backgroundColor: hovered ? "#475569" : "#334155" }
-                    : { backgroundColor: hovered ? "#e0e7ff" : "#f8fafc" },
-                  isDark ? { elevation: 2 } : null,
-                ]}
               >
-                <EditIcon width={18} height={18} color={iconColor} />
+                <EditIcon width={16} height={16} color={iconColor} />
               </Pressable>
             </ParallaxBackground>
           </View>
@@ -301,13 +322,7 @@ const Profile: React.FC<ProfileProps> = ({
             >
               {buddyName || t("profile.buddy.fallbackName", "Buddy")}
             </Text>
-            <Text
-              className={`text-base font-medium ${
-                isDark ? "text-slate-300" : "text-slate-500"
-              }`}
-            >
-              {genderLabel}
-            </Text>
+           
           </View>
         </View>
 
@@ -364,7 +379,7 @@ const Profile: React.FC<ProfileProps> = ({
               hitSlop={10}
               style={isDark ? { elevation: 2 } : undefined}
             >
-              <EditIcon width={18} height={18} color={iconColor} />
+              <EditIcon width={16} height={16} color={iconColor} />
             </Pressable>
           </View>
 
@@ -390,11 +405,10 @@ const Profile: React.FC<ProfileProps> = ({
         {/* Settings block 1 */}
         <View className="mx-4 gap-3">
           {/* Notifications */}
-          <Pressable
+          <View
             className={`w-full h-14 rounded-full px-4 flex-row items-center justify-between ${
               isDark ? "bg-slate-700" : "bg-indigo-50"
             }`}
-            onPress={() => {}}
           >
             <View className="flex-row items-center">
               <Icons.Notification
@@ -411,8 +425,20 @@ const Profile: React.FC<ProfileProps> = ({
                 {t("profile.sections.notification", "Notification")}
               </Text>
             </View>
-            <Ionicons name="checkmark" size={18} color={systemIconColor} />
-          </Pressable>
+            <Toggle
+              value={notificationPermission}
+              onValueChange={handleNotificationToggle}
+              size="sm"
+              trackColor={{
+                false: isDark ? "#475569" : "#E2E8F0",
+                true: isDark ? "#4F46E5" : "#1E1B4B",
+              }}
+              thumbColor={{
+                false: isDark ? "#FFFFFF" : "#FFFFFF",
+                true: isDark ? "#FFFFFF" : "#FFFFFF",
+              }}
+            />
+          </View>
 
           {/* Theme */}
           <Pressable
@@ -432,7 +458,7 @@ const Profile: React.FC<ProfileProps> = ({
                 {t("profile.sections.theme", "Theme")}
               </Text>
             </View>
-            <Ionicons name="checkmark" size={18} color={systemIconColor} />
+            <Ionicons name="chevron-forward" size={22} color={systemIconColor} />
           </Pressable>
 
           {/* Language */}
@@ -455,7 +481,7 @@ const Profile: React.FC<ProfileProps> = ({
                 {currentLanguage.name}
               </Text>
             </View>
-            <Ionicons name="checkmark" size={18} color={systemIconColor} />
+            <Ionicons name="chevron-forward" size={22} color={systemIconColor} />
           </Pressable>
         </View>
 
@@ -511,7 +537,7 @@ const Profile: React.FC<ProfileProps> = ({
                 {t("profile.sections.support", "Support")}
               </Text>
             </View>
-            <Ionicons name="checkmark" size={18} color={systemIconColor} />
+            <Ionicons name="chevron-forward" size={22} color={systemIconColor} />
           </Pressable>
         </View>
         {!hasLeftReview && (
