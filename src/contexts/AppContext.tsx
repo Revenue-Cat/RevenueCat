@@ -98,6 +98,10 @@ interface AppState {
   showCoinPurchase: boolean;
   selectedShopTab: ShopTab;
 
+  // Shop helpers
+  addOwnedBuddies: (ids: string[]) => void;
+  addOwnedBackgrounds: (ids: string[]) => void;
+
   // Notification preferences (local storage)
   notificationsEnabled: boolean;
   notificationSoundEnabled: boolean;
@@ -816,6 +820,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     },
     [userCoins]
   );
+
+  // Helpers to bulk-add owned items (avoid duplicates)
+  const addOwnedBuddies = useCallback((ids: string[]) => {
+    setOwnedBuddies((prev) => Array.from(new Set([...(prev || []), ...ids])));
+  }, []);
+
+  const addOwnedBackgrounds = useCallback((ids: string[]) => {
+    setOwnedBackgrounds((prev) => Array.from(new Set([...(prev || []), ...ids])));
+  }, []);
 
   const openShopWithTab = useCallback((tab: ShopTab) => {
     setSelectedShopTab(tab);
@@ -1881,6 +1894,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       addSlip,
       purchaseExtraSlips,
 
+    // Shop helpers
+    addOwnedBuddies,
+    addOwnedBackgrounds,
+
       // Notification system
       initializeNotifications,
       scheduleUserNotifications,
@@ -1950,6 +1967,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       shouldOfferProtectStreak,
       addSlip,
       purchaseExtraSlips,
+      addOwnedBuddies,
+      addOwnedBackgrounds,
       // Notification preferences
       notificationsEnabled,
       notificationSoundEnabled,

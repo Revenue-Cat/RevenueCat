@@ -74,7 +74,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     const status = getChallengeStatus(challenge.id);
     const previousCompletions = getChallengeCompletions(challenge.id);
       
-    return status === 'completed' || previousCompletions.length > 0;
+    return status === 'completed' || previousCompletions?.length > 0;
   }).length || 0;
 
   const getViewTitle = () => {

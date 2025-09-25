@@ -300,23 +300,25 @@ export const renderCombinedGrid = (
   const allItems = [...regularItems, ...placeholderItems];
   
   return (
-    <GridContainer className={gridStyles.container}>
-      {allItems.map((item) => {
-        const isOwned = isOwnedItems.includes(item.id);
-        const isSelected = selectedItemId === item.id;
-        const isPlaceholder = placeholderItems.some(pi => pi.id === item.id);
-        const type = isPlaceholder ? `placeholder-${regularType}` as const : regularType;
-        
-        return createGridItem(
-          item,
-          isOwned,
-          isSelected,
-          () => onItemPress(item),
-          type,
-          isDark,
-          options
-        );
-      })}
-    </GridContainer>
+    <View style={{ alignSelf: 'center' }}>
+      <GridContainer className={gridStyles.container}>
+        {allItems.map((item) => {
+          const isOwned = isOwnedItems.includes(item.id);
+          const isSelected = selectedItemId === item.id;
+          const isPlaceholder = placeholderItems.some(pi => pi.id === item.id);
+          const type = isPlaceholder ? `placeholder-${regularType}` as const : regularType;
+          
+          return createGridItem(
+            item,
+            isOwned,
+            isSelected,
+            () => onItemPress(item),
+            type,
+            isDark,
+            options
+          );
+        })}
+      </GridContainer>
+    </View>
   );
 };

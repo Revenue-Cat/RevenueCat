@@ -52,6 +52,8 @@ const Home: React.FC<HomeProps> = ({
     ownedBuddies,
     ownedBackgrounds,
     purchaseItem,
+    addOwnedBuddies,
+    addOwnedBackgrounds,
   } = useApp();
 
 
@@ -190,8 +192,8 @@ const Home: React.FC<HomeProps> = ({
             id: scene.id,
             emoji: "🎨", // Default emoji for scenes
             name: scene.name,
-            price: scene.coin,
-            owned: scene.owned,
+            price: scene.coin ?? 0,
+            owned: !!scene.owned,
             coin: scene.coin, // Add coin field for compatibility
           };
           await purchaseItem(shopItem, 'backgrounds');
@@ -200,6 +202,8 @@ const Home: React.FC<HomeProps> = ({
           break; // Stop if any purchase fails
         }
       }
+      // Mark all as owned after successful loop
+      addOwnedBackgrounds(availableScenes.map(s => s.id));
     } else {
       // Buy all available buddies
       const translatedBuddies = getTranslatedBuddyData(t);
@@ -214,8 +218,8 @@ const Home: React.FC<HomeProps> = ({
             id: buddy.id,
             emoji: buddy.emoji,
             name: buddy.name,
-            price: buddy.coin,
-            owned: buddy.owned,
+            price: buddy.coin ?? 0,
+            owned: !!buddy.owned,
             coin: buddy.coin, // Add coin field for compatibility
           };
           await purchaseItem(shopItem, 'buddies');
@@ -224,8 +228,10 @@ const Home: React.FC<HomeProps> = ({
           break; // Stop if any purchase fails
         }
       }
+      // Mark all as owned after successful loop
+      addOwnedBuddies(genderSpecificBuddies.map(b => b.id));
     }
-  }, [isScenesSelected, userCoins, shopTotalCost, ownedBackgrounds, ownedBuddies, sexKey, purchaseItem, setShowCoinPurchase, t]);
+  }, [isScenesSelected, userCoins, shopTotalCost, ownedBackgrounds, ownedBuddies, sexKey, purchaseItem, setShowCoinPurchase, addOwnedBuddies, addOwnedBackgrounds, t]);
 
 
   // Animate CTA buttons based on current view
@@ -412,7 +418,7 @@ const Home: React.FC<HomeProps> = ({
                     >
                       <Pressable
                         className={`w-2 h-2 rounded-full ${
-                          currentView === view ? "bg-white" : "bg-black/30"
+                          currentView === view ? "bg-white" : "bg-white/30"
                         }`}
                         onPress={() => changeView(view as any)}
                       />
