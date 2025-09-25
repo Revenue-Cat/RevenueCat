@@ -26,7 +26,7 @@ const SmokeTypeModal: React.FC<SmokeTypeModalProps> = ({
   const { t } = useTranslation();
   const isDark = theme === 'dark';
 
-  const iconColor = selectedValue ? '#312E81' : (isDark ? '#CBD5E1' : '#1E1B4B');
+  const iconColor = isDark ? '#CBD5E1' : (selectedValue ? '#312E81' : '#1E1B4B');
 
   const options = [
     { value: "cigarettes", label: t('setup.fields.smokeType.options.cigarettes'), icon: <SmokeIcon width={20} height={20} color={iconColor} /> },
@@ -68,7 +68,7 @@ const SmokeTypeModal: React.FC<SmokeTypeModalProps> = ({
                 <Ionicons 
                   name="checkmark" 
                   size={24} 
-                  color="#4f46e5" 
+                  color={isDark ? "#CBD5E1" : "#4f46e5"} 
                 />
               )}
             </Pressable>

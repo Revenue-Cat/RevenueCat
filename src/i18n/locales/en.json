@@ -567,7 +567,8 @@
     "habits": {
       "estimatedSavings": "Estimated daily savings",
       "line": "I smoke {{smokeType}}, usually {{dailyAmount}} a day. A pack costs me around {{currency}}{{price}}. I want {{goal}}.",
-      "title": "My smoking habits"
+      "title": "My smoking habits",
+      "perYear": "/year"
     },
     "sections": {
       "feedback": "Feedback",

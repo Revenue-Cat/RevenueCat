@@ -173,12 +173,12 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
               style={{
                 width: 90,
                 height: 220,
-                color: isDark ? '#0c68e7' : '#07033f',
+                color: isDark ? '#CBD5E1' : '#1E1B4B',
               }}
               itemStyle={{
                 fontSize: 24,
                 fontWeight: 'bold',
-                color: isDark ? '#0c68e7' : '#07033f',
+                color: isDark ? '#CBD5E1' : '#1E1B4B',
               }}
               selectionColor={isDark ? '#1e40af' : '#0b3ee6'}
               mode="dialog"
@@ -188,7 +188,7 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
                   key={number}
                   label={number.toString()}
                   value={number}
-                  color={pickerValue === number ? '#1E1B4B' : '#1E1B4B'}
+                  color={isDark ? '#CBD5E1' : '#1E1B4B'}
                 />
               ))}
             </Picker>
@@ -216,12 +216,12 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
               style={{
                 width: 72,
                 height: 220,
-                color: isDark ? '#0c68e7' : '#e6710b',
+                color: isDark ? '#CBD5E1' : '#1E1B4B',
               }}
               itemStyle={{
                 fontSize: 24,
                 fontWeight: 'bold',
-                color: isDark ? '#0c68e7' : '#e45a1a',
+                color: isDark ? '#CBD5E1' : '#1E1B4B',
               }}
               selectionColor={isDark ? '#1e40af' : '#0235e0'}
               mode="dialog"
@@ -231,7 +231,7 @@ const PackPricePickerModal: React.FC<PackPricePickerModalProps> = ({
                   key={currency}
                   label={currency}
                   value={currency}
-                  color={pickerCurrency === currency ? '#1E1B4B' : '#1E1B4B'}
+                  color={isDark ? '#CBD5E1' : '#1E1B4B'}
                 />
               ))}
             </Picker>

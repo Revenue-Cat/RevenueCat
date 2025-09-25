@@ -302,10 +302,11 @@ const Profile: React.FC<ProfileProps> = ({
               {/* Edit buddy -> BuddySelection */}
               <Pressable
                 onPress={onNavigateToBuddy}
-                className={`w-10 h-10 rounded-full z-[41] justify-center items-center absolute right-3 top-3 ${
+                className={`w-10 h-10 rounded-full z-[60] justify-center items-center absolute right-3 top-3 ${
                   isDark ? "bg-slate-600" : "bg-slate-100"
                 }`}
-                hitSlop={10}
+                hitSlop={15}
+                style={{ elevation: 10 }}
               >
                 <EditIcon width={16} height={16} color={iconColor} />
               </Pressable>
@@ -345,7 +346,7 @@ const Profile: React.FC<ProfileProps> = ({
               }`}
               style={{ fontWeight: "700", fontSize: 20 }}
             >
-              /year
+              {t("profile.habits.perYear", "/year")}
             </Text>
           </View>
           <Text

@@ -133,10 +133,11 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
             </View>
              ) : (isCompletedStatus) ? (
             <View className="absolute top-1 right-1 min-w-6 h-6 px-1 rounded-full bg-green-500 items-center justify-center">
-              <Text className="text-white text-xs font-bold">
-                {completionCount == 1 ?  <Ionicons name="checkmark" size={16} color="white" /> : completionCount}
-
-              </Text>
+              {completionCount == 1 ? (
+                <Ionicons name="checkmark" size={16} color="white" />
+              ) : (
+                <Text className="text-white text-xs font-bold">{completionCount}</Text>
+              )}
             </View>
           ) : null}
         

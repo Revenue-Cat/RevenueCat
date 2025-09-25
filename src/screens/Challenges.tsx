@@ -139,7 +139,7 @@ const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
   // Memoize the challenges list
   const challengesList = useMemo(() => (
     <View className="px-0">
-      {visibleChallenges.map((ch) => {
+      {visibleChallenges.map((ch, idx) => {
         if (!ch.id) {
           console.warn('Challenge ID not found for:', ch.title);
           return null;
@@ -147,7 +147,7 @@ const Challenges: React.FC<ChallengesProps> = ({ onNavigateToBreathing }) => {
         
         return (
           <MemoizedChallengeCard
-            key={`${ch.title}-${ch.id}`}
+            key={`${ch.title}-${ch.id}-${idx}`}
             {...ch}
             onCheckIn={() => handleCheckIn(ch.id!)}
             onPress={() => handleChallengePress(ch, ch.id!)}

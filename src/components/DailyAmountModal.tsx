@@ -78,7 +78,7 @@ const DailyAmountModal: React.FC<DailyAmountModalProps> = ({
                 <Ionicons 
                   name="checkmark" 
                   size={24} 
-                  color="#4f46e5" 
+                  color={isDark ? "#CBD5E1" : "#4f46e5"} 
                 />
               )}
             </Pressable>

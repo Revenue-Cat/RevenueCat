@@ -613,7 +613,8 @@
     "habits": {
       "estimatedSavings": "Ahorros diarios estimados",
       "line": "Fumo {{smokeType}}, usualmente {{dailyAmount}} al día. Un paquete cuesta alrededor de {{currency}}{{price}}. Quiero {{goal}}.",
-      "title": "Mis hábitos de fumar"
+      "title": "Mis hábitos de fumar",
+      "perYear": "/año"
     },
     "sections": {
       "feedback": "Comentarios",

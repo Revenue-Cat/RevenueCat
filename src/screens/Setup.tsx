@@ -32,6 +32,7 @@ import NoMeterIcon from "../assets/icons/no-mater.svg";
 import PrevLight from "../assets/icons/prev.svg";
 import PrevDark from "../assets/icons/prev-d.svg";
 import CTAButton from "../components/CTAButton";
+import BackButton from "../components/BackButton";
 
 interface SetupData {
   smokeType: string;
@@ -123,7 +124,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
   };
 
   const iconColor = setupData[currentStep as keyof SetupData]
-    ? "#312E81"
+    ? "#CBD5E1"
     : isDark
     ? "#CBD5E1"
     : "#1E1B4B";
@@ -264,25 +265,7 @@ const Setup: React.FC<SetupProps> = ({ onNext, onBack, fromProfile }) => {
         {/* Back (only if provided) + Title (changes if fromProfile) */}
         {onBack && (
           <View className="flex-row items-center justify-between">
-            <Pressable
-              className={`w-10 h-10 rounded-full justify-center items-center p-1 ${
-                isDark ? "bg-slate-700" : "bg-slate-50"
-              }`}
-              onPress={onBack}
-              hitSlop={10}
-              style={({ pressed }) => [
-                isDark
-                  ? { backgroundColor: pressed ? "#475569" : "#334155" }
-                  : { backgroundColor: pressed ? "#e0e7ff" : "#f8fafc" },
-                isDark ? { elevation: 2 } : null,
-              ]}
-            >
-              <PrevIcon
-                width={18}
-                height={18}
-                color={isDark ? "#FFFFFF" : "#1e1b4b"}
-              />
-            </Pressable>
+            <BackButton onPress={onBack} variant="icon" />
             <Text
               className={`text-xl font-bold ${
                 isDark ? "text-slate-100" : "text-indigo-950"

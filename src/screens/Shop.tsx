@@ -18,9 +18,7 @@ import { getTranslatedBuddyData, getTranslatedPlaceholderBuddyData, PLACEHOLDER_
 import { getTranslatedSceneData, getTranslatedPlaceholderSceneData, PLACEHOLDER_SCENE } from "../data/scenesData";
 import BuddyModal from "../components/BuddyModal";
 import SceneModal from "../components/SceneModal";
-import CoinIcon from "../assets/icons/coins.svg";
-import LottieView from "lottie-react-native";
-import LockLight from "../assets/icons/lock.svg";
+import { renderCombinedGrid } from "../utils/gridUtils";
 
 interface ShopProps {
   onBack: () => void;
@@ -145,227 +143,30 @@ const Shop: React.FC<ShopProps> = ({
     [translatedBuddies, sexKey]
   );
 
-  const renderBuddiesGrid = () => (
-    <View className="w-full flex-row flex-wrap">
-      {genderBuddies.map((item) => {
-        const isOwned = ownedBuddies?.includes(item.id) || false;
-        const isSelected = selectedBuddyId === item.id;
 
-        return (
-          <Pressable
-            key={item.id}
-            className="w-1/4 px-1 py-1"
-            onPress={() => handleBuddySelect(item)}
-          >
-            <View
-              className={`items-center rounded-xl relative ${
-                isDark ? "bg-slate-700/50" : "bg-white/10"
-              }`}
-            >
-              <View className="w-[80px] h-[80px] overflow-hidden relative">
-                {/* item.icon is a Lottie JSON (from buddyAssets), so render via LottieView */}
-                <LottieView
-                  source={item.icon}
-                  autoPlay={isSelected}
-                  loop={isSelected}
-                  {...(!isSelected ? ({ progress: 0 } as any) : {})}
-                  style={{ width: 80, height: 110, marginTop: -5 }}
-                  resizeMode="contain"
-                  enableMergePathsAndroidForKitKatAndAbove
-                />
+  const renderBuddiesGrid = () => {
+    return renderCombinedGrid(
+      genderBuddies,
+      translatedPlaceholderBuddies,
+      ownedBuddies || [],
+      selectedBuddyId,
+      handleBuddySelect,
+      'buddy',
+      isDark
+    );
+  };
 
-                {!isOwned && (
-                  <View className="absolute bottom-1 left-4 z-10 rounded-3xl bg-black/70 px-2 py-0.5">
-                    <View className="flex-row items-center justify-center">
-                      <Text className="text-s font-bold text-amber-500 gap-2">
-                        {item.coin}
-                      </Text>
-                      <CoinIcon width={16} height={16} className="ml-1" />
-                    </View>
-                  </View>
-                )}
-              </View>
-
-              {isSelected && (
-                <View className="absolute top-1 right-1">
-                  <Ionicons
-                    className="bg-green-500 rounded-full p-0.5 bold"
-                    name="checkmark"
-                    size={18}
-                    color="white"
-                  />
-                </View>
-              )}
-            </View>
-          </Pressable>
-        );
-      })}
-      {translatedPlaceholderBuddies.map((item) => {
-        const isOwned = ownedBuddies?.includes(item.id) || false;
-        const isSelected = selectedBuddyId === item.id;
-
-        return (
-          <Pressable
-            key={item.id}
-            className="w-1/4 px-1 py-1"
-            onPress={() => handleBuddySelect(item)}
-          >
-            <View
-              className={`items-center rounded-xl relative ${
-                isDark ? "bg-slate-700/50" : "bg-white/10"
-              }`}
-            >
-              <View className="w-[80px] h-[80px] overflow-hidden relative">
-                {/* PLACEHOLDER_BUDDY.icon is an SVG component, so render directly */}
-                {/* Show only half of the icon by using 110px height in 80px container */}
-                <View
-                  style={{
-                    width: 80,
-                    height: 110,        // Icon full height
-                    marginTop: -5,     // Negative margin to show bottom hal0
-                    alignItems: 'center',
-                    justifyContent: 'flex-end'  // Align to bottom to show lower half
-                  }}
-                >
-                  {React.createElement(item.icon, {
-                    width: 95,
-                    height: 95,        // Full icon height
-                    color: isSelected ? "#22C55E" : "#FFFFFF33",
-                    // opacity: 0.2
-                  })}
-                </View>
-
-                {!isOwned && (
-                  <View className="absolute top-1 right-1 z-10 rounded-3xl bg-black/40 p-1.5">
-                      <LockLight width={12} height={12} color="white" opacity={0.5} />
-                  </View>
-                )}
-              </View>
-
-              {isSelected && (
-                <View className="absolute top-1 right-1">
-                  <Ionicons
-                    className="bg-green-500 rounded-full p-0.5 bold"
-                    name="checkmark"
-                    size={18}
-                    color="white"
-                  />
-                </View>
-              )}
-            </View>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-
-  const renderScenesGrid = () => (
-    <View className="w-full flex-row flex-wrap">
-      {scenes.map((item) => {
-        const isOwned = ownedBackgrounds.includes(item.id);
-        const isSelected = selectedBackground.id === item.id;
-
-        return (
-          <Pressable
-            key={item.id}
-            className="w-1/4 px-1 py-1"
-            onPress={() => handleSceneSelect(item)}
-          >
-            <View
-              className={`items-center rounded-xl relative ${
-                isDark ? "bg-slate-700/50" : "bg-white/10"
-              }`}
-            >
-              <View className="w-[80px] h-[80px] overflow-hidden relative">
-                <Image
-                  source={item.background}
-                  className="w-full h-full rounded-2xl"
-                  resizeMode="cover"
-                />
-                {!isOwned && (
-                  <View className="absolute bottom-1 left-4 z-10 rounded-3xl bg-black/70 px-2 py-0.5">
-                    <View className="flex-row items-center justify-center">
-                      <Text className="text-s font-bold text-amber-500 gap-2">
-                        {item.coin}
-                      </Text>
-                      <CoinIcon width={16} height={16} className="ml-1" />
-                    </View>
-                  </View>
-                )}
-              </View>
-
-              {isSelected && (
-                <View className="absolute top-1 right-1">
-                  <Ionicons
-                    className="bg-green-500 rounded-full p-0.5 bold"
-                    name="checkmark"
-                    size={18}
-                    color="white"
-                  />
-                </View>
-              )}
-            </View>
-          </Pressable>
-        );
-      })}
-      {translatedPlaceholderScenes.map((item) => {
-        const isOwned = ownedBackgrounds.includes(item.id) || false;
-        const isSelected = selectedBackground.id === item.id;
-
-        return (
-          <Pressable
-            key={item.id}
-            className="w-1/4 px-1 py-1"
-            onPress={() => handleSceneSelect(item)}
-          >
-            <View
-              className={`items-center rounded-xl relative ${
-                isDark ? "bg-slate-700/50" : "bg-white/10"
-              }`}
-            >
-              <View className="w-[80px] h-[80px] overflow-hidden relative">
-                {/* PLACEHOLDER_SCENE.icon is an SVG component, so render directly */}
-                <View
-                  style={{
-                    width: 80,
-                    height: 80,
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {React.createElement(item.icon, {
-                    width: 80,
-                    height: 80,
-                     color: isSelected ? "#22C55E" :  "#FFFFFF33",
-                    // opacity: 0.5
-                  })}
-                </View>
-
-                {!isOwned && (
-                  <View className="absolute top-1 right-1 z-10 rounded-3xl bg-black/40 p-1.5">
-                    <LockLight width={12} height={12} color="white" opacity={0.5} />
-                  </View>
-                )}
-              </View>
-
-              {isSelected && (
-                <View className="absolute top-1 right-1">
-                  <Ionicons
-                    className="bg-green-500 rounded-full p-0.5 bold"
-                    name="checkmark"
-                    size={18}
-                    color="white"
-                  />
-                </View>
-              )}
-            </View>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-
-  const gradientColors = parseGradient(selectedBackground.backgroundColor || "linear-gradient(179.97deg, #1F1943 48.52%, #4E3EA9 99.97%)");
+  const renderScenesGrid = () => {
+    return renderCombinedGrid(
+      scenes,
+      translatedPlaceholderScenes,
+      ownedBackgrounds,
+      selectedBackground.id,
+      handleSceneSelect,
+      'scene',
+      isDark
+    );
+  };
 
   // Handle individual buddy purchase
   const handleBuyBuddy = useCallback(async (buddy: any) => {
