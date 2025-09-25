@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getSystemLanguage, SupportedLanguage } from '../utils/languageUtils';
 
-type Language = 'en' | 'es' | 'uk';
+type Language = SupportedLanguage;
 
 interface LanguageContextType {
   language: Language;
@@ -27,16 +28,29 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const { i18n } = useTranslation();
   const [language, setLanguageState] = useState<Language>('en');
 
-  // Load saved language on mount
+  // Load saved language on mount, fallback to system language
   useEffect(() => {
     const loadSavedLanguage = async () => {
       try {
         const savedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es' || savedLanguage === 'uk')) {
+        if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es' || savedLanguage === 'uk' || savedLanguage === 'fr')) {
           setLanguageState(savedLanguage as Language);
+        } else {
+          // No saved language found, use system language
+          const systemLanguage = await getSystemLanguage();
+          setLanguageState(systemLanguage);
         }
       } catch (error) {
         console.log('Error loading saved language:', error);
+        // Fallback to system language on error
+        try {
+          const systemLanguage = await getSystemLanguage();
+          setLanguageState(systemLanguage);
+        } catch (systemError) {
+          console.log('Error getting system language:', systemError);
+          // Final fallback to English
+          setLanguageState('en');
+        }
       }
     };
     
