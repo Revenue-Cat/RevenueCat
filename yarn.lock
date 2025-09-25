@@ -4230,6 +4230,13 @@ expo-local-authentication@~16.0.5:
   dependencies:
     invariant "^2.2.4"
 
+expo-localization@~16.1.6:
+  version "16.1.6"
+  resolved "https://registry.yarnpkg.com/expo-localization/-/expo-localization-16.1.6.tgz#0ad7bd6bb61f14d9d786e63fd0f7d190d44695cc"
+  integrity sha512-v4HwNzs8QvyKHwl40MvETNEKr77v1o9/eVC8WCBY++DIlBAvonHyJe2R9CfqpZbC4Tlpl7XV+07nLXc8O5PQsA==
+  dependencies:
+    rtl-detect "^1.0.2"
+
 expo-manifests@~0.16.6:
   version "0.16.6"
   resolved "https://registry.yarnpkg.com/expo-manifests/-/expo-manifests-0.16.6.tgz#a0e5b3225ee032999eac8408337494f464603209"
@@ -6704,11 +6711,6 @@ react-native-is-edge-to-edge@^1.1.6, react-native-is-edge-to-edge@^1.1.7:
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.2.1.tgz#64e10851abd9d176cbf2b40562f751622bde3358"
   integrity sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==
 
-react-native-keychain@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-10.0.0.tgz#1de6f54d27b2376deaac4d51883c066f53b7be7b"
-  integrity sha512-YzPKSAnSzGEJ12IK6CctNLU79T1W15WDrElRQ+1/FsOazGX9ucFPTQwgYe8Dy8jiSEDJKM4wkVa3g4lD2Z+Pnw==
-
 react-native-onesignal@^5.2.13:
   version "5.2.13"
   resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-5.2.13.tgz#b7fe51e426dd3b67a3d9132655337c7809ef9564"
@@ -7019,6 +7021,11 @@ rimraf@~2.4.0:
   integrity sha512-J5xnxTyqaiw06JjMftq7L9ouA448dw/E7dKghkP9WpKNuwmARNNg+Gk8/u5ryb9N/Yo2+z3MCwuqFK/+qPOPfQ==
   dependencies:
     glob "^6.0.1"
+
+rtl-detect@^1.0.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/rtl-detect/-/rtl-detect-1.1.2.tgz#ca7f0330af5c6bb626c15675c642ba85ad6273c6"
+  integrity sha512-PGMBq03+TTG/p/cRB7HCLKJ1MgDIi07+QU1faSjiYRfmY5UsAttV9Hs08jDAHVwcOwmVLcSJkpwyfXszVjWfIQ==
 
 run-parallel@^1.1.9:
   version "1.2.0"

@@ -103,7 +103,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
             </View>
           )}
           <Text className={`${isDark ? 'text-slate-300' : 'text-slate-600'} text-sm font-semibold my-1`}>
-            {duration} {t("challenges.challenge")}
+            {t("common.days", {count: totalDurations})} {t("challenges.challenge")}
           </Text>
 
           {/* Title and Description */}

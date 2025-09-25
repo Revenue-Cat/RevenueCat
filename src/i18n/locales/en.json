@@ -519,12 +519,15 @@
         "vaping": "Ml(vaping) avoided"
       }
     },
-    "title": "Zero Puffs"
+    "title": "Zero Puffs",
+    "get_all_scenes": "Get all scenes for {{value}}",
+    "get_all_buddies": "Get all buddies for {{value}}"
   },
   "languages": {
     "english": "English",
     "spanish": "Español",
-    "ukrainian": "Українська"
+    "ukrainian": "Українська",
+    "french": "Française"
   },
   "notificationPermission": {
     "actionButton": "Enable Notifications",
@@ -558,7 +561,7 @@
     },
     "gender": {
       "man": "Man",
-      "nonBinary": "Non-binary",
+      "nonBinary": "Isn't important",
       "woman": "Woman"
     },
     "habits": {
@@ -668,7 +671,9 @@
     }
   },
   "review": {
-    "title": "Leave feedback"
+    "title": "Leave feedback",
+    "button": "Positive feedback",
+    "description": "We're a small creative team! Help us grow by leaving a quick 5★ review. Your support means a lot and keeps us creating more for you!"
   },
   "reviewModal": {
     "close": "Close",
@@ -779,6 +784,7 @@
         "options": {
           "cigarettes": {
             "1-5": "1-5 cigarettes",
+            "5-10": "5-10 cigarettes",
             "11-20": "11-20 cigarettes",
             "21+": "21+ cigarettes",
             "6-10": "6-10 cigarettes"
@@ -1039,5 +1045,9 @@
   },
   "loading": {
     "text": "Loading..."
+  },
+  "common": {
+    "days_one": "{{count}} Day",
+    "days_other": "{{count}} Days"
   }
 }

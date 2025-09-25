@@ -85,51 +85,49 @@ const BuddySelection: React.FC<Props> = ({
   const getGenderSpecificId = (buddyKey: string, gender: SexKey) =>
     `${buddyKey}-${gender}`;
 
-  const buddies: Buddy[] = useMemo(
-    () => [
-      {
-        id: "llama",
-        name: t("buddySelection.buddies.llama?.name", "Llama Calmington"),
-        description: t(
-          "buddySelection.buddies.llama?.description",
-          "Soft-spoken strategist who keeps you cozy while cravings pass."
-        ),
-      },
-      {
-        id: "dog",
-        name: t("buddySelection.buddies.dog?.name", "Captain Pup"),
-        description: t(
-          "buddySelection.buddies.dog?.description",
-          "Loyal motivator who fetches wins and guards your streaks."
-        ),
-      },
-      {
-        id: "fox",
-        name: t("buddySelection.buddies.fox?.name", "Foxy Focus"),
-        description: t(
-          "buddySelection.buddies.fox?.description",
-          "Quick-witted planner who helps you outsmart triggers."
-        ),
-      },
-      {
-        id: "koala",
-        name: t("buddySelection.buddies.koala?.name", "Frenchie Freshbreath"),
-        description: t(
-          "buddySelection.buddies.koala?.description",
-          "Sniffs out trouble and keeps your breath fresher than a Paris morning."
-        ),
-      },
-      {
-        id: "zebra",
-        name: t("buddySelection.buddies.zebra?.name", "Zebra Zen"),
-        description: t(
-          "buddySelection.buddies.zebra?.description",
-          "Stripe-powered calm to pace your progress with style."
-        ),
-      },
-    ],
-    [t]
-  );
+  const sex = gender == "man" ? "m" : "w"
+  const buddies: Buddy[] = [
+    {
+      id: "llama",
+      name: t(`buddies.${getGenderSpecificId("llama", sex)}.name`, "Llama Calmington"),
+      description: t(
+        `buddies.${getGenderSpecificId("llama", sex)}.description`,
+        "Soft-spoken strategist who keeps you cozy while cravings pass."
+      ),
+    },
+    {
+      id: "dog",
+      name: t(`buddies.${getGenderSpecificId("dog", sex)}.name`, "Captain Pup"),
+      description: t(
+        `buddies.${getGenderSpecificId("dog", sex)}.description`,
+        "Loyal motivator who fetches wins and guards your streaks."
+      ),
+    },
+    {
+      id: "fox",
+      name: t(`buddies.${getGenderSpecificId("fox", sex)}.name`, "Foxy Focus"),
+      description: t(
+        `buddies.${getGenderSpecificId("fox", sex)}.description`,
+        "Quick-witted planner who helps you outsmart triggers."
+      ),
+    },
+    {
+      id: "koala",
+      name: t(`buddies.${getGenderSpecificId("koala", sex)}.name`, "Frenchie Freshbreath"),
+      description: t(
+        `buddies.${getGenderSpecificId("koala", sex)}.description`,
+        "Sniffs out trouble and keeps your breath fresher than a Paris morning."
+      ),
+    },
+    {
+      id: "zebra",
+      name: t(`buddies.${getGenderSpecificId("zebra", sex)}.name`, "Zebra Zen"),
+      description: t(
+        `buddies.${getGenderSpecificId("zebra", sex)}.description`,
+        "Stripe-powered calm to pace your progress with style."
+      ),
+    },
+  ];
 
   // Initial index = saved id if any, or first owned buddy
   const savedIndex = buddies.findIndex((b) => {
@@ -154,13 +152,15 @@ const BuddySelection: React.FC<Props> = ({
 
   // name logic
   const defaultInitialName = buddies[initialIndex]?.name || buddies[0].name;
-  const [nameEdited, setNameEdited] = useState<boolean>(!!savedBuddyName);
+  const [nameEdited, setNameEdited] = useState<boolean>(false);
   const [buddyName, setBuddyNameLocal] = useState<string>(
     savedBuddyName || defaultInitialName
   );
 
+  console.log(defaultInitialName, nameEdited, savedBuddyName)
+
   useEffect(() => {
-    if (nameEdited && savedBuddyName) {
+    if (nameEdited) {
       setBuddyNameLocal(savedBuddyName);
     } else {
       const nextDefault = buddies[activeIndex]?.name ?? buddies[0].name;
@@ -423,10 +423,10 @@ const BuddySelection: React.FC<Props> = ({
               style={{ fontWeight: "600" }}
             >
               {gender === "man"
-                ? "Man"
+                ? t("profile.gender.man", "Man")
                 : gender === "lady"
-                ? "Woman"
-                : "Isn't important"}
+                ? t("profile.gender.woman", "Woman")
+                : t("profile.gender.nonBinary", "Isn't important")}
             </Text>
           </View>
           <Ionicons name="checkmark" size={18} color={systemIconColor} />
@@ -452,7 +452,7 @@ const BuddySelection: React.FC<Props> = ({
                 }`}
                 style={{ fontWeight: "600" }}
               >
-                {side === "bright" ? "Bright side" : "Dark side"}
+                {side === "bright" ? t("sideModal.options.bright", "Bright side") : t("sideModal.options.dark", "Bright side")}
               </Text>
             </View>
             <Ionicons name="checkmark" size={18} color={systemIconColor} />

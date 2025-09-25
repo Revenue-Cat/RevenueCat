@@ -32,6 +32,7 @@ import SupportDark from "../assets/icons/support-d.svg";
 import FlagEn from "../assets/icons/flag-en.svg";
 import FlagEs from "../assets/icons/flag-es.svg";
 import FlagUk from "../assets/icons/flag-uk.svg";
+import FlagFr from "../assets/icons/flag-fr.svg";
 import PromoCards from "../components/PromoCards";
 import { COIN_PACKS, CoinPack, Plan } from "../config/subscriptions";
 import ReviewModal from "../components/ReviewModal";
@@ -77,6 +78,7 @@ const Profile: React.FC<ProfileProps> = ({
   const languages = [
     { code: "en", name: t("languages.english"), flag: FlagEn },
     { code: "es", name: t("languages.spanish"), flag: FlagEs },
+    { code: "fr", name: t("languages.french"), flag: FlagFr },
     { code: "uk", name: t("languages.ukrainian"), flag: FlagUk },
   ] as const;
   const currentLanguage =
@@ -143,13 +145,13 @@ const Profile: React.FC<ProfileProps> = ({
 
   const dailyLabel =
     {
-      "1-5": t("setup.fields.dailyAmount.options.1-5"),
-      "5-10": t("setup.fields.dailyAmount.options.5-10"),
-      "11-15": t("setup.fields.dailyAmount.options.11-15"),
-      "16-20": t("setup.fields.dailyAmount.options.16-20"),
-      "21-30": t("setup.fields.dailyAmount.options.21-30"),
-      "31-40": t("setup.fields.dailyAmount.options.31-40"),
-    }[dailyAmount || "5-10"] || t("setup.fields.dailyAmount.options.5-10");
+      "1-5": t("setup.fields.dailyAmount.options.cigarettes.1-5"),
+      "5-10": t("setup.fields.dailyAmount.options.cigarettes.5-10"),
+      "11-15": t("setup.fields.dailyAmount.options.cigarettes.11-15"),
+      "16-20": t("setup.fields.dailyAmount.options.cigarettes.16-20"),
+      "21-30": t("setup.fields.dailyAmount.options.cigarettes.21-30"),
+      "31-40": t("setup.fields.dailyAmount.options.cigarettes.31-40"),
+    }[dailyAmount || "5-10"] || t("setup.fields.dailyAmount.options.cigarettes.5-10");
 
   // savings math
   const savings = calculateSavings(

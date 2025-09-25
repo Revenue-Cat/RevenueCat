@@ -1,0 +1,1010 @@
+{
+  "achievements": {
+    "close": "Fermer",
+    "comingSoon": {
+      "description": "Nous travaillons dur pour vous offrir des réalisations uniques. Restez à l'écoute pour les mises à jour !",
+      "subtitle": "Réalisations exclusives en développement",
+      "title": "Bientôt disponible"
+    },
+    "completed": "Terminé !",
+    "completedOn": "Terminé le",
+    "daysLeft": "{{days}} jours restants",
+    "exclusive": {
+      "footer": "Relevez des défis pour débloquer des réalisations exclusives et obtenir des récompenses spéciales !",
+      "subtitle": "Défis spéciaux avec des récompenses uniques",
+      "title": "Réalisations Exclusives"
+    },
+    "locked": "Verrouillé. Mettez à niveau votre plan pour débloquer cette réalisation.",
+    "more": "Plus",
+    "share": "Partager",
+    "timeLeft": "Temps restant",
+    "update": "Mettre à jour",
+    "waitForLevel": "Attendez. Atteignez le niveau requis pour débloquer cette réalisation."
+  },
+  "breathing": {
+    "title": "Espace pour respirer",
+    "motivationalText": "Vous n'avez pas besoin d'une cigarette ! Vous avez besoin d'une minute de calme",
+    "phases": {
+      "inhale": "Inspirez",
+      "hold": "Retenez",
+      "exhale": "Expirez",
+      "complete": "Terminé",
+      "relax": "Détendez-vous"
+    },
+    "cycle": "Respirez {{cycle}}",
+    "completion": {
+      "breathsDone": "{{count}} inspirations faites",
+      "coinsEarned": "{{count}} pièces gagnées",
+      "takeNewBreaths": "Faites de nouvelles {{count}} inspirations"
+    },
+    "controls": {
+      "takeBreaths": "Faites {{count}} inspirations",
+      "startBreaths": "Commencez {{count}} inspirations"
+    }
+  },
+  "buddies": {
+    "dog-m": {
+      "description": "Tiens bon avec moi — nous vaincrons la fumée plus vite qu'elle ne le pense.",
+      "name": "Capitaine Chien"
+    },
+    "dog-w": {
+      "description": "Ensemble, nous brillons plus fort, et arrêter de fumer devient plus facile et plus rapide.",
+      "name": "Reine Chien"
+    },
+    "fox-m": {
+      "description": "Avec deux têtes intelligentes, la fumée n'a aucune chance — nous arrêterons de fumer deux fois plus vite.",
+      "name": "Renard Rusé"
+    },
+    "fox-w": {
+      "description": "Allons ensemble tromper la fumée — nous deux finirons ce jeu rapidement.",
+      "name": "Renarde Rusée"
+    },
+    "koala-m": {
+      "description": "Embrasse la vie avec moi — et nous secouerons la fumée plus vite qu'elle ne pourra s'accrocher.",
+      "name": "Monsieur Sniff"
+    },
+    "koala-w": {
+      "description": "Ensemble, nous trouverons la paix — et laisserons la fumée loin derrière beaucoup plus vite.",
+      "name": "Madame Sniff"
+    },
+    "llama-m": {
+      "description": "Monte avec moi — et nous atteindrons le sommet sans fumée plus vite que nous ne le pensons.",
+      "name": "Alpaga Calme"
+    },
+    "llama-w": {
+      "description": "Côte à côte, nous respirerons de l'air frais et chasserons la fumée en peu de temps.",
+      "name": "Alpaga Calme"
+    },
+    "panda-m": {
+      "description": "Un compagnon paisible et attentif pour votre voyage bien-être.",
+      "name": "Panda"
+    },
+    "panda-w": {
+      "description": "Un compagnon paisible et attentif pour votre voyage bien-être.",
+      "name": "Panda"
+    },
+    "zebra-m": {
+      "description": "Cours avec moi, et nous laisserons la fumée derrière plus vite qu'elle ne pourra nous rattraper.",
+      "name": "Zèbre Zen"
+    },
+    "zebra-w": {
+      "description": "Si nous rêvons côte à côte, la fumée disparaîtra deux fois plus vite.",
+      "name": "Zèbre Zen"
+    }
+  },
+  "buddySelection": {
+    "actionButton": "Continuer",
+    "profileTitle": "Mon ami assistant",
+    "subtitle": "Choisissez un personnage qui vous accompagnera dans votre voyage pour arrêter de fumer.",
+    "title": "Choisissez votre ami",
+    "lockedMessage": "Cet assistant est verrouillé. Débloquez-le dans la boutique bientôt.",
+    "buddies": {
+      "dog": {
+        "description": "Un motivateur fidèle qui protège votre chemin et apporte des victoires.",
+        "name": "Capitaine Chien"
+      },
+      "fox": {
+        "description": "Un assistant astucieux qui aide à éviter les tentations.",
+        "name": "Renard Rusé"
+      },
+      "koala": {
+        "description": "Détecte le danger et vous offre une respiration fraîche, comme un matin à Paris.",
+        "name": "Monsieur Sniff"
+      },
+      "llama": {
+        "description": "Un stratège doux qui vous soutient pendant les envies de fumer.",
+        "name": "Alpaga Calme"
+      },
+      "zebra": {
+        "description": "Un guide équilibré : pas à pas, bande par bande.",
+        "name": "Zèbre Zen"
+      }
+    },
+    "next": "Allons-y, ami !",
+    "sex": {
+      "label": "Sexe",
+      "note": "L'image de votre ami change en fonction du choix.",
+      "options": {
+        "m": "Masculin",
+        "w": "Féminin"
+      }
+    }
+  },
+  "challenges": {
+    "calmPower": {
+      "description": "Terminez 10 sessions de méditation.",
+      "title": "Pouvoir du calme"
+    },
+    "challenge": "défi",
+    "checkIn": "S'enregistrer",
+    "craveCrusher": {
+      "description": "Pratiquez des techniques de soulagement du stress.",
+      "title": "Écraseur d'envies"
+    },
+    "data": {
+      "calmPower": {
+        "achievement": "Zen",
+        "achievementDescription": "Vous avez terminé 10 jours de méditation consciente avec de la musique pour gérer les envies.",
+        "buddyAdvice": [
+          "Asseyez-vous confortablement et fermez les yeux.",
+          "Faites des inspirations lentes et profondes et concentrez-vous sur les sensations.",
+          "Si votre esprit vagabonde, ramenez doucement l'attention sur la respiration.",
+          "Répétez chaque fois qu'une envie surgit.",
+          "Répétez quotidiennement pendant 10 jours."
+        ],
+        "duration": "10 Jours",
+        "longDescription": "Pratiquez 2 minutes de méditation pour gérer les envies.",
+        "motivation": [
+          "Réduit le stress et la tension.",
+          "Augmente la conscience et la pleine conscience.",
+          "Aide à mieux gérer les envies.",
+          "Favorise la paix intérieure."
+        ],
+        "shortDescription": "Méditez 2 minutes.",
+        "title": "Pouvoir du calme"
+      },
+      "craveCrusher": {
+        "achievement": "Libéré",
+        "achievementDescription": "Vous avez dessiné ou écrit votre envie et l'avez écrasée pendant 10 jours.",
+        "buddyAdvice": [
+          "Prenez une feuille de papier et dessinez ou écrivez votre envie de cigarette.",
+          "Concentrez-vous sur la sensation pendant que vous la créez.",
+          "Froissez le papier en boule.",
+          "Faites une profonde inspiration et lâchez prise.",
+          "Répétez chaque fois qu'une envie surgit."
+        ],
+        "duration": "10 Jours",
+        "longDescription": "Dessinez ou écrivez votre envie sur du papier, puis froissez-la pour la libérer.",
+        "motivation": [
+          "Aide à reconnaître et libérer l'envie.",
+          "Fournit une sortie physique pour les émotions.",
+          "Augmente la conscience de soi.",
+          "Favorise le lâcher-prise."
+        ],
+        "shortDescription": "Froissez votre envie.",
+        "title": "Écraseur d'envies"
+      },
+      "fistFlow": {
+        "achievement": "Serré",
+        "achievementDescription": "Vous avez serré et relâché vos poings pendant 10 jours pour vaincre les envies.",
+        "buddyAdvice": [
+          "Faites un poing et serrez fort 20 fois.",
+          "Concentrez-vous sur les sensations dans vos mains et bras.",
+          "Respirez profondément et détendez-vous.",
+          "Répétez chaque fois qu'une envie surgit.",
+          "Répétez quotidiennement pendant 10 jours."
+        ],
+        "duration": "10 Jours",
+        "longDescription": "Serrez les poings 20 fois pour libérer la tension et l'envie.",
+        "motivation": [
+          "Réduit l'envie de nicotine.",
+          "Libère la tension physique.",
+          "Fournit un soulagement instantané.",
+          "Aide à gérer le stress."
+        ],
+        "shortDescription": "Serrez 20 fois.",
+        "title": "Flux du poing"
+      },
+      "flowMinute": {
+        "achievement": "Étendu",
+        "achievementDescription": "Vous avez étiré et libéré la tension pendant 10 jours.",
+        "buddyAdvice": [
+          "Asseyez-vous ou tenez-vous confortablement.",
+          "Étirez lentement le cou, les épaules et le dos pendant 2-3 minutes.",
+          "Respirez profondément et sentez la tension se libérer.",
+          "Répétez chaque fois que vous ressentez de la tension ou du stress.",
+          "Répétez quotidiennement pendant 10 jours."
+        ],
+        "duration": "10 Jours",
+        "longDescription": "Faites des étirements doux pendant 1 minute pour libérer la tension et le stress.",
+        "motivation": [
+          "Réduit le stress et la tension musculaire.",
+          "Améliore la flexibilité et la mobilité.",
+          "Augmente la circulation sanguine.",
+          "Favorise la relaxation."
+        ],
+        "shortDescription": "Étirez-vous pour libérer la tension.",
+        "title": "Minute de flux"
+      },
+      "hydrationBoost": {
+        "achievement": "HydroVictoire",
+        "achievementDescription": "Vous avez bu un verre d'eau en gorgées conscientes, en sentant chacune.",
+        "buddyAdvice": [
+          "Remplacez l'envie par un verre d'eau.",
+          "Buvez lentement l'eau, en vous concentrant sur le goût et les sensations.",
+          "Faites quelques profondes inspirations et détendez-vous.",
+          "Si l'envie revient — répétez les étapes.",
+          "Répétez quotidiennement pendant 2 jours."
+        ],
+        "duration": "2 Jours",
+        "longDescription": "Buvez un verre d'eau chaque fois que vous ressentez une envie.",
+        "motivation": [
+          "Réduit l'intensité de l'envie de nicotine.",
+          "Aide à éliminer les toxines du corps.",
+          "Vous garde hydraté et concentré.",
+          "Fournit une distraction saine."
+        ],
+        "shortDescription": "Buvez de l'eau à chaque envie.",
+        "title": "Boost d'hydratation"
+      },
+      "masterOfAir": {
+        "achievement": "EspritAir",
+        "achievementDescription": "Vous avez terminé 10 jours de respiration consciente et vaincu les envies avec calme.",
+        "buddyAdvice": [
+          "Faites une inspiration lente et profonde et expirez.",
+          "Concentrez-vous sur les sensations de votre respiration.",
+          "Répétez 5 fois.",
+          "Faites-le quotidiennement pendant 10 jours."
+        ],
+        "duration": "1 Jour",
+        "longDescription": "Pratiquez 5 inspirations profondes, trois fois par jour pendant 10 jours.",
+        "motivation": [
+          "Réduit le stress et l'anxiété",
+          "Réduit naturellement les envies",
+          "Augmente la concentration et le calme",
+          "Augmente l'énergie"
+        ],
+        "shortDescription": "Pratiquez 5 inspirations profondes.",
+        "title": "Maître de l'air"
+      },
+      "refresh": {
+        "achievement": "Éclaboussure",
+        "achievementDescription": "Vous avez terminé 10 jours de resets instantanés avec de l'eau froide au lieu d'envies.",
+        "buddyAdvice": [
+          "Éclaboussez de l'eau froide sur le visage ou les poignets.",
+          "Faites une profonde inspiration et détendez-vous.",
+          "Répétez si l'envie revient.",
+          "Répétez quotidiennement pendant 10 jours."
+        ],
+        "duration": "10 Jours",
+        "longDescription": "Éclaboussez de l'eau froide sur le visage pour un reset instantané et contenir l'envie.",
+        "motivation": [
+          "Réduit l'envie de nicotine.",
+          "Fournit un rafraîchissement instantané.",
+          "Aide à reset l'esprit.",
+          "Augmente la vigilance."
+        ],
+        "shortDescription": "Éclaboussez de l'eau pour contenir l'envie.",
+        "title": "Rafraîchir"
+      },
+      "snackBreak": {
+        "achievement": "SuccèsCollation",
+        "achievementDescription": "Vous êtes resté sans fumée pendant 10 jours, en choisissant des bouchées saines au lieu de cigarettes.",
+        "buddyAdvice": [
+          "Gardez des fruits, noix ou légumes à portée de main.",
+          "Quand l'envie arrive — mâchez lentement, en vous concentrant sur le goût et la texture.",
+          "Associez la collation à un verre d'eau.",
+          "Si l'envie revient — répétez l'étape.",
+          "Répétez quotidiennement pendant 10 jours."
+        ],
+        "duration": "10 Jours",
+        "longDescription": "Choisissez des collations saines au lieu de cigarettes quand l'envie arrive.",
+        "motivation": [
+          "Réduit naturellement les envies.",
+          "Fournit une nutrition saine.",
+          "Garde votre bouche et vos mains occupées.",
+          "Améliore la santé globale."
+        ],
+        "shortDescription": "Collation au lieu de fumer.",
+        "title": "Pause collation"
+      },
+      "stepSlayer": {
+        "achievement": "Marcheur",
+        "achievementDescription": "Vous êtes resté sans fumée et fort avec 10 jours de pas conscients.",
+        "buddyAdvice": [
+          "Faites de courtes promenades conscientes au lieu de fumer.",
+          "Concentrez-vous sur votre respiration et vos pas.",
+          "Utilisez cela comme une mini-pause pour rafraîchir l'esprit.",
+          "Si l'envie revient — promenez-vous à nouveau.",
+          "Répétez quotidiennement pendant 3 jours."
+        ],
+        "duration": "3 Jours",
+        "longDescription": "Faites une courte promenade de 500 pas chaque fois que vous ressentez une envie.",
+        "motivation": [
+          "Réduit le stress et l'anxiété.",
+          "Augmente naturellement les endorphines.",
+          "Fournit une distraction saine.",
+          "Améliore l'humeur globale."
+        ],
+        "shortDescription": "Marchez 500 pas pour reset.",
+        "title": "Tueur de pas"
+      }
+    },
+    "fistFlow": {
+      "description": "Maintenez la planche 2 minutes.",
+      "title": "Flux du poing"
+    },
+    "flowMinute": {
+      "description": "Terminez la routine d'étirement quotidienne.",
+      "title": "Minute de flux"
+    },
+    "hydrationBoost": {
+      "description": "Buvez de l'eau à chaque envie.",
+      "title": "Boost d'hydratation"
+    },
+    "masterOfAir": {
+      "description": "Pratiquez 5 inspirations profondes.",
+      "title": "Maître de l'air"
+    },
+    "modal": {
+      "benefits": "Avantages",
+      "buddyAdvice": "Conseils de l'ami",
+      "cancelAlert": {
+        "continue": "Continuer",
+        "giveUp": "Abandonner",
+        "message": "Le défi sera arrêté et son progrès sera perdu. Vous pouvez recommencer ce défi ou choisir n'importe quel autre défi.",
+        "title": "Êtes-vous sûr ?"
+      },
+      "cancelChallenge": "Annuler le défi",
+      "completed": "Terminé",
+      "dayChallenge": "{{count}} jour{{count, plural, one {} other {s}}} défi",
+      "history": "Historique",
+      "restartChallenge": "Redémarrer le défi",
+      "share": "Partager",
+      "startNow": "Commencer maintenant",
+      "startNowWithPoints": "Commencer maintenant pour {{points}}",
+      "today": "Aujourd'hui"
+    },
+    "refresh": {
+      "description": "Nagez 20 tours en une session.",
+      "title": "Rafraîchir"
+    },
+    "snackBreak": {
+      "description": "Choisissez des collations saines au lieu de nourriture malsaine.",
+      "title": "Pause collation"
+    },
+    "stepSlayer": {
+      "description": "Marchez 10 000 pas par jour.",
+      "title": "Tueur de pas"
+    },
+    "title": "Défis"
+  },
+  "challengeStart": {
+    "actionButton": "Commencer Mon Voyage",
+    "mainSubtitle": "Votre voyage sans tabac commence maintenant. Rendons-le significatif !",
+    "mainTitle": "Prêt à commencer ?"
+  },
+  "coinModal": {
+    "balance": "Solde",
+    "subtitle": "Choisissez un pack et continuez !",
+    "title": "Obtenir plus de pièces"
+  },
+  "coinPacks": {
+    "popular": {
+      "bonus": "+20% bonus inclus",
+      "caption": "Tout ce qu'il faut pour le bonheur",
+      "label": "Populaire"
+    },
+    "best": {
+      "caption": "Ne te refuse rien",
+      "label": "Meilleur"
+    },
+    "pro": {
+      "caption": "Démarrage rapide, sans pression",
+      "label": "Pro"
+    },
+    "starter": {
+      "caption": "Agis en grand et garde le cap.",
+      "label": "Démarrage"
+    }
+  },
+  "countdownTimer": {
+    "days": "Jours",
+    "hours": "Heures",
+    "minutes": "Min",
+    "seconds": "Sec"
+  },
+  "cravingSOS": {
+    "common": {
+      "days": "Défi bientôt !"
+    },
+    "crumpleCravings": {
+      "challenge": "Écraseur d'envies",
+      "description": "Quand l'envie de fumer arrive, dessinez ou écrivez votre envie sur une feuille de papier. Concentrez-vous sur la sensation, puis froissez le papier. Inspirez profondément et lâchez l'envie. Si elle revient — répétez les étapes.",
+      "title": "Froisser l'envie"
+    },
+    "dontGiveUp": {
+      "description": "Tu as eu une rechute et tu as fumé une cigarette — et c'est normal. Prends une profonde inspiration, rappelle-toi pourquoi tu as commencé, et reviens sur le chemin. Chaque envie que tu surmontes est un progrès.",
+      "okButton": "OK",
+      "title": "Ne lâche pas"
+    },
+    "gripRelease": {
+      "challenge": "Flux du poing",
+      "description": "Quand l'envie de fumer arrive, serrez les poings 20 fois. Concentrez-vous sur les sensations, respirez profondément et laissez l'envie passer. Répétez si nécessaire.",
+      "title": "Serrer et relâcher"
+    },
+    "iSmokedButton": "J'ai fumé !",
+    "meditateListen": {
+      "challenge": "Pouvoir du calme",
+      "description": "Remplacez l'envie par une courte méditation et de la musique. Concentrez-vous sur la respiration, détendez le corps et laissez l'envie passer.",
+      "title": "Méditer et écouter"
+    },
+    "modal": {
+      "subtitle": "Utilisez des exercices de respiration ou des conseils rapides",
+      "title": "Envie de fumer ?"
+    },
+    "sipBreathe": {
+      "challenge": "Héros Hydro",
+      "description": "Remplacez l'envie par un verre d'eau. Buvez lentement, en vous concentrant sur le goût et les sensations. Faites quelques profondes inspirations et détendez-vous. Si l'envie revient — répétez les étapes.",
+      "title": "Boire et respirer"
+    },
+    "snackInstead": {
+      "challenge": "Pause collation",
+      "description": "Quand l'envie de fumer arrive, prenez une collation saine. Mâchez lentement, concentrez-vous sur le goût et la texture, prenez une gorgée d'eau. Si l'envie revient — répétez les étapes.",
+      "title": "Collation au lieu de cigarette"
+    },
+    "splashRefresh": {
+      "challenge": "Rafraîchir",
+      "description": "Quand l'envie de fumer arrive, aspergez le visage ou les poignets d'eau froide. Respirez profondément, concentrez-vous sur les sensations et laissez le corps se rafraîchir. Si l'envie revient — répétez les étapes.",
+      "title": "Asperger et rafraîchir"
+    },
+    "stretchRelax": {
+      "challenge": "Minute de flux",
+      "description": "Quand vous ressentez de la tension ou de la raideur, étirez doucement le cou, les épaules et le dos pendant 2–3 minutes. Respirez profondément, concentrez-vous sur les sensations et laissez le corps se détendre. Si la tension revient — répétez les étapes.",
+      "title": "Étirer et se détendre"
+    },
+    "walkReset": {
+      "challenge": "Tueur de pas",
+      "description": "Quand vous ressentez l'envie de fumer, marchez 500 pas pour clarifier les pensées et reset le corps. Cela aide à se distraire et à se sentir en contrôle.",
+      "title": "Promenade pour reset"
+    },
+    "breatheDeep": {
+      "challenge": "Maître de l'air",
+      "description": "Pratiquez 5 inspirations profondes, trois fois par jour pendant 10 jours. Concentrez-vous sur votre respiration, détendez le corps et laissez l'envie passer naturellement.",
+      "title": "Respirez profondément"
+    },
+    "steps": {
+      "breathe": {
+        "title": "Prends une profonde inspiration",
+        "description": "Inspire lentement sur 4 comptes, retiens 4, expire sur 4",
+        "action": "Je respire"
+      },
+      "water": {
+        "title": "Bois un peu d'eau",
+        "description": "Reste hydraté et donne à ta bouche quelque chose à faire",
+        "action": "Je bois de l'eau"
+      },
+      "walk": {
+        "title": "Va te promener",
+        "description": "Bouge et change ton environnement",
+        "action": "Je vais me promener"
+      },
+      "friend": {
+        "title": "Appelle un ami",
+        "description": "Contacte quelqu'un qui soutient ton voyage",
+        "action": "J'appelle quelqu'un"
+      },
+      "encourage": {
+        "title": "Tu fais du bon boulot !",
+        "description": "L'envie passera. Tu es plus fort que cette envie.",
+        "action": "Je reste fort"
+      }
+    }
+  },
+  "home": {
+    "achievements": "Réalisations",
+    "badgesCollected": "Badges collectés",
+    "cravingSOS": "Envie de fumer",
+    "goodiesAvailable": "Articles disponibles",
+    "shop": "Boutique",
+    "stats": {
+      "cigsAvoided": "Cigarettes évitées",
+      "moneySaved": "Argent économisé",
+      "slips": "Rechutes",
+      "smokeFreeDays": "Jours sans tabac",
+      "timeSaved": "Temps économisé"
+    },
+    "title": "Zéro bouffées",
+    "get_all_scenes": "Obtenir toutes les scènes pour {{value}}",
+    "get_all_buddies": "Obtenir tous les amis pour {{value}}"
+  },
+  "languages": {
+    "english": "English",
+    "spanish": "Español",
+    "ukrainian": "Українська",
+    "french": "Française"
+  },
+  "notificationPermission": {
+    "actionButton": "Activer les notifications",
+    "benefits": {
+      "goals": "Restez sur la voie avec vos objectifs",
+      "milestones": "Célébrez vos réalisations",
+      "motivation": "Rappels quotidiens de motivation"
+    },
+    "continue": "Continuer",
+    "denied": {
+      "message": "Vous pouvez activer les notifications plus tard dans les paramètres de votre appareil.",
+      "title": "Permission refusée"
+    },
+    "enable": "Activer les notifications",
+    "error": {
+      "message": "Une erreur s'est produite lors de la demande de permission pour les notifications.",
+      "title": "Erreur"
+    },
+    "mainSubtitle": "Laissez votre ami vous rappeler doucement — sans pression, juste du progrès.",
+    "mainTitle": "Restez sur la voie, à votre manière",
+    "permissionGranted": "✅ Notifications activées !",
+    "preview": {
+      "message": "Le souvenir reste, mais le tabac est dans le passé.",
+      "title": "30 jours sans tabac"
+    },
+    "requesting": "Demande en cours...",
+    "skip": "Passer pour l'instant",
+    "subtitle": "Recevez des rappels doux et célébrez votre progrès",
+    "success": {
+      "message": "Vous recevrez maintenant des notifications utiles pour soutenir votre chemin !",
+      "title": "Permission accordée"
+    },
+    "title": "Restez motivé"
+  },
+  "profile": {
+    "buddy": {
+      "fallbackName": "Ami"
+    },
+    "gender": {
+      "man": "Homme",
+      "nonBinary": "Ça n'a pas d'importance",
+      "woman": "Femme"
+    },
+    "habits": {
+      "estimatedSavings": "Économies quotidiennes estimées",
+      "line": "Je fume {{smokeType}}, généralement {{dailyAmount}} par jour. Un paquet coûte environ {{currency}}{{price}}. Je veux {{goal}}.",
+      "title": "Mes habitudes de tabac"
+    },
+    "sections": {
+      "feedback": "Retour",
+      "notification": "Notifications",
+      "support": "Support",
+      "theme": "Thème"
+    },
+    "title": "Profil"
+  },
+  "progressChallenges": {
+    "title": "Défis de progrès"
+  },
+  "promos": {
+    "refer": {
+      "cta": "Inviter un ami",
+      "subtitle": "Arrêter est plus facile ensemble",
+      "title": "Obtiens 500 pièces pour une invitation"
+    },
+    "review": {
+      "cta": "Donner 5 étoiles",
+      "subtitle": "Aide-nous avec un court avis 5★",
+      "title": "Nous sommes une petite équipe créative !"
+    },
+    "share": {
+      "message": "Rejoins-moi sur QuitQly — mon appli préférée pour arrêter de fumer !",
+      "title": "QuitQly"
+    }
+  },
+  "regularAchievements": {
+    "bright-moon": {
+      "description": "Atteignez un mois sans tabac",
+      "name": "Lune Brillante"
+    },
+    "champion": {
+      "description": "Deux ans sans nicotine — champion de la santé",
+      "name": "Champion"
+    },
+    "divine": {
+      "description": "Trente ans sans nicotine — vous avez atteint le divin",
+      "name": "Divin"
+    },
+    "eternal": {
+      "description": "Vingt-cinq ans sans tabac — votre héritage est éternel",
+      "name": "Éternel"
+    },
+    "first-spark": {
+      "description": "Terminez votre premier jour sans tabac",
+      "name": "Première Étincelle"
+    },
+    "freedom": {
+      "description": "Atteignez six mois de vie sans tabac",
+      "name": "Liberté"
+    },
+    "fresh-path": {
+      "description": "Terminez trois mois sans tabac",
+      "name": "Chemin Frais"
+    },
+    "guardian": {
+      "description": "Quinze ans sans tabac — gardien de votre santé",
+      "name": "Gardien"
+    },
+    "hero": {
+      "description": "Terminez un an sans tabac",
+      "name": "Héros"
+    },
+    "hold-on": {
+      "description": "Survivez la première semaine de votre voyage pour arrêter de fumer",
+      "name": "Tiens bon"
+    },
+    "immortal": {
+      "description": "Dix ans sans nicotine — vous êtes immortel",
+      "name": "Immortel"
+    },
+    "legend": {
+      "description": "Maintenez deux ans de vie sans tabac",
+      "name": "Légende"
+    },
+    "master": {
+      "description": "Un an sans tabac — vous êtes un vrai maître de l'autocontrôle",
+      "name": "Maître"
+    },
+    "phoenix": {
+      "description": "Sept ans sans tabac — renaître des cendres plus fort",
+      "name": "Phénix"
+    },
+    "sage": {
+      "description": "Cinq ans sans tabac — la sagesse vient avec le temps",
+      "name": "Sage"
+    },
+    "sovereign": {
+      "description": "Vingt ans sans tabac — souverain de votre destin",
+      "name": "Souverain"
+    },
+    "steel-week": {
+      "description": "Terminez deux semaines sans tabac",
+      "name": "Semaine d'Acier"
+    },
+    "warrior": {
+      "description": "Trois ans sans tabac — guerrier contre la dépendance",
+      "name": "Guerrier"
+    }
+  },
+  "review": {
+    "title": "Laisser un avis",
+    "button": "Bon avis",
+    "description": "Nous sommes une petite équipe créative ! Aidez-nous à grandir en laissant un court avis 5★. Votre soutien est très important pour nous et nous permet de créer plus pour vous !"
+  },
+  "reviewModal": {
+    "close": "Fermer",
+    "submit": "Envoyer",
+    "title": "À quel point êtes-vous satisfait\nde l'appli QuitQly ?"
+  },
+  "scenes": {
+    "bg1": {
+      "name": "Silence Émeraude"
+    },
+    "bg2": {
+      "name": "Japon Calme"
+    },
+    "bg3": {
+      "name": "Horizon Sableux"
+    },
+    "bg4": {
+      "name": "Ville Dorée"
+    },
+    "bg5": {
+      "name": "Éveil Vert"
+    },
+    "bg6": {
+      "name": "Soir Violet"
+    },
+    "bg7": {
+      "name": "Forêt Brumeuse"
+    },
+    "bg8": {
+      "name": "Horizon Rose"
+    },
+    "bg9": {
+      "name": "Symphonie Tropicale"
+    },
+    "bg10": {
+      "name": "Nuit d'Halloween"
+    },
+    "bg11": {
+      "name": "Vallée Fleurie"
+    },
+    "bg12": {
+      "name": "Ville et Parc"
+    },
+    "bg13": {
+      "name": "Pont Aube"
+    },
+    "bg14": {
+      "name": "Cieux de Rêves"
+    },
+    "bg15": {
+      "name": "Ville du Soir"
+    }
+  },
+  "setup": {
+    "actionButton": "Continuer",
+    "fields": {
+      "dailyAmount": {
+        "label": "Quelle est votre norme quotidienne ?",
+        "modalTitle": {
+          "cigarettes": "Combien de cigarettes par jour est normal pour vous ?",
+          "roll-your-own": "Combien de roulées par jour est normal pour vous ?",
+          "tobacco-heater": "Combien de bâtonnets par jour est normal pour vous ?",
+          "vaping": "Combien vapotez-vous par jour ?"
+        },
+        "options": {
+          "cigarettes": {
+            "1-5": "1-5 cigarettes",
+            "5-10": "5-10 cigarettes",
+            "11-20": "11-20 cigarettes",
+            "21+": "21+ cigarettes",
+            "6-10": "6-10 cigarettes"
+          },
+          "roll-your-own": {
+            "1-5": "1-5 roulées",
+            "11-20": "11-20 roulées",
+            "21+": "21+ roulées",
+            "6-10": "6-10 roulées"
+          },
+          "tobacco-heater": {
+            "1-5": "1-5 bâtonnets",
+            "11-20": "11-20 bâtonnets",
+            "21+": "21+ bâtonnets",
+            "6-10": "6-10 bâtonnets"
+          },
+          "vaping": {
+            "heavy": "Intensif (3+ ml ou 150+ bouffées)",
+            "light": "Léger (jusqu'à 1 ml ou ~50 bouffées)",
+            "moderate": "Modéré (1-3 ml ou 50-150 bouffées)"
+          }
+        },
+        "selected": "J'utilise {{value}}"
+      },
+      "goal": {
+        "label": "Quel est votre objectif principal ?",
+        "modalTitle": "Quel est votre objectif ?",
+        "options": {
+          "doesnt-matter": "Peu importe",
+          "gain-control": "Gagner le contrôle",
+          "improve-health": "Améliorer la santé",
+          "quit-completely": "Arrêter complètement",
+          "reduce-gradually": "Réduire progressivement",
+          "save-money": "Économiser de l'argent"
+        },
+        "selected": "Je veux {{value}}"
+      },
+      "packPrice": {
+        "label": {
+          "cigarettes": "Prix par paquet",
+          "roll-your-own": "Prix par sachet",
+          "tobacco-heater": "Prix par paquet de bâtonnets",
+          "vaping": "Prix par bouteille/cartouche"
+        },
+        "modalTitle": {
+          "cigarettes": "Combien coûte un paquet ?",
+          "roll-your-own": "Combien coûte un sachet ?",
+          "tobacco-heater": "Combien coûte un paquet de bâtonnets ?",
+          "vaping": "Combien coûte une bouteille/cartouche ?"
+        },
+        "options": {
+          "3": "$3",
+          "4": "$4",
+          "5": "$5",
+          "6": "$6",
+          "7": "$7"
+        },
+        "selected": {
+          "cigarettes": "Un paquet me coûte {{value}}",
+          "roll-your-own": "Un sachet me coûte {{value}}",
+          "tobacco-heater": "Un paquet de bâtonnets me coûte {{value}}",
+          "vaping": "Une bouteille/cartouche me coûte {{value}}"
+        }
+      },
+      "smokeType": {
+        "label": "Que fumez-vous ?",
+        "modalTitle": "Que fumez-vous habituellement ?",
+        "options": {
+          "cigarettes": "Cigarettes",
+          "roll-your-own": "Roulées",
+          "tobacco-heater": "Chauffeur de tabac",
+          "vaping": "Vapotage"
+        },
+        "selected": "Je fume {{value}}"
+      }
+    },
+    "header": {
+      "description": "Juste quelques touches et 20 secondes pour obtenir un plan d'arrêt du tabac créé pour vous",
+      "title": "Définissez votre chemin pour arrêter de fumer"
+    },
+    "next": "Suivant",
+    "nextButton": {
+      "text": "Suivant"
+    },
+    "privacyText": "Ne vous inquiétez pas, vos données sont protégées. Nous les gardons privées et ne les partageons pas avec des tiers.",
+    "stats": {
+      "description": "Économies moyennes aux USA sans tabac. Ajoutez vos habitudes pour obtenir votre nombre."
+    },
+    "statsText": "fumeurs disent qu'ils veulent arrêter de fumer — vous n'êtes pas seul.",
+    "subtitle": "Cela nous aide à personnaliser votre expérience",
+    "title": "Faisons connaissance"
+  },
+  "shop": {
+    "balance": "Solde {{coins}}",
+    "buyCoins": "Acheter des pièces",
+    "buyFor": "Acheter pour {{coins}}",
+    "close": "Fermer",
+    "description": "Un excellent compagnon pour votre voyage pour arrêter de fumer.",
+    "owned": "Possédé",
+    "purchase": "Acheter",
+    "reward": "Récompense {{coins}}",
+    "sceneDescription": "Un beau fond pour améliorer votre voyage pour arrêter de fumer.",
+    "select": "Sélectionner",
+    "selected": "Sélectionné",
+    "share": "Partager",
+    "update": "Mettre à jour"
+  },
+  "sideModal": {
+    "hint": "Ce choix définira le thème de l'appli : clair ou sombre.",
+    "options": {
+      "bright": "Thème clair",
+      "dark": "Thème sombre"
+    },
+    "title": "Thème clair ou sombre ?"
+  },
+  "slipsLog": {
+    "buy": {
+      "cta": "Acheter pour {{coins}}",
+      "notEnough": {
+        "body": "Besoin de {{coins}} pièces pour acheter +5 rechutes.",
+        "title": "Pas assez de pièces"
+      }
+    },
+    "counter": {
+      "times": "fois"
+    },
+    "freeSlip": "Rechute gratuite",
+    "limit": {
+      "body": "Vous avez atteint la limite. Protégez la série pour ajouter +5, ou reset le timer.",
+      "title": "Ne lâchez pas"
+    },
+    "protect": {
+      "body": "Utilisez des pièces pour obtenir des rechutes supplémentaires et ne pas reset le timer.",
+      "title": "Protégez votre série"
+    },
+    "slipConfirmation": {
+      "description": "Une rechute ? Ne vous inquiétez pas. Prenez une inspiration et continuez à avancer.",
+      "logButton": "Enregistrer ma rechute",
+      "title": "Ne lâchez pas"
+    },
+    "smokedButton": "J'ai fumé",
+    "summary": "Il vous reste {{remaining}} rechutes autorisées. Si vous atteignez la limite, le timer sans cigarette redémarrera — et vous pourrez recommencer",
+    "title": "Journal des rechutes"
+  },
+  "stats": {
+    "description": "Économies moyennes aux USA sans tabac. Ajoutez vos habitudes pour obtenir votre nombre."
+  },
+  "subscriptions": {
+    "cta": "Ouvrir l'appli complète",
+    "plans": {
+      "monthly": {
+        "billing": "Facturé mensuellement",
+        "title": "1 mois"
+      },
+      "quarterly": {
+        "billing": "Facturé tous les 3 mois",
+        "title": "3 mois"
+      },
+      "yearly": {
+        "billing": "Facturé annuellement",
+        "title": "12 mois"
+      }
+    },
+    "save": "Économisez {{percent}}%"
+  },
+  "toggles": {
+    "buddies": "Amis",
+    "exclusive": "Exclusifs",
+    "regular": "Réguliers",
+    "scenes": "Scènes"
+  },
+  "welcome": {
+    "actionButton": "Commencer",
+    "ctaButton": "Oui, faisons-le ensemble",
+    "description": "Rejoignez des milliers de personnes qui ont arrêté de fumer avec succès grâce à notre approche éprouvée.",
+    "selectLanguage": "Langue",
+    "subtitle": "Votre voyage vers une vie sans tabac commence ici",
+    "title": "Bienvenue sur QuitQly",
+    "willYouQuit": "Vas-tu... arrêter de fumer ?"
+  },
+  "auth": {
+    "welcome": "Bienvenue sur RevenueCat",
+    "signInSubtitle": "Veuillez vous connecter pour continuer",
+    "createAccount": "Créer un compte",
+    "joinToday": "Rejoignez RevenueCat aujourd'hui",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "continueWithGoogle": "Continuer avec Google",
+    "noAccount": "Pas de compte ?",
+    "hasAccount": "Déjà un compte ?",
+    "or": "OU",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "errors": {
+      "fillAllFields": "Veuillez remplir tous les champs",
+      "passwordsDontMatch": "Les mots de passe ne correspondent pas",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+      "accountCreated": "Compte créé avec succès !",
+      "ok": "OK",
+      "loginError": "Erreur de connexion",
+      "registrationError": "Erreur d'inscription",
+      "googleSignInError": "Erreur de connexion Google",
+      "logoutError": "Erreur de déconnexion"
+    }
+  },
+  "chat": {
+    "title": "Assistant de chat",
+    "welcomeMessage": "Salut ! Je suis là pour t'aider dans ton voyage pour arrêter de fumer. Comment te sens-tu aujourd'hui ?",
+    "quickReplies": "Réponses rapides :",
+    "placeholder": "Écris ton message...",
+    "quickReplyOptions": {
+      "stressed": "Je me sens stressé",
+      "craving": "J'ai une forte envie",
+      "motivation": "J'ai besoin de motivation",
+      "celebrate": "Je veux célébrer mon progrès"
+    },
+    "responses": {
+      "stressed": "Je comprends que le stress peut être difficile. Souviens-toi, fumer ne résoudra pas le problème. Essaie de faire quelques profondes inspirations ou de te promener. Qu'est-ce qui te stresse en ce moment ?",
+      "craving": "L'envie est temporaire et passera. Essaie la technique de respiration 4-4-4 : inspire 4 secondes, retiens 4, expire 4. Tu es plus fort que cette envie !",
+      "motivation": "Tu fais du super boulot ! Chaque moment sans fumer est une victoire. Pense à pourquoi tu as commencé ce voyage. Ta santé, ta famille, ton avenir — tous te soutiennent !",
+      "celebrate": "C'est fantastique ! Célébrer ton progrès est très important. Quelle étape célébres-tu ? Souviens-toi, chaque jour sans tabac est un énorme accomplissement !",
+      "default": "Merci de partager ça avec moi. Je suis là pour te soutenir à chaque étape de ton voyage pour arrêter de fumer. Comment puis-je t'aider aujourd'hui ?"
+    }
+  },
+  "buddy": {
+    "nameModal": {
+      "title": "Nom de l'ami",
+      "placeholder": "Entre un nom"
+    }
+  },
+  "alerts": {
+    "notEnoughCoins": "Pas assez de pièces",
+    "shareFailed": "Erreur de partage : {{error}}",
+    "telegram": "Telegram",
+    "email": "E-mail",
+    "mockTelegram": "Maquette : ouvrir chat Telegram",
+    "mockEmail": "Maquette : ouvrir éditeur e-mail"
+  },
+  "support": {
+    "telegram": "Telegram",
+    "email": "E-mail"
+  },
+  "homeScreen": {
+    "title": "Tableau de bord RevenueCat",
+    "subtitle": "Bon retour !",
+    "userInfoTitle": "Informations utilisateur",
+    "email": "E-mail :",
+    "userId": "ID utilisateur :",
+    "emailVerified": "E-mail vérifié :",
+    "revenueDataTitle": "Vos données de revenus",
+    "logoutButtonText": "Se déconnecter",
+    "revenueDataDescription": "Vos analyses de revenus et données d'abonnement seront affichées ici.",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "loading": {
+    "text": "Chargement..."
+  },
+  "common": {
+    "days_one": "{{count}} Jour",
+    "days_other": "{{count}} Jours"
+  }
+}

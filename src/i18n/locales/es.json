@@ -2,15 +2,15 @@
   "achievements": {
     "close": "Cerrar",
     "comingSoon": {
-      "description": "¡Estamos trabajando duro para traerte logros exclusivos increíbles. ¡Mantente atento a las actualizaciones!",
-      "subtitle": "Los logros exclusivos están en construcción",
+      "description": "Estamos trabajando duro para ofrecerte logros únicos. ¡Mantente al tanto de las actualizaciones!",
+      "subtitle": "Logros exclusivos en desarrollo",
       "title": "Próximamente"
     },
     "completed": "¡Completado!",
-    "completedOn": "Completado el",
-    "daysLeft": "{{days}}d restantes",
+    "completedOn": "Completado en",
+    "daysLeft": "{{days}} días restantes",
     "exclusive": {
-      "footer": "¡Completa desafíos para desbloquear logros exclusivos y ganar recompensas especiales!",
+      "footer": "Completa desafíos para desbloquear logros exclusivos y obtener recompensas especiales!",
       "subtitle": "Desafíos especiales con recompensas únicas",
       "title": "Logros Exclusivos"
     },
@@ -22,62 +22,70 @@
     "waitForLevel": "Espera. Alcanza el nivel requerido para desbloquear este logro."
   },
   "breathing": {
-    "title": "Lugar de respiración",
-    "motivationalText": "¡No necesitas un cigarrillo! Necesitas un momento",
+    "title": "Espacio para respirar",
+    "motivationalText": "¡No necesitas un cigarrillo! Solo necesitas un minuto de calma",
     "phases": {
-      "inhale": "Inhalar",
-      "hold": "Mantener",
-      "exhale": "Exhalar",
+      "inhale": "Inhala",
+      "hold": "Mantén",
+      "exhale": "Exhala",
       "complete": "Completado",
-      "relax": "Relajar"
+      "relax": "Relájate"
     },
     "cycle": "Respira {{cycle}}",
     "completion": {
-      "breathsDone": "{{count}} Respiración completada",
-      "coinsEarned": "{{count}} Monedas ganadas",
-      "takeNewBreaths": "Tomar nuevas {{count}} respiraciones"
+      "breathsDone": "{{count}} respiraciones realizadas",
+      "coinsEarned": "{{count}} monedas ganadas",
+      "takeNewBreaths": "Haz nuevas {{count}} respiraciones"
     },
     "controls": {
-      "takeBreaths": "Tomar {{count}} respiraciones",
-      "startBreaths": "Comenzar {{count}} respiraciones"
+      "takeBreaths": "Haz {{count}} respiraciones",
+      "startBreaths": "Comienza {{count}} respiraciones"
     }
   },
   "buddies": {
+    "dog-m": {
+      "description": "Quédate conmigo: venceremos al humo más rápido de lo que él piensa.",
+      "name": "Capitán Perro"
+    },
+    "dog-w": {
+      "description": "Juntos brillamos más, y dejar de fumar se hace más fácil y rápido.",
+      "name": "Reina Perro"
+    },
     "fox-m": {
-      "description": "Un compañero suave y reconfortante para momentos difíciles.",
-      "name": "Peludo"
+      "description": "Con dos cabezas inteligentes, el humo no tiene oportunidad: dejaremos de fumar el doble de rápido.",
+      "name": "Zorro Astuto"
     },
     "fox-w": {
-      "description": "Un compañero suave y reconfortante para momentos difíciles.",
-      "name": "Peludo"
+      "description": "Vamos a superar al humo juntos: los dos terminaremos este juego rápido.",
+      "name": "Zorra Astuta"
     },
     "koala-m": {
-      "description": "Un amigo relajado y solidario para tu viaje para dejar de fumar.",
-      "name": "Koala"
+      "description": "Abraza la vida conmigo y sacudiremos el humo más rápido de lo que puede adherirse.",
+      "name": "Señor Sniff"
     },
     "koala-w": {
-      "description": "Un amigo relajado y solidario para tu viaje para dejar de fumar.",
-      "name": "Koala"
+      "description": "Juntos encontraremos paz y dejaremos el humo atrás mucho más rápido.",
+      "name": "Señora Sniff"
     },
     "llama-m": {
-      "description": "Un compañero gentil y tranquilo para tu viaje.",
-      "name": "Llama"
+      "description": "Sube conmigo y alcanzaremos la cima sin humo más rápido de lo que pensamos.",
+      "name": "Alpaca Tranquilo"
     },
     "llama-w": {
-      "description": "Un compañero gentil y tranquilo para tu viaje.",
-      "name": "Llama"
+      "description": "Hombro con hombro respiraremos aire fresco y ahuyentaremos el humo en poco tiempo.",
+      "name": "Alpaca Tranquila"
     },
     "panda-m": {
-      "description": "Un compañero pacífico y consciente para tu viaje de bienestar.",
+      "description": "Un compañero pacífico y atento para tu viaje de bienestar.",
       "name": "Panda"
     },
     "panda-w": {
-      "description": "Un compañero pacífico y consciente para tu viaje de bienestar.",
+      "description": "Un compañero pacífico y atento para tu viaje de bienestar.",
       "name": "Panda"
     },
     "zebra-m": {
-      "description": "Un amigo fuerte y decidido para mantenerte motivado.",
-      "name": "Cebra"
+      "description": "Corre conmigo y dejaremos el humo atrás más rápido de lo que puede alcanzarnos.",
+      "name": "Cebra Zen"
     },
     "zebra-w": {
       "description": "Un amigo fuerte y decidido para mantenerte motivado.",
@@ -118,15 +126,46 @@
   },
   "buddySelection": {
     "actionButton": "Continuar",
-    "profileTitle": "Mi compañero",
-    "subtitle": "Elige un compañero para tu viaje",
-    "title": "Elige tu compañero",
-    "lockedMessage": "Este compañero está bloqueado. Desbloquealo en la tienda pronto."
+    "profileTitle": "Mi amigo asistente",
+    "subtitle": "Elige un personaje que te acompañe en tu viaje para dejar de fumar.",
+    "title": "Elige a tu amigo",
+    "lockedMessage": "Este asistente está bloqueado. Desbloquéalo en la tienda pronto.",
+    "buddies": {
+      "dog": {
+        "description": "Un motivador leal que protege tu camino y trae victorias.",
+        "name": "Capitán Perro"
+      },
+      "fox": {
+        "description": "Un asistente astuto que te ayuda a evitar tentaciones.",
+        "name": "Zorro Astuto"
+      },
+      "koala": {
+        "description": "Siente el peligro y te da un aliento fresco, como una mañana en París.",
+        "name": "Señor Sniff"
+      },
+      "llama": {
+        "description": "Un estratega gentil que te apoya durante los antojos de fumar.",
+        "name": "Alpaca Tranquila"
+      },
+      "zebra": {
+        "description": "Un guía equilibrado: paso a paso, raya a raya.",
+        "name": "Cebra Zen"
+      }
+    },
+    "next": "¡Vamos, amigo!",
+    "sex": {
+      "label": "Género",
+      "note": "La imagen de tu amigo cambia según la selección.",
+      "options": {
+        "m": "Masculino",
+        "w": "Femenino"
+      }
+    }
   },
   "challenges": {
     "calmPower": {
       "description": "Completa 10 sesiones de meditación.",
-      "title": "Poder de calma"
+      "title": "Poder de la calma"
     },
     "challenge": "desafío",
     "duration": {
@@ -137,208 +176,208 @@
     },
     "checkIn": "Registrarse",
     "craveCrusher": {
-      "description": "Practica técnicas de alivio del estrés.",
+      "description": "Practica técnicas para aliviar el estrés.",
       "title": "Triturador de antojos"
     },
     "data": {
       "calmPower": {
         "achievement": "Zen",
-        "achievementDescription": "Completaste 10 días de meditación consciente con música para manejar los antojos.",
+        "achievementDescription": "Has completado 10 días de meditación consciente con música para manejar los antojos.",
         "buddyAdvice": [
-          "Repite cada vez que surja un antojo.",
-          "Repite diariamente durante 10 días.",
-          "Si tu mente divaga, gentilmente lleva la atención de vuelta a tu respiración.",
           "Siéntate cómodamente y cierra los ojos.",
-          "Toma respiraciones lentas y profundas y enfócate en las sensaciones."
+          "Haz respiraciones lentas y profundas y concéntrate en las sensaciones.",
+          "Si tu mente divaga, regresa suavemente la atención a la respiración.",
+          "Repite cada vez que surja un antojo.",
+          "Repite diariamente durante 10 días."
         ],
         "duration": "10 Días",
         "longDescription": "Practica 2 minutos de meditación para manejar los antojos.",
         "motivation": [
-          "Aumenta la atención plena y la conciencia.",
+          "Reduce el estrés y la tensión.",
+          "Aumenta la conciencia y la mindfulness.",
           "Ayuda a manejar mejor los antojos.",
-          "Promueve la paz interior.",
-          "Reduce el estrés y la tensión."
+          "Promueve la paz interior."
         ],
         "shortDescription": "Medita 2 minutos.",
-        "title": "Poder de calma"
+        "title": "Poder de la calma"
       },
       "craveCrusher": {
         "achievement": "Liberado",
-        "achievementDescription": "Dibujaste o escribiste tus antojos y los aplastaste durante 10 días.",
+        "achievementDescription": "Dibujaste o escribiste tu antojo y lo aplastaste durante 10 días.",
         "buddyAdvice": [
+          "Toma una hoja de papel y dibuja o escribe tu antojo por un cigarrillo.",
+          "Concéntrate en la sensación mientras lo creas.",
           "Arruga el papel en una bola.",
-          "Enfócate en el sentimiento mientras lo creas.",
-          "Repite cada vez que surjan antojos.",
-          "Toma una hoja de papel y dibuja tu antojo de un cigarrillo o escríbelo.",
-          "Toma una respiración profunda y déjalo ir."
+          "Haz una respiración profunda y suéltalo.",
+          "Repite cada vez que surja un antojo."
         ],
         "duration": "10 Días",
         "longDescription": "Dibuja o escribe tu antojo en papel, luego arrúgalo para liberarlo.",
         "motivation": [
-          "Aumenta la autoconciencia.",
-          "Promueve el dejar ir.",
+          "Ayuda a reconocer y liberar los antojos.",
           "Proporciona una salida física para las emociones.",
-          "Te ayuda a reconocer y liberar antojos."
+          "Aumenta la autoconciencia.",
+          "Promueve el soltarse."
         ],
         "shortDescription": "Arruga tu antojo.",
         "title": "Triturador de antojos"
       },
       "fistFlow": {
         "achievement": "Apretado",
-        "achievementDescription": "Apretaste y liberaste tus puños durante 10 días para vencer los antojos.",
+        "achievementDescription": "Apretaste y liberaste los puños durante 10 días para vencer los antojos.",
         "buddyAdvice": [
-          "Enfócate en las sensaciones en tus manos y brazos.",
-          "Haz un puño y aprieta firmemente 20 veces.",
-          "Repite cada vez que surjan antojos.",
-          "Repite diariamente durante 10 días.",
-          "Respira profundamente y relájate."
+          "Haz un puño y apriétalo fuertemente 20 veces.",
+          "Concéntrate en las sensaciones en tus manos y brazos.",
+          "Respira profundamente y relájate.",
+          "Repite cada vez que surja un antojo.",
+          "Repite diariamente durante 10 días."
         ],
         "duration": "10 Días",
-        "longDescription": "Aprieta tus puños 20 veces para liberar tensión y antojos.",
+        "longDescription": "Aprieta los puños 20 veces para liberar la tensión y los antojos.",
         "motivation": [
-          "Ayuda a manejar el estrés.",
+          "Reduce los antojos de nicotina.",
           "Libera la tensión física.",
           "Proporciona alivio inmediato.",
-          "Reduce los antojos de nicotina."
+          "Ayuda a manejar el estrés."
         ],
         "shortDescription": "Aprieta 20 veces.",
         "title": "Flujo de puño"
       },
       "flowMinute": {
         "achievement": "Estirado",
-        "achievementDescription": "Te estiraste y liberaste tensión durante 10 días.",
+        "achievementDescription": "Te estiraste y liberaste la tensión durante 10 días.",
         "buddyAdvice": [
-          "Estira lentamente tu cuello, hombros y espalda durante 2-3 minutos.",
-          "Repite cada vez que te sientas tenso o estresado.",
-          "Repite diariamente durante 10 días.",
+          "Siéntate o párate cómodamente.",
+          "Estira lentamente el cuello, hombros y espalda durante 2-3 minutos.",
           "Respira profundamente y siente cómo se libera la tensión.",
-          "Siéntate o párate cómodamente."
+          "Repite cada vez que sientas tensión o estrés.",
+          "Repite diariamente durante 10 días."
         ],
         "duration": "10 Días",
-        "longDescription": "Haz estiramientos suaves durante 1 minuto para liberar tensión y estrés.",
+        "longDescription": "Haz estiramientos suaves durante 1 minuto para liberar la tensión y el estrés.",
         "motivation": [
+          "Reduce el estrés y la tensión muscular.",
+          "Mejora la flexibilidad y la movilidad.",
           "Aumenta la circulación sanguínea.",
-          "Mejora la flexibilidad y movilidad.",
-          "Promueve la relajación.",
-          "Reduce el estrés y la rigidez muscular."
+          "Promueve la relajación."
         ],
-        "shortDescription": "Estira para liberar tensión.",
+        "shortDescription": "Estírate para liberar la tensión.",
         "title": "Minuto de flujo"
       },
       "hydrationBoost": {
         "achievement": "HidroVictoria",
-        "achievementDescription": "Bebiste un vaso de agua en sorbos conscientes, sintiendo cada uno.",
+        "achievementDescription": "Bebiste un vaso de agua con sorbos conscientes, sintiendo cada uno.",
         "buddyAdvice": [
-          "Bebe el agua lentamente, enfocándote en el sabor y las sensaciones.",
           "Reemplaza el antojo con un vaso de agua.",
-          "Repite diariamente durante 10 días.",
-          "Si el antojo regresa — repite los pasos.",
-          "Toma algunas respiraciones profundas y relájate."
+          "Bebe el agua lentamente, concentrándote en el sabor y las sensaciones.",
+          "Haz unas respiraciones profundas y relájate.",
+          "Si el antojo regresa, repite los pasos.",
+          "Repite diariamente durante 2 días."
         ],
         "duration": "2 Días",
         "longDescription": "Bebe un vaso de agua cada vez que sientas un antojo.",
         "motivation": [
-          "Ayuda a eliminar toxinas de tu cuerpo.",
-          "Proporciona una distracción saludable.",
-          "Reduce la intensidad del antojo de nicotina.",
-          "Te mantiene hidratado y enfocado."
+          "Reduce la intensidad de los antojos de nicotina.",
+          "Ayuda a eliminar toxinas del cuerpo.",
+          "Te mantiene hidratado y enfocado.",
+          "Proporciona una distracción saludable."
         ],
-        "shortDescription": "Bebe agua en cada antojo.",
+        "shortDescription": "Bebe agua con cada antojo.",
         "title": "Impulso de hidratación"
       },
       "masterOfAir": {
         "achievement": "MenteAire",
         "achievementDescription": "Completaste 10 días de respiración consciente y venciste los antojos con calma.",
         "buddyAdvice": [
-          "Enfócate en las sensaciones de tu respiración.",
-          "Haz esto diariamente durante 10 días.",
+          "Haz una inhalación lenta y profunda y exhala.",
+          "Concéntrate en las sensaciones de tu respiración.",
           "Repite 5 veces.",
-          "Toma una inhalación y exhalación lenta y profunda."
+          "Hazlo diariamente durante 10 días."
         ],
         "duration": "1 Día",
         "longDescription": "Practica 5 respiraciones profundas, tres veces al día durante 10 días.",
         "motivation": [
-          "Aumenta el enfoque y la calma",
-          "Aumenta la energía",
-          "Disminuye los antojos naturalmente",
-          "Reduce el estrés y la ansiedad"
+          "Reduce el estrés y la ansiedad",
+          "Reduce naturalmente los antojos",
+          "Aumenta la concentración y la calma",
+          "Aumenta la energía"
         ],
         "shortDescription": "Practica 5 respiraciones profundas.",
         "title": "Maestro del aire"
       },
       "refresh": {
-        "achievement": "Salpicada",
+        "achievement": "Salpicadura",
         "achievementDescription": "Completaste 10 días de reinicios instantáneos con agua fría en lugar de antojos.",
         "buddyAdvice": [
-          "Repite diariamente durante 10 días.",
-          "Repite si los antojos regresan.",
-          "Salpica agua fría en tu cara o muñecas.",
-          "Toma una respiración profunda y relájate."
+          "Salpica agua fría en la cara o las muñecas.",
+          "Haz una respiración profunda y relájate.",
+          "Repite si el antojo regresa.",
+          "Repite diariamente durante 10 días."
         ],
         "duration": "10 Días",
-        "longDescription": "Salpica agua fría en tu cara para reiniciar instantáneamente y frenar los antojos.",
+        "longDescription": "Salpica agua fría en la cara para reiniciar instantáneamente y contener el antojo.",
         "motivation": [
-          "Aumenta el estado de alerta.",
-          "Ayuda a reiniciar tu mente.",
-          "Proporciona refrescamiento instantáneo.",
-          "Reduce los antojos de nicotina."
+          "Reduce los antojos de nicotina.",
+          "Proporciona un refresco inmediato.",
+          "Ayuda a reiniciar la mente.",
+          "Aumenta la alerta."
         ],
-        "shortDescription": "Salpica agua para frenar los antojos.",
+        "shortDescription": "Salpica agua para contener el antojo.",
         "title": "Refrescar"
       },
       "snackBreak": {
-        "achievement": "BocadilloÉxito",
-        "achievementDescription": "Te mantuviste libre de humo durante 10 días eligiendo bocados saludables en lugar de cigarrillos.",
+        "achievement": "ÉxitoBocadillo",
+        "achievementDescription": "Te mantuviste sin humo durante 10 días, eligiendo bocadillos saludables en lugar de cigarrillos.",
         "buddyAdvice": [
+          "Mantén frutas, nueces o vegetales cerca.",
+          "Cuando llegue el antojo, mastica lentamente, concentrándote en el sabor y la textura.",
           "Combina el bocadillo con un vaso de agua.",
-          "Cuando llegue el impulso — mastica lentamente, enfócate en el sabor y textura.",
-          "Mantén frutas, nueces o verduras cerca.",
-          "Repite diariamente durante 10 días.",
-          "Si el antojo regresa — repite el paso."
+          "Si el antojo regresa, repite el paso.",
+          "Repite diariamente durante 10 días."
         ],
         "duration": "10 Días",
-        "longDescription": "Elige bocadillos saludables en lugar de cigarrillos cuando lleguen los antojos.",
+        "longDescription": "Elige bocadillos saludables en lugar de cigarrillos cuando llegue el antojo.",
         "motivation": [
-          "Mantiene tu boca y manos ocupadas.",
-          "Mejora la salud general.",
+          "Reduce naturalmente los antojos.",
           "Proporciona nutrición saludable.",
-          "Reduce los antojos naturalmente."
+          "Mantiene tu boca y manos ocupadas.",
+          "Mejora la salud general."
         ],
         "shortDescription": "Bocadillo en lugar de fumar.",
-        "title": "Descanso de bocadillo"
+        "title": "Pausa para bocadillo"
       },
       "stepSlayer": {
         "achievement": "Caminante",
-        "achievementDescription": "Te mantuviste libre de humo y fuerte con 10 días de pasos conscientes.",
+        "achievementDescription": "Te mantuviste sin humo y fuerte con 10 días de pasos conscientes.",
         "buddyAdvice": [
-          "Enfócate en tu respiración y pasos.",
-          "Repite diariamente durante 10 días.",
-          "Si el antojo regresa — camina de nuevo.",
-          "Toma caminatas cortas y conscientes en lugar de fumar.",
-          "Úsalo como una mini-pausa para refrescar tu mente."
+          "Haz caminatas cortas conscientes en lugar de fumar.",
+          "Concéntrate en tu respiración y pasos.",
+          "Úsalo como una mini pausa para refrescar la mente.",
+          "Si el antojo regresa, camina de nuevo.",
+          "Repite diariamente durante 3 días."
         ],
         "duration": "3 Días",
-        "longDescription": "Da una caminata corta de 500 pasos cada vez que sientas un antojo.",
+        "longDescription": "Haz una caminata corta de 500 pasos cada vez que sientas un antojo.",
         "motivation": [
-          "Aumenta las endorfinas naturalmente.",
-          "Mejora el estado de ánimo general.",
+          "Reduce el estrés y la ansiedad.",
+          "Aumenta naturalmente las endorfinas.",
           "Proporciona una distracción saludable.",
-          "Reduce el estrés y la ansiedad."
+          "Mejora el estado de ánimo general."
         ],
         "shortDescription": "Camina 500 pasos para reiniciar.",
         "title": "Asesino de pasos"
       }
     },
     "fistFlow": {
-      "description": "Mantén una plancha por 2 minutos.",
+      "description": "Mantén la plancha 2 minutos.",
       "title": "Flujo de puño"
     },
     "flowMinute": {
-      "description": "Completa rutina diaria de estiramiento.",
+      "description": "Completa la rutina diaria de estiramientos.",
       "title": "Minuto de flujo"
     },
     "hydrationBoost": {
-      "description": "Bebe agua en cada antojo.",
+      "description": "Bebe agua con cada antojo.",
       "title": "Impulso de hidratación"
     },
     "masterOfAir": {
@@ -347,17 +386,17 @@
     },
     "modal": {
       "benefits": "Beneficios",
-      "buddyAdvice": "Consejos de un amigo",
+      "buddyAdvice": "Consejos del amigo",
       "cancelAlert": {
         "continue": "Continuar",
         "giveUp": "Rendirse",
-        "message": "El desafío se detendrá y su progreso se perderá. Puedes comenzar este desafío nuevamente o elegir cualquier otro desafío.",
+        "message": "El desafío se detendrá y se perderá el progreso. Puedes comenzar este desafío de nuevo o elegir cualquier otro desafío.",
         "title": "¿Estás seguro?"
       },
       "cancelChallenge": "Cancelar desafío",
       "completed": "Completado",
-      "dayChallenge": "Desafío de {{count}} Día{{count, plural, one {} other {s}}}",
-      "history": "Historial",
+      "dayChallenge": "{{count}} día{{count, plural, one {} other {s}}} desafío",
+      "history": "Historia",
       "restartChallenge": "Reiniciar desafío",
       "share": "Compartir",
       "startNow": "Comenzar ahora",
@@ -370,7 +409,7 @@
     },
     "snackBreak": {
       "description": "Elige bocadillos saludables en lugar de comida chatarra.",
-      "title": "Descanso de bocadillo"
+      "title": "Pausa para bocadillo"
     },
     "stepSlayer": {
       "description": "Camina 10,000 pasos diarios.",
@@ -380,30 +419,30 @@
   },
   "challengeStart": {
     "actionButton": "Comenzar Mi Viaje",
-    "mainSubtitle": "Tu viaje sin humo comienza ahora. ¡Hagámoslo contar!",
-    "mainTitle": "¿Listo para empezar?"
+    "mainSubtitle": "Tu viaje sin fumar comienza ahora. ¡Hagámoslo significativo!",
+    "mainTitle": "¿Listo para comenzar?"
   },
   "coinModal": {
     "balance": "Saldo",
-    "subtitle": "Elige tu paquete y sigue avanzando!",
-    "title": "Consigue más monedas"
+    "subtitle": "Elige un paquete y continúa!",
+    "title": "Obtener más monedas"
   },
   "coinPacks": {
     "booster": {
-      "bonus": "Incluye +20% de bonificación",
-      "caption": "Valor sólido, progreso real.",
-      "label": "Impulso"
+      "bonus": "+20% bono incluido",
+      "caption": "Rentable y progreso real.",
+      "label": "Booster"
     },
     "legend": {
-      "caption": "Inicio rápido, sin presiones",
+      "caption": "Inicio rápido, sin presión",
       "label": "Leyenda"
     },
     "pro": {
-      "caption": "Inicio rápido, sin presiones",
+      "caption": "Inicio rápido, sin presión",
       "label": "Pro"
     },
     "starter": {
-      "caption": "A lo grande, sin perder el rumbo.",
+      "caption": "Actúa en grande y mantén el curso.",
       "label": "Inicial"
     }
   },
@@ -415,87 +454,87 @@
   },
   "cravingSOS": {
     "common": {
-      "days": "¡Desafío próximamente!"
+      "days": "¡Desafío pronto!"
     },
     "crumpleCravings": {
       "challenge": "Triturador de antojos",
-      "description": "Cuando sientas el impulso de fumar, dibuja o escribe tu antojo en un papel. Concéntrate en el sentimiento, luego arruga el papel. Respira profundamente y deja ir el antojo. Si vuelve, repite los pasos.",
-      "title": "Arruga el antojo"
+      "description": "Cuando sientas ganas de fumar, dibuja o escribe tu antojo en una hoja de papel. Concéntrate en la sensación, luego arruga el papel. Respira profundamente y suelta el antojo. Si regresa, repite los pasos.",
+      "title": "Arrugar antojos"
     },
     "dontGiveUp": {
-      "description": "Tuviste una recaída y fumaste un cigarrillo — y está bien. Respira profundamente, recuerda por qué empezaste y vuelve al camino. Cada antojo que resistes es progreso.",
+      "description": "Tuviste una recaída y fumaste un cigarrillo, y está bien. Respira profundamente, recuérdate por qué comenzaste y regresa al camino. Cada antojo que superas es progreso.",
       "okButton": "Ok",
       "title": "No te rindas"
     },
     "gripRelease": {
       "challenge": "Flujo de puño",
-      "description": "Cuando sientas el impulso de fumar, aprieta los puños 20 veces. Enfócate en las sensaciones, respira profundamente y deja que pase el impulso. Repite si es necesario.",
-      "title": "Aprieta y suelta"
+      "description": "Cuando sientas ganas de fumar, aprieta los puños 20 veces. Concéntrate en las sensaciones, respira profundamente y permite que el antojo pase. Repite si es necesario.",
+      "title": "Apretar y soltar"
     },
     "iSmokedButton": "¡Fumé!",
     "meditateListen": {
-      "challenge": "Poder de calma",
-      "description": "Reemplaza un antojo con una breve meditación y música. Enfócate en tu respiración, relaja tu cuerpo y deja que pase el antojo.",
-      "title": "Medita y escucha"
+      "challenge": "Poder de la calma",
+      "description": "Reemplaza el antojo con una meditación corta y música. Concéntrate en la respiración, relaja el cuerpo y permite que el antojo pase.",
+      "title": "Meditar y escuchar"
     },
     "modal": {
       "subtitle": "Usa ejercicios de respiración o consejos rápidos",
-      "title": "¿Quieres fumar?"
+      "title": "¿Ganas de fumar?"
     },
     "sipBreathe": {
-      "challenge": "Héroe de la hidratación",
-      "description": "Reemplaza el antojo con un vaso de agua. Bebe lentamente, enfocándote en el sabor y las sensaciones. Toma unas respiraciones profundas y relájate. Si el antojo vuelve, repite los pasos.",
-      "title": "Bebe y respira"
+      "challenge": "Héroe hidro",
+      "description": "Reemplaza el antojo con un vaso de agua. Bebe lentamente, concentrándote en el sabor y las sensaciones. Haz unas respiraciones profundas y relájate. Si el antojo regresa, repite los pasos.",
+      "title": "Beber y respirar"
     },
     "snackInstead": {
-      "challenge": "Descanso de bocadillo",
-      "description": "Cuando sientas el impulso de fumar, toma un bocadillo saludable. Mastica lentamente, enfócate en el sabor y la textura, y toma un sorbo de agua. Si el antojo regresa, repite los pasos.",
-      "title": "Picotea en su lugar"
+      "challenge": "Pausa para bocadillo",
+      "description": "Cuando sientas ganas de fumar, toma un bocadillo saludable. Mastica lentamente, concéntrate en el sabor y la textura, toma un sorbo de agua. Si el antojo regresa, repite los pasos.",
+      "title": "Bocadillo en lugar de cigarrillo"
     },
     "splashRefresh": {
       "challenge": "Refrescar",
-      "description": "Cuando sientas el impulso de fumar, salpica agua fría en tu cara o muñecas. Respira profundamente, enfócate en las sensaciones y deja que tu cuerpo se refresque. Si el antojo vuelve, repite los pasos.",
+      "description": "Cuando sientas ganas de fumar, salpica agua fría en la cara o las muñecas. Respira profundamente, concéntrate en las sensaciones y permite que el cuerpo se refresque. Si el antojo regresa, repite los pasos.",
       "title": "Salpicar y refrescar"
     },
     "stretchRelax": {
       "challenge": "Minuto de flujo",
-      "description": "Cuando sientas tensión o rigidez, estira suavemente el cuello, los hombros y la espalda durante 2-3 minutos. Respira profundamente, enfócate en las sensaciones y deja que tu cuerpo se relaje. Si la tensión regresa, repite los pasos.",
-      "title": "Estira y relájate"
+      "description": "Cuando sientas tensión o rigidez, estira suavemente el cuello, hombros y espalda durante 2-3 minutos. Respira profundamente, concéntrate en las sensaciones y permite que el cuerpo se relaje. Si la tensión regresa, repite los pasos.",
+      "title": "Estirar y relajar"
     },
     "walkReset": {
       "challenge": "Asesino de pasos",
-      "description": "Cuando sientas el impulso de fumar, camina 500 pasos para despejar tu mente y reiniciar tu cuerpo. Esto ayuda a distraerte de los antojos y sentir control.",
-      "title": "Caminar para reiniciar"
+      "description": "Cuando sientas antojo de fumar, camina 500 pasos para aclarar la mente y reiniciar el cuerpo. Esto ayuda a distraerte y sentir control.",
+      "title": "Caminata para reiniciar"
     },
     "breatheDeep": {
       "challenge": "Maestro del aire",
-      "description": "Practica 5 respiraciones profundas, tres veces al día durante 10 días. Enfócate en tu respiración, relaja tu cuerpo y deja que los antojos pasen naturalmente.",
-      "title": "Respira profundo"
+      "description": "Practica 5 respiraciones profundas, tres veces al día durante 10 días. Concéntrate en tu respiración, relaja el cuerpo y permite que el antojo pase naturalmente.",
+      "title": "Respira profundamente"
     },
     "steps": {
       "breathe": {
-        "title": "Respira Profundamente",
-        "description": "Inhala lentamente por 4 tiempos, mantén por 4, exhala por 4",
+        "title": "Haz una respiración profunda",
+        "description": "Inhala lentamente en 4 conteos, mantén 4, exhala en 4",
         "action": "Estoy respirando"
       },
       "water": {
-        "title": "Bebe Agua",
-        "description": "Mantente hidratado y dale a tu boca algo que hacer",
+        "title": "Bebe un poco de agua",
+        "description": "Mantente hidratado y dale algo que hacer a tu boca",
         "action": "Estoy bebiendo agua"
       },
       "walk": {
-        "title": "Sal a Caminar",
+        "title": "Ve a caminar",
         "description": "Muévete y cambia tu entorno",
         "action": "Voy a caminar"
       },
       "friend": {
-        "title": "Llama a un Amigo",
+        "title": "Llama a un amigo",
         "description": "Contacta a alguien que apoye tu viaje",
         "action": "Estoy llamando a alguien"
       },
       "encourage": {
-        "title": "¡Lo Estás Haciendo Genial!",
-        "description": "El antojo pasará. Eres más fuerte que este impulso.",
+        "title": "¡Lo estás haciendo genial!",
+        "description": "El antojo pasará. Eres más fuerte que este deseo.",
         "action": "Me mantengo fuerte"
       }
     }
@@ -503,7 +542,7 @@
   "home": {
     "achievements": "Logros",
     "badgesCollected": "Insignias recolectadas",
-    "cravingSOS": "SOS de Antojo",
+    "cravingSOS": "Ganas de fumar",
     "goodiesAvailable": "Artículos disponibles",
     "shop": "Tienda",
     "stats": {
@@ -519,56 +558,66 @@
         "vaping": "Ml(vaping) evitados"
       }
     },
-    "title": "Cero Caladas"
+    "title": "Cero caladas",
+    "get_all_scenes": "Todas las escenas por {{value}}",
+    "get_all_buddies": "Todos los amigos por {{value}}"
   },
   "languages": {
     "english": "English",
     "spanish": "Español",
-    "ukrainian": "Українська"
+    "ukrainian": "Українська",
+    "french": "Française"
   },
   "notificationPermission": {
-    "actionButton": "Habilitar Notificaciones",
+    "actionButton": "Activar notificaciones",
+    "benefits": {
+      "goals": "Mantente en el camino con tus metas",
+      "milestones": "Celebra tus logros",
+      "motivation": "Recordatorios diarios de motivación"
+    },
     "continue": "Continuar",
     "denied": {
-      "message": "Puedes habilitar las notificaciones más tarde en la configuración de tu dispositivo.",
-      "title": "Permiso Denegado"
+      "message": "Puedes activar las notificaciones más tarde en la configuración de tu dispositivo.",
+      "title": "Permiso denegado"
     },
+    "enable": "Activar notificaciones",
     "error": {
-      "message": "Hubo un error al solicitar el permiso de notificación.",
+      "message": "Ocurrió un error al solicitar el permiso de notificaciones.",
       "title": "Error"
     },
-    "mainSubtitle": "Deja que tu compañero te anime con recordatorios relajados — sin presión, solo progreso.",
+    "mainSubtitle": "Deja que tu amigo te recuerde suavemente, sin presión, solo progreso.",
     "mainTitle": "Mantente en el camino, a tu manera",
-    "permissionGranted": "✅ ¡Notificaciones habilitadas!",
+    "permissionGranted": "✅ ¡Notificaciones activadas!",
     "preview": {
       "message": "El recuerdo permanece, pero el tabaco está en el pasado.",
-      "title": "30 días sin fumar."
+      "title": "30 días sin fumar"
     },
     "requesting": "Solicitando...",
-    "subtitle": "Recibe recordatorios gentiles y celebra tu progreso",
+    "skip": "Omitir por ahora",
+    "subtitle": "Recibe recordatorios suaves y celebra tu progreso",
     "success": {
-      "message": "¡Ahora recibirás notificaciones útiles para apoyar tu viaje!",
-      "title": "Permiso Concedido"
+      "message": "¡Ahora recibirás notificaciones útiles para apoyar tu camino!",
+      "title": "Permiso concedido"
     },
     "title": "Mantente motivado"
   },
   "profile": {
     "buddy": {
-      "fallbackName": "Compañero"
+      "fallbackName": "Amigo"
     },
     "gender": {
       "man": "Hombre",
-      "nonBinary": "No binario",
+      "nonBinary": "No importa",
       "woman": "Mujer"
     },
     "habits": {
-      "estimatedSavings": "Ahorro diario estimado",
-      "line": "Fumo {{smokeType}}, normalmente {{dailyAmount}} al día. Un paquete me cuesta alrededor de {{currency}}{{price}}. Quiero {{goal}}.",
-      "title": "Mis hábitos de consumo"
+      "estimatedSavings": "Ahorros diarios estimados",
+      "line": "Fumo {{smokeType}}, usualmente {{dailyAmount}} al día. Un paquete cuesta alrededor de {{currency}}{{price}}. Quiero {{goal}}.",
+      "title": "Mis hábitos de fumar"
     },
     "sections": {
       "feedback": "Comentarios",
-      "notification": "Notificación",
+      "notification": "Notificaciones",
       "support": "Soporte",
       "theme": "Tema"
     },
@@ -580,17 +629,17 @@
   "promos": {
     "refer": {
       "cta": "Invitar a un amigo",
-      "subtitle": "Dejarlo es más fácil juntos",
-      "title": "Gana 500 monedas por invitar"
+      "subtitle": "Dejar es más fácil juntos",
+      "title": "Obtén 500 monedas por invitar"
     },
     "review": {
-      "cta": "Danos 5 estrellas",
-      "subtitle": "Ayúdanos con una rápida reseña de 5★",
-      "title": "¡Somos un equipo creativo pequeño!"
+      "cta": "Calificar con 5 estrellas",
+      "subtitle": "Ayúdanos con una reseña rápida de 5★",
+      "title": "¡Somos un pequeño equipo creativo!"
     },
     "share": {
-      "message": "Únete a mí en Zero Puffs — mi app favorita para dejar de fumar.",
-      "title": "Cero Caladas"
+      "message": "Únete a mí en QuitQly, mi app favorita para dejar de fumar!",
+      "title": "QuitQly"
     }
   },
   "regularAchievements": {
@@ -599,15 +648,15 @@
       "name": "Luna Brillante"
     },
     "champion": {
-      "description": "Dos años sin nicotina — un campeón de la salud",
+      "description": "Dos años sin nicotina: campeón de la salud",
       "name": "Campeón"
     },
     "divine": {
-      "description": "Treinta años sin nicotina — has logrado lo divino",
+      "description": "Treinta años sin nicotina: has alcanzado lo divino",
       "name": "Divino"
     },
     "eternal": {
-      "description": "Veinticinco años sin fumar — tu legado es eterno",
+      "description": "Veinticinco años sin fumar: tu legado es eterno",
       "name": "Eterno"
     },
     "first-spark": {
@@ -615,7 +664,7 @@
       "name": "Primera Chispa"
     },
     "freedom": {
-      "description": "Logra seis meses de vida sin humo",
+      "description": "Alcanza seis meses de vida sin fumar",
       "name": "Libertad"
     },
     "fresh-path": {
@@ -623,8 +672,8 @@
       "name": "Camino Fresco"
     },
     "guardian": {
-      "description": "Quince años sin fumar — guardián de tu salud",
-      "name": "Guardian"
+      "description": "Quince años sin fumar: guardián de tu salud",
+      "name": "Guardián"
     },
     "hero": {
       "description": "Completa un año sin fumar",
@@ -632,30 +681,30 @@
     },
     "hold-on": {
       "description": "Sobrevive la primera semana de tu viaje para dejar de fumar",
-      "name": "Mantente Firme"
+      "name": "Aguanta"
     },
     "immortal": {
-      "description": "Diez años sin nicotina — eres inmortal",
+      "description": "Diez años sin nicotina: eres inmortal",
       "name": "Inmortal"
     },
     "legend": {
-      "description": "Mantén dos años de vida sin humo",
+      "description": "Mantén dos años de vida sin fumar",
       "name": "Leyenda"
     },
     "master": {
-      "description": "Un año sin fumar — eres un verdadero maestro del autocontrol",
+      "description": "Un año sin fumar: eres un verdadero maestro del autocontrol",
       "name": "Maestro"
     },
     "phoenix": {
-      "description": "Siete años sin fumar — renacido de las cenizas más fuerte",
+      "description": "Siete años sin fumar: renacido de las cenizas más fuerte",
       "name": "Fénix"
     },
     "sage": {
-      "description": "Cinco años sin fumar — la sabiduría viene con el tiempo",
+      "description": "Cinco años sin fumar: la sabiduría viene con el tiempo",
       "name": "Sabio"
     },
     "sovereign": {
-      "description": "Veinte años sin fumar — soberano de tu destino",
+      "description": "Veinte años sin fumar: soberano de tu destino",
       "name": "Soberano"
     },
     "steel-week": {
@@ -663,17 +712,19 @@
       "name": "Semana de Acero"
     },
     "warrior": {
-      "description": "Tres años sin fumar — un guerrero contra la adicción",
+      "description": "Tres años sin fumar: guerrero contra la adicción",
       "name": "Guerrero"
     }
   },
   "review": {
-    "title": "Dejar comentarios"
+    "title": "Dejar una reseña",
+    "button": "Reseña positiva",
+    "description": "¡Somos un pequeño equipo creativo! Ayúdanos a crecer dejando una reseña de 5★. Tu apoyo es fundamental y nos permite seguir creando para ti."
   },
   "reviewModal": {
     "close": "Cerrar",
     "submit": "Enviar",
-    "title": "¿Qué tan satisfecho estás con\nla app QutQly?"
+    "title": "¿Qué tan satisfecho estás\ncon la app QuitQly?"
   },
   "scenes": {
     "bg1": {
@@ -769,34 +820,35 @@
     "actionButton": "Continuar",
     "fields": {
       "dailyAmount": {
-        "label": "¿Cuál es tu uso diario?",
+        "label": "¿Cuál es tu norma diaria?",
         "modalTitle": {
-          "cigarettes": "¿Cuántos cigarrillos al día es normal para ti?",
-          "roll-your-own": "¿Cuántos cigarrillos liados al día es normal para ti?",
-          "tobacco-heater": "¿Cuántas varillas al día es normal para ti?",
+          "cigarettes": "¿Cuántos cigarrillos al día son normales para ti?",
+          "roll-your-own": "¿Cuántas liadas al día son normales para ti?",
+          "tobacco-heater": "¿Cuántos palos al día son normales para ti?",
           "vaping": "¿Cuánto vapeas diariamente?"
         },
         "options": {
           "cigarettes": {
             "1-5": "1-5 cigarrillos",
+            "5-10": "5-10 cigarrillos",
             "11-20": "11-20 cigarrillos",
             "21+": "21+ cigarrillos",
             "6-10": "6-10 cigarrillos"
           },
           "roll-your-own": {
-            "1-5": "1-5 cigarrillos liados",
-            "11-20": "11-20 cigarrillos liados",
-            "21+": "21+ cigarrillos liados",
-            "6-10": "6-10 cigarrillos liados"
+            "1-5": "1-5 liadas",
+            "11-20": "11-20 liadas",
+            "21+": "21+ liadas",
+            "6-10": "6-10 liadas"
           },
           "tobacco-heater": {
-            "1-5": "1-5 varillas",
-            "11-20": "11-20 varillas",
-            "21+": "21+ varillas",
-            "6-10": "6-10 varillas"
+            "1-5": "1-5 palos",
+            "11-20": "11-20 palos",
+            "21+": "21+ palos",
+            "6-10": "6-10 palos"
           },
           "vaping": {
-            "heavy": "Intenso (3+ ml o 150+ caladas)",
+            "heavy": "Intensivo (3+ ml o 150+ caladas)",
             "light": "Ligero (hasta 1 ml o ~50 caladas)",
             "moderate": "Moderado (1-3 ml o 50-150 caladas)"
           }
@@ -804,11 +856,11 @@
         "selected": "Uso {{value}}"
       },
       "goal": {
-        "label": "¿Cuál es tu objetivo principal?",
-        "modalTitle": "¿Cuál es tu objetivo?",
+        "label": "¿Cuál es tu meta principal?",
+        "modalTitle": "¿Cuál es tu meta?",
         "options": {
           "doesnt-matter": "No importa",
-          "gain-control": "Ganar control",
+          "gain-control": "Obtener control",
           "improve-health": "Mejorar la salud",
           "quit-completely": "Dejar completamente",
           "reduce-gradually": "Reducir gradualmente",
@@ -820,13 +872,13 @@
         "label": {
           "cigarettes": "Precio por paquete",
           "roll-your-own": "Precio por bolsa",
-          "tobacco-heater": "Precio por paquete de varillas",
+          "tobacco-heater": "Precio por paquete de palos",
           "vaping": "Precio por botella/cartucho"
         },
         "modalTitle": {
           "cigarettes": "¿Cuánto cuesta un paquete?",
           "roll-your-own": "¿Cuánto cuesta una bolsa?",
-          "tobacco-heater": "¿Cuánto cuesta un paquete de varillas?",
+          "tobacco-heater": "¿Cuánto cuesta un paquete de palos?",
           "vaping": "¿Cuánto cuesta una botella/cartucho?"
         },
         "options": {
@@ -839,33 +891,35 @@
         "selected": {
           "cigarettes": "Un paquete me cuesta {{value}}",
           "roll-your-own": "Una bolsa me cuesta {{value}}",
-          "tobacco-heater": "Un paquete de varillas me cuesta {{value}}",
+          "tobacco-heater": "Un paquete de palos me cuesta {{value}}",
           "vaping": "Una botella/cartucho me cuesta {{value}}"
         }
       },
       "smokeType": {
         "label": "¿Qué fumas?",
-        "modalTitle": "¿Qué sueles fumar?",
+        "modalTitle": "¿Qué fumas usualmente?",
         "options": {
           "cigarettes": "Cigarrillos",
-          "roll-your-own": "Tabaco de liar",
-          "tobacco-heater": "Tabaco calentado",
+          "roll-your-own": "Liadas",
+          "tobacco-heater": "Calentador de tabaco",
           "vaping": "Vapeo"
         },
-        "selected": "Estoy fumando {{value}}"
+        "selected": "Fumo {{value}}"
       }
     },
     "header": {
-      "description": "Solo unos toques y 20 segundos para obtener un plan a tu medida.",
-      "title": "Configura tu camino para dejar de fumar"
+      "description": "Solo unos toques y 20 segundos para obtener un plan para dejar de fumar hecho para ti",
+      "title": "Establece tu camino para dejar de fumar"
     },
+    "next": "Siguiente",
     "nextButton": {
       "text": "Siguiente"
     },
-    "privacyText": "No te preocupes, tus datos están seguros. Los mantenemos privados y no los compartiremos.",
+    "privacyText": "No te preocupes, tus datos están protegidos. Los mantenemos privados y no los compartimos con terceros.",
     "stats": {
-      "description": "Ahorro promedio en EE. UU. al no fumar. Agrega tus hábitos para obtener tu número."
+      "description": "Ahorros promedio en EE.UU. sin fumar. Agrega tus hábitos para obtener tu número."
     },
+    "statsText": "fumadores dicen que quieren dejar de fumar: no estás solo.",
     "subtitle": "Esto nos ayuda a personalizar tu experiencia",
     "title": "Conozcámonos"
   },
@@ -875,9 +929,8 @@
     "buyCoins": "Comprar monedas",
     "buyFor": "Comprar por {{coins}}",
     "close": "Cerrar",
-    "description": "Un maravilloso compañero para tu viaje para dejar de fumar.",
-    "getAll": "Obtener todos los {{itemType}} por {{cost}}",
-    "owned": "Propiedad",
+    "description": "Un gran compañero para tu viaje para dejar de fumar.",
+    "owned": "Propio",
     "purchase": "Comprar",
     "purchaseFailed": "Error al comprar {{item}}",
     "reward": "Recompensa {{coins}}",
@@ -889,12 +942,12 @@
     "update": "Actualizar"
   },
   "sideModal": {
-    "hint": "Esta selección configurará el tema de tu app en claro u oscuro.",
+    "hint": "Esta elección establecerá el tema de la app: claro u oscuro.",
     "options": {
-      "bright": "Modo claro",
-      "dark": "Modo oscuro"
+      "bright": "Tema claro",
+      "dark": "Tema oscuro"
     },
-    "title": "¿Modo claro u oscuro?"
+    "title": "¿Tema claro u oscuro?"
   },
   "slipsLog": {
     "buy": {
@@ -907,147 +960,118 @@
     "counter": {
       "times": "veces"
     },
-    "freeSlip": "Recaída libre",
+    "freeSlip": "Recaída gratuita",
     "limit": {
-      "body": "Has alcanzado tu límite. Protege tu racha para añadir +5 o reinicia tu contador.",
+      "body": "Has alcanzado el límite. Protege tu racha para agregar +5, o reinicia el temporizador.",
       "title": "No te rindas"
     },
     "protect": {
-      "body": "Usa monedas para obtener recaídas extra y que tu contador no se reinicie.",
+      "body": "Usa monedas para obtener recaídas adicionales y no reiniciar el temporizador.",
       "title": "Protege tu racha"
     },
     "slipConfirmation": {
-      "description": "¿Tuviste una recaída? No te preocupes. Toma aire y sigue adelante.",
+      "description": "¿Tuviste una recaída? No te preocupes. Respira y sigue adelante.",
       "logButton": "Registrar mi recaída",
       "title": "No te rindas"
     },
     "smokedButton": "Fumé",
-    "summary": "Te quedan {{remaining}} recaídas permitidas. Si alcanzas el límite, tu contador sin fumar se reinicia — y puedes empezar de nuevo",
+    "summary": "Te quedan {{remaining}} recaídas permitidas. Si alcanzas el límite, el temporizador sin cigarrillos se reiniciará y podrás comenzar de nuevo",
     "title": "Registro de recaídas"
   },
   "stats": {
-    "description": "Ahorro promedio en EE. UU. al no fumar. Agrega tus hábitos para obtener tu número."
+    "description": "Ahorros promedio en EE.UU. sin fumar. Agrega tus hábitos para obtener tu número."
   },
   "subscriptions": {
-    "cta": "Desbloquear todo el programa",
+    "cta": "Abrir la app completa",
     "plans": {
       "monthly": {
-        "billing": "Pago una vez al mes",
+        "billing": "Cobro mensual",
         "title": "1 mes"
       },
       "quarterly": {
-        "billing": "Pago cada 3 meses",
+        "billing": "Cobro cada 3 meses",
         "title": "3 meses"
       },
       "yearly": {
-        "billing": "Pago una vez al año",
+        "billing": "Cobro anual",
         "title": "12 meses"
       }
     },
     "save": "Ahorra {{percent}}%"
   },
   "toggles": {
-    "buddies": "Compañeros",
-    "exclusive": "Exclusivo",
-    "regular": "Regular",
+    "buddies": "Amigos",
+    "exclusive": "Exclusivos",
+    "regular": "Regulares",
     "scenes": "Escenas"
   },
   "welcome": {
     "actionButton": "Comenzar",
     "ctaButton": "Sí, hagámoslo juntos",
-    "description": "Únete a miles de personas que han dejado de fumar exitosamente con nuestro enfoque probado.",
+    "description": "Únete a miles de personas que han dejado de fumar con éxito usando nuestro enfoque probado.",
     "selectLanguage": "Idioma",
-    "subtitle": "Tu viaje hacia una vida sin humo comienza aquí",
-    "title": "Bienvenido a Zero Puffs",
-    "willYouQuit": "¿Vas a... dejar de fumar?"
+    "subtitle": "Tu viaje hacia una vida sin fumar comienza aquí",
+    "title": "Bienvenido a QuitQly",
+    "willYouQuit": "¿Dejarás... de fumar?"
   },
   "auth": {
     "welcome": "Bienvenido a RevenueCat",
-    "signInSubtitle": "Por favor inicia sesión para continuar",
-    "createAccount": "Crear Cuenta",
+    "signInSubtitle": "Por favor, inicia sesión para continuar",
+    "createAccount": "Crear cuenta",
     "joinToday": "Únete a RevenueCat hoy",
-    "signIn": "Iniciar Sesión",
+    "signIn": "Iniciar sesión",
     "signUp": "Registrarse",
     "continueWithGoogle": "Continuar con Google",
-    "noAccount": "¿No tienes una cuenta?",
-    "hasAccount": "¿Ya tienes una cuenta?",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
     "or": "O",
     "email": "Correo electrónico",
     "password": "Contraseña",
-    "confirmPassword": "Confirmar Contraseña",
+    "confirmPassword": "Confirmar contraseña",
     "errors": {
-      "fillAllFields": "Por favor completa todos los campos",
+      "fillAllFields": "Por favor, completa todos los campos",
       "passwordsDontMatch": "Las contraseñas no coinciden",
       "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
       "accountCreated": "¡Cuenta creada exitosamente!",
       "ok": "OK",
-      "loginError": "Error de Inicio de Sesión",
-      "registrationError": "Error de Registro",
-      "googleSignInError": "Error de Inicio de Sesión con Google",
-      "logoutError": "Error de Cierre de Sesión"
+      "loginError": "Error de inicio de sesión",
+      "registrationError": "Error de registro",
+      "googleSignInError": "Error de inicio de sesión con Google",
+      "logoutError": "Error de cierre de sesión"
     }
   },
   "chat": {
-    "title": "Asistente de Chat",
+    "title": "Asistente de chat",
     "welcomeMessage": "¡Hola! Estoy aquí para ayudarte en tu viaje para dejar de fumar. ¿Cómo te sientes hoy?",
     "quickReplies": "Respuestas rápidas:",
     "placeholder": "Escribe tu mensaje...",
     "quickReplyOptions": {
       "stressed": "Me siento estresado",
-      "craving": "Tengo una fuerte ansiedad",
+      "craving": "Tengo un antojo fuerte",
       "motivation": "Necesito motivación",
       "celebrate": "Quiero celebrar mi progreso"
     },
     "responses": {
-      "stressed": "Entiendo que el estrés puede ser desafiante. Recuerda, fumar no resolverá el problema. Intenta tomar algunas respiraciones profundas o dar un paseo corto. ¿Qué te está causando estrés ahora mismo?",
-      "craving": "Los antojos son temporales y pasarán. Prueba la técnica de respiración 4-4-4: inhala por 4 segundos, mantén por 4, exhala por 4. ¡Eres más fuerte que este impulso!",
-      "motivation": "¡Lo estás haciendo increíble! Cada momento libre de humo es una victoria. Piensa en por qué comenzaste este viaje. Tu salud, tu familia, tu yo futuro - todos te están animando.",
-      "celebrate": "¡Eso es fantástico! Celebrar tu progreso es muy importante. ¿Qué hito estás celebrando? Recuerda, cada día libre de humo es un gran logro.",
+      "stressed": "Entiendo que el estrés puede ser difícil. Recuerda, fumar no resolverá el problema. Intenta hacer unas respiraciones profundas o dar un paseo. ¿Qué te está causando estrés ahora?",
+      "craving": "Los antojos son temporales y pasarán. Prueba la técnica de respiración 4-4-4: inhala por 4 segundos, mantén 4, exhala por 4. ¡Eres más fuerte que este deseo!",
+      "motivation": "¡Lo estás haciendo increíble! Cada momento sin fumar es una victoria. Piensa en por qué comenzaste este viaje. Tu salud, tu familia, tu futuro: todos te apoyan.",
+      "celebrate": "¡Eso es fantástico! Celebrar tu progreso es muy importante. ¿Qué hito estás celebrando? Recuerda, cada día sin fumar es un gran logro.",
       "default": "Gracias por compartir eso conmigo. Estoy aquí para apoyarte en cada paso de tu viaje para dejar de fumar. ¿Cómo puedo ayudarte hoy?"
-    }
-  },
-  "cravingSOS": {
-    "steps": {
-      "breathe": {
-        "title": "Respira Profundamente",
-        "description": "Inhala lentamente por 4 tiempos, mantén por 4, exhala por 4",
-        "action": "Estoy respirando"
-      },
-      "water": {
-        "title": "Bebe Agua",
-        "description": "Mantente hidratado y dale algo que hacer a tu boca",
-        "action": "Estoy bebiendo agua"
-      },
-      "walk": {
-        "title": "Sal a Caminar",
-        "description": "Muévete y cambia tu entorno",
-        "action": "Voy a caminar"
-      },
-      "friend": {
-        "title": "Llama a un Amigo",
-        "description": "Contacta a alguien que apoye tu viaje",
-        "action": "Voy a llamar a alguien"
-      },
-      "encourage": {
-        "title": "¡Lo Estás Haciendo Genial!",
-        "description": "El antojo pasará. Eres más fuerte que este impulso.",
-        "action": "Me mantengo fuerte"
-      }
     }
   },
   "buddy": {
     "nameModal": {
-      "title": "Nombre del compañero",
-      "placeholder": "Escribe un nombre"
+      "title": "Nombre del amigo",
+      "placeholder": "Ingresa el nombre"
     }
   },
   "alerts": {
-    "notEnoughCoins": "No hay suficientes monedas",
+    "notEnoughCoins": "Monedas insuficientes",
     "shareFailed": "Error al compartir: {{error}}",
     "telegram": "Telegram",
     "email": "Correo electrónico",
     "mockTelegram": "Simulación: abrir chat de Telegram",
-    "mockEmail": "Simulación: abrir compositor de correo"
+    "mockEmail": "Simulación: abrir editor de correo"
   },
   "support": {
     "telegram": "Telegram",
@@ -1055,18 +1079,22 @@
   },
   "homeScreen": {
     "title": "Panel de RevenueCat",
-    "subtitle": "¡Bienvenido de vuelta!",
-    "userInfoTitle": "Información del Usuario",
-    "email": "Correo:",
-    "userId": "ID de Usuario:",
-    "emailVerified": "Correo Verificado:",
-    "revenueDataTitle": "Tus Datos de Ingresos",
-    "logoutButtonText": "Cerrar Sesión",
-    "revenueDataDescription": "Aquí es donde se mostrarían tus análisis de ingresos y datos de suscripción.",
+    "subtitle": "¡Bienvenido de nuevo!",
+    "userInfoTitle": "Información del usuario",
+    "email": "Correo electrónico:",
+    "userId": "ID de usuario:",
+    "emailVerified": "Correo verificado:",
+    "revenueDataTitle": "Tus datos de ingresos",
+    "logoutButtonText": "Cerrar sesión",
+    "revenueDataDescription": "Aquí se mostrarán tus analíticas de ingresos y datos de suscripción.",
     "yes": "Sí",
     "no": "No"
   },
   "loading": {
     "text": "Cargando..."
+  },
+  "common": {
+    "days_one": "{{count}} Día",
+    "days_other": "{{count}} Días"
   }
 }

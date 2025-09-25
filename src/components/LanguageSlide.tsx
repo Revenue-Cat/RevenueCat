@@ -11,6 +11,7 @@ import SlideModal from "./SlideModal";
 import FlagEn from "../assets/icons/flag-en.svg";
 import FlagEs from "../assets/icons/flag-es.svg";
 import FlagUk from "../assets/icons/flag-uk.svg";
+import FlagFr from "../assets/icons/flag-fr.svg";
 
 type Props = {
   visible: boolean;
@@ -30,6 +31,7 @@ const LanguageSlide: React.FC<Props> = ({ visible, onClose }) => {
       [
         { code: "en", name: t("languages.english"), flag: FlagEn },
         { code: "es", name: t("languages.spanish"), flag: FlagEs },
+        { code: "fr", name: t("languages.french"), flag: FlagFr },
         { code: "uk", name: t("languages.ukrainian"), flag: FlagUk },
       ] as const,
     [t]

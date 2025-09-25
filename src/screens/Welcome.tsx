@@ -6,6 +6,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import FlagEn from "../assets/icons/flag-en.svg";
 import FlagEs from "../assets/icons/flag-es.svg";
+import FlagFr from "../assets/icons/flag-fr.svg";
 import FlagUk from "../assets/icons/flag-uk.svg";
 import LanguageSlide from "../components/LanguageSlide";
 import CTAButton from "../components/CTAButton";
@@ -24,6 +25,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
   const languages = [
     { code: "en", name: t("languages.english"), flag: FlagEn },
     { code: "es", name: t("languages.spanish"), flag: FlagEs },
+    { code: "fr", name: t("languages.french"), flag: FlagFr },
     { code: "uk", name: t("languages.ukrainian"), flag: FlagUk },
   ];
 
