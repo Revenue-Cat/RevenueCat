@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
 import { calculateSavings, getAvoidedLabel } from '../utils/savingsCalculator';
 
+
 const HomeStats: React.FC = () => {
   const { t } = useTranslation();
-  const { smokeType, dailyAmount, packPrice, packPriceCurrency, daysSmokeFree, startDate, slipsUsed, getSlipsAllowed } = useApp();
+  const { smokeType, dailyAmount, packPrice, packPriceCurrency, daysSmokeFree, startDate, slipsUsed, getSlipsAllowed ,selectedBackground} = useApp();
+
+  const parseGradient = useCallback(
+    (gradientString: string): [string, string] => {
+      const colorMatch = gradientString.match(/#[A-Fa-f0-9]{6}/g);
+      if (colorMatch && colorMatch.length >= 2) {
+        return [colorMatch[0], colorMatch[1]];
+      }
+      const fallbackMatch = gradientString.match(/#[A-Fa-f0-9]{3,6}/g);
+      if (fallbackMatch && fallbackMatch.length >= 2) {
+        return [fallbackMatch[0], fallbackMatch[1]];
+      }
+      return ["#1F1943", "#4E3EA9"]; // Default fallback
+    },
+    []
+  );
+  
+  const gradientColors = parseGradient(selectedBackground?.backgroundColor || '');
 
   // Calculate actual days since start date
   const getActualDaysSmokeFree = () => {
@@ -50,7 +68,7 @@ const HomeStats: React.FC = () => {
 
   return (
     <View className="flex-1">
-      <View className="flex-row gap-1 mb-1">
+      <View className="flex-row gap-1 mb-1 " style={{ backgroundColor: gradientColors[0] }}>
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
           <Text className="text-4xl font-semibold text-white">{savings.itemsAvoided}</Text>
           <Text className="text-s font-medium text-white opacity-50">{t(`home.stats.avoided.${smokeType || 'cigarettes'}`)}</Text>
@@ -60,7 +78,7 @@ const HomeStats: React.FC = () => {
           <Text className="text-s font-medium text-white opacity-50">{t('home.stats.moneySaved')}</Text>
         </View>
       </View>
-      <View className="flex-row gap-1 mb-6">
+      <View className="flex-row gap-1 mb-6" style={{ backgroundColor: gradientColors[0] }}>
         <View className="flex-1 bg-white/10 rounded-xl p-4 items-center">
           <Text className="text-4xl font-semibold text-white">{formatTime()}</Text>
           <Text className="text-s font-medium text-white opacity-50">{t('home.stats.timeSaved')}</Text>
