@@ -132,12 +132,13 @@ const SlideModal: React.FC<SlideModalProps> = ({
       onRequestClose={onClose}
     >
       <View className="flex-1">
-        {/* Dark Overlay - Smooth fade in/out */}
-        <View
+        {/* Dark Overlay - Clickable to close modal */}
+        <Pressable
           className="absolute inset-0"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
           }}
+          onPress={onClose}
           onLayout={() => {
             console.log('SlideModal: Dark overlay rendered - TEST VERSION');
           }}
@@ -163,13 +164,14 @@ const SlideModal: React.FC<SlideModalProps> = ({
             transform: [{ translateY: slideAnim }],
           }}
         >
-        <View
+        <Pressable
           className={`${
             isDark ? "bg-dark-background" : "bg-light-background"
           } rounded-t-3xl`}
+          onPress={(e) => e.stopPropagation()}
         >
           <View className="px-5 pt-6 pb-10">
-            {title && (
+            {title ? (
               <Text
                 className={`text-xl font-bold text-center px-8 mt-6 mb-6 ${
                   isDark ? "text-slate-100" : "text-indigo-950"
@@ -177,12 +179,12 @@ const SlideModal: React.FC<SlideModalProps> = ({
               >
                 {title}
               </Text>
-            )}
+            ) : null}
 
             {children}
 
             {/* Footer actions: confirm and/or close buttons */}
-            {(hasConfirm || showCloseButton) && (
+            {(hasConfirm || showCloseButton) ? (
               <View
                 className={`mt-6 ${
                   hasConfirm && showCloseButton
@@ -190,7 +192,7 @@ const SlideModal: React.FC<SlideModalProps> = ({
                     : ""
                 }`}
               >
-                {hasConfirm && (
+                {hasConfirm ? (
                   <Pressable
                     className={`w-15 h-15 rounded-2xl justify-center items-center ${
                       hasConfirm && showCloseButton ? "" : "self-center"
@@ -203,8 +205,8 @@ const SlideModal: React.FC<SlideModalProps> = ({
                       {confirmText}
                     </Text>
                   </Pressable>
-                )}
-                {showCloseButton && (
+                ) : null}
+                {showCloseButton ? (
                   <Pressable
                     className={`w-15 h-15 rounded-2xl justify-center items-center ${
                       hasConfirm && showCloseButton ? "" : "self-center"
@@ -223,11 +225,11 @@ const SlideModal: React.FC<SlideModalProps> = ({
                       ✕
                     </Text>
                   </Pressable>
-                )}
+                ) : null}
               </View>
-            )}
+            ) : null}
           </View>
-        </View>
+        </Pressable>
       </Animated.View>
       </View>
     </Modal>

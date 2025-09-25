@@ -4,9 +4,12 @@ import { View, Text, Pressable, Share, Modal, Image } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../contexts/ThemeContext";
 import ReviewModal from "./ReviewModal";
-import ReviewBannerImage from "../assets/review-banner-image.png";
+
 import Coins from "../assets/icons/coins.svg";
 import { APP_SHARE_URL } from "../config/subscriptions";
+import ReviewBannerImageDark from "../assets/feedback.svg";
+import ReviewBannerImageLight from "../assets/feedback-light.svg";
+
 
 type Props = {
   onShared?: () => void;
@@ -80,21 +83,26 @@ const PromoCards: React.FC<Props> = ({
       </View> */}
 
       {/* Review card */}
-      <View className="mt-4 bg-indigo-50 rounded-2xl p-5">
+      <View className={`mt-4 rounded-2xl p-5 ${
+        isDark ? "bg-slate-700" : "bg-indigo-50"
+      }`}>
         {/* Top illustration */}
-        <Image
-          source={ReviewBannerImage}
-          resizeMode="contain"
-          style={{ width: 280 }}
-        />
+        <View className={`rounded-xl`}>
+          {isDark ? <ReviewBannerImageDark width={"100%"} height={130}  /> : 
+          <ReviewBannerImageLight width={"100%"} height={130} />}
+        </View>
 
         {/* Title */}
-        <Text className="text-xl font-bold text-indigo-950 text-center">
+        <Text className={`text-xl font-bold text-center ${
+          isDark ? "text-slate-100" : "text-indigo-950"
+        }`}>
           {t("review.title", "Leave feedback")}
         </Text>
 
         {/* Description */}
-        <Text className="text-s text-slate-850 text-center mt-2">
+        <Text className={`text-s text-center mt-2 ${
+          isDark ? "text-slate-300" : "text-slate-600"
+        }`}>
           {t(
             "review.description",
             "We're a small creative team! Help us grow by leaving a quick 5★ review. Your support means a lot and keeps us creating more for you!"

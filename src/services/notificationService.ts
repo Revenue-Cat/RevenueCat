@@ -504,14 +504,24 @@ class NotificationService {
         return;
       }
 
+      // Group notifications by user to process them correctly
+      const notificationsByUser = new Map<string, Array<{ docSnap: any, data: any, scheduledTime: Date }>>();
+      
+      for (const notification of dueNotifications) {
+        const userId = notification.data.userId;
+        if (!notificationsByUser.has(userId)) {
+          notificationsByUser.set(userId, []);
+        }
+        notificationsByUser.get(userId)!.push(notification);
+      }
 
-      for (const { docSnap, data, scheduledTime } of dueNotifications) {
-
+      // Process notifications for each user individually
+      for (const [userId, userNotifications] of notificationsByUser) {
         try {
-          // Validate that this notification is for the correct user and day
-          const userSettings = await this.getUserSettings(data.userId);
+          // Get user settings once per user
+          const userSettings = await this.getUserSettings(userId);
           if (!userSettings) {
-            // console.log(`NotificationService: User settings not found for ${data.userId}, skipping notification`);
+            // console.log(`NotificationService: User settings not found for ${userId}, skipping all notifications for this user`);
             continue;
           }
 
@@ -520,40 +530,49 @@ class NotificationService {
           const currentDate = new Date();
           const daysSinceStart = Math.floor((currentDate.getTime() - userStartDate.getTime()) / (1000 * 60 * 60 * 24));
           
-          // Only send notification if it matches the user's current day
-          if (data.day !== daysSinceStart) {
-            // console.log(`NotificationService: Skipping notification for day ${data.day} - user is on day ${daysSinceStart}`);
-            continue;
+
+          // Process each notification for this user
+          for (const { docSnap, data, scheduledTime } of userNotifications) {
+            try {
+              // Only send notification if it matches the user's current day
+              if (data.day !== daysSinceStart) {
+                // console.log(`NotificationService: Skipping notification for day ${data.day} - user is on day ${daysSinceStart}`);
+                continue;
+              }
+
+              // Create notification object with converted date
+              const notification: ScheduledNotification = {
+                id: data.id,
+                userId: data.userId,
+                notificationId: data.notificationId,
+                day: data.day,
+                timeOfDay: data.timeOfDay,
+                scheduledTime: scheduledTime,
+                message: data.message,
+                category: data.category,
+                isSent: data.isSent,
+                sentAt: data.sentAt?.toDate(),
+                createdAt: data.createdAt.toDate()
+              };
+              
+              await this.sendNotification(notification);
+
+              // Remove the notification from Firebase after sending to prevent duplicates
+              await deleteDoc(docSnap.ref);
+
+            } catch (error) {
+              console.error(`NotificationService: ❌ Failed to process notification ${data.id} for user ${userId}:`, error);
+
+              // Mark as failed but don't remove - allow retry
+              await updateDoc(docSnap.ref, {
+                lastError: (error as Error).message,
+                lastAttemptAt: Timestamp.now()
+              });
+            }
           }
 
-          // Create notification object with converted date
-          const notification: ScheduledNotification = {
-            id: data.id,
-            userId: data.userId,
-            notificationId: data.notificationId,
-            day: data.day,
-            timeOfDay: data.timeOfDay,
-            scheduledTime: scheduledTime,
-            message: data.message,
-            category: data.category,
-            isSent: data.isSent,
-            sentAt: data.sentAt?.toDate(),
-            createdAt: data.createdAt.toDate()
-          };
-          
-          await this.sendNotification(notification);
-
-          // Remove the notification from Firebase after sending to prevent duplicates
-          await deleteDoc(docSnap.ref);
-
         } catch (error) {
-          console.error(`NotificationService: ❌ Failed to process notification ${data.id}:`, error);
-
-          // Mark as failed but don't remove - allow retry
-          await updateDoc(docSnap.ref, {
-            lastError: (error as Error).message,
-            lastAttemptAt: Timestamp.now()
-          });
+          console.error(`NotificationService: ❌ Failed to process notifications for user ${userId}:`, error);
         }
       }
 
