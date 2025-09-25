@@ -526,7 +526,8 @@
   "languages": {
     "english": "English",
     "spanish": "Español",
-    "ukrainian": "Українська"
+    "ukrainian": "Українська",
+    "french": "Française"
   },
   "notificationPermission": {
     "actionButton": "Enable Notifications",

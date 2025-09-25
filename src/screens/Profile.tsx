@@ -32,6 +32,7 @@ import SupportDark from "../assets/icons/support-d.svg";
 import FlagEn from "../assets/icons/flag-en.svg";
 import FlagEs from "../assets/icons/flag-es.svg";
 import FlagUk from "../assets/icons/flag-uk.svg";
+import FlagFr from "../assets/icons/flag-fr.svg";
 import PromoCards from "../components/PromoCards";
 import { COIN_PACKS, CoinPack, Plan } from "../config/subscriptions";
 import ReviewModal from "../components/ReviewModal";
@@ -77,6 +78,7 @@ const Profile: React.FC<ProfileProps> = ({
   const languages = [
     { code: "en", name: t("languages.english"), flag: FlagEn },
     { code: "es", name: t("languages.spanish"), flag: FlagEs },
+    { code: "fr", name: t("languages.french"), flag: FlagFr },
     { code: "uk", name: t("languages.ukrainian"), flag: FlagUk },
   ] as const;
   const currentLanguage =
