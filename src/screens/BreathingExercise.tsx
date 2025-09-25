@@ -567,14 +567,14 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack, 
         {countdown === null && !isActive && (
           <>
             <Pressable
-              className="w-10 h-10 rounded-full justify-center items-center ml-1.5"
+              className="w-10 h-10 rounded-full justify-center items-center bg-slate-100 ml-4"
               onPress={goBack}
             >
-               <Ionicons 
-                name="arrow-back" 
-                size={20} 
-                color={isDark ? "#f1f5f9" : "#1e1b4b"}
-              />
+               <Text
+                className={` "text-indigo-900" text-lg`}
+              >
+                ←
+              </Text>
             </Pressable>
             <Animated.Text 
               className={`text-xl font-bold text-indigo-950`}
@@ -623,7 +623,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack, 
               </Animated.Text>
               <View className="mb-8">
                 {isActive && (
-                  <Text className={`text-2lg font-semibold text-center ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+                  <Text className={`text-2lg font-semibold text-center text-slate-900`}>
                   {t('breathing.cycle', { cycle })}
                   </Text>
                 )}
@@ -663,7 +663,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack, 
             <View className="flex-row items-center gap-4 mx-4">
               {/* First Box - 5 Breaths done */}
               <View className="flex-1 items-center justify-center bg-indigo-50 p-4 rounded-xl">
-                <Text className={`text-3xl font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+                <Text className={`text-3xl font-bold text-slate-900`}>
                   {completedSessionsCount * 5}
                 </Text>
                 <Text className={`text-sm text-slate-500`}>{t('breathing.completion.breathsDone', { count: completedSessionsCount * 5 })}</Text>

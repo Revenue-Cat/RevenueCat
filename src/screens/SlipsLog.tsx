@@ -10,7 +10,10 @@ import ProtectDog from "../assets/protect-dog.png";
 import { SLIPS_CONFIG } from "../config/subscriptions";
 import CoinPurchaseModal from "../components/CoinPurchaseModal";
 import SlideModal from "../components/SlideModal";
+import BackButton from "../components/BackButton";
+import CountdownTimer from "../components/CountdownTimer";
 import SupportIcon from "../assets/buddies/support.svg";
+import SupportIconDark from "../assets/buddies/support-dark.svg";
 
 type Props = { onBack: () => void };
 
@@ -35,7 +38,8 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
     userCoins,
     setShowCoinPurchase,
     setStartDate,
-    userProgress
+    userProgress,
+    startDate
   } = useApp();
 
   const allowed = getSlipsAllowed();
@@ -106,32 +110,17 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
 
       {/* Header */}
       <View className="pl-4 pt-4 pb-3 flex-row items-center justify-between">
-        <Pressable
-          onPress={onBack}
-          className={`w-10 h-10 rounded-full justify-center items-center ${
-            isDark ? "bg-slate-600" : "bg-slate-100"
-          }`}
-          hitSlop={10}
-        >
-          <Text
-            className={`${
-              isDark ? "text-slate-200" : "text-indigo-900"
-            } text-lg`}
-          >
-            ←
-          </Text>
-        </Pressable>
+        {/* Back button */}
+        <BackButton onPress={onBack} />
 
         <Text className={`${titleColor} text-xl font-bold`}>
           {t("slipsLog.title", "Slips log")}
         </Text>
 
         <Pressable
-          className={`rounded-full px-3 py-1 flex-row items-center ${
-            isDark ? "bg-amber-300/20" : "bg-yellow-200"
-          }`}
+          className={`rounded-full px-3 py-1 flex-row items-center border border-orange-500 mr-5`}
         >
-          <Text className="mr-1 text-yellow-800 font-semibold">
+          <Text className="mr-1 text-orange-500 font-semibold">
             {t("shop.balance", { coins: userCoins })}
           </Text>
           <CoinIcon width={16} height={16} />
@@ -142,8 +131,23 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
         contentContainerStyle={{ paddingBottom: 120 }}
         className="px-4"
       >
+        {/* CountdownTimer with bg-indigo-700 background */}
+        {startDate && (
+          <View className="bg-indigo-700 rounded-3xl p-4 mx-5 pb-14">
+            <View className="items-center">
+              <CountdownTimer
+                targetDate={startDate}
+                textColor="text-white"
+                textSize="lg"
+                showSeconds={false}
+                countUp={true}
+              />
+            </View>
+          </View>
+        )}
+
         {/* Main summary card */}
-        <View className={`${cardBg} rounded-3xl p-5 mt-2`}>
+        <View className={`${cardBg} rounded-3xl p-5 -mt-10 relative z-10`}>
           <View className="items-center">
             <Image
               source={SmokingDog}
@@ -159,12 +163,12 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
 
           <View className="mt-3 items-center">
             <Text className="text-red-500 text-5xl font-bold">
-              {slipsUsed}
+                  {slipsUsed}
               <Text className={`${limitColor} text-lg font-semibold`}>
                 {" "}
                 / {allowed} {t("slipsLog.counter.times", "times")}
               </Text>
-            </Text>
+                </Text>
           </View>
 
           <Text
@@ -178,8 +182,49 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
           </Text>
         </View>
 
-        {/* Protect your streak card */}
-        {shouldOfferProtectStreak() && (
+
+        {/* Grid */}
+        <View className="mt-4 flex-row flex-wrap justify-center">
+          {grid.map((isoOrNull, i) => {
+            const isUsed = !!isoOrNull;
+            return (
+              <View
+                key={i}
+                style={{
+                  width: 82,
+                  height: 76,
+                  marginRight: 8,
+                  marginBottom: 8,
+                }}
+              >
+                <View
+                  className={`rounded-xl items-center justify-center ${
+                    isUsed ? tileActiveBg : tileInactiveBg
+                  }`}
+                  style={{ width: 82, height: 76 }}
+                >
+                  <SmokeIcon
+                    width={24}
+                    height={24}
+                    color={isUsed ? tileActiveFg : "#94a3b8"}
+                  />
+                  <Text
+                    className={`mt-2 text-m font-medium text-center ${
+                      isUsed ? "text-red-500" : tileInactiveText
+                    }`}
+                  >
+                    {isUsed
+                      ? formatDateShort(isoOrNull as string)
+                      : t("slipsLog.freeSlip", "Free Slip")}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+
+                {/* Protect your streak card */}
+                {shouldOfferProtectStreak() && (
           <View className={`${cardBg} rounded-3xl p-6 mt-6`}>
             <View className="items-center">
               <Image
@@ -224,45 +269,6 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
           </View>
         )}
 
-        {/* Grid */}
-        <View className="mt-4 flex-row flex-wrap justify-center">
-          {grid.map((isoOrNull, i) => {
-            const isUsed = !!isoOrNull;
-            return (
-              <View
-                key={i}
-                style={{
-                  width: 82,
-                  height: 76,
-                  marginRight: 8,
-                  marginBottom: 8,
-                }}
-              >
-                <View
-                  className={`rounded-xl items-center justify-center ${
-                    isUsed ? tileActiveBg : tileInactiveBg
-                  }`}
-                  style={{ width: 82, height: 76 }}
-                >
-                  <SmokeIcon
-                    width={24}
-                    height={24}
-                    color={isUsed ? tileActiveFg : "#94a3b8"}
-                  />
-                  <Text
-                    className={`mt-2 text-m font-medium text-center ${
-                      isUsed ? "text-red-500" : tileInactiveText
-                    }`}
-                  >
-                    {isUsed
-                      ? formatDateShort(isoOrNull as string)
-                      : t("slipsLog.freeSlip", "Free Slip")}
-                  </Text>
-                </View>
-              </View>
-            );
-          })}
-        </View>
 
       </ScrollView>
 
@@ -287,11 +293,15 @@ const SlipsLog: React.FC<Props> = ({ onBack }) => {
       >
         <View className="py-6">
           <View className="items-center mb-4">
-            <SupportIcon width={"100%"} height={126} color={isDark ? "#CBD5E1" : "#1e1b4b"} />
+            {isDark ? (
+              <SupportIconDark width={"100%"} height={126} />
+            ) : (
+              <SupportIcon width={"100%"} height={126} />
+            )}
           </View>
           <Text
             className={`text-2xl font-bold text-center mb-4 ${
-              isDark ? "text-indigo-950" : "text-indigo-950"
+              isDark ? "text-slate-100" : "text-indigo-950"
             }`}
           >
             {t("slipsLog.slipConfirmation.title")}

@@ -53,14 +53,12 @@ const ExclusiveAchievementsModalActions: React.FC<ExclusiveAchievementsModalActi
           <Text className={`text-2xl rounded-2xl px-5 py-3 font-bold ${isDark ? 'text-slate-100 bg-slate-700' : 'text-indigo-900 bg-indigo-50'}`}>✕</Text>
         </Pressable>
 
-        {(isInProgress || isLocked )? null : (
+        {(isInProgress || isLocked || !isCompleted) ? null : (
           <Pressable 
             className="flex-1 rounded-2xl justify-center items-center bg-indigo-600"
             onPress={() => {
               if (isCompleted) {
                 handleShare();
-              } else {
-                handleStartChallenge();
               }
             }}
             style={({ pressed }) => [
@@ -73,7 +71,7 @@ const ExclusiveAchievementsModalActions: React.FC<ExclusiveAchievementsModalActi
             <View className="flex-row items-center">
               {isLocked ? <UpgradeIcon width={24} height={24} color="white" /> : ""}
               <Text className="text-2xl font-bold text-white px-4 py-2 font-bold">
-                {isCompleted ? t('achievements.share') : "Start Challenge"}
+                {t('achievements.share') }
               </Text>
             </View>
           </Pressable>
