@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable, Alert, Linking } from "react-native";
+import { View, Text, Pressable, Alert, Linking, Clipboard } from "react-native";
 import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import SlideModal from "./SlideModal";
@@ -24,10 +24,47 @@ const SupportSlide: React.FC<Props> = ({ visible, onClose }) => {
   const systemIconColor = isDark ? "#CBD5E1" : "#1e1b4b";
 
   const handleEmailPress = async () => {
+    const emailUrl = "mailto:support@quitqly.com";
+    
     try {
-      await Linking.openURL("mailto:support@quitqly.com");
+      // Check if the device can open mailto URLs
+      const canOpen = await Linking.canOpenURL(emailUrl);
+      
+      if (canOpen) {
+        await Linking.openURL(emailUrl);
+      } else {
+        // If mailto is not supported, show an alert with the email address
+        Alert.alert(
+          t("alerts.email"),
+          `Please contact us at: support@quitqly.com`,
+          [
+            {
+              text: "Copy Email",
+              onPress: () => {
+                Clipboard.setString("support@quitqly.com");
+                Alert.alert("Email copied to clipboard!");
+              }
+            },
+            { text: "OK", style: "default" }
+          ]
+        );
+      }
     } catch (error) {
-      Alert.alert(t("alerts.email"), t("alerts.mockEmail"));
+      console.error("Error opening email:", error);
+      Alert.alert(
+        t("alerts.email"),
+        `Unable to open email app. Please contact us at: support@quitqly.com`,
+        [
+          {
+            text: "Copy Email",
+            onPress: () => {
+              Clipboard.setString("support@quitqly.com");
+              Alert.alert("Email copied to clipboard!");
+            }
+          },
+          { text: "OK", style: "default" }
+        ]
+      );
     }
   };
 

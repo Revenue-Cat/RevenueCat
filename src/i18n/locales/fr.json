@@ -984,6 +984,8 @@
     "mockEmail": "Maquette : ouvrir éditeur e-mail"
   },
   "support": {
+    "title": "Besoin d'aide ?",
+    "subtitle": "Notre équipe est là pour vous aider — choisissez votre moyen préféré de nous contacter.",
     "telegram": "Telegram",
     "email": "E-mail"
   },

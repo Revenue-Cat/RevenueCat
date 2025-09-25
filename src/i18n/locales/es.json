@@ -1074,6 +1074,8 @@
     "mockEmail": "Simulación: abrir editor de correo"
   },
   "support": {
+    "title": "¿Necesitas ayuda?",
+    "subtitle": "Nuestro equipo está aquí para ayudarte — elige tu forma preferida de contactarnos.",
     "telegram": "Telegram",
     "email": "Correo electrónico"
   },

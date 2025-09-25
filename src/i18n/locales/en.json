@@ -1027,6 +1027,8 @@
     "mockEmail": "Mock: open email composer"
   },
   "support": {
+    "title": "Need support?",
+    "subtitle": "Our team is here to help you — choose your preferred way to contact us.",
     "telegram": "Telegram",
     "email": "Email"
   },
