@@ -164,11 +164,10 @@ const SlideModal: React.FC<SlideModalProps> = ({
             transform: [{ translateY: slideAnim }],
           }}
         >
-        <Pressable
+        <View
           className={`${
             isDark ? "bg-dark-background" : "bg-light-background"
           } rounded-t-3xl`}
-          onPress={(e) => e.stopPropagation()}
         >
           <View className="px-5 pt-6 pb-10">
             {title ? (
@@ -229,7 +228,7 @@ const SlideModal: React.FC<SlideModalProps> = ({
               </View>
             ) : null}
           </View>
-        </Pressable>
+        </View>
       </Animated.View>
       </View>
     </Modal>

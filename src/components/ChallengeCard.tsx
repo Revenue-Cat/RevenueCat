@@ -169,7 +169,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
             <Ionicons name="checkmark" size={20} color="#ffffff" />
           )}
           <Text className="text-white font-semibold text-base ml-2">
-            {isCompleted ? t('challenges.modal.restartChallenge') : (isExclusive ? "Take 5 breathe" : t("challenges.checkIn"))}
+            {isCompleted ? t('challenges.modal.restartChallenge') : (isExclusive ? t('breathing.controls.takeBreaths', { count: 5 }): t("challenges.checkIn"))}
           </Text>
           {checkIns && !isCompleted && typeof checkIns === "number" && (
             <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">

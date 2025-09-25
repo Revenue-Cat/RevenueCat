@@ -25,7 +25,7 @@ const CoinPackCard: React.FC<Props> = ({ pack, onPress, isSelected }) => {
       } ${showHighlight ? "border-2 border-indigo-600" : "border-0"}`}
     >
       {/* Bonus badge */}
-      {showHighlight && (
+      {showHighlight && pack.bonusTag && (
         <View className="absolute -top-3 left-6 rounded-full px-3 py-1 bg-indigo-600">
           <Text className="text-white font-bold text-s">{pack.bonusTag}</Text>
         </View>

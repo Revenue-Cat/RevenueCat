@@ -640,7 +640,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                 isCompleted 
                   ? t('challenges.modal.restartChallenge', "Restart Challenge")
                   : isInProgress 
-                    ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn', "Check In"))
+                    ? (challenge?.isExclusive ? t('breathing.controls.takeBreaths', { count: 5 }): t('challenges.checkIn', "Check In"))
                     : (previousCompletions.length > 0 
                         ? t('challenges.modal.restartChallenge', "Restart Challenge")
                         : (isLocked 
@@ -656,7 +656,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                   ""
                 )}     
             <Text className="font-semibold text-xl text-white ml-2 mr-2">
-              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? "Take 5 breathe" : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : (isLocked ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 }) : t('challenges.modal.startNow'))))}
+              {isCompleted ? t('challenges.modal.restartChallenge') : (isInProgress ? (challenge?.isExclusive ? t('breathing.controls.takeBreaths', { count: 5 }) : t('challenges.checkIn')) : (previousCompletions.length > 0 ? t('challenges.modal.restartChallenge') : (isLocked ? t('challenges.modal.startNowWithPoints', { points: challenge?.points || 0 }) : t('challenges.modal.startNow'))))}
             </Text>
             {progressData.checkIns > 0 && isInProgress && !isCompleted ? (
                 <View className="ml-2 px-2 py-0.5 rounded-full bg-white/20">
