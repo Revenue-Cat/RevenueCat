@@ -613,7 +613,8 @@
     "habits": {
       "estimatedSavings": "Орієнтовна щоденна економія",
       "line": "Я курю {{smokeType}}, зазвичай {{dailyAmount}} на день. Пачка коштує близько {{currency}}{{price}}. Я хочу {{goal}}.",
-      "title": "Мої звички куріння"
+      "title": "Мої звички куріння",
+      "perYear": "/рік"
     },
     "sections": {
       "feedback": "Відгук",

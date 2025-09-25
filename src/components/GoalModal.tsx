@@ -28,7 +28,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
   const { t } = useTranslation();
   const isDark = theme === 'dark';
 
-  const iconColor = selectedValue ? '#312E81' : (isDark ? '#CBD5E1' : '#1E1B4B');
+  const iconColor = isDark ? '#CBD5E1' : (selectedValue ? '#312E81' : '#1E1B4B');
 
   const options = [
     { value: "quit-completely", label: t('setup.fields.goal.options.quit-completely'), icon: <QuitIcon width={20} height={20} color={iconColor} /> },
@@ -72,7 +72,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
                 <Ionicons 
                   name="checkmark" 
                   size={24} 
-                  color="#4f46e5" 
+                  color={isDark ? "#CBD5E1" : "#4f46e5"} 
                 />
               )}
             </Pressable>

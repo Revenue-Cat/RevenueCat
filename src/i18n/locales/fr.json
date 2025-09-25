@@ -569,7 +569,8 @@
     "habits": {
       "estimatedSavings": "Économies quotidiennes estimées",
       "line": "Je fume {{smokeType}}, généralement {{dailyAmount}} par jour. Un paquet coûte environ {{currency}}{{price}}. Je veux {{goal}}.",
-      "title": "Mes habitudes de tabac"
+      "title": "Mes habitudes de tabac",
+      "perYear": "/an"
     },
     "sections": {
       "feedback": "Retour",

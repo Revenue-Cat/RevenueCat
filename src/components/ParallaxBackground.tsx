@@ -149,6 +149,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       <Animated.View
         className="absolute left-0 right-0"
         style={{ zIndex: 40, ...edge(400) }}
+        pointerEvents="box-none"
       >
         <Animated.Image
           source={parallaxSlices.slice4}
@@ -165,6 +166,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       <Animated.View
         className="absolute left-0 right-0"
         style={{ zIndex: 30, ...edge(350) }}
+        pointerEvents="box-none"
       >
         <Animated.Image
           source={parallaxSlices.slice3}
@@ -181,6 +183,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       <Animated.View
         className="absolute left-0 right-0"
         style={{ zIndex: 20, ...edge(325) }}
+        pointerEvents="box-none"
       >
         <Animated.Image
           source={parallaxSlices.slice2}
@@ -197,6 +200,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       <Animated.View
         className="absolute left-0 right-0"
         style={{ zIndex: 10, ...edge(320) }}
+        pointerEvents="box-none"
       >
         <Animated.Image
           source={parallaxSlices.slice1}
