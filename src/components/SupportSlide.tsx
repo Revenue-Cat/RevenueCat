@@ -3,6 +3,7 @@ import { View, Text, Pressable, Alert, Linking, Clipboard } from "react-native";
 import { useTheme } from "../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import SlideModal from "./SlideModal";
+import SetupField from "./SetupField";
 
 // icons (colored brands) + right chevrons
 // import TelegramIcon from "../assets/icons/telegram.svg";
@@ -101,23 +102,14 @@ const SupportSlide: React.FC<Props> = ({ visible, onClose }) => {
 
       <View className="gap-4">
         {rows.map(({ key, Icon, label, onPress }) => (
-          <Pressable
+          <SetupField
             key={key}
+            id={key}
+            label={label}
+            icon={<Icon width={28} height={28} />}
+            value={label}
             onPress={onPress}
-            className={`w-full h-16 rounded-3xl px-4 flex-row items-center justify-between ${
-              isDark ? "bg-slate-700" : "bg-indigo-50"
-            }`}
-          >
-            <View className="flex-row items-center">
-              <Icon width={28} height={28} />
-              <Text
-                className={`ml-3 ${isDark ? "text-slate-100" : "text-indigo-950"}`}
-              >
-                {label}
-              </Text>
-            </View>
-            <Right width={18} height={12} color={systemIconColor} />
-          </Pressable>
+          />
         ))}
       </View>
     </SlideModal>

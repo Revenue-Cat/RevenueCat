@@ -39,6 +39,7 @@ import ReviewModal from "../components/ReviewModal";
 import CoinPackCard from "../components/CoinPackCard";
 import BackButton from "../components/BackButton";
 import Toggle from "../components/Toggle";
+import SetupField from "../components/SetupField";
 
 interface ProfileProps {
   onBack: () => void;
@@ -406,84 +407,54 @@ const Profile: React.FC<ProfileProps> = ({
         {/* Settings block 1 */}
         <View className="mx-4 gap-3">
           {/* Notifications */}
-          <View
-            className={`w-full h-14 rounded-full px-4 flex-row items-center justify-between ${
-              isDark ? "bg-slate-700" : "bg-indigo-50"
-            }`}
-          >
-            <View className="flex-row items-center">
-              <Icons.Notification
-                width={20}
-                height={20}
-                color={systemIconColor}
+          <SetupField
+            id="notifications"
+            label={t("profile.sections.notification", "Notification")}
+            icon={<Icons.Notification width={20} height={20} color={systemIconColor} />}
+            value={t("profile.sections.notification", "Notification")}
+            onPress={() => {}} // No action needed for toggle
+            rightContent={
+              <Toggle
+                value={notificationPermission}
+                onValueChange={handleNotificationToggle}
+                size="sm"
+                trackColor={{
+                  false: isDark ? "#475569" : "#E2E8F0",
+                  true: isDark ? "#4F46E5" : "#1E1B4B",
+                }}
+                thumbColor={{
+                  false: isDark ? "#FFFFFF" : "#FFFFFF",
+                  true: isDark ? "#FFFFFF" : "#FFFFFF",
+                }}
               />
-              <Text
-                className={`ml-3 ${
-                  isDark ? "text-slate-100" : "text-indigo-950"
-                }`}
-                style={{ fontWeight: "600" }}
-              >
-                {t("profile.sections.notification", "Notification")}
-              </Text>
-            </View>
-            <Toggle
-              value={notificationPermission}
-              onValueChange={handleNotificationToggle}
-              size="sm"
-              trackColor={{
-                false: isDark ? "#475569" : "#E2E8F0",
-                true: isDark ? "#4F46E5" : "#1E1B4B",
-              }}
-              thumbColor={{
-                false: isDark ? "#FFFFFF" : "#FFFFFF",
-                true: isDark ? "#FFFFFF" : "#FFFFFF",
-              }}
-            />
-          </View>
+            }
+          />
 
           {/* Theme */}
-          <Pressable
-            className={`w-full h-14 rounded-full px-4 flex-row items-center justify-between ${
-              isDark ? "bg-slate-700" : "bg-indigo-50"
-            }`}
+          <SetupField
+            id="theme"
+            label={t("profile.sections.theme", "Theme")}
+            icon={<Icons.Theme width={20} height={20} color={systemIconColor} />}
+            value={side === "bright" 
+              ? t("sideModal.options.bright", "Bright side") 
+              : t("sideModal.options.dark", "Dark side")}
             onPress={() => setShowSideModal(true)}
-          >
-            <View className="flex-row items-center">
-              <Icons.Theme width={20} height={20} color={systemIconColor} />
-              <Text
-                className={`ml-3 ${
-                  isDark ? "text-slate-100" : "text-indigo-950"
-                }`}
-                style={{ fontWeight: "600" }}
-              >
-                {t("profile.sections.theme", "Theme")}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={22} color={systemIconColor} />
-          </Pressable>
+          />
 
           {/* Language */}
-          <Pressable
-            className={`w-full h-14 rounded-full px-4 flex-row items-center justify-between ${
-              isDark ? "bg-slate-700" : "bg-indigo-50"
-            }`}
-            onPress={() => setShowLanguageModal(true)}
-          >
-            <View className="flex-row items-center">
+          <SetupField
+            id="language"
+            label={currentLanguage.name}
+            icon={
               <View className="w-6 h-6 rounded-full items-center justify-center overflow-hidden mr-2">
                 {currentLanguage.flag && (
                   <currentLanguage.flag width={24} height={24} />
                 )}
               </View>
-              <Text
-                className={`${isDark ? "text-slate-100" : "text-indigo-950"}`}
-                style={{ fontWeight: "600" }}
-              >
-                {currentLanguage.name}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={22} color={systemIconColor} />
-          </Pressable>
+            }
+            value={currentLanguage.name}
+            onPress={() => setShowLanguageModal(true)}
+          />
         </View>
 
         {/* divider */}
@@ -521,25 +492,13 @@ const Profile: React.FC<ProfileProps> = ({
           </Pressable> */}
 
           {/* Support -> open SupportSlide */}
-          <Pressable
-            className={`w-full h-14 rounded-full px-4 flex-row items-center justify-between ${
-              isDark ? "bg-slate-700" : "bg-indigo-50"
-            }`}
+          <SetupField
+            id="support"
+            label={t("profile.sections.support", "Support")}
+            icon={<Icons.Support width={20} height={20} color={systemIconColor} />}
+            value={t("profile.sections.support", "Support")}
             onPress={() => setShowSupportModal(true)}
-          >
-            <View className="flex-row items-center">
-              <Icons.Support width={20} height={20} color={systemIconColor} />
-              <Text
-                className={`ml-3 ${
-                  isDark ? "text-slate-100" : "text-indigo-950"
-                }`}
-                style={{ fontWeight: "600" }}
-              >
-                {t("profile.sections.support", "Support")}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={22} color={systemIconColor} />
-          </Pressable>
+          />
         </View>
         {!hasLeftReview && (
           <>

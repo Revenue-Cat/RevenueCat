@@ -6,6 +6,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 import SlideModal from "./SlideModal";
+import SetupField from "./SetupField";
 
 // flags
 import FlagEn from "../assets/icons/flag-en.svg";
@@ -52,35 +53,19 @@ const LanguageSlide: React.FC<Props> = ({ visible, onClose }) => {
         {languages.map(({ code, name, flag: Flag }) => {
           const selected = code === language;
           return (
-            <Pressable
+            <SetupField
               key={code}
-              onPress={() => handleSelect(code)}
-              className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
-                selected
-                  ? isDark
-                    ? "bg-slate-600"
-                    : "bg-indigo-100"
-                  : isDark
-                  ? "bg-slate-700"
-                  : "bg-indigo-50"
-              }`}
-            >
-              <View className="flex-row items-center">
+              id={code}
+              label={name}
+              icon={
                 <View className="w-8 h-8 rounded-full items-center justify-center overflow-hidden mr-3">
                   <Flag width={32} height={21} />
                 </View>
-                <Text
-                  className={`${isDark ? "text-slate-100" : "text-indigo-950"}`}
-                  style={{ fontWeight: "600" }}
-                >
-                  {name}
-                </Text>
-              </View>
-
-              {selected && (
-                <Ionicons name="checkmark" size={18} color={systemIconColor} />
-              )}
-            </Pressable>
+              }
+              value={name}
+              showCheckmark={selected}
+              onPress={() => handleSelect(code)}
+            />
           );
         })}
       </View>

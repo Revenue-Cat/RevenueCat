@@ -37,18 +37,18 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
         isDark ? "bg-dark-background" : "bg-light-background"
       }`}
     >
-      <ScrollView className="flex-1 px-6 pt-16">
+      <ScrollView className="flex-1 pt-2" contentContainerStyle={{ flexGrow: 1 }}>
         {/* Header */}
         <View className="items-center mb-9">
           <Text
-            className={`text-2xl font-bold mb-3 text-center ${
+            className={`text-2xl font-bold mb-1 text-center ${
               isDark ? "text-slate-100" : "text-indigo-950"
             }`}
           >
             {t("welcome.title")}
           </Text>
           <Text
-            className={`text-center font-medium leading-6 px-5 ${
+            className={`text-center font-md px-14 ${
               isDark ? "text-slate-300" : "text-slate-500"
             }`}
           >
@@ -70,24 +70,27 @@ const Welcome: React.FC<WelcomeProps> = ({ onNext }) => {
             <Ionicons name="chevron-down" size={18} color="#94A3B8" />
           </Pressable>
         </View>
+        
+        {/* Box for illustration - Vertically centered */}
+        <View className="flex-1 justify-center">
+          {/* Placeholder for illustration */}
+          <View className="items-center justify-center h-60">
+            <Image source={require("../assets/icons/welcome.png")} resizeMode="center" width={200} height={200} />
+          </View>
 
-        {/* Placeholder for illustration */}
-        <View className="items-center justify-center mb-8">
-          <Image source={require("../assets/icons/welcome.png")} />
+          {/* Will you quit text */}
+          <Text
+            className={`text-3xl font-bold text-center mb-16 mt-10 ${
+              isDark ? "text-slate-300" : "text-slate-800"
+            }`}
+          >
+            {t("welcome.willYouQuit")}
+          </Text>
         </View>
-
-        {/* Will you quit text */}
-        <Text
-          className={`text-3xl font-bold text-center mb-16 ${
-            isDark ? "text-slate-300" : "text-slate-800"
-          }`}
-        >
-          {t("welcome.willYouQuit")}
-        </Text>
       </ScrollView>
 
       {/* CTA Button - Fixed at bottom */}
-      <CTAButton label={t("welcome.ctaButton")} onPress={onNext} />
+      <CTAButton label={t("welcome.ctaButton")} onPress={onNext} containerClassName="pb-0" />
 
       {/* Language Selection Modal */}
       <LanguageSlide

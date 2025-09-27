@@ -418,7 +418,7 @@ const Home: React.FC<HomeProps> = ({
                     >
                       <Pressable
                         className={`w-2 h-2 rounded-full ${
-                          currentView === view ? "bg-white" : "bg-white/30"
+                          currentView === view ? "bg-white" : "bg-white/45"
                         }`}
                         onPress={() => changeView(view as any)}
                       />

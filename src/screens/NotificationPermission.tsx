@@ -5,6 +5,7 @@ import {
   Pressable,
   Dimensions,
   ScrollView,
+  Image
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -12,6 +13,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import NotificationIcon from "../assets/notification/notification.svg";
 import oneSignalService from "../services/oneSignalService";
+import CTAButton from "../components/CTAButton";
 
 const { width } = Dimensions.get("window");
 
@@ -76,18 +78,17 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({
       className={`flex-1 ${
         isDark ? "bg-dark-background" : "bg-light-background"
       }`}
-    >
-      <ScrollView className="flex-1 px-6 pt-16">
-        <View className="items-center mb-9">
+  >
+      <View className="items-center pt-2">
           <Text
-            className={`text-3xl font-bold mb-3 text-center ${
+            className={`text-2xl font-bold text-center mb-1 ${
               isDark ? "text-slate-100" : "text-indigo-950"
             }`}
           >
             {t("notificationPermission.mainTitle")}
           </Text>
           <Text
-            className={`text-md font-medium text-center leading-6 px-5 ${
+            className={`text-md font-medium text-center px-5 ${
               isDark ? "text-slate-300" : "text-slate-500"
             }`}
           >
@@ -95,72 +96,63 @@ const NotificationPermission: React.FC<NotificationPermissionProps> = ({
           </Text>
         </View>
 
-        {/* Notification Icon with Preview Card overlay */}
-        <View className="relative">
-          {/* Notification Icon Background */}
-          <View className="rounded-3xl pt-16 relative">
-            <LinearGradient
-              colors={["#776FF7", "#15123D"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 100,
-                borderTopLeftRadius: 24,
-                borderTopRightRadius: 24,
-              }}
-            />
-            <NotificationIcon width="100%" preserveAspectRatio="none" />
-          </View>
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ 
+          flexGrow: 1, 
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+          <View className="w-full">
 
-          {/* Notification Preview Card - Positioned on top */}
-          <View className="absolute top-4 left-0 right-0 px-4">
-            <View className="bg-white/90 backdrop-blur-lg rounded-2xl border-2 border-slate-50 p-4 shadow-lg">
-              <View className="flex-row items-center gap-3">
-                {/* Gradient Icon */}
-                <LinearGradient
-                  colors={["#8890F3", "#F377B5"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 0, y: 1 }}
-                  style={{
-                    height: 52,
-                    width: 52,
-                    borderRadius: 8,
-                  }}
-                />
-                {/* Content */}
-                <View className="flex-1">
-                  <Text className="text-sm font-semibold text-gray-800">
-                    {t("notificationPermission.preview.title")}
-                  </Text>
-                  <Text className="text-sm font-semibold text-gray-800">
-                    {t("notificationPermission.preview.message")}
+          {/* Notification Icon with Preview Card overlay */}
+           <View className="relative w-full items-center">
+              {/* Notification Icon Background */}
+             <Image 
+               source={require("../assets/icons/rip.png")} 
+               style={{ width: '90%', height: 400 }} 
+               resizeMode="contain" 
+             />
+
+            {/* Notification Preview Card - Positioned on top */}
+            <View className="absolute top-12 left-10 right-10">
+              <View className="bg-white/80 backdrop-blur-lg rounded-2xl border-2 border-slate-50 p-4 shadow-lg">
+                <View className="flex-row items-center gap-3">
+              
+                  <Image 
+                    source={require("../assets/icons/logo.png")} 
+                    className="w-16 h-16"
+                    resizeMode="contain" 
+                  />
+                  {/* Content */}
+                  <View className="flex-1">
+                    <Text className="text-sm font-semibold text-gray-800">
+                      {t("notificationPermission.preview.title")}
+                    </Text>
+                    <Text className="text-sm font-semibold text-gray-800">
+                      {t("notificationPermission.preview.message")}
+                    </Text>
+                  </View>
+
+                  {/* Timestamp */}
+                  <Text className="text-s text-gray-500 font-semibold">
+                    {currentTime}
                   </Text>
                 </View>
-
-                {/* Timestamp */}
-                <Text className="text-s text-gray-500 font-semibold">
-                  {currentTime}
-                </Text>
               </View>
             </View>
           </View>
         </View>
       </ScrollView>
       {/* Next Button - Fixed at bottom */}
-      <View className="px-6 pb-8 items-center">
-        <Pressable
-          className={`rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600 ${isRequestingPermission ? "opacity-50" : ""}`}
-          onPress={handleRequestPermission}
-          disabled={isRequestingPermission}
-        >
-          <Text className="font-semibold text-xl mr-2 text-white">
-            {t("notificationPermission.actionButton")}
-          </Text>
-        </Pressable>
+      <View>
+        <CTAButton
+            label={t("notificationPermission.actionButton")}
+            onPress={handleRequestPermission}
+            disabled={isRequestingPermission}
+            containerClassName="pb-0" 
+          />
 
       </View>
     </View>

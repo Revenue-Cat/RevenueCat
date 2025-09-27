@@ -39,7 +39,7 @@
     },
     "controls": {
       "takeBreaths": "Faites {{count}} inspirations",
-      "startBreaths": "Commencez {{count}} inspirations"
+      "startBreaths": "Commencez maintenant"
     }
   },
   "buddies": {

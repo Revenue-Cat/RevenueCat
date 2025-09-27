@@ -73,11 +73,11 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
           </Text>
         </Pressable>
 
-        {(isRegularAchievement(achievement.id) && (progress?.percentage || 0) !== 100) ? null : (
+        {(isRegularAchievement(achievement.id) && (progress?.percentage || 0) < 100) ? null : (
           <Pressable
             className="flex-1 rounded-2xl px-6 py-4 items-center justify-center flex-row bg-indigo-600"
             onPress={() => {
-              if (achievement.unlocked && (progress?.percentage || 0) === 100) {
+              if (achievement.unlocked && (progress?.percentage || 0) >= 100) {
                 handleShare();
               } else if (isRegularAchievement(achievement.id)) {
                 // Regular achievements don't have Update button when locked
@@ -89,7 +89,7 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
             }}
             accessibilityRole="button"
             accessibilityLabel={
-              achievement.unlocked && (progress?.percentage || 0) === 100 
+              achievement.unlocked && (progress?.percentage || 0) >= 100 
                 ? t('achievements.share', "Share")
                 : (isRegularAchievement(achievement.id) 
                     ? t('achievements.close', "Close")
@@ -97,7 +97,7 @@ const AchievementModalActions: React.FC<AchievementModalActionsProps> = ({
             }
           >
             <Text className="font-semibold text-xl text-white">
-              {achievement.unlocked && (progress?.percentage || 0) === 100 ? t('achievements.share') : (isRegularAchievement(achievement.id) ? t('achievements.close') : t('achievements.update'))}
+              {achievement.unlocked && (progress?.percentage || 0)>= 100 ? t('achievements.share') : (isRegularAchievement(achievement.id) ? t('achievements.close') : t('achievements.update'))}
             </Text>
           </Pressable>
         )}

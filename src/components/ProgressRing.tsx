@@ -27,6 +27,7 @@ const ProgressRing: React.FC<ProgressRingProps> = ({
           borderWidth: strokeWidth,
           borderColor: progress >= 0 ? (borderColor || '#374151' ) : 'transparent',
           position: 'absolute',
+          opacity: 0.4
         }}
       />
       

@@ -39,7 +39,7 @@
     },
     "controls": {
       "takeBreaths": "Take {{count}} breaths",
-      "startBreaths": "Start {{count}} breaths"
+      "startBreaths": "Start now"
     }
   },
   "buddies": {

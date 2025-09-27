@@ -99,7 +99,7 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
         <Text
           className={`${
             isDark ? "text-slate-300" : "text-slate-500"
-          } text-center`}
+          } text-cente px-2 text-center`}
         >
           {t("cravingSOS.modal.subtitle")}
         </Text>
@@ -289,20 +289,25 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
       </View>
       </View>
  {/* Action buttons container -  */}
-      <ImageBackground
-        source={BreathingBgIcon}
+      <View 
         style={{
-          marginHorizontal: -40,
+          marginHorizontal: -20,
           marginBottom: -40,
-          paddingBottom: 40,
-          paddingHorizontal: 50,
-          paddingVertical: 16,
-          paddingTop: 46,
-          borderTopLeftRadius: 16,
-          borderTopRightRadius: 16,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          overflow: 'hidden',
         }}
-        resizeMode="contain"
       >
+        <ImageBackground
+          source={BreathingBgIcon}
+          style={{
+            paddingBottom: 40,
+            paddingHorizontal: 20,
+            paddingVertical: 16,
+            paddingTop: 20,
+          }}
+          resizeMode="cover"
+        >
         <View className="flex-row items-center gap-2 justify-center w-full">
           {/* Close (✕) — made 48x48 to match smoke button */}
           <Pressable
@@ -345,7 +350,8 @@ const CravingSOSModal: React.FC<CravingSOSModalProps> = ({
             <SmokeIcon width={24} height={24} color="#ffffff" />
           </Pressable>
         </View>
-      </ImageBackground>
+        </ImageBackground>
+      </View>
 
       {/* Don't Give Up Modal */}
       <Modal

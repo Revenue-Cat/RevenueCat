@@ -91,7 +91,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   const showProgress = !isLocked && !isActive && typeof timeBasedProgress === "number";
 
   const CardContent = (
-    <View className={`${isDark ? 'bg-slate-700' : 'bg-white'} rounded-2xl p-4 mb-2`}>
+    <View className={`${isDark ? 'bg-slate-700' : 'bg-white'} rounded-2xl p-4 mb-3`}>
       {/* Main Content */}
       <View className="flex-row justify-between items-start mb-3">
         {/* Left: points badge + duration + title + description */}

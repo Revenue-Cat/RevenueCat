@@ -689,7 +689,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ onClose, onBack, 
         
         {!isActive && countdown === null && !isPaused ? (
           <CTAButton
-              label={isCompleted ? t('breathing.completion.takeNewBreaths', { count: 5 }) : t('breathing.controls.takeBreaths', { count: 5 })}
+              label={isCompleted ? t('breathing.completion.takeNewBreaths', { count: 5 }) : t('breathing.controls.startBreaths')}
               onPress={handleStart}
               rightIconName={null}
               containerClassName="absolute bottom-0 left-0 right-0 z-[200]"

@@ -39,6 +39,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     getChallengeStatus,
     getChallengeProgress,
     getChallengeCompletions,
+    calculateProgressBasedOnTime
   } = useApp();
 
   // Get the selected buddy data
@@ -73,8 +74,17 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   const completedChallengesCount = CHALLENGES_DATA.filter((challenge) => {
     const status = getChallengeStatus(challenge.id);
     const previousCompletions = getChallengeCompletions(challenge.id);
-      
-    return status === 'completed' || previousCompletions?.length > 0;
+    const progressData = getChallengeProgress(challenge.id);
+
+    const timeBasedProgress = progressData.startDate 
+    ? calculateProgressBasedOnTime(
+        challenge.id, 
+        challenge.duration, 
+        progressData.startDate
+      ) 
+    : 0;
+    const completed = status === 'completed' || previousCompletions.length || (timeBasedProgress ?? 0) >= 100
+    return status === 'completed' || (previousCompletions?.length ?? 0) > 0 || completed;
   }).length || 0;
 
   const getViewTitle = () => {

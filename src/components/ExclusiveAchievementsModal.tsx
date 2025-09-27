@@ -39,10 +39,10 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
   if (!challenge) return null;
 
   const status = getChallengeStatus(challenge.id);
-  const isCompleted = status === 'completed' || challenge.previousCompletions.length;
+  const isCompleted = status === 'completed' || challenge.previousCompletions.length || (challenge.timeBasedProgress ?? 0) >= 100;
   const isInProgress = status === 'inprogress';
   const isLocked = status === 'locked';
-  const borderColor = isDark ? "#475569" : "#d7d9df";
+  const borderColor = isDark ? "#475569" : "#cbd5e1";
 
   // Compute completion count from stored completions
   const completionCount = getChallengeCompletions(challenge.id).length;
@@ -53,7 +53,7 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
       <View className="w-32 h-32 relative">
         {/* Progress Ring */}
          <ProgressRing
-            progress={isCompleted ? 100 : challenge.timeBasedProgress}
+            progress={isCompleted ? 100 : challenge.timeBasedProgress ?? 0}
             size={112}
             strokeWidth={3}
             color={
@@ -66,7 +66,7 @@ const ExclusiveAchievementsModal: React.FC<ExclusiveAchievementsModalProps> = ({
 
         {/* Challenge Icon Background */}
         <View className="absolute inset-0 bg-gradient-to-br from-green-400 to-yellow-400 rounded-full justify-center items-center">
-          {challenge.achievementIcon && !isLocked && isCompleted ? (
+          {challenge.achievementIcon && !isLocked && (isCompleted || completionCount > 0 || (challenge.timeBasedProgress ?? 0) >= 100) ? (
             <Image
               source={challenge.achievementIcon}
               className="w-36 h-36"

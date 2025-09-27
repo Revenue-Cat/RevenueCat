@@ -6,6 +6,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useApp } from "../contexts/AppContext";
 import BuddyCarousel, { Buddy } from "../components/BuddyCarousel";
 import type { SexKey } from "../assets/buddies";
+import SetupField from "../components/SetupField";
 
 // Modals
 import BuddyNameModal from "../components/BuddyNameModal";
@@ -32,6 +33,7 @@ import WomanDark from "../assets/icons/woman-d.svg";
 import IncognitoLight from "../assets/icons/incognito.svg";
 import IncognitoDark from "../assets/icons/incognito-d.svg";
 import CTAButton from "../components/CTAButton";
+import BackButton from "../components/BackButton";
 
 type Gender = "man" | "lady" | "any";
 type Side = "bright" | "dark";
@@ -258,40 +260,38 @@ const BuddySelection: React.FC<Props> = ({
     >
       {/* Top back button (only in Profile edit mode) */}
       {fromProfile && onBack && (
-        <View className="flex-row items-center justify-between px-6 pt-4 pb-1">
-          <Pressable
-            className={`w-10 h-10 rounded-full justify-center items-center p-1`}
-            onPress={onBack}
+        <View className="flex-row items-center justify-between ml-3">
+          <BackButton onPress={onBack} variant="icon" />
+          <Text
+            className={`text-2xl font-bold mb-1 text-center ${
+              isDark ? "text-slate-100" : "text-indigo-950"
+            }`}
           >
-             <Ionicons 
-              name="arrow-back" 
-              size={20} 
-              color={isDark ? "#f1f5f9" : "#1e1b4b"}
-            />
-          </Pressable>
+            {fromProfile
+              ? t("buddySelection.profileTitle", "My quit buddy")
+              : t("buddySelection.title", "Pick your quit buddy")}
+          </Text>
           <View style={{ width: 40, height: 40 }} />
         </View>
       )}
-
+      <View className="flex-1">
       {/* Header */}
       <View
-        className={`${
-          fromProfile ? "items-center mb-10" : "items-center pt-16"
-        } px-6 mb-2`}
+        className={`items-center px-6 pt-2`}
       >
-        <Text
-          className={`text-2xl font-bold mb-3 text-center ${
+        {!fromProfile && <Text
+          className={`text-2xl font-bold mb-1 text-center ${
             isDark ? "text-slate-100" : "text-indigo-950"
           }`}
         >
           {fromProfile
             ? t("buddySelection.profileTitle", "My quit buddy")
             : t("buddySelection.title", "Pick your quit buddy")}
-        </Text>
+        </Text>}
 
         {!fromProfile && (
           <Text
-            className={`text-center font-medium leading-6 px-5 ${
+            className={`text-center font-medium px-5 ${
               isDark ? "text-slate-300" : "text-slate-500"
             }`}
           >
@@ -302,6 +302,7 @@ const BuddySelection: React.FC<Props> = ({
           </Text>
         )}
       </View>
+      <View className=" flex-1 justify-center"> 
 
       {/* Carousel */}
       <View className="mt-2">
@@ -347,19 +348,21 @@ const BuddySelection: React.FC<Props> = ({
         {buddyName}
       </Text>
       <Text
-        className="text-slate-500 text-center mt-[10px] px-10"
+        className="text-slate-500 text-center mt-[10px] px-10 h-16"
         style={{
           fontFamily: "Inter",
           fontWeight: "500",
           fontSize: 14,
           lineHeight: 20,
         }}
+        numberOfLines={2}
+        ellipsizeMode="tail"
       >
       {buddies[activeIndex]?.description}
       </Text>
 
       {/* Dots */}
-      <View className="mt-4 flex-row justify-center">
+      <View className="flex-row justify-center">
         {buddies.map((_, i) => {
           const active = i === activeIndex;
           const bg = isDark
@@ -380,105 +383,131 @@ const BuddySelection: React.FC<Props> = ({
       </View>
 
       {/* Rows */}
-      <View className="mt-6 px-6 gap-3">
+      {!fromProfile && <View className="mt-6 px-6 gap-3">
         {/* Name */}
-        <Pressable
+        <SetupField
+          id="buddyName"
+          label={buddyName}
+          icon={<Icons.Character width={20} height={20} color={systemIconColor} />}
+          value={buddyName}
           disabled={isLocked(activeIndex)}
           onPress={() => setShowNameModal(true)}
-          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
-            isDark ? "bg-slate-700" : "bg-indigo-50"
-          } ${isLocked(activeIndex) ? "opacity-60" : ""}`}
-        >
-          <View className="flex-row items-center">
-            <Icons.Character width={20} height={20} color={systemIconColor} />
-            <Text
-              className={`ml-3 ${
-                isDark ? "text-slate-100" : "text-indigo-950"
-              }`}
-              style={{ fontWeight: "600" }}
-            >
-              {buddyName}
-            </Text>
-          </View>
-          <Ionicons
-            name="chevron-forward-outline"
-            size={20}
-            color={systemIconColor}
-          />
-        </Pressable>
+          className={isLocked(activeIndex) ? "opacity-60" : ""}
+        />
 
         {/* Gender */}
-        <Pressable
+        <SetupField
+          id="gender"
+          label={gender === "man"
+            ? t("profile.gender.man", "Man")
+            : gender === "lady"
+            ? t("profile.gender.woman", "Woman")
+            : t("profile.gender.nonBinary", "Isn't important")}
+          icon={<Icons.Gender width={20} height={20} color={systemIconColor} />}
+          value={gender === "man"
+            ? t("profile.gender.man", "Man")
+            : gender === "lady"
+            ? t("profile.gender.woman", "Woman")
+            : t("profile.gender.nonBinary", "Isn't important")}
+          showCheckmark={true}
           onPress={() => setShowGenderModal(true)}
-          className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
-            isDark ? "bg-slate-700" : "bg-indigo-50"
-          }`}
-        >
-          <View className="flex-row items-center">
-            <Icons.Gender width={20} height={20} color={systemIconColor} />
+        />
+
+        {/* Side (only in onboarding mode) */}
+        {!fromProfile && (
+          <SetupField
+            id="side"
+            label={side === "bright" 
+              ? t("sideModal.options.bright", "Bright side") 
+              : t("sideModal.options.dark", "Dark side")}
+            icon={side === "bright" 
+              ? <Icons.Sun width={20} height={20} color={systemIconColor} />
+              : <Icons.Moon width={20} height={20} color={systemIconColor} />}
+            value={side === "bright" 
+              ? t("sideModal.options.bright", "Bright side") 
+              : t("sideModal.options.dark", "Dark side")}
+            showCheckmark={true}
+            onPress={() => setShowSideModal(true)}
+          />
+        )}
+      </View>}
+      </View>
+     
+      </View>
+      {/* CTA (only in onboarding mode) */}
+      
+        <View >
+        
+        
             <Text
-              className={`ml-3 ${
-                isDark ? "text-slate-100" : "text-indigo-950"
+              className={`text-center mb-3 ${
+                isDark ? "text-slate-400" : "text-slate-500"
               }`}
-              style={{ fontWeight: "600" }}
             >
-              {gender === "man"
+             { !canProceed &&  t("buddySelection.lockedMessage") }
+            </Text>
+        
+            {fromProfile && (
+            <View className="px-6 gap-3">
+            {/* Name */}
+            <SetupField
+              id="buddyName"
+              label={buddyName}
+              icon={<Icons.Character width={20} height={20} color={systemIconColor} />}
+              value={buddyName}
+              disabled={isLocked(activeIndex)}
+              onPress={() => setShowNameModal(true)}
+              className={isLocked(activeIndex) ? "opacity-60" : ""}
+            />
+    
+            {/* Gender */}
+            <SetupField
+              id="gender"
+              label={gender === "man"
                 ? t("profile.gender.man", "Man")
                 : gender === "lady"
                 ? t("profile.gender.woman", "Woman")
                 : t("profile.gender.nonBinary", "Isn't important")}
-            </Text>
+              icon={<Icons.Gender width={20} height={20} color={systemIconColor} />}
+              value={gender === "man"
+                ? t("profile.gender.man", "Man")
+                : gender === "lady"
+                ? t("profile.gender.woman", "Woman")
+                : t("profile.gender.nonBinary", "Isn't important")}
+              showCheckmark={true}
+              onPress={() => setShowGenderModal(true)}
+            />
+    
+            {/* Side (only in onboarding mode) */}
+            {!fromProfile && (
+              <SetupField
+                id="side"
+                label={side === "bright" 
+                  ? t("sideModal.options.bright", "Bright side") 
+                  : t("sideModal.options.dark", "Dark side")}
+                icon={side === "bright" 
+                  ? <Icons.Sun width={20} height={20} color={systemIconColor} />
+                  : <Icons.Moon width={20} height={20} color={systemIconColor} />}
+                value={side === "bright" 
+                  ? t("sideModal.options.bright", "Bright side") 
+                  : t("sideModal.options.dark", "Dark side")}
+                showCheckmark={true}
+                onPress={() => setShowSideModal(true)}
+              />
+            )}
           </View>
-          <Ionicons name="checkmark" size={18} color={systemIconColor} />
-        </Pressable>
-
-        {/* Side (only in onboarding mode) */}
-        {!fromProfile && (
-          <Pressable
-            onPress={() => setShowSideModal(true)}
-            className={`w-full h-14 rounded-2xl px-4 flex-row items-center justify-between ${
-              isDark ? "bg-slate-700" : "bg-indigo-50"
-            }`}
-          >
-            <View className="flex-row items-center">
-              {side === "bright" ? (
-                <Icons.Sun width={20} height={20} color={systemIconColor} />
-              ) : (
-                <Icons.Moon width={20} height={20} color={systemIconColor} />
-              )}
-              <Text
-                className={`ml-3 ${
-                  isDark ? "text-slate-100" : "text-indigo-950"
-                }`}
-                style={{ fontWeight: "600" }}
-              >
-                {side === "bright" ? t("sideModal.options.bright", "Bright side") : t("sideModal.options.dark", "Bright side")}
-              </Text>
-            </View>
-            <Ionicons name="checkmark" size={18} color={systemIconColor} />
-          </Pressable>
-        )}
-      </View>
-
-      {/* CTA (only in onboarding mode) */}
-      {!fromProfile && (
-        <View className="px-6 pb-8 mt-6">
+          )}
+        {!fromProfile && ( 
           <CTAButton
             label={t("buddySelection.next", "Let’s Go, Buddy!")}
             onPress={onNext}
             disabled={!canProceed}
+            containerClassName="pb-0" 
           />
-          {!canProceed && (
-            <Text
-              className={`text-center mt-2 ${
-                isDark ? "text-slate-400" : "text-slate-500"
-              }`}
-            >
-              {t("buddySelection.lockedMessage")}
-            </Text>
-          )}
+        )}
+         
         </View>
-      )}
+     
 
       {/* Modals */}
       <BuddyNameModal

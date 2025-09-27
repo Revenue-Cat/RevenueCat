@@ -39,7 +39,7 @@
     },
     "controls": {
       "takeBreaths": "Зробіть {{count}} вдихів",
-      "startBreaths": "Почніть {{count}} вдихів"
+      "startBreaths": "Почніть зараз"
     }
   },
   "buddies": {

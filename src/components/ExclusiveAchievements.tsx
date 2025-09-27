@@ -172,7 +172,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
             const isLocked = challenge.status === 'locked';
             const completionCount = challenge.previousCompletions.length;
             const isActive = challenge.status === 'active';
-
+            console.log("Achievements challenge", isCompleted, isInProgress, completionCount > 0, challenge.timeBasedProgress)
             return (
               <View
                 key={`${challenge.id}-${index}`}
@@ -196,7 +196,7 @@ const ExclusiveAchievements: React.FC<ExclusiveAchievementsProps> = ({
                     />
                   {/* Achievement Icon */}
                   <View className="absolute w-[70px] h-[70px] rounded-full justify-center items-center">
-                    {challenge.achievementIcon && !isLocked && !isActive && (isCompleted || completionCount > 0) ? (
+                    {challenge.achievementIcon && !isLocked && !isActive && (isCompleted || completionCount > 0 || challenge.timeBasedProgress >=100) ? (
                       <Image
                         source={challenge.achievementIcon}
                         style={{ width: 80, height: 80 }}
